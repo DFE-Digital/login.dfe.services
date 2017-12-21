@@ -1,0 +1,94 @@
+<div class="grid-row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Access DfE services
+        </h1>
+
+        <% if(locals.myOrganisations) { %>
+        <% for (let i = 0; i < locals.myOrganisations.length; i++) { %>
+        <% const myServices = locals.myServicesByOrganisations[locals.myOrganisations[i]] %>
+        <% if (myServices) { %>
+        <h2 class="heading-small"><%= myServices[0].organisation.name %></h2>
+        <ul class="service-list">
+            <% for (let s = 0; s < myServices.length; s++) { %>
+            <li class="status-<%= myServices[s].status ? "live" : "pending" %>%>">
+                <div class="service-name">
+                    <h3 class="service-title">
+                        <% if (myServices[s].status === 1) { %>
+                            <a href="#" class="service-link under-construction">
+                                <%= myServices[s].name %>
+                            </a>
+                        <% } else { %>
+                            <%= myServices[s].name %>
+                            <span class="heading-secondary">Pending approval</span>
+                        <% } %>
+                    </h3>
+                    <span class="role-name"><%= myServices[s].role.name %></span>
+                </div>
+                <div class="more-information">
+                    <a href="#modal-service-<%=i+1%>-<%=s+1%>" class="modal-link">More information <span class="vh">about <%= myServices[s].name %></span> </a>
+                </div>
+                <div class="modal" id="modal-service-<%=i+1%>-<%=s+1%>">
+                    <a href="#" class="close">Close</a>
+                    <h3 class="heading-large"><%= myServices[s].name %></h3>
+                    <dl class="rows condensed">
+
+                        <dt>Organisation</dt>
+                        <dd><%= myServices[0].organisation.name %></dd>
+
+                        <dt>Access level</dt>
+                        <dd><%= myServices[0].role.name %></dd>
+
+
+                        <dt>Description</dt>
+                        <dd><%= myServices[s].description ? myServices[s].description : '---'%></dd>
+
+                        <% if (myServices[s].status === 1) { %>
+
+                        <!--<dt>Last accessed</dt>-->
+                        <!--<dd>{{ LAST ACCESSED DATETIME }}</dd>-->
+
+                        <% } else { %>
+
+                        <dt>Request sent</dt>
+                        <dd><%= locals.moment(myServices[s].requestDate).fromNow()%></dd>
+                        <%if(myServices[s].myApproversForService && myServices[s].myApproversForService.length !== 0) {%>
+                        <dt>Request sent to</dt>
+                        <dd>
+                            <ul>
+                                <% for (let j = 0; j < myServices[s].myApproversForService.length; j++) {
+                                const approver = myServices[s].myApproversForService[j];
+                                %>
+                                    <li><%=approver.given_name%> <%=approver.family_name%>  <a href="mailto:<%=approver.email%>"><%=approver.email%></a></li>
+                                <% } %>
+                            </ul>
+                        </dd>
+                        <% } %>
+                        <% } %>
+
+                    </dl>
+                </div>
+            </li>
+            <% } %>
+        </ul>
+        <% } %>
+        <% } %>
+        <% } else { %>
+        <div class="empty-state">
+            <p>You don't have access to any services at the moment.</p>
+        </div>
+        <% } %>
+
+    </div>
+    <div class="col-4">
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <nav class="subnav">
+                <ul>
+                    <li><a href="/services/available-services">Add another service</a></li>
+                </ul>
+            </nav>
+        </aside>
+    </div>
+</div>
+

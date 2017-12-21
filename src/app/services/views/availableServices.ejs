@@ -1,0 +1,69 @@
+<a href="/" class="link-back">Back</a>
+<div class="grid-row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Other services
+        </h1>
+        <p class="lede">Your may require access to one ore more of the following services, selecting a service will enable you to learn about the service and request access.</p>
+        <% if(locals.availableServices) { %>
+        <ul class="available-service-list service-list">
+            <% for (let i = 0; i < locals.availableServices.length; i++) { %>
+            <li>
+                <div class="service-name">
+                    <h3 class="service-title">
+                        <a href="services/request-access/<%= locals.availableServices[i].id %>" title="Request access to <%= locals.availableServices[i].name %>">
+                            <%= locals.availableServices[i].name %>
+                        </a>
+                    </h3>
+                </div>
+                <div class="more-information">
+                    <%= locals.availableServices[i].description %>
+                </div>
+
+            </li>
+
+            <% } %>
+        </ul>
+        <% } else { %>
+        <p>No services available</p>
+        <% } %>
+    </div>
+    <div class="col-4">
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <nav class="subnav">
+                <ul>
+                    <li><a href="/">My services</a></li>
+                </ul>
+            </nav>
+        </aside>
+    </div>
+</div>
+
+
+<style>
+
+    .service-list li a {
+        text-decoration: none;
+    }
+
+    .service-list li h3 {
+        text-decoration: none;
+    }
+
+    .service-list li a h3 span.service-title {
+        text-decoration: none;
+    }
+
+    .service-list li a span.service-description {
+        color: #111;
+    }
+
+
+    li.manage-service a {
+        padding: 5px 15px;
+        border-left-color: #a83632;
+    }
+
+
+</style>
