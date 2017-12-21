@@ -59,7 +59,7 @@ typings/
 
 # Dev env
 /config/
-!/config/PROJECT-NAME.dev.json
+!/config/login.dfe.services.dev.json
 
 .idea/workspace.xml
 .idea/watcherTasks.xml
