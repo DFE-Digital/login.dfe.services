@@ -14,10 +14,13 @@ const flash = require('express-flash-2');
 const config = require('./infrastructure/config');
 const getPassportStrategy = require('./infrastructure/oidc');
 const { setUserContext, setApproverContext, asyncMiddleware, setConfigContext } = require('./infrastructure/utils');
+const { servicesSchema, validateConfigAndQuitOnError } = require('login.dfe.config.schema');
 
 const registerRoutes = require('./routes');
 
 const init = async () => {
+  validateConfigAndQuitOnError(servicesSchema, config, logger);
+
   const app = express();
   const csrf = csurf({ cookie: true });
 

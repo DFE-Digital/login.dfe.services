@@ -31,6 +31,7 @@
     "express-session": "^1.15.6",
     "lodash": "^4.17.4",
     "login.dfe.jwt-strategies": "github:DFE-Digital/login.dfe.jwt-strategies#v1.0.4",
+    "login.dfe.config.schema": "git+https://github.com/DFE-Digital/login.dfe.config.schema.git#v1.8.1",
     "moment": "^2.19.3",
     "morgan": "^1.9.0",
     "openid-client": "^1.18.1",
