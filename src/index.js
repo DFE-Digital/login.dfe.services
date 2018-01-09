@@ -30,7 +30,12 @@ const init = async () => {
       action: 'deny',
     },
   }));
-  const csrf = csurf({ cookie: true });
+  const csrf = csurf({
+    cookie: {
+      secure: true,
+      httpOnly: true,
+    },
+  });
 
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser());
