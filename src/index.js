@@ -15,6 +15,8 @@ const config = require('./infrastructure/config');
 const getPassportStrategy = require('./infrastructure/oidc');
 const { setUserContext, setApproverContext, asyncMiddleware, setConfigContext } = require('./infrastructure/utils');
 const { servicesSchema, validateConfigAndQuitOnError } = require('login.dfe.config.schema');
+const helmet = require('helmet');
+const sanitization = require('login.dfe.sanitization');
 
 const registerRoutes = require('./routes');
 
@@ -22,10 +24,17 @@ const init = async () => {
   validateConfigAndQuitOnError(servicesSchema, config, logger);
 
   const app = express();
+  app.use(helmet({
+    noCache: true,
+    frameguard: {
+      action: 'deny',
+    },
+  }));
   const csrf = csurf({ cookie: true });
 
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser());
+  app.use(sanitization());
   app.use(morgan('combined', { stream: fs.createWriteStream('./access.log', { flags: 'a' }) }));
   app.use(morgan('dev'));
   app.set('view engine', 'ejs');
