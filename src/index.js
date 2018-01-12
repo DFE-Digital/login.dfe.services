@@ -30,6 +30,11 @@ const init = async () => {
       action: 'deny',
     },
   }));
+
+  if (config.hostingEnvironment.env !== 'dev') {
+    app.set('trust proxy', 1);
+  }
+  
   const csrf = csurf({
     cookie: {
       secure: true,
