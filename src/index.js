@@ -1,3 +1,5 @@
+const config = require('./infrastructure/config');
+const appInsights = require('applicationinsights');
 const express = require('express');
 const passport = require('passport');
 const bodyParser = require('body-parser');
@@ -11,7 +13,6 @@ const fs = require('fs');
 const path = require('path');
 const csurf = require('csurf');
 const flash = require('express-flash-2');
-const config = require('./infrastructure/config');
 const getPassportStrategy = require('./infrastructure/oidc');
 const { setUserContext, setApproverContext, asyncMiddleware, setConfigContext } = require('./infrastructure/utils');
 const { servicesSchema, validateConfigAndQuitOnError } = require('login.dfe.config.schema');
@@ -22,6 +23,10 @@ const registerRoutes = require('./routes');
 
 const init = async () => {
   validateConfigAndQuitOnError(servicesSchema, config, logger);
+
+  if (config.hostingEnvironment.applicationInsights) {
+    appInsights.setup(config.hostingEnvironment.applicationInsights).start();
+  }
 
   const app = express();
   app.use(helmet({
