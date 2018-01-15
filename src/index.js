@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
+const moment = require('moment');
 const morgan = require('morgan');
 const logger = require('./infrastructure/logger');
 const https = require('https');
@@ -67,6 +68,14 @@ const init = async () => {
   }));
   app.use(flash());
 
+
+  // Setup global locals for layouts and views
+  Object.assign(app.locals, {
+    moment,
+    app: {
+      title: 'Login.Dfe',
+    },
+  });
 
   passport.use('oidc', await getPassportStrategy());
   passport.serializeUser((user, done) => {
