@@ -3,6 +3,7 @@
 require('winston-redis').Redis;
 const winston = require('winston');
 const config = require('./../config');
+const WinstonSequelizeTransport = require('login.dfe.audit.winston-sequelize-transport');
 
 const logLevel = (config && config.loggerSettings && config.loggerSettings.logLevel) ? config.loggerSettings.logLevel : 'info';
 
@@ -16,7 +17,12 @@ const loggerConfig = {
     debug: 5,
     silly: 6,
   },
-  colors: (config && config.loggerSettings && config.loggerSettings.colors) ? config.loggerSettings.colors : null,
+  colors: {
+    info: 'yellow',
+    ok: 'green',
+    error: 'red',
+    audit: 'magenta',
+  },
   transports: [],
 };
 
@@ -29,6 +35,12 @@ if (config && config.loggerSettings && config.loggerSettings.redis && config.log
     port: config.loggerSettings.redis.port,
     auth: config.loggerSettings.redis.auth,
   }));
+}
+
+const sequelizeTransport = WinstonSequelizeTransport(config);
+
+if (sequelizeTransport) {
+  loggerConfig.transports.push(sequelizeTransport);
 }
 
 const logger = new (winston.Logger)(loggerConfig);
