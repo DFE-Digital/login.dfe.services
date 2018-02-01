@@ -1,9 +1,11 @@
 const passport = require('passport');
 const logger = require('./infrastructure/logger');
+const config = require('./infrastructure/config');
 
 const home = require('./app/home');
 const services = require('./app/services');
 const signOut = require('./app/signOut');
+const healthCheck = require('login.dfe.healthcheck');
 
 const routes = (app, csrf) => {
   // auth callbacks
@@ -37,6 +39,7 @@ const routes = (app, csrf) => {
   });
 
   // app routes
+  app.use('/healthcheck', healthCheck({ config }));
   app.use('/', home(csrf));
   app.use('/services', services(csrf));
   app.use('/signout', signOut(csrf));
