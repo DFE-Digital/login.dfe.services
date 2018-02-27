@@ -1,5 +1,5 @@
 const config = require('./infrastructure/config');
-const appInsights = require('applicationinsights');
+const logger = require('./infrastructure/logger');
 const express = require('express');
 const passport = require('passport');
 const bodyParser = require('body-parser');
@@ -8,7 +8,6 @@ const expressLayouts = require('express-ejs-layouts');
 const session = require('cookie-session');
 const moment = require('moment');
 const morgan = require('morgan');
-const logger = require('./infrastructure/logger');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
@@ -25,9 +24,6 @@ const registerRoutes = require('./routes');
 const init = async () => {
   validateConfigAndQuitOnError(servicesSchema, config, logger);
 
-  if (config.hostingEnvironment.applicationInsights) {
-    appInsights.setup(config.hostingEnvironment.applicationInsights).start();
-  }
   let expiryInMinutes = 30;
   const sessionExpiry = parseInt(config.hostingEnvironment.sessionCookieExpiryInMinutes);
   if (!isNaN(sessionExpiry)) {
