@@ -18,6 +18,7 @@ const { setUserContext, setApproverContext, asyncMiddleware, setConfigContext } 
 const { servicesSchema, validateConfigAndQuitOnError } = require('login.dfe.config.schema');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
+const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
 
 const registerRoutes = require('./routes');
 
@@ -43,7 +44,7 @@ const init = async () => {
   if (config.hostingEnvironment.env !== 'dev') {
     app.set('trust proxy', 1);
   }
-  
+
   const csrf = csurf({
     cookie: {
       secure: true,
@@ -96,6 +97,14 @@ const init = async () => {
 
 
   registerRoutes(app, csrf);
+
+  const errorPageRenderer = ejsErrorPages.getErrorPageRenderer({
+    help: config.hostingEnvironment.helpUrl,
+  }, config.hostingEnvironment.env === 'dev');
+  app.use(getErrorHandler({
+    logger,
+    errorPageRenderer,
+  }));
 
   if (config.hostingEnvironment.env === 'dev') {
     app.proxy = true;
