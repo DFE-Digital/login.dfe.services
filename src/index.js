@@ -8,6 +8,7 @@ const expressLayouts = require('express-ejs-layouts');
 const session = require('cookie-session');
 const moment = require('moment');
 const morgan = require('morgan');
+const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
@@ -19,8 +20,22 @@ const { servicesSchema, validateConfigAndQuitOnError } = require('login.dfe.conf
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
+const KeepAliveAgent = require('agentkeepalive');
 
 const registerRoutes = require('./routes');
+
+http.GlobalAgent = new KeepAliveAgent({
+  maxSockets: 10,
+  maxFreeSockets: 2,
+  timeout: 60000,
+  keepAliveTimeout: 300000,
+});
+https.GlobalAgent = new KeepAliveAgent({
+  maxSockets: 10,
+  maxFreeSockets: 2,
+  timeout: 60000,
+  keepAliveTimeout: 300000,
+});
 
 const init = async () => {
   validateConfigAndQuitOnError(servicesSchema, config, logger);
