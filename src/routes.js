@@ -15,7 +15,7 @@ const routes = (app, csrf) => {
       let redirectUrl = '/';
 
       if (err) {
-        if (err.message === 'state mismatch') {
+        if (err.message.match(/state\smismatch/)) {
           req.session = null;
           return res.redirect('/');
         }
