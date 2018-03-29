@@ -7,6 +7,9 @@ jest.mock('./../../../../../src/infrastructure/config', () => {
         url: 'http://unit.test.local',
       },
     },
+    hostingEnvironment: {
+      agentKeepAlive: {}
+    },
   };
 });
 
@@ -17,7 +20,7 @@ describe('When getting a collection of users', () => {
 
   let account;
   let getBearerToken;
-  let rp;
+  let rp= jest.fn();
 
   beforeEach(() => {
     getBearerToken = jest.fn().mockReturnValue('token');
@@ -26,9 +29,9 @@ describe('When getting a collection of users', () => {
       getBearerToken,
     }));
 
-    rp = jest.fn();
+    rp.mockReset();
     const requestPromise = require('request-promise');
-    requestPromise.mockImplementation(rp);
+    requestPromise.defaults.mockReturnValue(rp);
 
     const Account = require('./../../../../../src/infrastructure/account/DirectoriesApiAccount');
     account = Account.fromContext(user);
