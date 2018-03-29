@@ -58,8 +58,9 @@ typings/
 .env
 
 # Dev env
-/config/
 !/config/login.dfe.services.dev.json
+/config/
+
 
 .idea/workspace.xml
 .idea/watcherTasks.xml
