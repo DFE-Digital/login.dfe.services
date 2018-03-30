@@ -6,7 +6,10 @@ jest.mock('./../../../../src/infrastructure/config', () => {
       },
       organisations: {
         type: 'static',
-      }
+      },
+      hostingEnvironment: {
+        agentKeepAlive: {}
+      },
     };
 });
 jest.mock('./../../../../src/infrastructure/config');
