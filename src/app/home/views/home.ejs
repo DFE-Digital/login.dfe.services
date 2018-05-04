@@ -4,6 +4,12 @@
             Services
         </h1>
 
+        <% if (organisations.length === 0) { %>
+        <div class="empty-state">
+            <p>You have no associations to any organisations</p>
+        </div>
+        <% } %>
+
         <%
         for (let o = 0; o < organisations.length; o++) {
             const organisation = organisations[o];
@@ -43,6 +49,7 @@
                 </div>
             </section>
             <section>
+                <% if (organisation.services.length > 0) { %>
                 <ul class="service-list">
                     <%
                     for (let s = 0; s < organisation.services.length; s++) {
@@ -62,6 +69,11 @@
                     </li>
                     <% } %>
                 </ul>
+                <% } else { %>
+                <div class="empty-state">
+                    <p>You have no services for <%=organisation.name%></p>
+                </div>
+                <% }%>
             </section>
         </article>
         <% } %>
