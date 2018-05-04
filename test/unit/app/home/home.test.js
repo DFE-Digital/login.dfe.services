@@ -39,6 +39,19 @@ const orgsAndServicesForUser = [
       },
     ],
   },
+  {
+    organisation: {
+      id: 'org2',
+      name: 'Organisation Two',
+      uid: '543181665'
+    },
+    role: {
+      id: 0,
+      name: 'End User',
+    },
+    approvers: [],
+    services: [],
+  },
 ];
 
 describe('when displaying current organisation and service mapping', () => {
@@ -91,7 +104,7 @@ describe('when displaying current organisation and service mapping', () => {
         name: 'Organisation One',
         urn: '45619413',
         role: {
-          id: 10000,
+          id: 'approver',
           name: 'Approver',
         },
         approvers: [
@@ -109,6 +122,17 @@ describe('when displaying current organisation and service mapping', () => {
             status: 1,
           },
         ],
+      },
+      {
+        id: 'org2',
+        name: 'Organisation Two',
+        uid: '543181665',
+        role: {
+          id: 'end-user',
+          name: 'End User',
+        },
+        approvers: [],
+        services: [],
       }
     ]);
   });
