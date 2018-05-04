@@ -24,6 +24,7 @@ const expressAuthenticationStub = (authenticated, extras) => {
       res.locals = {};
     }
     res.locals.flash = {};
+    res.locals.profilesUrl = '';
 
     next();
   };

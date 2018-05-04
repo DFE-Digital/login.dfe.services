@@ -1,11 +1,9 @@
-const DirectoriesApiAccount = require('./DirectoriesApiAccount');
-const StaticAccount = require('./StaticAccount');
 const config = require('./../config');
 
 let account;
 if (config.directories.type.toLowerCase() === 'api') {
-  account = DirectoriesApiAccount;
+  account = require('./DirectoriesApiAccount');
 } else {
-  account = StaticAccount;
+  account = require('./StaticAccount');
 }
 module.exports = account;
