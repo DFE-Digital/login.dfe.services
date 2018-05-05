@@ -1,6 +1,9 @@
 jest.mock('./../../../../src/infrastructure/organisations', () => ({
   getOrganisationAndServiceForUser: jest.fn(),
 }));
+jest.mock('./../../../../src/infrastructure/hotConfig', () => ({
+  getOidcClients: jest.fn(),
+}));
 jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
   getUsersById: jest.fn(),
@@ -8,6 +11,7 @@ jest.mock('./../../../../src/infrastructure/account', () => ({
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { getOrganisationAndServiceForUser } = require('./../../../../src/infrastructure/organisations');
+const { getOidcClients } = require('./../../../../src/infrastructure/hotConfig');
 const Account = require('./../../../../src/infrastructure/account');
 const home = require('./../../../../src/app/home/home');
 
@@ -53,6 +57,16 @@ const orgsAndServicesForUser = [
     services: [],
   },
 ];
+const oidcClients = [
+  {
+    friendlyName: 'Service 1',
+    client_id: 'service_one',
+    redirect_uris: ['http://service.one/login'],
+    params: {
+      serviceId: 'svc1',
+    },
+  },
+];
 
 describe('when displaying current organisation and service mapping', () => {
   let req;
@@ -67,6 +81,8 @@ describe('when displaying current organisation and service mapping', () => {
     res.mockResetAll();
 
     getOrganisationAndServiceForUser.mockReset().mockReturnValue(orgsAndServicesForUser);
+
+    getOidcClients.mockReset().mockReturnValue(oidcClients);
 
     Account.fromContext.mockReset().mockReturnValue({
       id: 'user1',
@@ -98,8 +114,8 @@ describe('when displaying current organisation and service mapping', () => {
     await home(req, res);
 
     expect(res.render.mock.calls[0][1].organisations).toBeDefined();
-    expect(res.render.mock.calls[0][1].organisations).toEqual([
-      {
+    expect(res.render.mock.calls[0][1].organisations).toHaveLength(2);
+    expect(res.render.mock.calls[0][1].organisations[0]).toEqual({
         id: 'org1',
         name: 'Organisation One',
         urn: '45619413',
@@ -120,10 +136,11 @@ describe('when displaying current organisation and service mapping', () => {
             externalIdentifiers: [],
             requestDate: '2018-03-05T11:27:08.560Z',
             status: 1,
+            serviceUrl: 'http://service.one/login',
           },
         ],
-      },
-      {
+      });
+    expect(res.render.mock.calls[0][1].organisations[1]).toEqual({
         id: 'org2',
         name: 'Organisation Two',
         uid: '543181665',
@@ -133,7 +150,6 @@ describe('when displaying current organisation and service mapping', () => {
         },
         approvers: [],
         services: [],
-      }
-    ]);
+      })
   });
 });

@@ -16,7 +16,7 @@ const csurf = require('csurf');
 const flash = require('express-flash-2');
 const getPassportStrategy = require('./infrastructure/oidc');
 const { setUserContext, setApproverContext, asyncMiddleware, setConfigContext } = require('./infrastructure/utils');
-const { servicesSchema, validateConfigAndQuitOnError } = require('login.dfe.config.schema');
+const { servicesSchema, validateConfig } = require('login.dfe.config.schema');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
@@ -38,7 +38,7 @@ https.GlobalAgent = new KeepAliveAgent({
 });
 
 const init = async () => {
-  validateConfigAndQuitOnError(servicesSchema, config, logger);
+  validateConfig(servicesSchema, config, logger, config.hostingEnvironment.env !== 'dev');
 
   let expiryInMinutes = 30;
   const sessionExpiry = parseInt(config.hostingEnvironment.sessionCookieExpiryInMinutes);

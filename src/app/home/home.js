@@ -1,6 +1,7 @@
 'use strict';
 
 const { getOrganisationAndServiceForUser } = require('./../../infrastructure/organisations');
+const { getOidcClients } = require('./../../infrastructure/hotConfig');
 const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
@@ -23,14 +24,20 @@ const mapRole = (role) => {
     name: role.name,
   };
 };
-const getAndMapOrganisationsAndServices = async (account) => {
-  const organisations = await getOrganisationAndServiceForUser(account.id);
-  const allApprovers = await getApproversDetails(organisations);
+const getAndMapOrganisationsAndServices = async (account, correlationId) => {
+  const organisations = await getOrganisationAndServiceForUser(account.id, correlationId);
+  const allApprovers = await getApproversDetails(organisations, correlationId);
+  const oidcClients = await getOidcClients(correlationId);
 
   return organisations.map((organisation) => {
     const approvers = organisation.approvers.map((approverId) => {
       return allApprovers.find(x => x.id.toLowerCase() === approverId.toLowerCase());
     }).filter(x => x);
+    const services = organisation.services ? organisation.services.map((service) => {
+      const oidcClient = oidcClients.find(c => c.params && c.params.serviceId && c.params.serviceId.toLowerCase() === service.id.toLowerCase());
+      const serviceUrl = oidcClient ? oidcClient.redirect_uris[0] : '#';
+      return Object.assign({ serviceUrl }, service);
+    }) : [];
     return {
       id: organisation.organisation.id,
       name: organisation.organisation.name,
@@ -38,14 +45,14 @@ const getAndMapOrganisationsAndServices = async (account) => {
       uid: organisation.organisation.uid,
       role: mapRole(organisation.role),
       approvers,
-      services: organisation.services,
+      services,
     };
   })
 };
 
 const home = async (req, res) => {
   const account = Account.fromContext(req.user);
-  const organisations = await getAndMapOrganisationsAndServices(account);
+  const organisations = await getAndMapOrganisationsAndServices(account, req.id);
 
   return res.render('home/views/home', {
     title: 'Access DfE services',
