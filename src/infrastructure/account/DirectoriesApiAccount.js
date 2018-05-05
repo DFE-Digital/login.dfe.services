@@ -76,7 +76,7 @@ class DirectoriesApiAccount extends Account {
     }
   }
 
-  async getUsersById(ids) {
+  static async getUsersById(ids) {
     const response = await callDirectoriesApi(`users/by-ids?id=${ids.toString()}`, null, 'GET');
     if (!response.success) {
       if (response.statusCode === 404) {
@@ -84,7 +84,7 @@ class DirectoriesApiAccount extends Account {
       }
       throw new Error(response.errorMessage);
     }
-    return response.result;
+    return response.result.map(a => new DirectoriesApiAccount(a));
   }
 }
 

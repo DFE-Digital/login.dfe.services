@@ -18,7 +18,7 @@ describe('When getting a collection of users', () => {
   const users = [{ sub: 'user1', email: 'user.one@unit.test' }, { sub: 'user2', email: 'user.two@unit.test' }];
   const userIds = ['user1', 'user2'];
 
-  let account;
+  let Account;
   let getBearerToken;
   let rp= jest.fn();
 
@@ -29,16 +29,15 @@ describe('When getting a collection of users', () => {
       getBearerToken,
     }));
 
-    rp.mockReset();
+    rp.mockReset().mockReturnValue([]);
     const requestPromise = require('request-promise');
     requestPromise.defaults.mockReturnValue(rp);
 
-    const Account = require('./../../../../../src/infrastructure/account/DirectoriesApiAccount');
-    account = Account.fromContext(user);
+    Account = require('./../../../../../src/infrastructure/account/DirectoriesApiAccount');
   });
 
   it('then it should get users in the directories api', async () => {
-    await account.getUsersById(userIds);
+    await Account.getUsersById(userIds);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0].method).toBe('GET');
@@ -46,7 +45,7 @@ describe('When getting a collection of users', () => {
   });
 
   it('then it should authorize api using jwt strategy', async () => {
-    await account.getUsersById(userIds);
+    await Account.getUsersById(userIds);
 
     expect(getBearerToken.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0].headers.authorization).toBe('bearer token');
@@ -57,9 +56,12 @@ describe('When getting a collection of users', () => {
       users
     ));
 
-    const actual = await account.getUsersById(userIds);
+    const actual = await Account.getUsersById(userIds);
 
-    expect(actual).toBe(users);
+    expect(actual).toEqual([
+      new Account(users[0]),
+      new Account(users[1]),
+    ]);
   });
 
   it('then it should reject if password change fails', async () => {
@@ -69,6 +71,6 @@ describe('When getting a collection of users', () => {
       throw error;
     });
 
-    await expect(account.getUsersById(userIds)).rejects.toBeDefined();
+    await expect(Account.getUsersById(userIds)).rejects.toBeDefined();
   });
 });

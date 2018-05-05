@@ -45,7 +45,7 @@ const routes = (app, csrf) => {
   // app routes
   app.use('/healthcheck', healthCheck({ config }));
   app.use('/', home(csrf));
-  app.use('/services', services(csrf));
+  // app.use('/services', services(csrf));
   app.use('/signout', signOut(csrf));
 };
 
