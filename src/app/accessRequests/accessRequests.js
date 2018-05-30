@@ -11,7 +11,7 @@ const getUserDetails = async (usersForApproval) => {
   return await Account.getUsersById(distinctUserIds);
 };
 
-const action = async (req, res) => {
+const get = async (req, res) => {
   let usersForApproval = await getOrganisationUsersForApproval(req.user.sub, req.id);
 
   if(usersForApproval) {
@@ -28,4 +28,13 @@ const action = async (req, res) => {
   });
 };
 
-module.exports = action;
+const post = async (req, res) => {
+
+  res.redirect('accessRequests/views/requests');
+};
+
+
+module.exports = {
+  get,
+  post,
+};

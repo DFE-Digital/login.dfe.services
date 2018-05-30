@@ -45,7 +45,7 @@ describe('when displaying the users for approval', () => {
       {claims:{ sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests' }},
     ]);
 
-    getAccessRequests = require('./../../../../src/app/accessRequests/getAccessRequests');
+    getAccessRequests = require('./../../../../src/app/accessRequests/accessRequests').get;
   });
 
   it('then it should return the requests view', async () => {

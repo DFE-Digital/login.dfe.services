@@ -6,13 +6,15 @@ const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const router = express.Router({ mergeParams: true });
-const getAccessRequests = require('./getAccessRequests');
+const getAccessRequests = require('./accessRequests').get;
+const postAccessRequests = require('./accessRequests').post;
 
 
 const home = () => {
   logger.info('Mounting accessRequest routes');
 
   router.get('/', isLoggedIn, asyncWrapper(getAccessRequests));
+  router.post('/', isLoggedIn, asyncWrapper(postAccessRequests));
 
 
   return router;
