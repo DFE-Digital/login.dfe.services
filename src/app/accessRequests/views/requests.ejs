@@ -11,7 +11,7 @@
         <%for(let i= 0; i < locals.usersForApproval.length; i++) {%>
 
         <div class="request">
-            <p><a href="user-profile-access-request.html"><%=locals.usersForApproval[i].usersName%></a> has requested access to <b><%=locals.usersForApproval[i].org_name%></b>. <%=locals.usersForApproval[i].created_date%></p>
+            <p><a href="user-profile-access-request.html"><%=locals.usersForApproval[i].usersName%></a> has requested access to <b><%=locals.usersForApproval[i].org_name%></b>. <time datetime="<%=locals.usersForApproval[i].created_date%>"><%=moment(locals.usersForApproval[i].created_date).fromNow()%></time></p>
             <a href="" class="button-respond">Respond</a>
             <div class="respond js-hidden">
                 <div class="form-group">
