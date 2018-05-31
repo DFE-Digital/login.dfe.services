@@ -89,12 +89,17 @@ const init = async () => {
   app.use(flash());
 
 
-  // Setup global locals for layouts and views
+
   Object.assign(app.locals, {
     moment,
-    app: {
-      title: 'Login.Dfe',
+    urls: {
+      help: config.hostingEnvironment.helpUrl,
+      interactions: config.hostingEnvironment.interactionsUrl,
     },
+    app: {
+      title: 'DfE Sign-in',
+    },
+    gaTrackingId: config.hostingEnvironment.gaTrackingId,
   });
 
   passport.use('oidc', await getPassportStrategy());
