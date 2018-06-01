@@ -1,5 +1,4 @@
 <h1 class="heading-xlarge">Access requests</h1>
-
 <div class="">
     <nav>
         <ul class="tabs" role="tablist">
@@ -12,7 +11,7 @@
 
         <div class="request">
             <p><a href="user-profile-access-request.html"><%=locals.usersForApproval[i].usersName%></a> has requested access to <b><%=locals.usersForApproval[i].org_name%></b>. <time datetime="<%=locals.usersForApproval[i].created_date%>"><%=moment(locals.usersForApproval[i].created_date).fromNow()%></time></p>
-            <a href="#respond-<%=i%>" class="button-respond">Respond</a>
+            <a href="#respond-<%=i%>" data-target="respond-<%=i%>" class="button-respond js-toggle-content">Respond</a>
             <div class="respond js-hidden" id="respond-<%=i%>">
                 <form>
                     <div class="form-group">
@@ -57,7 +56,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <button type="submit">Save</button>
+                        <button type="submit" class="button">Save</button>
                     </div>
                 </form>
             </div>
