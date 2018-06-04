@@ -7,6 +7,9 @@ jest.mock('./../../../../src/infrastructure/config', () => {
     },
   };
 });
+jest.mock('./../../../../src/infrastructure/logger', () => ({
+  audit: jest.fn(),
+}));
 
 jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
