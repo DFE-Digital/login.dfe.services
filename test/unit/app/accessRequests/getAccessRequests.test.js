@@ -60,7 +60,7 @@ describe('when displaying the users for approval', () => {
 
     usersForApproval[0].usersName = 'User One';
     usersForApproval[1].usersName = 'No Name Supplied';
-    expect(Account.getUsersById.mock.calls).toHaveLength(1)
+    expect(Account.getUsersById.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][1].usersForApproval).toEqual(usersForApproval);
   });
 });

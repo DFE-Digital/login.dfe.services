@@ -40,7 +40,12 @@ const getOrganisationUsersForApproval = async (userId, correlationId) => {
   return callApi('GET', `/organisations/users-for-approval/${userId}`, correlationId);
 };
 
+const putUserInOrganisation = async(userId, orgId, status, role, reason, correlationId) => {
+  return callApi('PUT', `/organisations/${orgId}/users/${userId}`, correlationId, {roleId:role, status, reason});
+};
+
 module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
+  putUserInOrganisation,
 };
