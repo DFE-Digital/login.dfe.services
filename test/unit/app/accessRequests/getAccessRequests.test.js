@@ -16,6 +16,11 @@ jest.mock('./../../../../src/infrastructure/account', () => ({
   getUsersById: jest.fn(),
 }));
 
+jest.mock('./../../../../src/infrastructure/logger', () => ({
+  audit: jest.fn(),
+}));
+
+
 const Account = require('./../../../../src/infrastructure/account');
 
 describe('when displaying the users for approval', () => {
