@@ -10,14 +10,14 @@ const getAccessRequests = require('./accessRequests').get;
 const postAccessRequests = require('./accessRequests').post;
 
 
-const home = () => {
+const action = (csrf) => {
   logger.info('Mounting accessRequest routes');
 
-  router.get('/', isLoggedIn, asyncWrapper(getAccessRequests));
-  router.post('/', isLoggedIn, asyncWrapper(postAccessRequests));
+  router.get('/',csrf, isLoggedIn, asyncWrapper(getAccessRequests));
+  router.post('/',csrf, isLoggedIn, asyncWrapper(postAccessRequests));
 
 
   return router;
 };
 
-module.exports = home;
+module.exports = action;
