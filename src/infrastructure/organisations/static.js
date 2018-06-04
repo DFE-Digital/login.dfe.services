@@ -15,7 +15,12 @@ const getOrganisationUsersForApproval = async (userId) => {
   }]);
 };
 
+const putUserInOrganisation = async() => {
+  return Promise.resolve();
+};
+
 module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
+  putUserInOrganisation,
 };
