@@ -35,7 +35,7 @@ const post = async (req, res) => {
 
   const userId = req.body.user_id;
   const orgId = req.body.org_id;
-  const status = req.body.radio_inline_approve_reject.toLowerCase() === 'approve' ? 1 : -1;
+  const status = req.body.approve_reject.toLowerCase() === 'approve' ? 1 : -1;
   let role;
   let reason = req.body.message;
 
@@ -43,25 +43,26 @@ const post = async (req, res) => {
     role = 0;
   } else {
     reason = '';
-    role = req.body.radio_inline_group_role.toLowerCase() === 'approver' ? 10000 : 1;
+    role = req.body.role.toLowerCase() === 'approver' ? 10000 : 1;
   }
 
   await putUserInOrganisation(userId, orgId, status, role, reason, req.id);
 
-  logger.audit(`User ${req.user.email} (id: ${req.user.sub}) has set set user id ${userId} to status "${req.body.radio_inline_approve_reject}"`, {
+  logger.audit(`User ${req.user.email} (id: ${req.user.sub}) has set set user id ${userId} to status "${req.body.approve_reject}"`, {
     type: 'organisation',
     subType: 'access-request',
     success: true,
     editedUser: userId,
     userId: req.user.sub,
     userEmail: req.user.email,
-    role: req.body.radio_inline_group_role,
+    role: role,
     reason,
     orgId,
-    status: req.body.radio_inline_approve_reject
+    status: req.body.approve_reject
   });
 
   res.redirect('access-requests');
+
 };
 
 

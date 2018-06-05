@@ -41,8 +41,8 @@ describe('when approving users', () => {
     req.body = {
       user_Id:'user-123',
       org_id: 'org-123',
-      radio_inline_approve_reject: 'Approve',
-      radio_inline_group_role: 'Approver',
+      approve_reject: 'Approve',
+      role: 'Approver',
       message: ''
     };
     res = mockResponse();
@@ -72,7 +72,7 @@ describe('when approving users', () => {
   });
 
   it('then the API is called with the mapped values if approved and an end user and the request is audited', async () => {
-    req.body.radio_inline_group_role = 'end user';
+    req.body.role = 'end user';
 
     await postAccessRequests(req, res);
 
@@ -87,7 +87,7 @@ describe('when approving users', () => {
   });
 
   it('then if the request is rejected the values are mapped correctly and the request is audited', async () => {
-    req.body.radio_inline_approve_reject = 'Reject';
+    req.body.approve_reject = 'Reject';
     req.body.message = 'rejected reason';
 
     await postAccessRequests(req, res);

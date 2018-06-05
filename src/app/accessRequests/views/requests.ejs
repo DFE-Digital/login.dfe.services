@@ -1,70 +1,72 @@
 <h1 class="heading-xlarge">Access requests</h1>
-<div class="">
-    <nav>
-        <ul class="tabs" role="tablist">
-            <li class="active">Organisations (<%=locals.usersForApproval.length%>)</li>
-        </ul>
-    </nav>
-    <div class="pane">
-
-        <% for(let i= 0; i < locals.usersForApproval.length; i++) {%>
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <div class="request">
-            <p><b><%=locals.usersForApproval[i].usersName%></b> (<%=locals.usersForApproval[i].usersEmail%>) has requested access to <b><%=locals.usersForApproval[i].org_name%></b>. <time datetime="<%=locals.usersForApproval[i].created_date%>"><%=moment(locals.usersForApproval[i].created_date).fromNow()%></time></p>
+<nav>
+    <ul class="tabs" role="tablist">
+        <li class="active">Organisations (<%=locals.usersForApproval.length%>)</li>
+    </ul>
+</nav>
+<div class="pane">
+    <% for(let i= 0; i < locals.usersForApproval.length; i++) {%>
+    <form method="post">
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+        <input type="hidden" value="<%=locals.usersForApproval[i].user_id%>" name="user_id" />
+        <input type="hidden" value="<%=locals.usersForApproval[i].org_id%>" name="org_id" />
+        <div class="request">
+            <p><b><%=locals.usersForApproval[i].usersName%></b>
+                <span class="breakable">(<%=locals.usersForApproval[i].usersEmail%>)</span>
+                has requested access to <b><%=locals.usersForApproval[i].org_name%></b> &ndash;
+                <time datetime="<%=locals.usersForApproval[i].created_date%>"><%=moment(locals.usersForApproval[i].created_date).fromNow()%></time>
+            </p>
             <a href="#respond-<%=i%>" data-target="respond-<%=i%>" class="button-respond js-toggle-content">Respond</a>
-
             <div class="respond js-hidden" id="respond-<%=i%>">
+                <div class="form-group">
+                    <fieldset class="inline">
+                        <legend>
+                            <h2 class="heading-small">Your response</h2>
+                        </legend>
+                        <div class="multiple-choice" data-target="panel-permissions-<%=i%>">
+                            <input id="radio-inline-approve-<%=i%>" type="radio" name="approve_reject" value="Approve">
+                            <label for="radio-inline-approve-<%=i%>">Approve</label>
+                        </div>
+                        <div class="multiple-choice" data-target="panel-message-<%=i%>">
+                            <input id="radio-inline-reject-<%=i%>" type="radio" name="approve_reject" value="Reject">
+                            <label for="radio-inline-reject-<%=i%>">Reject</label>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="pnl js-hidden" id="panel-permissions-<%=i%>">
                     <div class="form-group">
                         <fieldset class="inline">
                             <legend>
-                                <h2 class="heading-small">Your response</h2>
+                                <h2 class="heading-small">Permissions level</h2>
                             </legend>
-                            <div class="multiple-choice" data-target="panel-permissions-<%=i%>">
-                                <input id="radio-inline-approve-<%=i%>" type="radio" name="radio_inline_approve_reject" value="Approve">
-                                <label for="radio-inline-approve-<%=i%>">Approve</label>
+                            <div class="multiple-choice">
+                                <input id="radio-inline-enduser-<%=i%>" type="radio" name="role" value="End user" checked="checked">
+                                <label for="radio-inline-enduser-<%=i%>">End user</label>
                             </div>
-                            <div class="multiple-choice" data-target="panel-message-<%=i%>">
-                                <input id="radio-inline-reject-<%=i%>" type="radio" name="radio_inline_approve_reject" value="Reject">
-                                <label for="radio-inline-reject-<%=i%>">Reject</label>
+                            <div class="multiple-choice">
+                                <input id="radio-inline-approver-<%=i%>" type="radio" name="role" value="Approver">
+                                <label for="radio-inline-approver-<%=i%>">Approver</label>
                             </div>
                         </fieldset>
                     </div>
-                    <div class="pnl js-hidden" id="panel-permissions-<%=i%>">
-                        <div class="form-group">
-                            <fieldset class="inline">
-                                <legend>
-                                    <h2 class="heading-small">Permissions level</h2>
-                                </legend>
-                                <div class="multiple-choice">
-                                    <input id="radio-inline-enduser-<%=i%>" type="radio" name="radio_inline_group_role" value="End user">
-                                    <label for="radio-inline-enduser-<%=i%>">End user</label>
-                                </div>
-                                <div class="multiple-choice">
-                                    <input id="radio-inline-approver-<%=i%>" type="radio" name="radio_inline_group_role" value="Approver">
-                                    <label for="radio-inline-approver-<%=i%>">Approver</label>
-                                </div>
-                            </fieldset>
-                        </div>
+                    <div class="form-group form-submit">
+                        <button type="submit" class="button">Save</button>
                     </div>
-                    <div class="pnl js-hidden" id="panel-message-<%=i%>">
-                        <div class="form-group">
-                            <label for="message-<%=i%>">
-                                <span class="form-text">Reason for rejecting (optional)</span>
-                                <span class="form-hint">Any text you supply will be emailed to <%=locals.usersForApproval[i].usersName%> and stored in the audit </span>
-                            </label>
-                            <textarea rows="3" class="form-control" name="message"></textarea>
-                        </div>
-                    </div>
-                    <input type="hidden" value="<%=locals.usersForApproval[i].user_id%>" name="user_id" />
-                    <input type="hidden" value="<%=locals.usersForApproval[i].org_id%>" name="org_id" />
+                </div>
+                <div class="pnl js-hidden" id="panel-message-<%=i%>">
                     <div class="form-group">
+                        <label for="message-<%=i%>">
+                            <span class="form-label-bold">Reason for rejecting (optional)</span>
+                            <span class="form-hint">Any text you supply will be emailed to <%=locals.usersForApproval[i].usersName%> and stored in the audit </span>
+                        </label>
+                        <textarea rows="3" class="form-control" name="message" id="message-<%=i%>"></textarea>
+                    </div>
+                    <div class="form-group form-submit">
                         <button type="submit" class="button">Save</button>
                     </div>
                 </div>
             </div>
-        </form>
-        <%}%>%>
-    </div>
-
+        </div>
+    </form>
+    <%}%>%>
 </div>
