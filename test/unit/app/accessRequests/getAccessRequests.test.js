@@ -67,7 +67,9 @@ describe('when displaying the users for approval', () => {
     await getAccessRequests(req, res);
 
     usersForApproval[0].usersName = 'User One';
+    usersForApproval[0].usersEmail = 'user.one@unit.tests';
     usersForApproval[1].usersName = 'No Name Supplied';
+    usersForApproval[1].usersEmail = '';
     expect(Account.getUsersById.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][1].usersForApproval).toEqual(usersForApproval);
   });
