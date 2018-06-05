@@ -11,7 +11,7 @@
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <div class="request">
-            <p><b><%=locals.usersForApproval[i].usersName%></b> (email@domain.gov.uk) has requested access to <b><%=locals.usersForApproval[i].org_name%></b>. <time datetime="<%=locals.usersForApproval[i].created_date%>"><%=moment(locals.usersForApproval[i].created_date).fromNow()%></time></p>
+            <p><b><%=locals.usersForApproval[i].usersName%></b> (<%=locals.usersForApproval[i].usersEmail%>) has requested access to <b><%=locals.usersForApproval[i].org_name%></b>. <time datetime="<%=locals.usersForApproval[i].created_date%>"><%=moment(locals.usersForApproval[i].created_date).fromNow()%></time></p>
             <a href="#respond-<%=i%>" data-target="respond-<%=i%>" class="button-respond js-toggle-content">Respond</a>
 
             <div class="respond js-hidden" id="respond-<%=i%>">
