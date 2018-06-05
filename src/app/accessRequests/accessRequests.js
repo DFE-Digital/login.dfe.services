@@ -21,7 +21,8 @@ const get = async (req, res) => {
     usersForApproval = usersForApproval.map((user) => {
       const userFound = userList.find(c => c.claims.sub.toLowerCase() === user.user_id.toLowerCase());
       const usersName = userFound ? `${userFound.claims.given_name} ${userFound.claims.family_name}` : 'No Name Supplied';
-      return Object.assign({usersName}, user);
+      const usersEmail = userFound ? userFound.claims.email : '';
+      return Object.assign({usersName, usersEmail}, user);
     });
   }
   res.render('accessRequests/views/requests', {
@@ -34,20 +35,21 @@ const post = async (req, res) => {
 
   const userId = req.body.user_id;
   const orgId = req.body.org_id;
-  const status = req.body.radio_inline_approve_reject.toLowerCase() === 'approve' ? 1 : 0;
-  let role = req.body.radio_inline_group_role.toLowerCase() === 'approver' ? 10000 : 1;
+  const status = req.body.radio_inline_approve_reject.toLowerCase() === 'approve' ? 1 : -1;
+  let role;
   let reason = req.body.message;
 
-  if(status === 0) {
+  if(status === -1) {
     role = 0;
   } else {
-    reason = ''
+    reason = '';
+    role = req.body.radio_inline_group_role.toLowerCase() === 'approver' ? 10000 : 1;
   }
 
   await putUserInOrganisation(userId, orgId, status, role, reason, req.id);
 
   logger.audit(`User ${req.user.email} (id: ${req.user.sub}) has set set user id ${userId} to status "${req.body.radio_inline_approve_reject}"`, {
-    type: 'services',
+    type: 'organisation',
     subType: 'access-request',
     success: true,
     editedUser: userId,
@@ -59,7 +61,7 @@ const post = async (req, res) => {
     status: req.body.radio_inline_approve_reject
   });
 
-  res.redirect('accessRequests');
+  res.redirect('access-requests');
 };
 
 

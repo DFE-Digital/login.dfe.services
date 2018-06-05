@@ -53,7 +53,7 @@
                                 <span class="form-text">Reason for rejecting (optional)</span>
                                 <span class="form-hint">Any text you supply will be emailed to <%=locals.usersForApproval[i].usersName%> and stored in the audit </span>
                             </label>
-                            <textarea rows="3" class="form-control" id="message-<%=i%>"></textarea>
+                            <textarea rows="3" class="form-control" name="message"></textarea>
                         </div>
                     </div>
                     <input type="hidden" value="<%=locals.usersForApproval[i].user_id%>" name="user_id" />

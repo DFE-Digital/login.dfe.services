@@ -95,7 +95,7 @@ describe('when approving users', () => {
     expect(putUserInOrganisation.mock.calls).toHaveLength(1);
     expect(putUserInOrganisation.mock.calls[0][0]).toBe(req.body.user_id);
     expect(putUserInOrganisation.mock.calls[0][1]).toBe(req.body.org_id);
-    expect(putUserInOrganisation.mock.calls[0][2]).toBe(0);
+    expect(putUserInOrganisation.mock.calls[0][2]).toBe(-1);
     expect(putUserInOrganisation.mock.calls[0][3]).toBe(0);
     expect(putUserInOrganisation.mock.calls[0][4]).toBe('rejected reason');
     expect(putUserInOrganisation.mock.calls[0][5]).toBe(req.id);
@@ -107,7 +107,7 @@ describe('when approving users', () => {
     await postAccessRequests(req, res);
 
     expect(res.redirect.mock.calls.length).toBe(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('accessRequests');
+    expect(res.redirect.mock.calls[0][0]).toBe('access-requests');
   });
 
 });
