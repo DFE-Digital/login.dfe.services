@@ -6,9 +6,7 @@ const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const router = express.Router({ mergeParams: true });
-const getAccessRequests = require('./accessRequests').get;
-const postAccessRequests = require('./accessRequests').post;
-
+const { get: getAccessRequests, post: postAccessRequests } = require('./accessRequests');
 
 const action = (csrf) => {
   logger.info('Mounting accessRequest routes');

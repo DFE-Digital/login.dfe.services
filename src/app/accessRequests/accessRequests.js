@@ -36,12 +36,10 @@ const post = async (req, res) => {
   const userId = req.body.user_id;
   const orgId = req.body.org_id;
   const status = req.body.approve_reject.toLowerCase() === 'approve' ? 1 : -1;
-  let role;
+  let role = 0;
   let reason = req.body.message;
 
-  if(status === -1) {
-    role = 0;
-  } else {
+  if(status === 1) {
     reason = '';
     role = req.body.role.toLowerCase() === 'approver' ? 10000 : 1;
   }
