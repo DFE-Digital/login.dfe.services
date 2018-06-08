@@ -4,6 +4,7 @@ const config = require('./infrastructure/config');
 
 const home = require('./app/home');
 const services = require('./app/services');
+const accessRequests = require('./app/accessRequests');
 const signOut = require('./app/signOut');
 const healthCheck = require('login.dfe.healthcheck');
 
@@ -47,6 +48,7 @@ const routes = (app, csrf) => {
   app.use('/', home(csrf));
   // app.use('/services', services(csrf));
   app.use('/signout', signOut(csrf));
+  app.use('/access-requests', accessRequests(csrf))
 };
 
 module.exports = routes;

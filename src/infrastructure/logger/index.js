@@ -27,7 +27,7 @@ const loggerConfig = {
   transports: [],
 };
 
-loggerConfig.transports.push(new (winston.transports.Console)({level: logLevel, colorize: true}));
+loggerConfig.transports.push(new (winston.transports.Console)({ level: logLevel, colorize: true }));
 
 const sequelizeTransport = WinstonSequelizeTransport(config);
 
@@ -49,6 +49,16 @@ const logger = new (winston.Logger)(loggerConfig);
 
 process.on('unhandledRejection', (reason, p) => {
   logger.error('Unhandled Rejection at:', p, 'reason:', reason);
+});
+process.on('uncaughtException', (err) => {
+  try {
+    logger.error(err.message);
+  } catch (e) {
+    console.error(`Failed to log fatal error to logger (${e.message})`);
+    console.error(err.message);
+  }
+
+  process.exit(-99);
 });
 
 module.exports = logger;
