@@ -9,8 +9,12 @@ const uniq = require('lodash/uniq');
 const getApproversDetails = async (organisations) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
   const distinctApproverIds = uniq(allApproverIds);
+  if (distinctApproverIds.length === 0) {
+    return [];
+  }
   return Account.getUsersById(distinctApproverIds);
 };
+
 const mapRole = (role) => {
   let id = role.id;
   if (id === 0) {
