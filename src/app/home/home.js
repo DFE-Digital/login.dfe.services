@@ -62,6 +62,7 @@ const home = async (req, res) => {
     title: 'Access DfE services',
     user: account,
     organisations,
+    currentPage: 'services'
   });
 };
 
