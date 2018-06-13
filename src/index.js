@@ -94,6 +94,7 @@ const init = async () => {
     moment,
     urls: {
       help: config.hostingEnvironment.helpUrl,
+      profile: config.hostingEnvironment.profileUrl,
       interactions: config.hostingEnvironment.interactionsUrl,
     },
     app: {
