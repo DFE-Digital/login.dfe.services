@@ -7,7 +7,6 @@ const cookieParser = require('cookie-parser');
 const expressLayouts = require('express-ejs-layouts');
 const session = require('cookie-session');
 const moment = require('moment');
-const morgan = require('morgan');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
@@ -70,8 +69,6 @@ const init = async () => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(sanitization());
-  app.use(morgan('combined', { stream: fs.createWriteStream('./access.log', { flags: 'a' }) }));
-  app.use(morgan('dev'));
   app.set('view engine', 'ejs');
   app.set('views', path.resolve(__dirname, 'app'));
   app.use(expressLayouts);
