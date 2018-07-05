@@ -39,7 +39,7 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
     }).filter(x => x);
     const services = organisation.services ? organisation.services.map((service) => {
       const oidcClient = oidcClients.find(c => c.params && c.params.serviceId && c.params.serviceId.toLowerCase() === service.id.toLowerCase());
-      const serviceUrl = oidcClient ? oidcClient.redirect_uris[0] : '#';
+      const serviceUrl = oidcClient ? (oidcClient.service_home || oidcClient.redirect_uris[0] ): '#';
       return Object.assign({ serviceUrl }, service);
     }) : [];
     return {
