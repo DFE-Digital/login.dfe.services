@@ -110,26 +110,12 @@ describe('when displaying current organisation and service mapping', () => {
     });
   });
 
-  it('then it should include mapped organisations and services for user', async () => {
+  it('then it should include mapped services for user', async () => {
     await home(req, res);
 
-    expect(res.render.mock.calls[0][1].organisations).toBeDefined();
-    expect(res.render.mock.calls[0][1].organisations).toHaveLength(2);
-    expect(res.render.mock.calls[0][1].organisations[0]).toEqual({
-        id: 'org1',
-        name: 'Organisation One',
-        urn: '45619413',
-        role: {
-          id: 'approver',
-          name: 'Approver',
-        },
-        approvers: [
-          { id: 'user6', name: 'User Six', email: 'user.six@unit.tests' },
-          { id: 'user11', name: 'User Eleven', email: 'user.eleven@unit.tests' },
-          { id: 'user1', name: 'User One', email: 'user.one@unit.tests' },
-        ],
-        services: [
-          {
+    expect(res.render.mock.calls[0][1].services).toBeDefined();
+    expect(res.render.mock.calls[0][1].services).toHaveLength(1);
+    expect(res.render.mock.calls[0][1].services[0]).toEqual({
             id: 'svc1',
             name: 'Service 1',
             description: 'first service',
@@ -137,19 +123,6 @@ describe('when displaying current organisation and service mapping', () => {
             requestDate: '2018-03-05T11:27:08.560Z',
             status: 1,
             serviceUrl: 'http://service.one/login',
-          },
-        ],
       });
-    expect(res.render.mock.calls[0][1].organisations[1]).toEqual({
-        id: 'org2',
-        name: 'Organisation Two',
-        uid: '543181665',
-        role: {
-          id: 'end-user',
-          name: 'End User',
-        },
-        approvers: [],
-        services: [],
-      })
   });
 });
