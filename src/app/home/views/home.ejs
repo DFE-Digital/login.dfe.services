@@ -7,32 +7,30 @@
         </div>
     </div>
 
+    <% if (services.length === 0) { %>
+    <div class="empty-state">
+        <p>You have no services assigned</p>
+    </div>
+    <% } %>
+
+
     <div class="row school">
         <div class="col-12 portal">
             <div class="row">
                 <%
-                for (let o = 0; o < organisations.length; o++) {
-                    const organisation = organisations[o];
-                %>
-                <% if (organisation.services.length > 0) { %>
-                <%
-                for (let s = 0; s < organisation.services.length; s++) {
-                    const service = organisation.services[s];
+                for (let s = 0; s < services.length; s++) {
+                    const service = services[s];
                 %>
                 <div class="col-4">
                     <a href="<%=service.serviceUrl%>" class="service-link">
                         <%=service.name%>
-                        <svg width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z"/></svg>
+                        <svg viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z"/></svg>
                     </a>
                 </div>
                 <% } %>
             </div>
-            <% } else { %>
-            <div class="empty-state">
-                <p>You have no services assigned</p>
-            </div>
-            <% }%>
+
         </div>
-        <% } %>
     </div>
+
 </div>
