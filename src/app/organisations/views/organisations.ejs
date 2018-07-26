@@ -36,6 +36,7 @@ for (let o = 0; o < organisations.length; o++) {
                         <dt><abbr title="Unique Identifier">UID</abbr></dt>
                         <dd><%=organisation.uid%></dd>
                         <% } %>
+                        <% if (organisation.approvers.length > 0) { %>
                         <dt>Approvers</dt>
                         <dd>
                             <ul>
@@ -44,6 +45,7 @@ for (let o = 0; o < organisations.length; o++) {
                                 <% } %>
                             </ul>
                         </dd>
+                        <% } %>
                     </dl>
                 </div>
             </div>
