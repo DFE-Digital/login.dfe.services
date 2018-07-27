@@ -75,5 +75,4 @@ const home = async (req, res) => {
   });
 };
 
-module.exports = getAndMapOrganisationsAndServices;
 module.exports = home;
