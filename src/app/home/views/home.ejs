@@ -1,82 +1,39 @@
-<div class="row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
-            Services
-        </h1>
-
-        <% if (organisations.length === 0) { %>
-        <div class="empty-state">
-            <p>You have no associations to any organisations</p>
+<div class ="servicesv2">
+    <div class="row">
+        <div class="col-8">
+            <h1 class="heading-xlarge">
+                Services
+            </h1>
         </div>
-        <% } %>
-
-        <%
-        for (let o = 0; o < organisations.length; o++) {
-            const organisation = organisations[o];
-        %>
-        <article class="organisation-services">
-            <section class="organisation">
-                <header>
-                    <h2><%=organisation.name%></h2>
-                </header>
-                <div class="user">
-                    <div class="role <%=organisation.role.id%>" tabindex="0" title="<%=user.name%> is an <%=organisation.role.name%> at <%=organisation.name%>"><%=organisation.role.name%></div>
-                    <a href="my.html" class="info-link">Information and approvers <span class="vh">for <%=organisation.name%></span> </a>
-                </div>
-                <div class="meta js-hidden">
-                    <div class="approvers">
-                        <dl class="rows condensed small-dt">
-                            <% if (organisation.urn) { %>
-                            <dt><abbr title="Unique Reference Number">URN</abbr></dt>
-                            <dd><%=organisation.urn%></dd>
-                            <% } %>
-
-                            <% if (organisation.uid) { %>
-                            <dt><abbr title="Unique Identifier">UID</abbr></dt>
-                            <dd><%=organisation.uid%></dd>
-                            <% } %>
-
-                            <dt>Approvers</dt>
-                            <dd>
-                                <ul>
-                                    <% for (let a = 0; a < organisation.approvers.length; a++) { %>
-                                    <li><%=organisation.approvers[a].name%> <a href="mailto:<%=organisation.approvers[a].email%>"><%=organisation.approvers[a].email%></a></li>
-                                    <% } %>
-                                </ul>
-                            </dd>
-                        </dl>
-                    </div>
-                </div>
-            </section>
-            <section>
-                <% if (organisation.services.length > 0) { %>
-                <ul class="service-list">
-                    <%
-                    for (let s = 0; s < organisation.services.length; s++) {
-                      const service = organisation.services[s];
-                    %>
-                    <li>
-                        <div class="links">
-                            <a href="<%=service.serviceUrl%>" class="service-link"><%=service.name%></a>
-                            <a href="#" class="information">More Information <span class="vh">about <%=service.name%></span></a>
-                        </div>
-                        <div class="service-description js-hidden">
-                            <dl class="simple">
-                                <dt>Service description</dt>
-                                <dd><%=service.description%></dd>
-                            </dl>
-                        </div>
-                    </li>
-                    <% } %>
-                </ul>
-                <% } else { %>
-                <div class="empty-state">
-                    <p>You have no services for <%=organisation.name%></p>
-                </div>
-                <% }%>
-            </section>
-        </article>
-        <% } %>
-
+        <div class="col-4 my-orgs">
+            <a href="/organisations">My organisations and approvers</a>
+        </div>
     </div>
+
+    <% if (services.length === 0) { %>
+    <div class="empty-state">
+        <p>You have no services assigned</p>
+    </div>
+    <% } %>
+
+
+    <div class="row school">
+        <div class="col-12 portal">
+            <div class="row">
+                <%
+                for (let s = 0; s < services.length; s++) {
+                    const service = services[s];
+                %>
+                <div class="col-4">
+                    <a href="<%=service.serviceUrl%>" class="service-link">
+                        <%=service.name%>
+                        <svg viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z"/></svg>
+                    </a>
+                </div>
+                <% } %>
+            </div>
+
+        </div>
+    </div>
+
 </div>

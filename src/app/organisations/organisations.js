@@ -54,25 +54,16 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
   })
 };
 
-const home = async (req, res) => {
+const organisations = async (req, res) => {
   const account = Account.fromContext(req.user);
   const organisations = await getAndMapOrganisationsAndServices(account, req.id);
-  const services = [];
-  for (let o = 0; o < organisations.length; o++) {
-    const organisation = organisations[o];
-    for (let i = 0; i < organisation.services.length; i++) {
-      if (services.indexOf(services[i])) {
-        services.push(organisation.services[i])
-      }
-    }
-  }
 
-  return res.render('home/views/home', {
-    title: 'Access DfE services',
+  return res.render('organisations/views/organisations', {
+    title: 'Organisations',
     user: account,
-    services,
-    currentPage: 'services'
+    organisations,
+    currentPage: 'organisations'
   });
 };
 
-module.exports = home;
+module.exports = organisations;

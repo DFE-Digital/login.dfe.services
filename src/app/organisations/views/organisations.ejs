@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">Organisations</h1>
+    </div>
+</div>
+
+<% if (organisations.length === 0) { %>
+<div class="empty-state">
+    <p>You have no associations to any organisations</p>
+</div>
+<% } %>
+
+<%
+for (let o = 0; o < organisations.length; o++) {
+    const organisation = organisations[o];
+%>
+<div class="pane">
+    <article class="organisation-services">
+        <section class="organisation">
+            <header>
+                <h2><%=organisation.name%></h2>
+            </header>
+            <div class="user">
+                <div class="role <%=organisation.role.id%>" tabindex="0" title="<%=user.name%> is an <%=organisation.role.name%> at <%=organisation.name%>"><%=organisation.role.name%></div>
+                <a href="my.html" class="info-link">Information and approvers <span class="vh">for <%=organisation.name%></span> </a>
+            </div>
+            <div class="meta js-hidden">
+                <div class="approvers">
+                    <dl class="rows condensed small-dt">
+                        <% if (organisation.urn) { %>
+                        <dt><abbr title="Unique Reference Number">URN</abbr></dt>
+                        <dd><%=organisation.urn%></dd>
+                        <% } %>
+
+                        <% if (organisation.uid) { %>
+                        <dt><abbr title="Unique Identifier">UID</abbr></dt>
+                        <dd><%=organisation.uid%></dd>
+                        <% } %>
+                        <% if (organisation.approvers.length > 0) { %>
+                        <dt>Approvers</dt>
+                        <dd>
+                            <ul>
+                                <% for (let a = 0; a < organisation.approvers.length; a++) { %>
+                                <li><%=organisation.approvers[a].name%> <a href="mailto:<%=organisation.approvers[a].email%>"><%=organisation.approvers[a].email%></a></li>
+                                <% } %>
+                            </ul>
+                        </dd>
+                        <% } %>
+                    </dl>
+                </div>
+            </div>
+        </section>
+    </article>
+    <hr>
+    <% } %>
+</div>
