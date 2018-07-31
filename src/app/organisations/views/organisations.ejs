@@ -10,19 +10,20 @@
 </div>
 <% } %>
 
-<%
-for (let o = 0; o < organisations.length; o++) {
-    const organisation = organisations[o];
-%>
+
 <div class="pane">
+    <%
+    for (let o = 0; o < organisations.length; o++) {
+        const organisation = organisations[o];
+    %>
     <article class="organisation-services">
         <section class="organisation">
             <header>
                 <h2><%=organisation.name%></h2>
             </header>
             <div class="user">
-                <div class="role <%=organisation.role.id%>" tabindex="0" title="<%=user.name%> is an <%=organisation.role.name%> at <%=organisation.name%>"><%=organisation.role.name%></div>
-                <a href="my.html" class="info-link">Information and approvers <span class="vh">for <%=organisation.name%></span> </a>
+                <div class="role <%=organisation.role.id%>" tabindex="0" title="You are an <%=organisation.role.name%> at <%=organisation.name%>"><%=organisation.role.name%></div>
+                <a href="" class="info-link" title="Information and approvers for <%=organisation.name%>">Information and approvers <span class="vh">for <%=organisation.name%></span> </a>
             </div>
             <div class="meta js-hidden">
                 <div class="approvers">
