@@ -1,7 +1,7 @@
 'use strict';
 
 const config = require('./../config');
-const { getServicesForUser } = require('../../infrastructure/services/index');
+const { getServicesForUser } = require('../../infrastructure/access');
 
 const APPROVER = 10000;
 
