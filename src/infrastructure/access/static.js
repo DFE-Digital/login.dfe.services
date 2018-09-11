@@ -1,5 +1,5 @@
 const getServicesForUser = async() => {
-  return Promise.resolve(null);
+  return Promise.resolve([]);
 };
 
 module.exports = {

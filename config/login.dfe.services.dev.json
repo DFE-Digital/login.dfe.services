@@ -39,6 +39,9 @@
   "access": {
     "type":"static"
   },
+  "applications": {
+    "type":"static"
+  },
   "identifyingParty": {
     "url": "https://localhost:4430",
     "clientId": "services",
