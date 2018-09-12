@@ -28,6 +28,7 @@ const mapRole = (role) => {
     name: role.name,
   };
 };
+
 const getAndMapOrganisationsAndServices = async (account, correlationId) => {
   const organisations = await getOrganisationAndServiceForUser(account.id, correlationId);
   const allApprovers = await getApproversDetails(organisations, correlationId);
@@ -37,11 +38,6 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
     const approvers = organisation.approvers.map((approverId) => {
       return allApprovers.find(x => x.id.toLowerCase() === approverId.toLowerCase());
     }).filter(x => x);
-    const services = organisation.services ? organisation.services.map((service) => {
-      const oidcClient = oidcClients.find(c => c.params && c.params.serviceId && c.params.serviceId.toLowerCase() === service.id.toLowerCase());
-      const serviceUrl = oidcClient ? (oidcClient.service_home || oidcClient.redirect_uris[0] ): '#';
-      return Object.assign({ serviceUrl }, service);
-    }) : [];
     return {
       id: organisation.organisation.id,
       name: organisation.organisation.name,
@@ -49,7 +45,6 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
       uid: organisation.organisation.uid,
       role: mapRole(organisation.role),
       approvers,
-      services,
     };
   })
 };

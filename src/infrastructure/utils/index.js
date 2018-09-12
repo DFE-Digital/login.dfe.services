@@ -1,7 +1,7 @@
 'use strict';
 
 const config = require('./../config');
-const { getServicesForUser } = require('../../infrastructure/services/index');
+const { getServicesForUser } = require('../../infrastructure/access');
 
 const APPROVER = 10000;
 
@@ -13,7 +13,7 @@ const isLoggedIn = (req, res, next) => {
   return res.status(302).redirect('/auth');
 };
 
-const setApproverContext = async (req, res, next) => {
+/*const setApproverContext = async (req, res, next) => {
   res.locals.isApprover = false;
   if (req.user) {
     const user = req.user;
@@ -21,7 +21,7 @@ const setApproverContext = async (req, res, next) => {
     res.locals.isApprover = services.some(s => s.role.id >= APPROVER && s.status > 0);
   }
   next();
-};
+};*/
 
 const getUserEmail = user => user.email || '';
 
@@ -46,4 +46,4 @@ const setConfigContext = (req, res, next) => {
   next();
 }
 
-module.exports = { isLoggedIn, getUserEmail, getUserDisplayName, setUserContext, setApproverContext, asyncMiddleware, setConfigContext };
+module.exports = { isLoggedIn, getUserEmail, getUserDisplayName, setUserContext, asyncMiddleware, setConfigContext };

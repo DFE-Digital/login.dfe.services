@@ -15,6 +15,14 @@ const getOrganisationUsersForApproval = async (userId) => {
   }]);
 };
 
+const getServiceById = async (serviceId, correlationId) => {
+  return Promise.resolve({
+    "id": "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+    "name": "Some service",
+    "description": "Some service that does some stuff",
+  });
+};
+
 const putUserInOrganisation = async() => {
   return Promise.resolve();
 };
@@ -23,4 +31,5 @@ module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
   putUserInOrganisation,
+  getServiceById,
 };
