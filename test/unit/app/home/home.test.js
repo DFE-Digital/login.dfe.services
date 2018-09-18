@@ -78,6 +78,17 @@ describe('when displaying current organisation and service mapping', () => {
     });
   });
 
+  it('then it should render home view wih no services if user has no service mappings', async () => {
+    getServicesForUser.mockReturnValue(undefined);
+
+    await home(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('home/views/home');
+    expect(res.render.mock.calls[0][1].services).toBeDefined();
+    expect(res.render.mock.calls[0][1].services).toHaveLength(0);
+  });
+
   it('then it should map serviceUrl from service_home when available', async () => {
     getApplication.mockReset().mockReturnValue({
       name: 'Service One',
