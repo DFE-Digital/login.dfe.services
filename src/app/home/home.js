@@ -8,7 +8,7 @@ const sortBy = require('lodash/sortBy');
 
 
 const getAndMapServices = async (account, correlationId) => {
-  const serviceAccess = await getServicesForUser(account.id, correlationId);
+  const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
   const services = uniqBy(serviceAccess.map((sa) => ({
     id: sa.serviceId,
     name: '',
