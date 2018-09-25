@@ -24,15 +24,22 @@ const getAndMapServices = async (account, correlationId) => {
 };
 
 const home = async (req, res) => {
-  const account = Account.fromContext(req.user);
-  const services = await getAndMapServices(account, req.id);
+  if (req.isAuthenticated()) {
+    const account = Account.fromContext(req.user);
+    const services = await getAndMapServices(account, req.id);
 
-  return res.render('home/views/home', {
-    title: 'Access DfE services',
-    user: account,
-    services,
-    currentPage: 'services'
-  });
+    return res.render('home/views/home', {
+      title: 'Access DfE services',
+      user: account,
+      services,
+      currentPage: 'services'
+    });
+  } else {
+    return res.render('home/views/externalServices', {
+      title: 'Access DfE services',
+      loggedOut: true,
+    });
+  }
 };
 
 module.exports = home;

@@ -1,7 +1,7 @@
 'use strict';
 
 const complete = (req, res) => {
-  res.render('signOut/views/complete');
+  res.redirect('/');
 };
 
 module.exports = complete;
