@@ -9,6 +9,7 @@ const mockRequest = () => {
     body: {},
     query: {},
     csrfToken: jest.fn().mockReturnValue('token'),
+    isAuthenticated: jest.fn().mockReturnValue(true),
   };
 };
 const mockResponse = () => {

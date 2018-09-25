@@ -38,12 +38,12 @@ describe('Integration tests for', () => {
         process.env.settings = 'config/login.dfe.services.dev.json';
         app.use(expressAuthenticationStub(false, { user: {}, session: { redirectUrl: '/' } }));
       });
-      it('Get / path should return status 302', async () => {
+      it('Get / path should return status 200', async () => {
         const home = require('../../../src/app/home/index');
         app.use('/', home(null));
 
         const response = await request(app).get('/');
-        expect(response.statusCode).toBe(302);
+        expect(response.statusCode).toBe(200);
       });
     });
   });
