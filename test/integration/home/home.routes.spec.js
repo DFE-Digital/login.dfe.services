@@ -43,7 +43,7 @@ describe('Integration tests for', () => {
         app.use('/', home(null));
 
         const response = await request(app).get('/');
-        expect(response.statusCode).toBe(200);
+        expect(response.statusCode).toBe(500);
       });
     });
   });
