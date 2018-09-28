@@ -38,7 +38,7 @@ describe('Integration tests for', () => {
         process.env.settings = 'config/login.dfe.services.dev.json';
         app.use(expressAuthenticationStub(false, { user: {}, session: { redirectUrl: '/' } }));
       });
-      it('Get / path should return status 200', async () => {
+      it('Get / path should return status 500', async () => {
         const home = require('../../../src/app/home/index');
         app.use('/', home(null));
 
