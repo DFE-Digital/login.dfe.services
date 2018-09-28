@@ -12,7 +12,7 @@ const router = express.Router({ mergeParams: true });
 const home = () => {
   logger.info('Mounting home routes');
 
-  router.get('/', isLoggedIn, asyncWrapper(getIndex));
+  router.get('/', asyncWrapper(getIndex));
 
   return router;
 };

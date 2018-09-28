@@ -1,0 +1,63 @@
+<div class="grid-row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            DfE Sign-in
+        </h1>
+        <p>To access your service, please select below and you will be taken to the appropriate login page.</p>
+
+        <h2 class="heading-medium">Services on DfE Sign-in </h2>
+        <p>The first time you use DfE Sign in you will be asked to migrate your account from Secure Access. If you have already migrated, use your email and password to login.</p>
+        <article class="organisation-services">
+            <section>
+                <ul class="service-list">
+                    <%
+                    for (let s = 0; s < services.length; s++) {
+                        const service = services[s];
+                        if (service.isMigrated === true && service.isExternalService === true) {
+                    %>
+                    <li>
+                        <div class="links">
+                            <a href="<%=service.serviceUrl%>" class="service-link"><%=service.name%></a>
+                            <a href="#" class="information">More Information <span class="vh">about <%=service.name%></span></a>
+                        </div>
+                        <div class="service-description js-hidden">
+                            <dl class="simple">
+                                <dd>The <%=service.name%> service, has already moved away from Secure Access and now uses DfE Sign-in. If you are a registered <%=service.name%> user, you should have received an email advising you how to set up a DfE Sign-In account.
+                                    If you have not yet done so, you will need to create a DfE Sign-in account with your email address and a password of your choice before you can access <%=service.name%>.</dd>
+                            </dl>
+                        </div>
+                    </li>
+                    <% } %>
+                    <% } %>
+                </ul>
+            </section>
+        </article>
+        <h2 class="heading-medium">Services on Secure Access </h2>
+        <p>You will still login to Secure Access, using your Secure Access username and password</p>
+        <article class="organisation-services">
+            <section>
+                <ul class="service-list">
+                    <%
+                    for (let s = 0; s < services.length; s++) {
+                        const service = services[s];
+                        if (service.isMigrated === false && service.isExternalService === true) {
+                    %>
+                    <li>
+                        <div class="links">
+                            <a href="<%=service.serviceUrl%>" class="service-link"><%=service.name%></a>
+                            <a href="#" class="information">More Information <span class="vh">about <%=service.name%></span></a>
+                        </div>
+                        <div class="service-description js-hidden">
+                            <dl class="simple">
+                                <dd>Access to the <%=service.name%> service is currently still possible through Secure Access. It will move shortly to the DfE Sign-in service. If you are a registered <%service.name%> user, you will receive an email advising you how to set up a DfE Sign-In account using your email address and a password of your choice.</dd>
+                                <dd>If you have already created a DfE Sign-in account to access any of the services above, you do not need a second - the same account can be used to access many services on behalf of multiple organisations. </dd>
+                            </dl>
+                        </div>
+                    </li>
+                    <% } %>
+                    <% } %>
+                </ul>
+            </section>
+        </article>
+    </div>
+</div>

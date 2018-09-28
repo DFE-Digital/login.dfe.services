@@ -50,7 +50,7 @@ describe('when displaying current organisation and service mapping', () => {
     getApplication.mockReset().mockReturnValue(application);
   });
 
-  it('then it should render home view', async () => {
+  it('then it should render external services if not logged in', async () => {
     await home(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
