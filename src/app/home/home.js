@@ -32,6 +32,7 @@ const getAndMapExternalServices = async (correlationId) => {
     serviceUrl: (service.relyingParty ? (service.relyingParty.service_home || service.relyingParty.redirect_uris[0]): undefined) || '#',
     isMigrated: service.isMigrated,
     isExternalService: service.isExternalService,
+    description: service.description,
   })), 'id');
    return sortBy(services, 'name');
 };
