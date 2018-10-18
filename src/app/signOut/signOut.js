@@ -9,7 +9,13 @@ const logger = require('./../../infrastructure/logger');
 
 const signUserOut = (req, res) => {
   if (req.user.id_token) {
-    logger.audit('User logged out', { userId: req.user.sub, email :req.user.email });
+    logger.audit('User logged out', {
+      type: 'Sign-out',
+      subType: 'services',
+      userId: req.user.sub,
+      email: req.user.email,
+      client: 'services',
+    });
     const idToken = req.user.id_token;
     const issuer = passport._strategies.oidc._issuer;
     const returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
