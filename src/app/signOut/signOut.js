@@ -11,7 +11,6 @@ const signUserOut = (req, res) => {
   if (req.user.id_token) {
     logger.audit('User logged out', {
       type: 'Sign-out',
-      subType: 'services',
       userId: req.user.sub,
       email: req.user.email,
       client: 'services',
