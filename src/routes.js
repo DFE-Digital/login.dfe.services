@@ -48,7 +48,7 @@ const routes = (app, csrf) => {
   app.use('/', home(csrf));
   // app.use('/services', services(csrf));
   app.use('/signout', signOut(csrf));
-  app.use('/access-requests', accessRequests(csrf));
+  // app.use('/access-requests', accessRequests(csrf));
   app.use('/organisations', organisations(csrf));
   app.get('*', (req, res) => {
     res.status(404).render('errors/views/notFound');

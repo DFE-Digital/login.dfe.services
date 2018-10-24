@@ -11,8 +11,8 @@ const { get: getAccessRequests, post: postAccessRequests } = require('./accessRe
 const action = (csrf) => {
   logger.info('Mounting accessRequest routes');
 
-  router.get('/',csrf, isLoggedIn, asyncWrapper(getAccessRequests));
-  router.post('/',csrf, isLoggedIn, asyncWrapper(postAccessRequests));
+  // router.get('/',csrf, isLoggedIn, asyncWrapper(getAccessRequests));
+  // router.post('/',csrf, isLoggedIn, asyncWrapper(postAccessRequests));
 
 
   return router;
