@@ -8,6 +8,9 @@ const logger = require('./../../infrastructure/logger');
 
 const getUserDetails = async (usersForApproval) => {
   const allUserId = flatten(usersForApproval.map((user) => user.user_id));
+  if (allUserId.length === 0) {
+    return [];
+  }
   const distinctUserIds = uniq(allUserId);
   return await Account.getUsersById(distinctUserIds);
 };
