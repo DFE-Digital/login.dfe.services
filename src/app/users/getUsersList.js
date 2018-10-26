@@ -4,6 +4,7 @@ const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const { getAllUsersForOrganisation } = require('../../infrastructure/organisations');
 
+
 const getAllUsersForOrg = async (usersInOrg) => {
   const allUserIds = flatten(usersInOrg.map((user) => user.id));
   if (allUserIds.length === 0) {

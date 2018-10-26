@@ -41,6 +41,7 @@ const routes = (app, csrf) => {
           role: 10000,
         },
       ]; // TODO: Get from orgs api
+
       user.organisations = organisations;
 
       return req.logIn(user, (loginErr) => {

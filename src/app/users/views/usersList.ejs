@@ -1,21 +1,14 @@
 <h1 class="heading-xlarge">Users
     <small>Bishop Ullathorne Catholic School</small>
 </h1>
-<div class="row">
+<div class="row row-spacer">
     <div class="col-6 pull-right">
         <div class="pull-right">
             <a href="add-user.html" class="button button-secondary">Invite user</a>
         </div>
     </div>
 </div>
-<div class="row meta">
-    <div class="col-6">
-        <p>Showing 1 - 13 of <b>13</b> users</p>
-    </div>
-    <div class="col-6">
 
-    </div>
-</div>
 <div class="row">
     <div class="col-12">
         <table class="data">
@@ -38,7 +31,11 @@
                 <td><a href="user-profilev1.1.html"><%=locals.usersForOrganisation[i].usersName%></a></td>
 
                 <td><span class="breakable"><%=locals.usersForOrganisation[i].usersEmail%></span></td>
-                <td>End user</td>
+                <% if (locals.usersForOrganisation[i].role) { %>
+                <td><%= locals.usersForOrganisation[i].role.name %></td>
+                <% } else { %>
+                    <td>Unknown</td>
+                <% } %>
                 <td>Active</td>
             </tr>
             <% } %>
@@ -47,12 +44,4 @@
     </div>
 </div>
 
-<div class="row meta">
-    <div class="col-6">
-        <p>Showing 1 - 13 of <b>13</b> users</p>
-    </div>
-    <div class="col-6">
-
-    </div>
-</div>
 

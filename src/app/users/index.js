@@ -12,7 +12,12 @@ const router = express.Router({ mergeParams: true });
 const users = () => {
   logger.info('Mounting users route');
 
+  router.get('/users', asyncWrapper((req, res) => {
+    res.redirect(`${req.user.organisations[0].id}/users`);
+  }));
+
   router.get('/:orgId/users', isLoggedIn, asyncWrapper(getUsersList));
   return router;
+
 };
 module.exports = users;
