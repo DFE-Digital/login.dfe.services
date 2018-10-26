@@ -8,6 +8,8 @@ const accessRequests = require('./app/accessRequests');
 const signOut = require('./app/signOut');
 const healthCheck = require('login.dfe.healthcheck');
 const organisations = require('./app/organisations');
+const users = require('./app/users');
+
 const routes = (app, csrf) => {
   // auth callbacks
   app.get('/auth', passport.authenticate('oidc'));
@@ -32,6 +34,15 @@ const routes = (app, csrf) => {
         req.session.redirectUrl = null;
       }
 
+      const organisations = [
+        {
+          id: '1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69',
+          name: '0-2-5 NURSERY test',
+          role: 10000,
+        },
+      ]; // TODO: Get from orgs api
+      user.organisations = organisations;
+
       return req.logIn(user, (loginErr) => {
         if (loginErr) {
           logger.error(`Login error in auth callback - ${loginErr}`);
@@ -50,6 +61,7 @@ const routes = (app, csrf) => {
   app.use('/signout', signOut(csrf));
   // app.use('/access-requests', accessRequests(csrf));
   app.use('/organisations', organisations(csrf));
+  app.use('/approvals', users(csrf));
   app.get('*', (req, res) => {
     res.status(404).render('errors/views/notFound');
   });

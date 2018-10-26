@@ -44,13 +44,19 @@ const putUserInOrganisation = async(userId, orgId, status, role, reason, correla
   return callApi('PUT', `/organisations/${orgId}/users/${userId}`, correlationId, {roleId:role, status, reason});
 };
 
+const getAllUsersForOrganisation = async (orgId, correlationId) => {
+  return callApi('GET', `/organisations/${orgId}/users`, correlationId);
+};
+
 const getServiceById = async (serviceId, correlationId) => {
   return await callOrganisationsApi(`services/${serviceId}`, 'GET', undefined, correlationId);
 };
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
   putUserInOrganisation,
   getServiceById,
+  getAllUsersForOrganisation,
 };
