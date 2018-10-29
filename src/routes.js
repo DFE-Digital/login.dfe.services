@@ -9,12 +9,13 @@ const signOut = require('./app/signOut');
 const healthCheck = require('login.dfe.healthcheck');
 const organisations = require('./app/organisations');
 const users = require('./app/users');
+const { getOrganisationAndServiceForUser } = require('./infrastructure/organisations');
 
 const routes = (app, csrf) => {
   // auth callbacks
   app.get('/auth', passport.authenticate('oidc'));
   app.get('/auth/cb', (req, res, next) => {
-    passport.authenticate('oidc', (err, user) => {
+    passport.authenticate('oidc', async (err, user) => {
       let redirectUrl = '/';
 
       if (err) {
@@ -33,15 +34,16 @@ const routes = (app, csrf) => {
         redirectUrl = req.session.redirectUrl;
         req.session.redirectUrl = null;
       }
+      /*const organisations = [
+  {
+    id: '1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69',
+    name: '0-2-5 NURSERY test',
+    role: 10000,
+  },
+]; // TODO: Get from orgs api*/
 
-      const organisations = [
-        {
-          id: '1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69',
-          name: '0-2-5 NURSERY test',
-          role: 10000,
-        },
-      ]; // TODO: Get from orgs api
-
+      const organisations = await getOrganisationAndServiceForUser(user.sub, req.id);
+      
       user.organisations = organisations;
 
       return req.logIn(user, (loginErr) => {

@@ -20,16 +20,15 @@ const getUsersList = async (req, res) => {
   if (usersForOrganisation) {
     const userList = await getAllUsersForOrg(usersForOrganisation);
     usersForOrganisation = usersForOrganisation.map((user) => {
-      const userFound = userList.find(c => c.claims.sub.toLowerCase() === user.id.toLowerCase());
+      const userFound = userList ? userList.find(c => c.claims.sub.toLowerCase() === user.id.toLowerCase()) : '';
       const usersName = userFound ? `${userFound.claims.given_name} ${userFound.claims.family_name}` : 'No Name Supplied';
       const usersEmail = userFound ? userFound.claims.email : '';
       return Object.assign({usersName, usersEmail}, user);
     });
   }
-  const organisations = req.user.organisations;
   return res.render('users/views/usersList', {
     title: 'Users',
-    organisations,
+    organisations: req.user.organisations,
     usersForOrganisation,
     currentPage: 'users'
   });

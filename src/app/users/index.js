@@ -13,7 +13,7 @@ const users = () => {
   logger.info('Mounting users route');
 
   router.get('/users', asyncWrapper((req, res) => {
-    res.redirect(`${req.user.organisations[0].id}/users`);
+    res.redirect(`${req.user.organisations[0].organisation.id}/users`);
   }));
 
   router.get('/:orgId/users', isLoggedIn, asyncWrapper(getUsersList));

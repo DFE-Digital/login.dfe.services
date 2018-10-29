@@ -1,10 +1,10 @@
 <h1 class="heading-xlarge">Users
-    <small>Bishop Ullathorne Catholic School</small>
+    <small><%= locals.organisations[0].organisation.name%></small>
 </h1>
 <div class="row row-spacer">
     <div class="col-6 pull-right">
         <div class="pull-right">
-            <a href="add-user.html" class="button button-secondary">Invite user</a>
+            <a href="" class="button button-secondary">Invite user</a>
         </div>
     </div>
 </div>
@@ -28,7 +28,7 @@
 
             <% for(let i= 0; i < locals.usersForOrganisation.length; i++) {%>
             <tr>
-                <td><a href="user-profilev1.1.html"><%=locals.usersForOrganisation[i].usersName%></a></td>
+                <td><a href=""><%=locals.usersForOrganisation[i].usersName%></a></td>
 
                 <td><span class="breakable"><%=locals.usersForOrganisation[i].usersEmail%></span></td>
                 <% if (locals.usersForOrganisation[i].role) { %>
@@ -36,7 +36,7 @@
                 <% } else { %>
                     <td>Unknown</td>
                 <% } %>
-                <td>Active</td>
+                <td></td>
             </tr>
             <% } %>
             </tbody>
