@@ -34,16 +34,9 @@ const routes = (app, csrf) => {
         redirectUrl = req.session.redirectUrl;
         req.session.redirectUrl = null;
       }
-      /*const organisations = [
-  {
-    id: '1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69',
-    name: '0-2-5 NURSERY test',
-    role: 10000,
-  },
-]; // TODO: Get from orgs api*/
 
       const organisations = await getOrganisationAndServiceForUser(user.sub, req.id);
-      
+
       user.organisations = organisations;
 
       return req.logIn(user, (loginErr) => {

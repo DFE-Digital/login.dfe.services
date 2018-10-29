@@ -1,7 +1,7 @@
 'use strict';
 
 const config = require('./../config');
-const { getServicesForUser } = require('../../infrastructure/access');
+const {getServicesForUser} = require('../../infrastructure/access');
 
 const APPROVER = 10000;
 
@@ -11,6 +11,14 @@ const isLoggedIn = (req, res, next) => {
   }
   req.session.redirectUrl = req.originalUrl;
   return res.status(302).redirect('/auth');
+};
+
+const isApprover = (req, res, next) => {
+  const userApproverOrgs = req.user.organisations.filter(x => x.role.id === 10000);
+  if (userApproverOrgs.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())) {
+    return next();
+  }
+  return res.status(401).render('errors/views/notAuthorised');
 };
 
 /*const setApproverContext = async (req, res, next) => {
@@ -46,4 +54,12 @@ const setConfigContext = (req, res, next) => {
   next();
 }
 
-module.exports = { isLoggedIn, getUserEmail, getUserDisplayName, setUserContext, asyncMiddleware, setConfigContext };
+module.exports = {
+  isLoggedIn,
+  getUserEmail,
+  getUserDisplayName,
+  setUserContext,
+  asyncMiddleware,
+  setConfigContext,
+  isApprover
+};
