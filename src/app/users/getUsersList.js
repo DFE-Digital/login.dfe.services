@@ -3,7 +3,6 @@ const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const { getAllUsersForOrganisation } = require('../../infrastructure/organisations');
-const sortBy = require('lodash/sortBy');
 
 const getAllUsersForOrg = async (usersInOrg) => {
   const allUserIds = flatten(usersInOrg.map((user) => user.id));
