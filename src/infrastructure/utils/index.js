@@ -39,6 +39,9 @@ const setUserContext = (req, res, next) => {
   if (req.user) {
     res.locals.user = req.user;
     res.locals.displayName = getUserDisplayName(req.user);
+    if (req.user.organisations) {
+      res.locals.isApprover = req.user.organisations.filter(x => x.role.id === 10000).length > 0
+    }
   }
   next();
 };

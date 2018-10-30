@@ -25,9 +25,11 @@ const getUsersList = async (req, res) => {
       return Object.assign({usersName, usersEmail}, user);
     });
   }
+  const organisationId = req.params.orgId;
+  const organisationDetails = req.user.organisations.filter(x => x.organisation.id === organisationId);
   return res.render('users/views/usersList', {
     title: 'Users',
-    organisations: req.user.organisations,
+    organisations: organisationDetails,
     usersForOrganisation,
     currentPage: 'users'
   });
