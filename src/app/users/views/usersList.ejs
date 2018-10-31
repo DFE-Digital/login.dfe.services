@@ -40,6 +40,8 @@ const paginationModel = {
                     <a href="#" class="">Permission level</a></th>
                 <th scope="col" class="cwp-10">
                     <a href="#" class="">Status</a></th>
+                <th scope="col" class="cwp-10">
+                    <a href="#" class="">Last login</a></th>
             </tr>
             </thead>
             <tbody>
@@ -55,7 +57,9 @@ const paginationModel = {
                 <% } else { %>
                     <td>Unknown</td>
                 <% } %>
-                <td></td>
+                <td><%= locals.status.description %></td>
+
+                <td><%=user.lastLogin ? locals.moment(user.lastLogin).fromNow() : 'Never'%></td>
             </tr>
             <% } %>
             </tbody>

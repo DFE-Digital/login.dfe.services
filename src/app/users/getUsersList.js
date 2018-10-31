@@ -1,7 +1,5 @@
 'use strict';
-const Account = require('./../../infrastructure/account');
-const flatten = require('lodash/flatten');
-const uniq = require('lodash/uniq');
+const { mapUserStatus } = require('./../../infrastructure/utils');
 const { getAllUsersForOrg } = require('../../infrastructure/search');
 
 
@@ -22,6 +20,7 @@ const getUsersList = async (req, res) => {
     page: pageNumber,
     numberOfPages: usersForOrganisation.numberOfPages,
     totalNumberOfResults: usersForOrganisation.totalNumberOfResults,
+    status: mapUserStatus(usersForOrganisation.users.statusId),
     currentPage: 'users'
   });
 };
