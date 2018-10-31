@@ -9,8 +9,26 @@
     </div>
 </div>
 
+<%
+const paginationModel = {
+    method: 'post',
+    csrfToken,
+    currentPage: locals.page,
+    numberOfPages: locals.numberOfPages,
+    totalNumberOfResults: locals.totalNumberOfResults,
+    numberOfResultsOnPage: locals.usersForOrganisation.users.length,
+    data: [
+        { key: 'criteria', value: locals.criteria },
+        { key: 'sort', value: locals.sortBy },
+        { key: 'sortDir', value: locals.sortOrder },
+        { key: 'showFilters', value: locals.showFilters }
+    ]
+}
+%>
+
 <div class="row">
     <div class="col-12">
+        <%- include('../../layouts/pagination', paginationModel); %>
         <table class="data">
             <thead>
             <tr class="sortable">
@@ -26,13 +44,14 @@
             </thead>
             <tbody>
 
-            <% for(let i= 0; i < locals.usersForOrganisation.length; i++) {%>
+            <% for(let i= 0; i < locals.usersForOrganisation.users.length; i++) {
+            const user = locals.usersForOrganisation.users[i]%>
             <tr>
-                <td><a href=""><%=locals.usersForOrganisation[i].usersName%></a></td>
+                <td><a href=""><%= user.firstName %> <%= user.lastName %></a></td>
 
-                <td><span class="breakable"><%=locals.usersForOrganisation[i].usersEmail%></span></td>
-                <% if (locals.usersForOrganisation[i].role) { %>
-                <td><%= locals.usersForOrganisation[i].role.name %></td>
+                <td><span class="breakable"><%=user.email%></span></td>
+                <% if (locals.usersForOrganisation.users[i].role) { %>
+                <td><%= locals.usersForOrganisation.users[i].role.name %></td>
                 <% } else { %>
                     <td>Unknown</td>
                 <% } %>
