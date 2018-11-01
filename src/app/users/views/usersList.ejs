@@ -39,9 +39,9 @@ const paginationModel = {
                 <th scope="col" class="cwp-15">
                     <a href="#" class="">Permission level</a></th>
                 <th scope="col" class="cwp-10">
-                    <a href="#" class="">Status</a></th>
-                <th scope="col" class="cwp-10">
                     <a href="#" class="">Last login</a></th>
+                <th scope="col" class="cwp-10">
+                    <a href="#" class="">Status</a></th>
             </tr>
             </thead>
             <tbody>
@@ -52,14 +52,18 @@ const paginationModel = {
                 <td><a href=""><%= user.firstName %> <%= user.lastName %></a></td>
 
                 <td><span class="breakable"><%=user.email%></span></td>
-                <% if (locals.usersForOrganisation.users[i].role) { %>
-                <td><%= locals.usersForOrganisation.users[i].role.name %></td>
+                <%
+                if (user.organisations.length > 0) {
+                    const permissionName = user.organisations[0].roleId === 10000 ? 'Approver' : 'End user';
+                    %>
+                    <td><%= permissionName %></td>
                 <% } else { %>
                     <td>Unknown</td>
                 <% } %>
-                <td></td>
 
                 <td><%=user.lastLogin ? locals.moment(user.lastLogin).fromNow() : 'Never'%></td>
+
+                <td><%= user.statusId.description %></td>
             </tr>
             <% } %>
             </tbody>

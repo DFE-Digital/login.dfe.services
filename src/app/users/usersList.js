@@ -11,6 +11,10 @@ const search = async (req) => {
     page = 1;
   }
   const usersForOrganisation = await  getAllUsersForOrg(page, organisationId, req.id);
+  for (let i = 0; i < usersForOrganisation.users.length; i++) {
+    const user = usersForOrganisation.users[i];
+    user.statusId = mapUserStatus(user.statusId);
+  }
   return {
     page,
     usersForOrganisation,
@@ -19,7 +23,6 @@ const search = async (req) => {
     totalNumberOfResults: usersForOrganisation.totalNumberOfResults,
   }
 };
-
 
 const get = async (req, res) => {
   const result = await search(req);
