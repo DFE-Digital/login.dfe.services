@@ -57,13 +57,14 @@ const paginationModel = {
                 <% } else { %>
                     <td>Unknown</td>
                 <% } %>
-                <td><%= locals.status.description %></td>
+                <td></td>
 
                 <td><%=user.lastLogin ? locals.moment(user.lastLogin).fromNow() : 'Never'%></td>
             </tr>
             <% } %>
             </tbody>
         </table>
+        <%- include('../../layouts/pagination', paginationModel); %>
     </div>
 </div>
 

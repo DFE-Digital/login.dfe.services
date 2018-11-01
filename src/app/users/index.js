@@ -5,7 +5,7 @@ const { isLoggedIn, isApprover} = require('../../infrastructure/utils');
 const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
-const getUsersList = require('./getUsersList');
+const { get: getUsersList, post: postUserList } = require('./usersList');
 const { get: getSelectOrganisation, post: postSelectOrganisation } = require('./selectOrganisation');
 const router = express.Router({ mergeParams: true });
 
@@ -22,9 +22,10 @@ const users = (csrf) => {
   }));
 
   router.get('/:orgId/users', csrf, isLoggedIn, isApprover, asyncWrapper(getUsersList));
-
+  router.post('/:orgId/users', csrf, isLoggedIn, isApprover, asyncWrapper(postUserList));
   router.get('/select-organisation', csrf, isLoggedIn, asyncWrapper(getSelectOrganisation));
   router.post('/select-organisation', csrf, isLoggedIn, asyncWrapper(postSelectOrganisation));
+
   return router;
 
 };
