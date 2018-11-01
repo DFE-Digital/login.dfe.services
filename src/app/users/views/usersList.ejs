@@ -45,7 +45,11 @@ const paginationModel = {
             </tr>
             </thead>
             <tbody>
-
+            <% if(locals.usersForOrganisation.users.length === 0) { %>
+                <tr>
+                    <td colspan="5"><span class="empty-state">No users found</span></td>
+                </tr>
+            <% } %>
             <% for(let i= 0; i < locals.usersForOrganisation.users.length; i++) {
             const user = locals.usersForOrganisation.users[i]%>
             <tr>
