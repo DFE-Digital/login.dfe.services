@@ -13,6 +13,8 @@ const router = express.Router({ mergeParams: true });
 const users = (csrf) => {
   logger.info('Mounting users route');
 
+  router.use(isLoggedIn);
+
   router.get('/users', asyncWrapper((req, res) => {
     req.user.organisations = req.user.organisations.filter(x => x.role.id === 10000);
     if (req.user.organisations.length === 1) {
@@ -26,12 +28,13 @@ const users = (csrf) => {
     res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
   }));
 
-  router.get('/:orgId/users', csrf, isLoggedIn, isApprover, asyncWrapper(getUsersList));
-  router.post('/:orgId/users', csrf, isLoggedIn, isApprover, asyncWrapper(postUserList));
-  router.get('/:orgId/users/:uid/services', csrf, isLoggedIn, isApprover, asyncWrapper(getServices));
+  router.get('/:orgId/users', csrf, isApprover, asyncWrapper(getUsersList));
+  router.post('/:orgId/users', csrf, isApprover, asyncWrapper(postUserList));
 
-  router.get('/select-organisation', csrf, isLoggedIn, asyncWrapper(getSelectOrganisation));
-  router.post('/select-organisation', csrf, isLoggedIn, asyncWrapper(postSelectOrganisation));
+  router.get('/:orgId/users/:uid/services', csrf, isApprover, asyncWrapper(getServices));
+
+  router.get('/select-organisation', csrf, asyncWrapper(getSelectOrganisation));
+  router.post('/select-organisation', csrf, asyncWrapper(postSelectOrganisation));
 
 
   return router;
