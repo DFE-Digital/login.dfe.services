@@ -11,13 +11,13 @@ const rp = require('request-promise').defaults({
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 const getAllUsersForOrg = async (page, orgId, correlationId) => {
-  // const token = await jwtStrategy(config.search.service).getBearerToken();
+  const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
     return await rp({
       method: 'GET',
       uri: `${config.search.service.url}/users/?page=${page}&filter_organisations=${orgId}`,
       headers: {
-        /// authorization: `bearer ${token}`,
+        authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
       json: true,
