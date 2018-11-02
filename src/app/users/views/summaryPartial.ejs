@@ -1,0 +1,37 @@
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            First name Last name
+            <small>Email address</small>
+        </h1>
+        <dl class="inline condensed">
+            <dt class="label">Account Status</dt>
+            <dd>Status</dd>
+            <dt class="label">Permission level</dt>
+            <dd>End user</dd>
+        </dl>
+    </div>
+    <div class="col-4">
+            <aside>
+                <h2 class="heading-medium">Actions</h2>
+                <ul class="list">
+                    <li><a href="">Add services</a></li>
+                    <li><a href="">Edit permission level</a></li>
+                    <li><a href="">Remove access to <%= locals.organisation[0].organisation.name%></a></li>
+                </ul>
+            </aside>
+    </div>
+</div>
+
+<nav>
+    <ul class="tabs" role="tablist">
+
+
+        <% if(locals.area === 'services') { %>
+            <li class="active">Services</li>
+        <% } else { %>
+            <li><a href="services" role="tab">Services</a></li>
+        <% } %>
+
+    </ul>
+</nav>

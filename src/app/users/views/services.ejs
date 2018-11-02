@@ -1,0 +1,42 @@
+<%- include('summaryPartial', {area: 'services'}); %>
+<% let hasServices = false %>
+
+<article class="organisation-services">
+    <section class="organisation">
+        <header>
+            <h3 class="heading-small spacer-heading"><%= locals.organisation[0].organisation.name%></h3>
+        </header>
+    </section>
+    <% for (let i = 0; i < locals.services.length; i++) { %>
+        <% if (locals.services.length > 0) { %>
+            <% hasServices = true %>
+            <% const service = locals.services[i]; %>
+            <section class="services">
+                <table class="data no-borders">
+                    <thead>
+                    <tr>
+                        <th scope="col" class="cwp-30">Service</th>
+                        <th scope="col" class="cwp-25">Activated</th>
+                        <th scope="col" class="cwp-15">Last active</th>
+                        <th scope="col" class="cwp-15">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td> <a href=""><%=service.name%></a></td>
+                        <td><%= service.dateActivated ? locals.moment(service.dateActivated).format('DD MMM YYYY') : 'Unknown'%></td>
+                        <td>Date</td>
+                        <td>Status</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+            <% } %>
+    <% } %>
+</article>
+
+<% if (!hasServices) { %>
+    <div class="empty-state">
+        <p>NAME is not associated with any services</p>
+    </div>
+<% } %>

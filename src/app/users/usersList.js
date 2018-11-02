@@ -18,7 +18,7 @@ const search = async (req) => {
   return {
     page,
     usersForOrganisation,
-    organisations: organisationDetails,
+    organisation: organisationDetails,
     numberOfPages: usersForOrganisation.numberOfPages,
     totalNumberOfResults: usersForOrganisation.totalNumberOfResults,
   }
@@ -34,7 +34,7 @@ const get = async (req, res) => {
     page: result.page,
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
-    organisations: result.organisations,
+    organisation: result.organisation,
   });
 };
 
@@ -48,7 +48,7 @@ const post = async (req, res) => {
     page: result.page,
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
-    organisations: result.organisations,
+    organisation: result.organisation,
   });
 };
 
