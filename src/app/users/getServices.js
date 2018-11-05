@@ -1,6 +1,8 @@
 'use strict';
 const { getServicesForUser, getServicesForInvitation } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
+const { mapUserStatus } = require('./../../infrastructure/utils');
+const { getUserDetails } = require('./utils');
 const sortBy = require('lodash/sortBy');
 
 const getAllServicesForUserInOrg = async (userId, organisationId, correlationId) => {
@@ -21,14 +23,16 @@ const getAllServicesForUserInOrg = async (userId, organisationId, correlationId)
     const service = services[i];
     const application = await getApplication(service.id);
     service.name = application.name;
+    service.status = mapUserStatus(service.status);
   }
   return sortBy(services, 'name');
 };
 
 
 const action = async (req, res) => {
+  const user = await getUserDetails(req);
   const organisationId = req.params.orgId;
-  const organisationDetails = req.user.organisations.filter(x => x.organisation.id === organisationId);
+  const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
 
   return res.render('users/views/services', {
@@ -37,6 +41,7 @@ const action = async (req, res) => {
     csrfToken: req.csrfToken(),
     organisation: organisationDetails,
     services: servicesForUser,
+    user,
   });
 };
 

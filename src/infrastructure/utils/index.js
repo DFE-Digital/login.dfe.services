@@ -2,7 +2,7 @@
 
 const config = require('./../config');
 const {getServicesForUser} = require('../../infrastructure/access');
-
+const { getOrganisationAndServiceForUser } = require('./../organisations');
 const APPROVER = 10000;
 
 const isLoggedIn = (req, res, next) => {
@@ -14,7 +14,7 @@ const isLoggedIn = (req, res, next) => {
 };
 
 const isApprover = (req, res, next) => {
-  const userApproverOrgs = req.user.organisations.filter(x => x.role.id === 10000);
+  const userApproverOrgs = req.userOrganisations.filter(x => x.role.id === 10000);
   if (userApproverOrgs.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())) {
     return next();
   }
@@ -35,12 +35,15 @@ const getUserEmail = user => user.email || '';
 
 const getUserDisplayName = user => `${user.given_name || ''} ${user.family_name || ''}`.trim();
 
-const setUserContext = (req, res, next) => {
+const setUserContext = async (req, res, next) => {
   if (req.user) {
     res.locals.user = req.user;
     res.locals.displayName = getUserDisplayName(req.user);
-    if (req.user.organisations) {
-      res.locals.isApprover = req.user.organisations.filter(x => x.role.id === 10000).length > 0
+    const organisations = await getOrganisationAndServiceForUser(req.user.sub, req.id);
+    req.userOrganisations = organisations;
+
+    if (req.userOrganisations) {
+      res.locals.isApprover = req.userOrganisations.filter(x => x.role.id === 10000).length > 0
     }
   }
   next();

@@ -1,14 +1,14 @@
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            First name Last name
-            <small>Email address</small>
+            <%= locals.user.name%>
+            <small><%= locals.user.email %></small>
         </h1>
         <dl class="inline condensed">
             <dt class="label">Account Status</dt>
-            <dd>Status</dd>
+            <dd><%=locals.user.status.description%></dd>
             <dt class="label">Permission level</dt>
-            <dd>End user</dd>
+            <dd>permission level</dd>
         </dl>
     </div>
     <div class="col-4">

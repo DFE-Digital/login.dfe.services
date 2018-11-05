@@ -16,9 +16,8 @@ const users = (csrf) => {
   router.use(isLoggedIn);
 
   router.get('/users', asyncWrapper((req, res) => {
-    req.user.organisations = req.user.organisations.filter(x => x.role.id === 10000);
-    if (req.user.organisations.length === 1) {
-      res.redirect(`${req.user.organisations[0].organisation.id}/users`);
+    if (req.userOrganisations.length === 1) {
+      res.redirect(`${req.userOrganisations[0].organisation.id}/users`);
     } else {
       res.redirect(`/approvals/select-organisation`);
     }

@@ -86,6 +86,17 @@ class DirectoriesApiAccount extends Account {
     }
     return response.result.map(a => new DirectoriesApiAccount(a));
   }
+
+  static async getInvitation(invitationId) {
+    const response = await callDirectoriesApi(`invitations/${invitationId}`, null, 'GET');
+    if (!response.success) {
+      if (response.statusCode === 404) {
+        return null;
+      }
+      throw new Error(response.errorMessage);
+    }
+    return response.result.map(a => new DirectoriesApiAccount(a));
+  }
 }
 
 module.exports = DirectoriesApiAccount;

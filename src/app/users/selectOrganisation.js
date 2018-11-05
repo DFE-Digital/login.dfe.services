@@ -1,8 +1,8 @@
 'use strict';
 
 const get = async (req, res) => {
-  for (let i= 0; i < req.user.organisations.length; i++) {
-    const org = req.user.organisations[i];
+  for (let i= 0; i < req.userOrganisations.length; i++) {
+    const org = req.userOrganisations[i];
     if (org.organisation) {
       org.naturalIdentifiers = [];
       const urn = org.organisation.urn;
@@ -22,7 +22,7 @@ const get = async (req, res) => {
   return res.render('users/views/selectOrganisation', {
     csrfToken: req.csrfToken(),
     title: 'Select Organisation',
-    organisations: req.user.organisations,
+    organisations: req.userOrganisations,
     currentPage: 'users',
     selectedOrganisation: null,
     validationMessages: {},
@@ -32,7 +32,7 @@ const get = async (req, res) => {
 const validate = (req) => {
   const selectedOrg = req.body.selectedOrganisation;
   const model = {
-    organisations: req.user.organisations,
+    organisations: req.userOrganisations,
     currentPage: 'users',
     selectedOrganisation: selectedOrg,
     validationMessages: {},

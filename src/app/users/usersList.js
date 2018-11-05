@@ -4,7 +4,7 @@ const { getAllUsersForOrg } = require('../../infrastructure/search');
 
 const search = async (req) => {
   const organisationId = req.params.orgId;
-  const organisationDetails = req.user.organisations.filter(x => x.organisation.id === organisationId);
+  const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
   const paramsSource = req.method === 'POST' ? req.body : req.query;
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
   if (isNaN(page)) {
