@@ -24,7 +24,11 @@
                     <tbody>
                     <tr>
                         <td> <a href=""><%=service.name%></a></td>
-                        <td><%= service.dateActivated ? locals.moment(service.dateActivated).format('DD MMM YYYY') : 'Unknown'%></td>
+                        <% if (service.dateActivated) { %>
+                        <td><%=locals.moment(service.dateActivated).format('DD MMM YYYY')%></td>
+                        <%} else {%>
+                            <td>Pending</td>
+                        <%}%>
                         <td>Date</td>
                         <td>Status</td>
                     </tr>

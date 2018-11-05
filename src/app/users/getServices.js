@@ -1,10 +1,14 @@
 'use strict';
-const { getServicesForUser } = require('./../../infrastructure/access');
+const { getServicesForUser, getServicesForInvitation } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
 const sortBy = require('lodash/sortBy');
 
 const getAllServicesForUserInOrg = async (userId, organisationId, correlationId) => {
-  const allUserServices = (await getServicesForUser(userId, correlationId)) || [];
+  const allUserServices = userId.startsWith('inv-') ? await getServicesForInvitation(userId.substr(4), correlationId) : await getServicesForUser(userId, correlationId);
+  if (!allUserServices) {
+    return [];
+  }
+
   const userServicesForOrg = allUserServices.filter(x => x.organisationId === organisationId);
   const services = userServicesForOrg.map((service) => ({
     id: service.serviceId,

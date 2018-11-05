@@ -31,6 +31,27 @@ const getServicesForUser = async (id, correlationId) => {
   }
 };
 
+const getServicesForInvitation = async (iid, correlationId) => {
+  const token = await jwtStrategy(config.access.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'GET',
+      uri: `${config.access.service.url}/invitations/${iid}/services`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return undefined;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   getServicesForUser,
+  getServicesForInvitation,
 };
