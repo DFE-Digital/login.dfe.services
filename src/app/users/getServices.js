@@ -35,6 +35,11 @@ const action = async (req, res) => {
   const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
 
+  req.session.user = {
+    name: user.name,
+    email: user.email,
+  };
+
   return res.render('users/views/services', {
     backLink: 'users-list',
     currentPage: 'users',
