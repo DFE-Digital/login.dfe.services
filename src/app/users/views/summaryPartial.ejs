@@ -8,7 +8,7 @@
             <dt class="label">Account Status:</dt>
             <dd><%=locals.user.status.description%></dd>
             <dt class="label">Permission level:</dt>
-            <dd>permission level</dd>
+            <dd><%=locals.user.organisation[0].roleId === 10000 ? 'Approver' : 'End user';%></dd>
         </dl>
     </div>
     <div class="col-4">
@@ -17,7 +17,7 @@
                 <ul class="list">
                     <li><a href="">Add services</a></li>
                     <li><a href="">Edit permission level</a></li>
-                    <li><a href="">Remove access to <%= locals.organisation[0].organisation.name%></a></li>
+                    <li><a href="remove-organisation">Remove access to <%= locals.organisation[0].organisation.name%></a></li>
                 </ul>
             </aside>
     </div>

@@ -16,7 +16,6 @@ const getAllServicesForUserInOrg = async (userId, organisationId, correlationId)
     id: service.serviceId,
     dateActivated: service.accessGrantedOn,
     name: '',
-    lastLogin: null,
     status: null,
   }));
   for (let i = 0; i < services.length; i++) {

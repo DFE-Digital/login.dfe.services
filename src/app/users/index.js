@@ -7,6 +7,7 @@ const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const { get: getUsersList, post: postUserList } = require('./usersList');
 const { get: getSelectOrganisation, post: postSelectOrganisation } = require('./selectOrganisation');
+const { get: getRemoveOrganisation } = require('./removeOrganisationAccess');
 const getServices = require('./getServices');
 const router = express.Router({ mergeParams: true });
 
@@ -31,6 +32,7 @@ const users = (csrf) => {
   router.post('/:orgId/users', csrf, isApprover, asyncWrapper(postUserList));
 
   router.get('/:orgId/users/:uid/services', csrf, isApprover, asyncWrapper(getServices));
+  router.get('/:orgId/users/:uid/remove-organisation', csrf, isApprover, asyncWrapper(getRemoveOrganisation));
 
   router.get('/select-organisation', csrf, asyncWrapper(getSelectOrganisation));
   router.post('/select-organisation', csrf, asyncWrapper(postSelectOrganisation));

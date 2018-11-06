@@ -1,27 +1,20 @@
 'use strict';
-const Account = require('./../../infrastructure/account');
+const { getById } = require('./../../infrastructure/search');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
-  if (uid.startsWith('inv-')) {
-    const invitation = await Account.getInvitation(uid.substr(4));
-    const mapInvitation = {
-      id: uid,
-      name: invitation.claims.name,
-      email: invitation.claims.email,
-      status: invitation.claims.deactivated ? mapUserStatus(-2) : mapUserStatus(-1)
-    };
-    return mapInvitation
-  } else {
-    const user = await Account.getById(uid);
-    return {
-      id: uid,
-      name: `${user.claims.given_name} ${user.claims.family_name}`,
-      email: user.claims.email,
-      status: mapUserStatus(user.claims.status)
-    };
-  }
+  const user = await getById(uid, req.id);
+  const organisationDetails = user.organisations.filter(x => x.id === req.params.orgId);
+  return {
+    id: uid,
+    name: `${user.firstName} ${user.lastName}`,
+    email: user.email,
+    status: mapUserStatus(user.statusId),
+    organisation: organisationDetails,
+    lastLogin: user.lastLogin,
+
+  };
 };
 
 module.exports = {

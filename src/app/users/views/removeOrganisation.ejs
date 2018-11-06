@@ -1,0 +1,39 @@
+<div class="grid-row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Confirm removal from organisation
+        </h1>
+        <p class="lede">Please review these details before removing <%= locals.user.name %> access to <%=locals.organisation[0].organisation.name%></p>
+
+        <dl class="app-check-your-answers app-check-your-answers--short">
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    User
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%= locals.user.name %>
+                </dd>
+            </div>
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    Organisation
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%=locals.organisation[0].organisation.name%>
+                </dd>
+            </div>
+        </dl>
+
+        <form method="post">
+            <fieldset>
+                <legend><h2 class="heading-small">Are you sure you want to remove <%= locals.user.name %> access to the Bishop Ullathorne Catholic School?</h2></legend>
+            </fieldset>
+            <div class="form-submit submit-buttons">
+                <a href="" class="button">Continue</a>
+                <a href="../" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

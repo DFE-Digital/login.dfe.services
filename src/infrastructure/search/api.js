@@ -31,6 +31,27 @@ const getAllUsersForOrg = async (page, orgId, correlationId) => {
   }
 };
 
+const getById = async (userId, correlationId) => {
+  const token = await jwtStrategy(config.search.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'GET',
+      uri: `${config.search.service.url}/users/${userId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return undefined;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   getAllUsersForOrg,
+  getById,
 };
