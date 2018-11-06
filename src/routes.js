@@ -35,10 +35,6 @@ const routes = (app, csrf) => {
         req.session.redirectUrl = null;
       }
 
-      // const organisations = await getOrganisationAndServiceForUser(user.sub, req.id);
-      //
-      // user.organisations = organisations;
-
       return req.logIn(user, (loginErr) => {
         if (loginErr) {
           logger.error(`Login error in auth callback - ${loginErr}`);

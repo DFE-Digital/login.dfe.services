@@ -49,7 +49,14 @@ const getAllUsersForOrganisation = async (orgId, correlationId) => {
 };
 
 const getServiceById = async (serviceId, correlationId) => {
-  return await callOrganisationsApi(`services/${serviceId}`, 'GET', undefined, correlationId);
+  return await callApi(`services/${serviceId}`, 'GET', undefined, correlationId);
+};
+
+const deleteUserOrganisation = async (userId, organisationId, correlationId)  => {
+  return callApi('DELETE', `organisations/${organisationId}/users/${userId}`, correlationId);
+};
+const deleteInvitationOrganisation = async (invitationId, organisationId, correlationId) => {
+  return callApi('DELETE', `organisations/${organisationId}/invitations/${invitationId}`, correlationId);
 };
 
 
@@ -59,4 +66,6 @@ module.exports = {
   putUserInOrganisation,
   getServiceById,
   getAllUsersForOrganisation,
+  deleteUserOrganisation,
+  deleteInvitationOrganisation,
 };

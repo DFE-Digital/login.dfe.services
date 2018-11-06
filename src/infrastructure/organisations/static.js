@@ -39,10 +39,20 @@ const getAllUsersForOrganisation = async(orgId, correlationId) => {
   }]);
 };
 
+const deleteInvitationOrganisation = async(invitationId, organisationId, correlationId) => {
+  return Promise.resolve();
+};
+
+const deleteUserOrganisation = async(userId, organisationId, correlationId) => {
+  return Promise.resolve();
+};
+
 module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
   putUserInOrganisation,
   getServiceById,
   getAllUsersForOrganisation,
+  deleteInvitationOrganisation,
+  deleteUserOrganisation,
 };

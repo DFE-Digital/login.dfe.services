@@ -3,7 +3,7 @@
         <h1 class="heading-xlarge">
             Confirm removal from organisation
         </h1>
-        <p class="lede">Please review these details before removing <%= locals.user.name %> access to <%=locals.organisation[0].organisation.name%></p>
+        <p class="lede">Please review these details before removing <%= locals.user.name %> access to <%=locals.organisation[0].organisation.name%> and all services</p>
 
         <dl class="app-check-your-answers app-check-your-answers--short">
 
@@ -24,15 +24,26 @@
                     <%=locals.organisation[0].organisation.name%>
                 </dd>
             </div>
+            <% if (locals.services.length > 0) { %>
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    Services
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <% for (let i = 0; i < locals.services.length; i++) { %>
+                            <% const service = locals.services[i]; %>
+                              <%=service.name%> <br>
+                        <% } %>
+                </dd>
+            </div>
+            <% } %>
         </dl>
 
         <form method="post">
-            <fieldset>
-                <legend><h2 class="heading-small">Are you sure you want to remove <%= locals.user.name %> access to the Bishop Ullathorne Catholic School?</h2></legend>
-            </fieldset>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <div class="form-submit submit-buttons">
-                <a href="" class="button">Continue</a>
-                <a href="../" class="button button-secondary">Cancel</a>
+                <button type="submit" class="button">Continue</button>
+                <a href="./" class="button button-secondary">Cancel</a>
             </div>
         </form>
     </div>
