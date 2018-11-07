@@ -1,14 +1,24 @@
+<% if (locals.flash.info) { %>
+<div class="row">
+    <div class="col-12">
+        <div class="notification notification-success">
+            <%=locals.flash.info%>
+        </div>
+    </div>
+</div>
+<% } %>
+
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            <%= user.name%>
-            <small><%= user.email %></small>
+            <%= locals.user.name%>
+            <small><%= locals.user.email %></small>
         </h1>
         <dl class="inline condensed">
             <dt class="label">Account Status:</dt>
             <dd><%=locals.user.status.description%></dd>
-            <dt class="label">Permission level:</dt>
-            <dd><%=locals.user.organisation[0].roleId === 10000 ? 'Approver' : 'End user';%></dd>
+            <dt class="label">Is approver:</dt>
+            <dd><%=locals.user.organisation[0].roleId === 10000 ? 'Yes' : 'No';%></dd>
         </dl>
     </div>
     <div class="col-4">
@@ -16,8 +26,8 @@
                 <h2 class="heading-medium">Actions</h2>
                 <ul class="list">
                     <li><a href="">Add services</a></li>
-                    <li><a href="">Edit permission level</a></li>
-                    <li><a href="remove-organisation">Remove access to <%= locals.organisation[0].organisation.name%></a></li>
+                    <li><a href="edit-permission"><%=locals.user.organisation[0].roleId === 10000 ? 'Revoke approver access' : 'Make approver';%></a></li>
+                    <li><a href="remove-organisation">Remove from organisation</a></li>
                 </ul>
             </aside>
     </div>

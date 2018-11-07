@@ -47,7 +47,7 @@ const paginationModel = {
                 <th scope="col" class="cwp-35">
                     <a href="#" class="">Email</a></th>
                 <th scope="col" class="cwp-15">
-                    <a href="#" class="">Permission level</a></th>
+                    <a href="#" class="">Is approver</a></th>
                 <th scope="col" class="cwp-10">
                     <a href="#" class="">Last login</a></th>
                 <th scope="col" class="cwp-10">
@@ -68,7 +68,7 @@ const paginationModel = {
                 <td><span class="breakable"><%=user.email%></span></td>
                 <%
                 if (user.organisations.length > 0) {
-                    const permissionName = user.organisations[0].roleId === 10000 ? 'Approver' : 'End user';
+                    const permissionName = user.organisations[0].roleId === 10000 ? 'Yes' : '';
                     %>
                     <td><%= permissionName %></td>
                 <% } else { %>

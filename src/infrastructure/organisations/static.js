@@ -23,7 +23,7 @@ const getServiceById = async (serviceId, correlationId) => {
   });
 };
 
-const putUserInOrganisation = async() => {
+const putUserInOrganisation = async(userId, orgId, role, correlationId) => {
   return Promise.resolve();
 };
 
@@ -47,6 +47,10 @@ const deleteUserOrganisation = async(userId, organisationId, correlationId) => {
   return Promise.resolve();
 };
 
+const putInvitationInOrganisation = async(invitationId, orgId, role, correlationId) => {
+  return Promise.resolve();
+};
+
 module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
@@ -55,4 +59,5 @@ module.exports = {
   getAllUsersForOrganisation,
   deleteInvitationOrganisation,
   deleteUserOrganisation,
+  putInvitationInOrganisation
 };

@@ -59,6 +59,12 @@ const deleteInvitationOrganisation = async (invitationId, organisationId, correl
   return callApi('DELETE', `organisations/${organisationId}/invitations/${invitationId}`, correlationId);
 };
 
+const putInvitationInOrganisation = async (invitationId, orgId, role, correlationId) => {
+  return callApi('PUT', `/organisations/${orgId}/invitations/${invitationId}`, correlationId, {roleId: role});
+};
+
+
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -68,4 +74,5 @@ module.exports = {
   getAllUsersForOrganisation,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
+  putInvitationInOrganisation,
 };

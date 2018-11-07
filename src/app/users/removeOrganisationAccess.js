@@ -1,10 +1,11 @@
 'use strict';
 
 const logger = require('./../../infrastructure/logger');
-const { getAllServicesForUserInOrg } = require('./utils');
+const { getAllServicesForUserInOrg, getUserDetails } = require('./utils');
 const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../../infrastructure/organisations');
 
 const get = async (req, res) => {
+  const user = await getUserDetails(req);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
@@ -12,15 +13,15 @@ const get = async (req, res) => {
   return res.render('users/views/removeOrganisation', {
     csrfToken: req.csrfToken(),
     organisation: organisationDetails,
-    user: req.session.user,
+    user,
     currentPage: 'users',
     backLink: 'users-details',
-    validationMessages: {},
     services: servicesForUser,
   });
 };
 
 const post = async (req, res) => {
+  const user = await getUserDetails(req);
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
 
@@ -31,7 +32,7 @@ const post = async (req, res) => {
   }
   const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
   const org = organisationDetails[0].organisation.name;
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${user.email} (id: ${uid})`, {
     type: 'approver',
     subType: 'user-org-deleted',
     userId: req.user.sub,
@@ -43,7 +44,7 @@ const post = async (req, res) => {
       newValue: undefined,
     }],
   });
-  res.flash('info', `${req.session.user.name} has been removed from ${org}`);
+  res.flash('info', `${user.name} has been removed from ${org}`);
   return res.redirect(`/approvals/${organisationId}/users`);
 };
 
