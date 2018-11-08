@@ -10,7 +10,7 @@ const search = async (req) => {
   if (isNaN(page)) {
     page = 1;
   }
-  const usersForOrganisation = await  getAllUsersForOrg(page, organisationId, req.id);
+  const usersForOrganisation = await getAllUsersForOrg(page, organisationId, req.id);
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
     const user = usersForOrganisation.users[i];
     const organisation = user.organisations.filter(x => x.id === organisationId);

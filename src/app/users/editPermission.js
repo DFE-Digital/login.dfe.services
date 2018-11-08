@@ -32,6 +32,17 @@ const post = async (req, res) => {
   } else {
     await putUserInOrganisation(uid, organisationId, 1, role, req.id);
   }
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for org ${organisationDetails[0].organisation.name} (id: ${organisationId}) for user ${user.email} (id: ${uid})`, {
+    type: 'approver',
+    subType: 'user-org-permission-edited',
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    editedUser: uid,
+    editedFields: [{
+      name: 'edited_permission',
+      newValue: permissionName,
+    }],
+  });
   res.flash('info', `${user.name} now has ${permissionName} access to ${organisationDetails[0].organisation.name}`);
   return res.redirect(`/approvals/${organisationId}/users/${uid}`);
 };

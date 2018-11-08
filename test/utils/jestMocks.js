@@ -5,6 +5,7 @@ const mockRequest = () => {
     params: {
       uuid: '123-abc',
     },
+    id: 'correlationId',
     session: {},
     body: {},
     query: {},
