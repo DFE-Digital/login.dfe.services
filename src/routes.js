@@ -15,7 +15,7 @@ const routes = (app, csrf) => {
   // auth callbacks
   app.get('/auth', passport.authenticate('oidc'));
   app.get('/auth/cb', (req, res, next) => {
-    passport.authenticate('oidc', async (err, user) => {
+    passport.authenticate('oidc',(err, user) => {
       let redirectUrl = '/';
 
       if (err) {

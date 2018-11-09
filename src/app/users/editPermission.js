@@ -1,7 +1,7 @@
 'use strict';
 const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../infrastructure/organisations');
 const logger = require('./../../infrastructure/logger');
-const { getUserDetails} = require('./utils');
+const { getUserDetails } = require('./utils');
 
 
 const get = async (req, res) => {
@@ -44,7 +44,7 @@ const post = async (req, res) => {
     }],
   });
   res.flash('info', `${user.name} now has ${permissionName} access to ${organisationDetails[0].organisation.name}`);
-  return res.redirect(`/approvals/${organisationId}/users/${uid}`);
+  return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
 };
 
 module.exports = {

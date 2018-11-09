@@ -3,7 +3,9 @@ const { getById } = require('./../../infrastructure/search');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const { getServicesForUser, getServicesForInvitation } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
+const { getSingleUserService, getSingleInvitationService } = require('./../../infrastructure/access');
 const sortBy = require('lodash/sortBy');
+
 
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
@@ -41,7 +43,18 @@ const getAllServicesForUserInOrg = async (userId, organisationId, correlationId)
   return sortBy(services, 'name');
 };
 
+const getSingleServiceForUser = async (userId, organisationId, serviceId, correlationId) => {
+  const userService = userId.startsWith('-inv') ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId) : await getSingleUserService(userId, serviceId, organisationId, correlationId);
+  const application = await getApplication(userService.serviceId);
+  return {
+    id: userService.serviceId,
+    roles: userService.roles,
+    name: application.name,
+  };
+};
+
 module.exports = {
   getUserDetails,
   getAllServicesForUserInOrg,
+  getSingleServiceForUser,
 };

@@ -1,0 +1,65 @@
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Edit service
+        </h1>
+        <dl class="app-check-your-answers app-check-your-answers--short">
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    User
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%= locals.user.name %>
+                </dd>
+            </div>
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    Organisation
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%=locals.organisation[0].organisation.name%>
+                </dd>
+            </div>
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    Service
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%= locals.service.name%>
+                </dd>
+            </div>
+        </dl>
+        <form>
+            <div class="form-group">
+                <% if (locals.serviceRoles.length > 0) { %>
+                <fieldset>
+                    <legend><h2 class="heading-small">Select all required roles</h2></legend>
+
+                    <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
+                        <% const role = locals.serviceRoles[i]; %>
+                    <div class="multiple-choice">
+                        <input id="<%=role.id%>" type="checkbox" name="checkbox-group" value="">
+                        <label for="<%=role.id%>"><%= role.name%></label>
+                    </div>
+                    <% } %>
+
+                </fieldset>
+                <% } %>
+            </div>
+        </form>
+        <div class="form-submit">
+            <a href="" class="button">Save</a>
+        </div>
+    </div>
+    <div class="col-4">
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <ul class="list">
+                <li><a href="<%=locals.service.id%>/remove-service">Remove service</a> </li>
+            </ul>
+        </aside>
+    </div>
+</div>

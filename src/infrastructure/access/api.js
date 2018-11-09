@@ -10,48 +10,59 @@ const rp = require('request-promise').defaults({
 });
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
-const getServicesForUser = async (id, correlationId) => {
+const callApi = async (method, path, correlationId, body) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
-  try {
-    return await rp({
-      method: 'GET',
-      uri: `${config.access.service.url}/users/${id}/services`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      json: true,
-    });
 
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
+  const hasSeperator = (config.access.service.url.endsWith('/') && !path.startsWith('/'))
+    || (!config.access.service.url.endsWith('/') && path.startsWith('/'));
+  const basePathSeperator = hasSeperator ? '' : '/';
+  const opts = {
+    method,
+    uri: `${config.access.service.url}${basePathSeperator}${path}`,
+    headers: {
+      authorization: `bearer ${token}`,
+      'x-correlation-id':
+      correlationId,
+    },
+    json: true,
+  };
+  if (body && (method === 'POST' || method !== 'PUT' || method !== 'PATCH')) {
+    opts.body = body;
   }
+  return rp(opts);
+};
+
+
+const getServicesForUser = async (id, correlationId) => {
+  return callApi('GET', `/users/${id}/services`, correlationId);
 };
 
 const getServicesForInvitation = async (iid, correlationId) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-  try {
-    return await rp({
-      method: 'GET',
-      uri: `${config.access.service.url}/invitations/${iid}/services`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      json: true,
-    });
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
+  return callApi('GET', `/invitations/${iid}/services`, correlationId)
+};
+
+
+const getSingleUserService = async (id, sid, oid, correlationId) => {
+  return callApi('GET', `/users/${id}/services/${sid}/organisations/${oid}`, correlationId);
+};
+
+const getSingleInvitationService = async (iid, sid, oid, correlationId) => {
+  return callApi('GET', `invitations/${iid}/services/${sid}/organisations/${oid}`, correlationId);
+};
+
+const listRolesOfService = async (sid, correlationId) => {
+  return callApi('GET', `services/${sid}/roles`, correlationId);
+};
+
+const removeServiceFromUser = async (uid, sid, oid, correlationId) => {
+  return callApi('DELETE', `users/${uid}/services/${sid}/organisations/${oid}`, correlationId);
 };
 
 module.exports = {
   getServicesForUser,
   getServicesForInvitation,
+  getSingleUserService,
+  getSingleInvitationService,
+  listRolesOfService,
+  removeServiceFromUser,
 };
