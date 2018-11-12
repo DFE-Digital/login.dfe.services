@@ -2,7 +2,7 @@
 
 const logger = require('./../../infrastructure/logger');
 const { getSingleServiceForUser, getUserDetails } = require('./utils');
-const { removeServiceFromUser } = require('./../../infrastructure/access');
+const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 
 const get = async (req, res) => {
   const user = await getUserDetails(req);
@@ -27,8 +27,7 @@ const post = async (req, res) => {
   const service = await getSingleServiceForUser(uid, organisationId, serviceId, req.id);
 
   if(uid.startsWith('inv-')) {
-    return null
-    //TODO: remove service from invitation- add to access
+    await removeServiceFromInvitation(uid.substr(4), serviceId, organisationId, req.id);
   } else {
     await removeServiceFromUser(uid, serviceId, organisationId, req.id);
   }

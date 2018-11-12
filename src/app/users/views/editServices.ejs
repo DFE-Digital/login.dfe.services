@@ -41,7 +41,7 @@
                     <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
                         <% const role = locals.serviceRoles[i]; %>
                     <div class="multiple-choice">
-                        <input id="<%=role.id%>" type="checkbox" name="checkbox-group" value="">
+                        <input id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>">
                         <label for="<%=role.id%>"><%= role.name%></label>
                     </div>
                     <% } %>
@@ -50,8 +50,9 @@
                 <% } %>
             </div>
         </form>
-        <div class="form-submit">
-            <a href="" class="button">Save</a>
+        <div class="form-submit submit-buttons">
+            <button type="submit" class="button">Save</button>
+            <a href="./" class="button button-secondary">Cancel</a>
         </div>
     </div>
     <div class="col-4">

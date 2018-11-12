@@ -22,6 +22,10 @@ const removeServiceFromUser = async(uid, sid, oid, correlationId) => {
   return Promise.resolve();
 };
 
+const removeServiceFromInvitation = async(iid, sid, oid, correlationId) => {
+  return Promise.resolve();
+};
+
 module.exports = {
   getServicesForUser,
   getServicesForInvitation,
@@ -29,4 +33,5 @@ module.exports = {
   getSingleInvitationService,
   listRolesOfService,
   removeServiceFromUser,
+  removeServiceFromInvitation,
 };
