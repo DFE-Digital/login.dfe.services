@@ -1,6 +1,5 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const logger = require('./../../infrastructure/logger');
 const { getUserDetails, getSingleServiceForUser } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
@@ -11,26 +10,33 @@ const get = async (req, res) => {
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
   const serviceRoles = await policyEngine.getRolesAvailableForUser(req.params.uid, req.params.orgId, req.params.sid, req.get('x-correlation-id'));
-  //TODO: only display roles with status 1? And check current user roles and all service roles model match
-  return res.render('users/views/editServices', {
+  const model = {
     backLink: 'user-details',
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisation: organisationDetails,
-    service : userService,
+    service: userService,
     user,
     serviceRoles,
-  });
-};
-
-const validate = (req) => {
-
-  const model = {
-    validationMessages: {},
+    selectedRoles: [],
   };
+
+  if (req.session.service) {
+    model.selectedRoles = req.session.service.roles;
+  }
+  //TODO: only display roles with status 1? And check current user roles
+  return res.render('users/views/editServices', model);
 };
+
+
 const post = async (req, res) => {
-  //:TODO: post to confirm edit services page- check at least one role selected
+  const selectedRoles = req.body.role;
+  //:TODO: store selected roles in session
+  if (!req.session.service) {
+    req.session.service = {};
+  }
+  req.session.service.roles = selectedRoles;
+  return res.redirect(`${req.params.sid}/confirm-edit-service`)
 };
 
 module.exports = {

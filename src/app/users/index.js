@@ -9,8 +9,9 @@ const { get: getUsersList, post: postUserList } = require('./usersList');
 const { get: getSelectOrganisation, post: postSelectOrganisation } = require('./selectOrganisation');
 const { get: getRemoveOrganisation, post: postRemoveOrganisation } = require('./removeOrganisationAccess');
 const { get: getEditPermission, post: postEditPermission } = require('./editPermission');
-const { get: getEditService } = require('./editServices');
+const { get: getEditService, post: postEditService } = require('./editServices');
 const { get: getRemoveService, post: postRemoveService } = require('./removeServiceAccess');
+const { get: getConfirmEditService } = require('./confirmEditService');
 const getServices = require('./getServices');
 
 const router = express.Router({ mergeParams: true });
@@ -36,7 +37,10 @@ const users = (csrf) => {
   router.post('/:orgId/users', csrf, isApprover, asyncWrapper(postUserList));
 
   router.get('/:orgId/users/:uid/services', csrf, isApprover, asyncWrapper(getServices));
+
   router.get('/:orgId/users/:uid/services/:sid', csrf, isApprover, asyncWrapper(getEditService));
+  router.post('/:orgId/users/:uid/services/:sid', csrf, isApprover, asyncWrapper(postEditService));
+  router.get('/:orgId/users/:uid/services/:sid/confirm-edit-service', csrf, isApprover, asyncWrapper(getConfirmEditService));
   router.get('/:orgId/users/:uid/services/:sid/remove-service', csrf, isApprover, asyncWrapper(getRemoveService));
   router.post('/:orgId/users/:uid/services/:sid/remove-service', csrf, isApprover, asyncWrapper(postRemoveService));
 

@@ -32,9 +32,10 @@
                 </dd>
             </div>
         </dl>
-        <form>
+        <% if (locals.serviceRoles.length > 0) { %>
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <div class="form-group">
-                <% if (locals.serviceRoles.length > 0) { %>
                 <fieldset>
                     <legend><h2 class="heading-small">Select all required roles</h2></legend>
 
@@ -42,18 +43,17 @@
                         <% const role = locals.serviceRoles[i]; %>
                     <div class="multiple-choice">
                         <input id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>">
-                        <label for="<%=role.id%>"><%= role.name%></label>
+                        <label for="<%=role.id%>"><%=role.name%></label>
                     </div>
                     <% } %>
-
                 </fieldset>
-                <% } %>
+            </div>
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Save</button>
+                <a href="./" class="button button-secondary">Cancel</a>
             </div>
         </form>
-        <div class="form-submit submit-buttons">
-            <button type="submit" class="button">Save</button>
-            <a href="./" class="button button-secondary">Cancel</a>
-        </div>
+        <% } %>
     </div>
     <div class="col-4">
         <aside>
