@@ -24,18 +24,17 @@ const get = async (req, res) => {
   if (req.session.service) {
     model.selectedRoles = req.session.service.roles;
   }
-  //TODO: only display roles with status 1? And check current user roles
+  //TODO: only display roles with status 1?
+  //TODO: Check current user roles- preselect
   return res.render('users/views/editServices', model);
 };
 
 
 const post = async (req, res) => {
   const selectedRoles = req.body.role;
-  //:TODO: store selected roles in session
-  if (!req.session.service) {
-    req.session.service = {};
-  }
-  req.session.service.roles = selectedRoles;
+  req.session.service = {
+    roles: selectedRoles
+  };
   return res.redirect(`${req.params.sid}/confirm-edit-service`)
 };
 

@@ -30,17 +30,23 @@
                     Service
                 </dt>
                 <dd class="app-check-your-answers__answer">
+                    <%= locals.service.name%>
                 </dd>
             </div>
-
+            <% if (locals.roles.length > 0) { %>
             <div class="app-check-your-answers__contents">
                 <dt class="app-check-your-answers__title">
                     Roles
                 </dt>
                 <dd class="app-check-your-answers__answer">
-                    <%=locals.roles%>
+                    <%=locals.roles.name%>
+                    <% for (let i = 0; i < locals.roles.length; i++) { %>
+                        <% const role = locals.roles[i]; %>
+                        <%=role.name%> <br>
+                    <% } %>
                 </dd>
             </div>
+            <% } %>
         </dl>
 
         <form method="post">
