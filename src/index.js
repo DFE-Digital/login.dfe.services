@@ -1,4 +1,5 @@
 const config = require('./infrastructure/config');
+const configSchema = require('./infrastructure/config/schema');
 const logger = require('./infrastructure/logger');
 const express = require('express');
 const passport = require('passport');
@@ -15,13 +16,14 @@ const csurf = require('csurf');
 const flash = require('express-flash-2');
 const getPassportStrategy = require('./infrastructure/oidc');
 const { setUserContext, asyncMiddleware, setConfigContext } = require('./infrastructure/utils');
-const { servicesSchema, validateConfig } = require('login.dfe.config.schema');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
 const KeepAliveAgent = require('agentkeepalive');
 
 const registerRoutes = require('./routes');
+
+configSchema.validate();
 
 http.GlobalAgent = new KeepAliveAgent({
   maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
@@ -37,7 +39,6 @@ https.GlobalAgent = new KeepAliveAgent({
 });
 
 const init = async () => {
-  validateConfig(servicesSchema, config, logger, config.hostingEnvironment.env !== 'dev');
 
   let expiryInMinutes = 30;
   const sessionExpiry = parseInt(config.hostingEnvironment.sessionCookieExpiryInMinutes);
