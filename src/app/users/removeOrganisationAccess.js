@@ -30,8 +30,9 @@ const post = async (req, res) => {
   } else {
     await deleteUserOrganisation(uid, organisationId, req.id);
   }
-  const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
-  const org = organisationDetails[0].organisation.name;
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
+  const org = organisationDetails.organisation.name;
+
   logger.audit(`${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${user.email} (id: ${uid})`, {
     type: 'approver',
     subType: 'user-org-deleted',

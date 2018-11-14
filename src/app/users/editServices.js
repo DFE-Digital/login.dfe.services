@@ -25,7 +25,6 @@ const get = async (req, res) => {
     model.selectedRoles = req.session.service.roles;
   }
   //TODO: only display roles with status 1?
-  //TODO: Check current user roles- preselect
   return res.render('users/views/editServices', model);
 };
 

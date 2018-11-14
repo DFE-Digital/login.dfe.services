@@ -42,7 +42,12 @@
                     <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
                         <% const role = locals.serviceRoles[i]; %>
                     <div class="multiple-choice">
-                        <input id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>">
+                        <input id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
+                                <% if (locals.service.roles.length > 0) {
+                                  for (let i = 0; i < locals.service.roles.length; i++) {
+                                    const existingRole = locals.service.roles[i];
+                                %>
+                                <%= role.id === existingRole.id ? "checked" : ""%><% } }%>>
                         <label for="<%=role.id%>"><%=role.name%></label>
                     </div>
                     <% } %>
