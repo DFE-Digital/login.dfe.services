@@ -7,10 +7,10 @@ const { getUserDetails } = require('./utils');
 const get = async (req, res) => {
   const user = await getUserDetails(req);
   const organisationId = req.params.orgId;
-  const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   return res.render('users/views/editPermission', {
     csrfToken: req.csrfToken(),
-    organisation: organisationDetails,
+    organisationDetails,
     currentPage: 'users',
     backLink: 'users-details',
     validationMessages: {},
@@ -24,7 +24,7 @@ const post = async (req, res) => {
   const role = parseInt(req.body.selectedLevel);
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
-  const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const permissionName = role === 10000 ? 'approver' : 'end user';
 
   if(uid.startsWith('inv-')) {
@@ -32,7 +32,7 @@ const post = async (req, res) => {
   } else {
     await putUserInOrganisation(uid, organisationId, 1, role, req.id);
   }
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for org ${organisationDetails[0].organisation.name} (id: ${organisationId}) for user ${user.email} (id: ${uid})`, {
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for org ${organisationDetails.organisation.name} (id: ${organisationId}) for user ${user.email} (id: ${uid})`, {
     type: 'approver',
     subType: 'user-org-permission-edited',
     userId: req.user.sub,
@@ -43,7 +43,7 @@ const post = async (req, res) => {
       newValue: permissionName,
     }],
   });
-  res.flash('info', `${user.name} now has ${permissionName} access to ${organisationDetails[0].organisation.name}`);
+  res.flash('info', `${user.name} now has ${permissionName} access to ${organisationDetails.organisation.name}`);
   return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
 };
 

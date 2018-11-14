@@ -16,6 +16,7 @@ jest.mock('./../../../../src/infrastructure/config', () => {
     },
   };
 });
+jest.mock('./../../../../src/app/users/utils');
 
 jest.mock('./../../../../src/infrastructure/logger', () => {
   return {
@@ -26,15 +27,15 @@ jest.mock('./../../../../src/infrastructure/logger', () => {
   };
 });
 
-jest.mock('./../../../../src/app/users/utils');
-const { getUserDetails, getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
 
-describe('when displaying the remove organisation', () => {
+const { getUserDetails } = require('./../../../../src/app/users/utils');
+
+describe('when displaying the users services', () => {
 
   let req;
   let res;
 
-  let getRemoveOrganisation;
+  let getEditPermission;
 
   beforeEach(() => {
     req = mockRequest();
@@ -73,20 +74,11 @@ describe('when displaying the remove organisation', () => {
       id: 'user1',
     });
 
-
-    getAllServicesForUserInOrg.mockReset();
-    getAllServicesForUserInOrg.mockReturnValue({
-      id: 'service1',
-      dateActivated: '10/10/2018',
-      name: 'service name',
-      status: 'active',
-    });
-
-    getRemoveOrganisation = require('./../../../../src/app/users/removeOrganisationAccess').get;
+    getEditPermission = require('./../../../../src/app/users/editPermission').get;
   });
 
   it('then it should get the users details', async () => {
-    await getRemoveOrganisation(req, res);
+    await getEditPermission(req, res);
 
     expect(getUserDetails.mock.calls).toHaveLength(1);
     expect(getUserDetails.mock.calls[0][0]).toBe(req);
@@ -95,29 +87,28 @@ describe('when displaying the remove organisation', () => {
     });
   });
 
-  it('then it should get the services for a user', async () => {
-    await getRemoveOrganisation(req, res);
-
-    expect(getAllServicesForUserInOrg.mock.calls).toHaveLength(1);
-    expect(getAllServicesForUserInOrg.mock.calls[0][0]).toBe('user1');
-    expect(getAllServicesForUserInOrg.mock.calls[0][1]).toBe('org1');
-    expect(getAllServicesForUserInOrg.mock.calls[0][2]).toBe('correlationId');
-  });
-
-
-  it('then it should return the services view', async () => {
-    await getRemoveOrganisation(req, res);
+  it('then it should return the edit permission view', async () => {
+    await getEditPermission(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/removeOrganisation');
+    expect(res.render.mock.calls[0][0]).toBe('users/views/editPermission');
   });
 
   it('then it should include csrf token', async () => {
-    await getRemoveOrganisation(req, res);
+    await getEditPermission(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
     });
   });
+
+  it('then it should include the organisation details', async () => {
+    await getEditPermission(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      organisationDetails: req.organisationDetails,
+    });
+  });
+
 
 });

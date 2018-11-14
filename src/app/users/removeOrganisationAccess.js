@@ -7,12 +7,12 @@ const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../.
 const get = async (req, res) => {
   const user = await getUserDetails(req);
   const organisationId = req.params.orgId;
-  const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
 
   return res.render('users/views/removeOrganisation', {
     csrfToken: req.csrfToken(),
-    organisation: organisationDetails,
+    organisationDetails,
     user,
     currentPage: 'users',
     backLink: 'users-details',

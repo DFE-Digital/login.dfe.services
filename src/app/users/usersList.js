@@ -4,7 +4,7 @@ const { getAllUsersForOrg } = require('../../infrastructure/search');
 
 const search = async (req) => {
   const organisationId = req.params.orgId;
-  const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const paramsSource = req.method === 'POST' ? req.body : req.query;
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
   if (isNaN(page)) {
@@ -20,7 +20,7 @@ const search = async (req) => {
   return {
     page,
     usersForOrganisation,
-    organisation: organisationDetails,
+    organisationDetails,
     numberOfPages: usersForOrganisation.numberOfPages,
     totalNumberOfResults: usersForOrganisation.totalNumberOfResults,
   }
@@ -36,7 +36,7 @@ const get = async (req, res) => {
     page: result.page,
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
-    organisation: result.organisation,
+    organisationDetails: result.organisationDetails,
   });
 };
 
@@ -50,7 +50,7 @@ const post = async (req, res) => {
     page: result.page,
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
-    organisation: result.organisation,
+    organisationDetails: result.organisationDetails,
   });
 };
 

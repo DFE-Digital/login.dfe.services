@@ -8,12 +8,12 @@ const get = async (req, res) => {
   const user = await getUserDetails(req);
   const service = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
-  const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   return res.render('users/views/removeService', {
     backLink: 'edit-services',
     currentPage: 'users',
     csrfToken: req.csrfToken(),
-    organisation: organisationDetails,
+    organisationDetails,
     service,
     user,
   });
@@ -31,8 +31,8 @@ const post = async (req, res) => {
   } else {
     await removeServiceFromUser(uid, serviceId, organisationId, req.id);
   }
-  const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
-  const org = organisationDetails[0].organisation.name;
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
+  const org = organisationDetails.organisation.name;
   logger.audit(`${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${user.email} (id: ${uid})`, {
     type: 'approver',
     subType: 'user-service-deleted',

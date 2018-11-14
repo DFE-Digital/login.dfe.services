@@ -45,7 +45,7 @@ describe('when displaying the users services', () => {
         }
       }],
     };
-    req.userOrganisations = {
+    req.userOrganisations = [{
       organisation: {
         id: 'organisationId',
         name: 'organisationName',
@@ -54,17 +54,7 @@ describe('when displaying the users services', () => {
         id: 0,
         name: 'category name'
       }
-    };
-    req.userOrganisations.filter = jest.fn().mockReturnValue({
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
-      },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    });
+    }];
     res = mockResponse();
 
     getUserDetails.mockReset();

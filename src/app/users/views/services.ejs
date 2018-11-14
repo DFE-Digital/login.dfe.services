@@ -4,7 +4,7 @@
 <article class="organisation-services">
     <section class="organisation">
         <header>
-            <h3 class="heading-small spacer-heading"><%= locals.organisation[0].organisation.name%></h3>
+            <h3 class="heading-small spacer-heading"><%= locals.organisationDetails.organisation.name%></h3>
         </header>
     </section>
     <section class="services">
@@ -22,7 +22,7 @@
             <% for (let i = 0; i < locals.services.length; i++) { %>
                     <% const service = locals.services[i]; %>
                     <tr>
-                        <td> <a href="/approvals/<%= locals.organisation[0].organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>"><%=service.name%></a></td>
+                        <td> <a href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>"><%=service.name%></a></td>
                         <% if (service.dateActivated) { %>
                         <td><%=locals.moment(service.dateActivated).format('DD MMM YYYY')%></td>
                         <%} else {%>

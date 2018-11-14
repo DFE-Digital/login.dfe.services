@@ -15,6 +15,7 @@ const getSelectedRoles = async (req) => {
     roleDetails = allRolesOfService.filter(x => selectedRoleIds.find(y=> y.toLowerCase() === x.id.toLowerCase()));
   } else  {
     roleDetails = [];
+    selectedRoleIds = [];
   }
   return {
     roleDetails,

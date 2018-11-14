@@ -9,7 +9,7 @@
 <% } %>
 
 <h1 class="heading-xlarge">Users
-    <small><%= locals.organisation[0].organisation.name%></small>
+    <small><%= locals.organisationDetails.organisation.name%></small>
 </h1>
 <div class="row row-spacer">
     <div class="col-6 pull-right">
@@ -63,7 +63,7 @@ const paginationModel = {
             <% for(let i= 0; i < locals.usersForOrganisation.users.length; i++) {
             const user = locals.usersForOrganisation.users[i]%>
             <tr>
-                <td><a href="/approvals/<%= locals.organisation[0].organisation.id %>/users/<%= user.id%>"><%= user.firstName %> <%= user.lastName %></a></td>
+                <td><a href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= user.id%>"><%= user.firstName %> <%= user.lastName %></a></td>
 
                 <td><span class="breakable"><%=user.email%></span></td>
                 <%

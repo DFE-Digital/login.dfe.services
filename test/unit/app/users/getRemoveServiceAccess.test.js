@@ -27,20 +27,21 @@ jest.mock('./../../../../src/infrastructure/logger', () => {
 });
 
 jest.mock('./../../../../src/app/users/utils');
-const { getUserDetails, getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
+const { getUserDetails, getSingleServiceForUser } = require('./../../../../src/app/users/utils');
 
-describe('when displaying the remove organisation', () => {
+describe('when displaying the remove service access view', () => {
 
   let req;
   let res;
 
-  let getRemoveOrganisation;
+  let getRemoveService;
 
   beforeEach(() => {
     req = mockRequest();
     req.params = {
       uid: 'user1',
       orgId: 'org1',
+      sid: 'service1',
     };
     req.user = {
       sub: 'user1',
@@ -74,19 +75,19 @@ describe('when displaying the remove organisation', () => {
     });
 
 
-    getAllServicesForUserInOrg.mockReset();
-    getAllServicesForUserInOrg.mockReturnValue({
+    getSingleServiceForUser.mockReset();
+    getSingleServiceForUser.mockReturnValue({
       id: 'service1',
       dateActivated: '10/10/2018',
       name: 'service name',
       status: 'active',
     });
 
-    getRemoveOrganisation = require('./../../../../src/app/users/removeOrganisationAccess').get;
+    getRemoveService = require('./../../../../src/app/users/removeServiceAccess').get;
   });
 
   it('then it should get the users details', async () => {
-    await getRemoveOrganisation(req, res);
+    await getRemoveService(req, res);
 
     expect(getUserDetails.mock.calls).toHaveLength(1);
     expect(getUserDetails.mock.calls[0][0]).toBe(req);
@@ -95,29 +96,44 @@ describe('when displaying the remove organisation', () => {
     });
   });
 
-  it('then it should get the services for a user', async () => {
-    await getRemoveOrganisation(req, res);
+  it('then it should get the selected user service', async () => {
+    await getRemoveService(req, res);
 
-    expect(getAllServicesForUserInOrg.mock.calls).toHaveLength(1);
-    expect(getAllServicesForUserInOrg.mock.calls[0][0]).toBe('user1');
-    expect(getAllServicesForUserInOrg.mock.calls[0][1]).toBe('org1');
-    expect(getAllServicesForUserInOrg.mock.calls[0][2]).toBe('correlationId');
+    expect(getSingleServiceForUser.mock.calls).toHaveLength(1);
+    expect(getSingleServiceForUser.mock.calls[0][0]).toBe('user1');
+    expect(getSingleServiceForUser.mock.calls[0][1]).toBe('org1');
+    expect(getSingleServiceForUser.mock.calls[0][2]).toBe('service1');
+    expect(getSingleServiceForUser.mock.calls[0][3]).toBe('correlationId');
   });
 
-
-  it('then it should return the services view', async () => {
-    await getRemoveOrganisation(req, res);
+  it('then it should return the confirm remove service view', async () => {
+    await getRemoveService(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/removeOrganisation');
+    expect(res.render.mock.calls[0][0]).toBe('users/views/removeService');
   });
 
   it('then it should include csrf token', async () => {
-    await getRemoveOrganisation(req, res);
+    await getRemoveService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
     });
   });
 
+  it('then it should include the organisation details', async () => {
+    await getRemoveService(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      organisationDetails: req.organisationDetails,
+    });
+  });
+
+  it('then it should include the service details', async () => {
+    await getRemoveService(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      service: getSingleServiceForUser(),
+    });
+  });
 });
