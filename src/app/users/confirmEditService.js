@@ -27,11 +27,11 @@ const get = async (req, res) => {
   const user = await getUserDetails(req);
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
-  const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const selectedRoles = await getSelectedRoles(req);
   return res.render('users/views/confirmEditService', {
     csrfToken: req.csrfToken(),
-    organisation: organisationDetails,
+    organisationDetails,
     currentPage: 'users',
     backLink: 'edit-service',
     user,
@@ -53,8 +53,8 @@ const post = async (req, res) => {
     await updateUserService(uid, serviceId, organisationId, selectedRoles.selectedRoleIds, req.id);
   }
 
-  const organisationDetails = req.userOrganisations.filter(x => x.organisation.id === organisationId);
-  const org = organisationDetails[0].organisation.name;
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
+  const org = organisationDetails.organisation.name;
   logger.audit(`${req.user.email} (id: ${req.user.sub}) updated service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${user.email} (id: ${uid})`, {
     type: 'approver',
     subType: 'user-service-updated',

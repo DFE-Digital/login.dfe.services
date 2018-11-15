@@ -9,7 +9,7 @@ const get = async (req, res) => {
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
-  const serviceRoles = await policyEngine.getRolesAvailableForUser(req.params.uid, req.params.orgId, req.params.sid, req.get('x-correlation-id'));
+  const serviceRoles = await policyEngine.getRolesAvailableForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const model = {
     backLink: 'user-details',
     currentPage: 'users',
