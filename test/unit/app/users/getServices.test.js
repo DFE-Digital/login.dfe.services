@@ -1,21 +1,6 @@
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 
-jest.mock('./../../../../src/infrastructure/config', () => {
-  return {
-    organisations: {
-      type: 'static',
-    },
-    access: {
-      type: 'static',
-    },
-    search: {
-      type: 'static',
-    },
-    applications: {
-      type: 'static',
-    },
-  };
-});
+jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 jest.mock('./../../../../src/app/users/utils');
 const { getUserDetails, getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
 const getServices = require('./../../../../src/app/users/getServices');

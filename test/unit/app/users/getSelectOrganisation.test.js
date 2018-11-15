@@ -1,12 +1,6 @@
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 
-jest.mock('./../../../../src/infrastructure/config', () => {
-  return {
-    organisations: {
-      type: 'static',
-    },
-  };
-});
+jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
 describe('when displaying the multiple organisation selection', () => {
 

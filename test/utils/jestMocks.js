@@ -1,5 +1,42 @@
 'use strict';
 
+const mockConfig = () => {
+  return {
+    hostingEnvironment: {
+      agentKeepAlive: {},
+      env: 'test-run',
+    },
+    loggerSettings: {},
+    organisations: {
+      type: 'static',
+    },
+    access: {
+      type: 'static',
+    },
+    search: {
+      type: 'static',
+    },
+    applications: {
+      type: 'static',
+    },
+    hotConfig: {
+      type: 'static',
+    },
+    directories: {
+      type: 'static',
+    },
+  };
+};
+
+const mockLogger = () => {
+  return {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    audit: jest.fn(),
+  };
+};
+
 const mockRequest = () => {
   return {
     params: {
@@ -28,5 +65,7 @@ const mockResponse = () => {
 
 module.exports = {
   mockRequest,
-  mockResponse
+  mockResponse,
+  mockConfig,
+  mockLogger,
 };

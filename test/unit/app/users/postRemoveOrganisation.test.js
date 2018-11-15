@@ -1,38 +1,13 @@
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 
-jest.mock('./../../../../src/infrastructure/config', () => {
-  return {
-    organisations: {
-      type: 'static',
-    },
-    access: {
-      type: 'static',
-    },
-    search: {
-      type: 'static',
-    },
-    applications: {
-      type: 'static',
-    },
-  };
-});
-
+jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/infrastructure/organisations', () => {
   return {
     deleteInvitationOrganisation: jest.fn(),
     deleteUserOrganisation: jest.fn(),
   };
 });
-
-jest.mock('./../../../../src/infrastructure/logger', () => {
-  return {
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-    audit: jest.fn(),
-  };
-});
-
 jest.mock('./../../../../src/app/users/utils');
 
 const logger = require('./../../../../src/infrastructure/logger');
