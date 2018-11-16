@@ -1,0 +1,75 @@
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Select services
+        </h1>
+        <dl class="app-check-your-answers app-check-your-answers--short">
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    User
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%= locals.name%>
+                </dd>
+            </div>
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    Organisation
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%=locals.organisationDetails.organisation.name%>
+                </dd>
+            </div>
+        </dl>
+        <form method="post">
+            <div class="form-group">
+                <fieldset>
+                    <legend>
+                        <span class="body-text">Select all required services</span>
+                    </legend>
+
+                    <div class="multiple-choice">
+                        <input id="checkbox" type="checkbox" name="checkbox-group" value="">
+                        <label for="checkbox">Analyse School Performance</label>
+                    </div>
+
+                    <div class="multiple-choice">
+                        <input id="checkbox-1" type="checkbox" name="checkbox-group" value="">
+                        <label for="checkbox-1">COLLECT</label>
+                    </div>
+
+                    <div class="multiple-choice">
+                        <input id="checkbox-2" type="checkbox" name="checkbox-group" value="">
+                        <label for="checkbox-2">EFA Information Exchange</label>
+                    </div>
+
+                    <div class="multiple-choice">
+                        <input id="checkbox-3" type="checkbox" name="checkbox-group" value="">
+                        <label for="checkbox-3">School to school (S2S)</label>
+                    </div>
+
+                    <div class="multiple-choice">
+                        <input id="checkbox-4" type="checkbox" name="checkbox-group" value="">
+                        <label for="checkbox-4">Get information about schools</label>
+                    </div>
+
+                    <div class="multiple-choice">
+                        <input id="checkbox-5" type="checkbox" name="checkbox-group" value="">
+                        <label for="checkbox-5">Teaching Jobs</label>
+                    </div>
+
+                    <div class="multiple-choice">
+                        <input id="checkbox-6" type="checkbox" name="checkbox-group" value="">
+                        <label for="checkbox-6">Trainee Teacher Portal</label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Continue</button>
+                <a href="" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

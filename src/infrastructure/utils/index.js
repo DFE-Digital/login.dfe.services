@@ -14,9 +14,11 @@ const isLoggedIn = (req, res, next) => {
 };
 
 const isApprover = (req, res, next) => {
-  const userApproverOrgs = req.userOrganisations.filter(x => x.role.id === 10000);
-  if (userApproverOrgs.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())) {
-    return next();
+  if (req.userOrganisations) {
+    const userApproverOrgs = req.userOrganisations.filter(x => x.role.id === 10000);
+    if (userApproverOrgs.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())) {
+      return next();
+    }
   }
   return res.status(401).render('errors/views/notAuthorised');
 };
