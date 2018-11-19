@@ -43,9 +43,12 @@ const setUserContext = async (req, res, next) => {
     res.locals.displayName = getUserDisplayName(req.user);
     const organisations = await getOrganisationAndServiceForUser(req.user.sub, req.id);
     req.userOrganisations = organisations;
-
-    if (req.userOrganisations) {
-      res.locals.isApprover = req.userOrganisations.filter(x => x.role.id === 10000).length > 0
+    try {
+      if (req.userOrganisations) {
+        res.locals.isApprover = req.userOrganisations.filter(x => x.role.id === 10000).length > 0
+      }
+    } catch (e) {
+      return e;
     }
   }
   next();
