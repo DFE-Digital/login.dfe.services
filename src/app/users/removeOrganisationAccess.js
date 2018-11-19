@@ -3,6 +3,7 @@
 const logger = require('./../../infrastructure/logger');
 const { getAllServicesForUserInOrg, getUserDetails } = require('./utils');
 const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../../infrastructure/organisations');
+const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 
 const get = async (req, res) => {
   const user = await getUserDetails(req);
@@ -25,10 +26,19 @@ const post = async (req, res) => {
   const user = await getUserDetails(req);
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
+  const servicesForUser = await getAllServicesForUserInOrg(uid, organisationId, req.id);
 
   if(uid.startsWith('inv-')) {
+    for (let i = 0; i < servicesForUser.length; i++) {
+      const service = servicesForUser[i];
+      await removeServiceFromInvitation(uid.substr(4), service.id, organisationId, req.id);
+    }
     await deleteInvitationOrganisation(uid.substr(4), organisationId, req.id);
   } else {
+    for (let i = 0; i < servicesForUser.length; i ++) {
+      const service = servicesForUser[i];
+      await removeServiceFromUser(uid, service.id, organisationId, req.id);
+    }
     await deleteUserOrganisation(uid, organisationId, req.id);
   }
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
