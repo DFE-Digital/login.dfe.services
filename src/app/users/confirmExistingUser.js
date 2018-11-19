@@ -12,7 +12,6 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
-  //TODO: redirect to /:uid/associate-services
   return res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/associate-services`)
 };
 

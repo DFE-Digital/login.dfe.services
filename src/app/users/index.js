@@ -15,7 +15,9 @@ const { get: getConfirmEditService, post: postConfirmEditService } = require('./
 const getServices = require('./getServices');
 const { get: getNewUserDetails, post: postNewUserDetails } = require('./newUserDetails');
 const { get: getConfirmExistingUser, post: postConfirmExistingUser } = require('./confirmExistingUser');
-const { get: getAssociateServices } = require('./associateServices');
+const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
+const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');
+const { get: getConfirmNewUser, post: postConfirmNewUser} = require ('./confirmNewUser');
 
 const router = express.Router({ mergeParams: true });
 
@@ -44,10 +46,19 @@ const users = (csrf) => {
 
   //add services to new user (invitation) if no user exists in DSI (from invite journey)
   router.get('/:orgId/users/associate-services', csrf, isApprover, asyncWrapper(getAssociateServices));
+  router.post('/:orgId/users/associate-services', csrf, isApprover, asyncWrapper(postAssociateServices));
+  router.get('/:orgId/users/associate-services/:sid', csrf, isApprover, asyncWrapper(getAssociateRoles));
+  router.post('/:orgId/users/associate-services/:sid', csrf, isApprover, asyncWrapper(postAssociateRoles));
+  router.get('/:orgId/users/confirm-new-user', csrf, isApprover, asyncWrapper(getConfirmNewUser));
+  router.post('/:orgId/users/confirm-new-user', csrf, isApprover, asyncWrapper(postConfirmNewUser));
 
   //add services to existing user from user details page or invite journey if user found in DSI
   router.get('/:orgId/users/:uid/associate-services', csrf, isApprover, asyncWrapper(getAssociateServices));
-
+  router.post('/:orgId/users/:uid/associate-services', csrf, isApprover, asyncWrapper(postAssociateServices));
+  router.get('/:orgId/users/:uid/associate-services/:sid', csrf, isApprover, asyncWrapper(getAssociateRoles));
+  router.post('/:orgId/users/:uid/associate-services/:sid', csrf, isApprover, asyncWrapper(postAssociateRoles));
+  router.get('/:orgId/users/:uid/confirm-new-user', csrf, isApprover, asyncWrapper(getConfirmNewUser));
+  router.post('/:orgId/users/:uid/confirm-new-user', csrf, isApprover, asyncWrapper(postConfirmNewUser));
 
   router.get('/:orgId/users/:uid', asyncWrapper((req, res) => {
     res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);

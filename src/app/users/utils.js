@@ -1,9 +1,8 @@
 'use strict';
 const { getById } = require('./../../infrastructure/search');
 const { mapUserStatus } = require('./../../infrastructure/utils');
-const { getServicesForUser, getServicesForInvitation } = require('./../../infrastructure/access');
+const { getServicesForUser, getServicesForInvitation, getSingleUserService, getSingleInvitationService } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
-const { getSingleUserService, getSingleInvitationService } = require('./../../infrastructure/access');
 const sortBy = require('lodash/sortBy');
 
 

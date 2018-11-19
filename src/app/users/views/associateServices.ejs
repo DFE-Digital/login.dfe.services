@@ -24,46 +24,30 @@
             </div>
         </dl>
         <form method="post">
-            <div class="form-group">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+            <div class="form-group  <%= (locals.validationMessages.services !== undefined) ? 'form-group-error' : '' %>">
                 <fieldset>
+                    <% if (locals.validationMessages.services !== undefined) { %>
+                    <p class="error-message" id="validation-selected-organisation"><%=locals.validationMessages.services%></p>
+                    <% } %>
                     <legend>
                         <span class="body-text">Select all required services</span>
                     </legend>
 
+                    <% for (let i = 0; i < locals.services.length; i++) { %>
+                    <% const service = locals.services[i]; %>
                     <div class="multiple-choice">
-                        <input id="checkbox" type="checkbox" name="checkbox-group" value="">
-                        <label for="checkbox">Analyse School Performance</label>
-                    </div>
 
-                    <div class="multiple-choice">
-                        <input id="checkbox-1" type="checkbox" name="checkbox-group" value="">
-                        <label for="checkbox-1">COLLECT</label>
+                        <input id="<%=service.id%>" type="checkbox" name="service" value="<%=service.id%>"
+                                <% if (locals.selectedServices && locals.selectedServices.length > 0) {
+                                    for(let i = 0; i < locals.selectedServices.length; i++) {
+                                      const selectedService = locals.selectedServices[i].serviceId;
+                                %>
+                                <%= service.id === selectedService ? 'checked': ''%><% } }%>>
+                        <label for="<%=service.id%>"><%=service.name%></label>
                     </div>
+                    <% } %>
 
-                    <div class="multiple-choice">
-                        <input id="checkbox-2" type="checkbox" name="checkbox-group" value="">
-                        <label for="checkbox-2">EFA Information Exchange</label>
-                    </div>
-
-                    <div class="multiple-choice">
-                        <input id="checkbox-3" type="checkbox" name="checkbox-group" value="">
-                        <label for="checkbox-3">School to school (S2S)</label>
-                    </div>
-
-                    <div class="multiple-choice">
-                        <input id="checkbox-4" type="checkbox" name="checkbox-group" value="">
-                        <label for="checkbox-4">Get information about schools</label>
-                    </div>
-
-                    <div class="multiple-choice">
-                        <input id="checkbox-5" type="checkbox" name="checkbox-group" value="">
-                        <label for="checkbox-5">Teaching Jobs</label>
-                    </div>
-
-                    <div class="multiple-choice">
-                        <input id="checkbox-6" type="checkbox" name="checkbox-group" value="">
-                        <label for="checkbox-6">Trainee Teacher Portal</label>
-                    </div>
                 </fieldset>
             </div>
             <div class="form-submit submit-buttons">

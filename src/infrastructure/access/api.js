@@ -1,5 +1,6 @@
 const config = require('./../config');
 const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
+//TODO: use login.dfe.request-promise-retry
 const rp = require('request-promise').defaults({
   agent: new KeepAliveAgent({
     maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
@@ -26,11 +27,8 @@ const callApi = async (method, endpoint, correlationId, body) => {
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401 || status === 404) {
+    if (status === 404) {
       return undefined;
-    }
-    if (status === 409) {
-      return false;
     }
     throw e;
   }

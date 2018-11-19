@@ -20,6 +20,7 @@ const get = async (req, res) => {
   });
 };
 
+//TODO: remove services from access
 const post = async (req, res) => {
   const user = await getUserDetails(req);
   const uid = req.params.uid;
