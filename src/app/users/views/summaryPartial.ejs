@@ -1,0 +1,46 @@
+<% if (locals.flash.info) { %>
+    <div class="row">
+        <div class="col-12">
+            <div class="notification notification-success">
+                <%= locals.flash.info %>
+            </div>
+        </div>
+    </div>
+<% } %>
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            <%= locals.user.name%>
+            <small><%= locals.user.email %></small>
+        </h1>
+        <dl class="inline condensed">
+            <dt class="label">Account Status:</dt>
+            <dd><%=locals.user.status.description%></dd>
+            <dt class="label">Is approver:</dt>
+            <dd><%=locals.user.organisation[0].roleId === 10000 ? 'Yes' : 'No';%></dd>
+        </dl>
+    </div>
+    <div class="col-4">
+            <aside>
+                <h2 class="heading-medium">Actions</h2>
+                <ul class="list">
+                    <li><a href="">Add services</a></li>
+                    <li><a href="edit-permission"><%=locals.user.organisation[0].roleId === 10000 ? 'Revoke approver access' : 'Make approver';%></a></li>
+                    <li><a href="remove-organisation">Remove from organisation</a></li>
+                </ul>
+            </aside>
+    </div>
+</div>
+
+<nav>
+    <ul class="tabs" role="tablist">
+
+
+        <% if(locals.area === 'services') { %>
+            <li class="active">Services</li>
+        <% } else { %>
+            <li><a href="services" role="tab">Services</a></li>
+        <% } %>
+
+    </ul>
+</nav>

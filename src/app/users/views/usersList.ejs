@@ -1,0 +1,89 @@
+<% if (locals.flash.info) { %>
+<div class="row">
+    <div class="col-12">
+        <div class="notification notification-success">
+            <%=locals.flash.info%>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<h1 class="heading-xlarge">Users
+    <small><%= locals.organisationDetails.organisation.name%></small>
+</h1>
+<div class="row row-spacer">
+    <div class="col-6 pull-right">
+        <div class="pull-right">
+            <a href="" class="button button-secondary">Invite user</a>
+        </div>
+    </div>
+</div>
+
+<%
+const paginationModel = {
+    method: 'post',
+    csrfToken,
+    currentPage: locals.page,
+    numberOfPages: locals.numberOfPages,
+    totalNumberOfResults: locals.totalNumberOfResults,
+    numberOfResultsOnPage: locals.usersForOrganisation.users.length,
+    data: [
+        { key: 'criteria', value: locals.criteria },
+        { key: 'sort', value: locals.sortBy },
+        { key: 'sortDir', value: locals.sortOrder },
+        { key: 'showFilters', value: locals.showFilters }
+    ]
+}
+%>
+
+<div class="row">
+    <div class="col-12">
+        <%- include('../../layouts/pagination', paginationModel); %>
+        <table class="data">
+            <thead>
+            <tr class="sortable">
+                <th scope="col" class="cwp-15">
+                    <a href="#" class="sorted dir-d">Name</a></th>
+                <th scope="col" class="cwp-35">
+                    <a href="#" class="">Email</a></th>
+                <th scope="col" class="cwp-15">
+                    <a href="#" class="">Is approver</a></th>
+                <th scope="col" class="cwp-10">
+                    <a href="#" class="">Last login</a></th>
+                <th scope="col" class="cwp-10">
+                    <a href="#" class="">Status</a></th>
+            </tr>
+            </thead>
+            <tbody>
+            <% if(locals.usersForOrganisation.users.length === 0) { %>
+                <tr>
+                    <td colspan="5"><span class="empty-state">No users found</span></td>
+                </tr>
+            <% } %>
+            <% for(let i= 0; i < locals.usersForOrganisation.users.length; i++) {
+            const user = locals.usersForOrganisation.users[i]%>
+            <tr>
+                <td><a href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= user.id%>"><%= user.firstName %> <%= user.lastName %></a></td>
+
+                <td><span class="breakable"><%=user.email%></span></td>
+                <%
+                if (user.organisations.length > 0) {
+                    const permissionName = user.organisations[0].roleId === 10000 ? 'Yes' : '';
+                    %>
+                    <td><%= permissionName %></td>
+                <% } else { %>
+                    <td>Unknown</td>
+                <% } %>
+
+                <td><%=user.lastLogin ? locals.moment(user.lastLogin).fromNow() : 'Never'%></td>
+
+                <td><%= user.statusId.description %></td>
+            </tr>
+            <% } %>
+            </tbody>
+        </table>
+        <%- include('../../layouts/pagination', paginationModel); %>
+    </div>
+</div>
+
+

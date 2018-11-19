@@ -23,7 +23,31 @@ const getServiceById = async (serviceId, correlationId) => {
   });
 };
 
-const putUserInOrganisation = async() => {
+const putUserInOrganisation = async(userId, orgId, role, correlationId) => {
+  return Promise.resolve();
+};
+
+const getAllUsersForOrganisation = async(orgId, correlationId) => {
+  return Promise.resolve([{
+    id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
+    status: 1,
+    role: {
+      id: 0,
+      name: 'End user',
+    },
+    numberOfPages: 1,
+  }]);
+};
+
+const deleteInvitationOrganisation = async(invitationId, organisationId, correlationId) => {
+  return Promise.resolve();
+};
+
+const deleteUserOrganisation = async(userId, organisationId, correlationId) => {
+  return Promise.resolve();
+};
+
+const putInvitationInOrganisation = async(invitationId, orgId, role, correlationId) => {
   return Promise.resolve();
 };
 
@@ -32,4 +56,8 @@ module.exports = {
   getOrganisationUsersForApproval,
   putUserInOrganisation,
   getServiceById,
+  getAllUsersForOrganisation,
+  deleteInvitationOrganisation,
+  deleteUserOrganisation,
+  putInvitationInOrganisation
 };

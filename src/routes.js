@@ -8,11 +8,14 @@ const accessRequests = require('./app/accessRequests');
 const signOut = require('./app/signOut');
 const healthCheck = require('login.dfe.healthcheck');
 const organisations = require('./app/organisations');
+const users = require('./app/users');
+const { getOrganisationAndServiceForUser } = require('./infrastructure/organisations');
+
 const routes = (app, csrf) => {
   // auth callbacks
   app.get('/auth', passport.authenticate('oidc'));
   app.get('/auth/cb', (req, res, next) => {
-    passport.authenticate('oidc', (err, user) => {
+    passport.authenticate('oidc',(err, user) => {
       let redirectUrl = '/';
 
       if (err) {
@@ -50,6 +53,7 @@ const routes = (app, csrf) => {
   app.use('/signout', signOut(csrf));
   // app.use('/access-requests', accessRequests(csrf));
   app.use('/organisations', organisations(csrf));
+  app.use('/approvals', users(csrf));
   app.get('*', (req, res) => {
     res.status(404).render('errors/views/notFound');
   });

@@ -44,13 +44,35 @@ const putUserInOrganisation = async(userId, orgId, status, role, reason, correla
   return callApi('PUT', `/organisations/${orgId}/users/${userId}`, correlationId, {roleId:role, status, reason});
 };
 
-const getServiceById = async (serviceId, correlationId) => {
-  return await callOrganisationsApi(`services/${serviceId}`, 'GET', undefined, correlationId);
+const getAllUsersForOrganisation = async (orgId, correlationId) => {
+  return callApi('GET', `/organisations/${orgId}/users`, correlationId);
 };
+
+const getServiceById = async (serviceId, correlationId) => {
+  return await callApi(`services/${serviceId}`, 'GET', undefined, correlationId);
+};
+
+const deleteUserOrganisation = async (userId, organisationId, correlationId)  => {
+  return callApi('DELETE', `organisations/${organisationId}/users/${userId}`, correlationId);
+};
+const deleteInvitationOrganisation = async (invitationId, organisationId, correlationId) => {
+  return callApi('DELETE', `organisations/${organisationId}/invitations/${invitationId}`, correlationId);
+};
+
+const putInvitationInOrganisation = async (invitationId, orgId, role, correlationId) => {
+  return callApi('PUT', `/organisations/${orgId}/invitations/${invitationId}`, correlationId, {roleId: role});
+};
+
+
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
   putUserInOrganisation,
   getServiceById,
+  getAllUsersForOrganisation,
+  deleteUserOrganisation,
+  deleteInvitationOrganisation,
+  putInvitationInOrganisation,
 };
