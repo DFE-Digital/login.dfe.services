@@ -8,6 +8,13 @@ jest.mock('./../../../../src/infrastructure/organisations', () => {
     deleteUserOrganisation: jest.fn(),
   };
 });
+
+jest.mock('./../../../../src/infrastructure/access', () => {
+  return {
+    removeServiceFromUser: jest.fn(),
+    removeServiceFromInvitation: jest.fn(),
+  };
+});
 jest.mock('./../../../../src/app/users/utils');
 
 const logger = require('./../../../../src/infrastructure/logger');
@@ -59,6 +66,14 @@ describe('when removing organisation access', () => {
     getUserDetails.mockReturnValue({
       id: 'user1',
       email: 'email@email.com'
+    });
+
+    getAllServicesForUserInOrg.mockReset();
+    getAllServicesForUserInOrg.mockReturnValue({
+      id: 'service1',
+      dateActivated: '10/10/2018',
+      name: 'service name',
+      status: 'active',
     });
 
     res = mockResponse();
