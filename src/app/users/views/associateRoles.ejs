@@ -37,14 +37,16 @@
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <div class="form-group">
                 <fieldset>
-                    <legend><h2 class="heading-small">Select all required roles</h2></legend>
+                    <% if (locals.serviceRoles.length < 0) { %>
+                        <legend><h2 class="heading-small">Select all required roles</h2></legend>
 
-                    <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
-                        <% const role = locals.serviceRoles[i]; %>
-                        <div class="multiple-choice">
-                            <input id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>">
-                            <label for="<%=role.id%>"><%=role.name%></label>
-                        </div>
+                        <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
+                            <% const role = locals.serviceRoles[i]; %>
+                            <div class="multiple-choice">
+                                <input id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>">
+                                <label for="<%=role.id%>"><%=role.name%></label>
+                            </div>
+                        <% } %>
                     <% } %>
                 </fieldset>
             </div>
