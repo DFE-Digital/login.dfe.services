@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            Select roles for <%=locals.serviceDetails.name%>
+            Select roles
         </h1>
         <p>Showing service <%= locals.currentService%> of <%=locals.totalNumberOfServices%></p>
         <dl class="app-check-your-answers app-check-your-answers--short">
@@ -37,7 +37,7 @@
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <div class="form-group">
                 <fieldset>
-                    <% if (locals.serviceRoles.length < 0) { %>
+                    <% if (locals.serviceRoles.length > 0) { %>
                         <legend><h2 class="heading-small">Select all required roles</h2></legend>
 
                         <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
