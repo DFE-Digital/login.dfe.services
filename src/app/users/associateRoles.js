@@ -33,7 +33,8 @@ const get = async (req, res) => {
 const post = async (req, res) => {
   const currentService = req.session.user.services.findIndex(x => x.serviceId === req.params.sid);
 
-  let selectedRoles = req.body.role;
+  let selectedRoles = req.body.role ? req.body.role : [];
+
   if(!(selectedRoles instanceof Array)){
     selectedRoles= [req.body.role];
   }
