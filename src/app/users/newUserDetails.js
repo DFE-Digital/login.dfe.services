@@ -1,6 +1,6 @@
 'use strict';
 const Account = require('./../../infrastructure/account');
-const { getOrganisationAndServiceForUser } = require('./../../infrastructure/organisations');
+const { getOrganisationAndServiceForUser, getOrganisationAndServiceForInvitation } = require('./../../infrastructure/organisations');
 const { emailPolicy } = require('login.dfe.validation');
 
 const get = (req, res) => {
@@ -37,7 +37,10 @@ const validate = async (req) => {
     isDSIUser: false,
   };
 
+  //TODO: check existing invitation
   const existingUser = await Account.getById(model.email, req.id);
+  const existingInvitation = await Account.getInvitationByEmail(model.email);
+
   if (!model.firstName) {
     model.validationMessages.firstName = 'Please enter a first name';
   }
@@ -61,6 +64,18 @@ const validate = async (req) => {
       model.lastName = existingUser.claims.family_name;
       model.email = existingUser.claims.email;
       model.uid = existingUser.claims.sub;
+    }
+  } else if (existingInvitation) {
+    const invitationOrganisations = await getOrganisationAndServiceForInvitation(existingInvitation.id);
+    const isInvitationInOrg = invitationOrganisations.find(x => x.organisation.id === req.params.orgId);
+    if (isInvitationInOrg) {
+      model.validationMessages.email = `A DfE Sign-in user already exists with that email address for ${isInvitationInOrg.organisation.name}`;
+    } else {
+      model.isDSIUser = true;
+      model.firstName = existingInvitation.firstName;
+      model.lastName = existingInvitation.lastName;
+      model.email = existingInvitation.email;
+      model.uid = `inv-${existingInvitation.id}`
     }
   }
   return model;

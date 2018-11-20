@@ -1,7 +1,8 @@
 'use strict';
-const { getAllServices } = require('./../../infrastructure/applications');
-const { listRolesOfService } = require ('./../../infrastructure/access');
-
+const {getAllServices} = require('./../../infrastructure/applications');
+const {listRolesOfService, addInvitationService, addUserService} = require('./../../infrastructure/access');
+const {putUserInOrganisation, putInvitationInOrganisation} = require('./../../infrastructure/organisations');
+const Account = require('./../../infrastructure/account');
 const get = async (req, res) => {
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const services = req.session.user.services.map(service => ({
@@ -14,7 +15,7 @@ const get = async (req, res) => {
     const service = services[i];
     const serviceDetails = allServices.services.find(x => x.id === service.id);
     const allRolesOfService = await listRolesOfService(service.id, req.id);
-    const roleDetails = allRolesOfService.filter(x => service.roles.find(y=> y.toLowerCase() === x.id.toLowerCase()));
+    const roleDetails = allRolesOfService.filter(x => service.roles.find(y => y.toLowerCase() === x.id.toLowerCase()));
     service.name = serviceDetails.name;
     service.roles = roleDetails;
   }
@@ -33,11 +34,38 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
-  //TODO: Add org, services and roles to user if req.params.uid exists
+  let uid = req.params.uid;
+  const organisationId = req.params.orgId;
 
-  //TODO: Add org, services and roles to invitation if req.params.uid starts with inv-
+  if (!uid) {
+    const invitationId = await Account.createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email);
+    uid = `inv-${invitationId}`;
+  }
 
-  //TODO: Create invite if no user uid. add org, services and roles to invite.
+  //if existing invitation
+  if (uid.startsWith('inv-')) {
+    const invitationId = uid.substr(4);
+    await putInvitationInOrganisation(invitationId, organisationId, 0, req.id);
+    if (req.session.user.services) {
+      for (let i = 0; i < req.session.user.services.length; i++) {
+        const service = req.session.user.services[i];
+        await addInvitationService(invitationId, service.serviceId, organisationId, service.roles, req.id);
+      }
+    }
+  } else {
+    //if existing user not in org
+    await putUserInOrganisation(uid, organisationId, 0, req.id);
+    if (req.session.user.services) {
+      for (let i = 0; i < req.session.user.services.length; i++) {
+        const service = req.session.user.services[i];
+        await addUserService(uid, service.serviceId, organisationId, service.roles, req.id);
+      }
+    }
+  }
+
+  res.flash('info', req.params.uid ? `User ${req.session.user.email} added to organisation` : `Invitation email sent to ${req.session.user.email}`);
+  res.redirect(`/approvals/${organisationId}/users`);
+  //TODO: Audit invite new user, add existing user, add existing invitation
 };
 
 module.exports = {

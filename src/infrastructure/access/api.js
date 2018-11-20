@@ -78,6 +78,20 @@ const updateInvitationService = async (iid, sid, oid, roles, correlationId) => {
   return callApi('PATCH', `/invitations/${iid}/services/${sid}/organisations/${oid}`, correlationId, body);
 };
 
+const addUserService = async (uid, sid, oid, roles, correlationId) => {
+  const body = {
+    roles,
+  };
+  return callApi('PUT', `users/${uid}/services/${sid}/organisations/${oid}`, correlationId, body);
+};
+
+const addInvitationService = async (iid, sid, oid, roles, correlationId) => {
+  const body = {
+    roles,
+  };
+  return callApi('PUT', `invitations/${iid}/services/${sid}/organisations/${oid}`, correlationId, body);
+};
+
 module.exports = {
   getServicesForUser,
   getServicesForInvitation,
@@ -88,4 +102,6 @@ module.exports = {
   removeServiceFromInvitation,
   updateUserService,
   updateInvitationService,
+  addUserService,
+  addInvitationService,
 };

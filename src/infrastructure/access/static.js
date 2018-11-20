@@ -34,6 +34,14 @@ const updateInvitationService = async (iid, sid, oid, role, correlationId) => {
   return Promise.resolve(null);
 };
 
+const addUserService = async (uid, sid, oid, role, correlationId) => {
+  return Promise.resolve(null);
+};
+
+const addInvitationService = async (iid, sid, oid, role, correlationId) => {
+  return Promise.resolve(null);
+};
+
 module.exports = {
   getServicesForUser,
   getServicesForInvitation,
@@ -44,4 +52,6 @@ module.exports = {
   removeServiceFromInvitation,
   updateUserService,
   updateInvitationService,
+  addInvitationService,
+  addUserService,
 };

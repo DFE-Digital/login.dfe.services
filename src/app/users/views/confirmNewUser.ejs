@@ -105,8 +105,12 @@
             <% } %>
         </dl>
 
-        <div class="form-submit">
-            <a href="" class="button">Submit</a>
-        </div>
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Submit</button>
+                <a href="../" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
     </div>
 </div>

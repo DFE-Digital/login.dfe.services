@@ -63,6 +63,10 @@ const putInvitationInOrganisation = async (invitationId, orgId, role, correlatio
   return callApi('PUT', `/organisations/${orgId}/invitations/${invitationId}`, correlationId, {roleId: role});
 };
 
+const getOrganisationAndServiceForInvitation = async (invitationId, correlationId) => {
+  return callApi('GET', `/invitations/v2/${invitationId}`, correlationId);
+}
+
 
 
 
@@ -75,4 +79,5 @@ module.exports = {
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   putInvitationInOrganisation,
+  getOrganisationAndServiceForInvitation,
 };
