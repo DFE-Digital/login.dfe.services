@@ -94,6 +94,7 @@ const post = async (req, res) => {
   req.session.user.firstName = model.firstName;
   req.session.user.lastName = model.lastName;
   req.session.user.email = model.email;
+  req.session.user.isInvite = true;
 
   if (model.isDSIUser) {
     req.session.user.uid = model.uid;

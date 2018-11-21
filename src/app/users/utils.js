@@ -9,7 +9,7 @@ const sortBy = require('lodash/sortBy');
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
   const user = await getById(uid, req.id);
-  const organisationDetails = user.organisations.filter(x => x.id === req.params.orgId);
+  const organisationDetails = user.organisations.find(x => x.id === req.params.orgId);
   return {
     id: uid,
     firstName: user.firstName,

@@ -27,6 +27,7 @@ const get = async (req, res) => {
       firstName: req.session.user.firstName,
       lastName: req.session.user.lastName,
       email: req.session.user.email,
+      isInvite: req.session.user.isInvite ? req.session.user.isInvite : false,
     },
     services,
     organisationDetails,
@@ -54,7 +55,9 @@ const post = async (req, res) => {
     }
   } else {
     //if existing user not in org
-    await putUserInOrganisation(uid, organisationId, 0, req.id);
+    if (req.session.user.isInvite) {
+      await putUserInOrganisation(uid, organisationId, 0, req.id);
+    }
     if (req.session.user.services) {
       for (let i = 0; i < req.session.user.services.length; i++) {
         const service = req.session.user.services[i];
@@ -63,8 +66,13 @@ const post = async (req, res) => {
     }
   }
 
-  res.flash('info', req.params.uid ? `User ${req.session.user.email} added to organisation` : `Invitation email sent to ${req.session.user.email}`);
-  res.redirect(`/approvals/${organisationId}/users`);
+  if (req.session.user.isInvite) {
+    res.flash('info', req.params.uid ? `User ${req.session.user.email} added to organisation` : `Invitation email sent to ${req.session.user.email}`);
+    res.redirect(`/approvals/${organisationId}/users`);
+  } else {
+    res.flash('info', `Services successfully added`);
+    res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`)
+  }
   //TODO: Audit invite new user, add existing user, add existing invitation
 };
 

@@ -1,19 +1,28 @@
 <div class="grid-row">
     <div class="col-8">
-        <h1 class="heading-xlarge">
+        <% if (locals.user.isInvite) { %>
+            <h1 class="heading-xlarge">
             Review invite details
-        </h1>
-        <p>Please review these details before sending out an invite. The user will have to confirm their email address and create a password before their account is active.</p>
+            </h1>
+            <p>Please review these details before sending out an invite. The user will have to confirm their email address and create a password before their account is active.</p>
+        <% } else { %>
+                <h1 class="heading-xlarge">
+                    Review new services
+                </h1>
+                <p>Please review these details before granting access</p>
+            <% } %>
 
-        <dl class="app-check-your-answers app-check-your-answers--short">
+            <dl class="app-check-your-answers app-check-your-answers--short">
             <div class="app-check-your-answers__contents">
                 <dt class="app-check-your-answers__title">
                     Personal details
                 </dt>
                 <dd class="app-check-your-answers__change ">
+                    <% if (locals.user.isInvite) {%>
                     <a href="">
                         Change
                     </a>
+                    <% } %>
                 </dd>
             </div>
             <div class="app-check-your-answers__contents">

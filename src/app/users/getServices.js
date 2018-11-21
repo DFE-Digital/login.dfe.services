@@ -9,6 +9,7 @@ const action = async (req, res) => {
   if (!req.session.user) {
     req.session.user = {};
   }
+  req.session.user.uid = user.id;
   req.session.user.firstName = user.firstName;
   req.session.user.lastName = user.lastName;
   req.session.user.email = user.email;

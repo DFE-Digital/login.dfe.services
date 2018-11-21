@@ -47,7 +47,7 @@ const post = async (req, res) => {
   }
   else {
     //TODO: redirect to the review page
-    return req.session.user.uid ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-new-user`) : res.redirect(`/approvals/${req.params.orgId}/users/confirm-new-user`);
+    return req.session.user.uid ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`) : res.redirect(`/approvals/${req.params.orgId}/users/confirm-new-user`);
   }
 };
 

@@ -57,8 +57,8 @@ const users = (csrf) => {
   router.post('/:orgId/users/:uid/associate-services', csrf, isApprover, asyncWrapper(postAssociateServices));
   router.get('/:orgId/users/:uid/associate-services/:sid', csrf, isApprover, asyncWrapper(getAssociateRoles));
   router.post('/:orgId/users/:uid/associate-services/:sid', csrf, isApprover, asyncWrapper(postAssociateRoles));
-  router.get('/:orgId/users/:uid/confirm-new-user', csrf, isApprover, asyncWrapper(getConfirmNewUser));
-  router.post('/:orgId/users/:uid/confirm-new-user', csrf, isApprover, asyncWrapper(postConfirmNewUser));
+  router.get('/:orgId/users/:uid/confirm-details', csrf, isApprover, asyncWrapper(getConfirmNewUser));
+  router.post('/:orgId/users/:uid/confirm-details', csrf, isApprover, asyncWrapper(postConfirmNewUser));
 
   router.get('/:orgId/users/:uid', asyncWrapper((req, res) => {
     res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);

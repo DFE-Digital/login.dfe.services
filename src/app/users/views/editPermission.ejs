@@ -1,9 +1,9 @@
 <div class="grid-row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            Confirm <%=locals.user.organisation[0].roleId === 10000 ? 'revoke approver' : 'approver';%> access
+            Confirm <%=locals.user.organisation.roleId === 10000 ? 'revoke approver' : 'approver';%> access
         </h1>
-        <p class="lede">Please review these details before <%=locals.user.organisation[0].roleId === 10000 ? 'revoking' : 'granting';%> <%= locals.user.firstName %> <%= locals.user.lastName %> approver access to <%=locals.organisationDetails.organisation.name%></p>
+        <p class="lede">Please review these details before <%=locals.user.organisation.roleId === 10000 ? 'revoking' : 'granting';%> <%= locals.user.firstName %> <%= locals.user.lastName %> approver access to <%=locals.organisationDetails.organisation.name%></p>
 
         <dl class="app-check-your-answers app-check-your-answers--short">
 
@@ -28,7 +28,7 @@
 
         <form method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <% if (locals.user.organisation[0].roleId === 10000) { %>
+            <% if (locals.user.organisation.roleId === 10000) { %>
             <input type="hidden" name="selectedLevel" value="0"/>
             <% } else { %>
             <input type="hidden" name="selectedLevel" value="10000"/>
