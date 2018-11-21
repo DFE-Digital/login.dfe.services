@@ -12,7 +12,8 @@ const getUserDetails = async (req) => {
   const organisationDetails = user.organisations.filter(x => x.id === req.params.orgId);
   return {
     id: uid,
-    name: `${user.firstName} ${user.lastName}`,
+    firstName: user.firstName,
+    lastName: user.lastName,
     email: user.email,
     status: mapUserStatus(user.statusId),
     organisation: organisationDetails,

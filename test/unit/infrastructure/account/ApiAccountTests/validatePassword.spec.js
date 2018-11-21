@@ -1,4 +1,4 @@
-jest.mock('request-promise');
+jest.mock('login.dfe.request-promise-retry');
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../../../src/infrastructure/config', () => {
   return {
@@ -28,7 +28,7 @@ describe('When validating a users password', () => {
       getBearerToken,
     }));
     rp.mockReset();
-    const requestPromise = require('request-promise');
+    const requestPromise = require('login.dfe.request-promise-retry');
     requestPromise.defaults.mockReturnValue(rp);
 
     const Account = require('./../../../../../src/infrastructure/account/DirectoriesApiAccount');

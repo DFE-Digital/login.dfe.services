@@ -1,10 +1,16 @@
 'use strict';
-const { getAllServices } = require('./../../infrastructure/applications');
+const {getAllServices} = require('./../../infrastructure/applications');
+const {getAllServicesForUserInOrg} = require('./utils');
 
 const get = async (req, res) => {
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const allServices = await getAllServices(req.id);
-  const externalServices = allServices.services.filter(x => x.isExternalService === true);
+  let externalServices = allServices.services.filter(x => x.isExternalService === true);
+
+  if (req.params.uid) {
+    const allUserServicesInOrg = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
+    externalServices = externalServices.filter(ex => !allUserServicesInOrg.find(as => as.id === ex.id));
+  }
   const model = {
     csrfToken: req.csrfToken(),
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
@@ -19,7 +25,7 @@ const get = async (req, res) => {
   res.render('users/views/associateServices', model);
 };
 
-const validate = async(req) => {
+const validate = async (req) => {
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const allServices = await getAllServices(req.id);
   const externalServices = allServices.services.filter(x => x.isExternalService === true);
@@ -46,10 +52,10 @@ const post = async (req, res) => {
   }
 
   let selectedServices = req.body.service;
-  if(!(selectedServices instanceof Array)){
+  if (!(selectedServices instanceof Array)) {
     selectedServices = [req.body.service];
   }
-  req.session.user.services = selectedServices.map(serviceId=>({serviceId, roles:[]}));
+  req.session.user.services = selectedServices.map(serviceId => ({serviceId, roles: []}));
 
   const service = req.session.user.services[0].serviceId;
   return res.redirect(`associate-services/${service}`)

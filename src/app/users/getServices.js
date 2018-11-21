@@ -6,6 +6,13 @@ const action = async (req, res) => {
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
+  if (!req.session.user) {
+    req.session.user = {};
+  }
+  req.session.user.firstName = user.firstName;
+  req.session.user.lastName = user.lastName;
+  req.session.user.email = user.email;
+  req.session.user.services = [];
 
   return res.render('users/views/services', {
     backLink: 'users-list',

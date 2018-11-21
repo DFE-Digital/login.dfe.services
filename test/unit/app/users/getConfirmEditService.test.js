@@ -11,7 +11,7 @@ jest.mock('./../../../../src/infrastructure/access', () => {
 
 jest.mock('./../../../../src/app/users/utils');
 
-const { getUserDetails, getSingleServiceForUser } = require('./../../../../src/app/users/utils');
+const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
 const { listRolesOfService } = require('./../../../../src/infrastructure/access');
 
 describe('when displaying the confirm edit service view', () => {
@@ -29,6 +29,11 @@ describe('when displaying the confirm edit service view', () => {
       sid: 'service1',
     };
     req.session = {
+      user: {
+        email: 'test@test.com',
+        firstName: 'test',
+        lastName: 'name',
+      },
       service: {
         roles : [
           'role1',
@@ -63,12 +68,6 @@ describe('when displaying the confirm edit service view', () => {
     }];
     res = mockResponse();
 
-    getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({
-      id: 'user1',
-    });
-
-
     getSingleServiceForUser.mockReset();
     getSingleServiceForUser.mockReturnValue({
       id: 'service1',
@@ -88,16 +87,6 @@ describe('when displaying the confirm edit service view', () => {
     }]);
 
     getConfirmEditService = require('./../../../../src/app/users/confirmEditService').get;
-  });
-
-  it('then it should get the users details', async () => {
-    await getConfirmEditService(req, res);
-
-    expect(getUserDetails.mock.calls).toHaveLength(1);
-    expect(getUserDetails.mock.calls[0][0]).toBe(req);
-    expect(res.render.mock.calls[0][1].user).toMatchObject({
-      id: 'user1',
-    });
   });
 
   it('then it should get the selected user service', async () => {

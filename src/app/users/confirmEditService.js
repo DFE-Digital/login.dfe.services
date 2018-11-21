@@ -1,6 +1,6 @@
 'use strict';
 const logger = require('./../../infrastructure/logger');
-const { getUserDetails, getSingleServiceForUser } = require('./utils');
+const { getSingleServiceForUser } = require('./utils');
 const { listRolesOfService, updateUserService, updateInvitationService } = require ('./../../infrastructure/access');
 
 const getSelectedRoles = async (req) => {
@@ -24,7 +24,6 @@ const getSelectedRoles = async (req) => {
 };
 
 const get = async (req, res) => {
-  const user = await getUserDetails(req);
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
@@ -34,14 +33,17 @@ const get = async (req, res) => {
     organisationDetails,
     currentPage: 'users',
     backLink: 'edit-service',
-    user,
+    user: {
+      firstName: req.session.user.firstName,
+      lastName: req.session.user.lastName,
+      email: req.session.user.email,
+    },
     roles: selectedRoles.roleDetails,
     service: userService,
   });
 };
 
 const post = async (req, res) => {
-  const user = await getUserDetails(req);
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
   const serviceId = req.params.sid;
@@ -55,7 +57,7 @@ const post = async (req, res) => {
 
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) updated service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${user.email} (id: ${uid})`, {
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) updated service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
     type: 'approver',
     subType: 'user-service-updated',
     userId: req.user.sub,

@@ -19,6 +19,13 @@ describe('when displaying the remove organisation', () => {
       uid: 'user1',
       orgId: 'org1',
     };
+    req.session = {
+      user: {
+        email: 'test@test.com',
+        firstName: 'test',
+        lastName: 'name',
+      },
+    };
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
@@ -45,12 +52,6 @@ describe('when displaying the remove organisation', () => {
     }];
     res = mockResponse();
 
-    getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({
-      id: 'user1',
-    });
-
-
     getAllServicesForUserInOrg.mockReset();
     getAllServicesForUserInOrg.mockReturnValue({
       id: 'service1',
@@ -60,16 +61,6 @@ describe('when displaying the remove organisation', () => {
     });
 
     getRemoveOrganisation = require('./../../../../src/app/users/removeOrganisationAccess').get;
-  });
-
-  it('then it should get the users details', async () => {
-    await getRemoveOrganisation(req, res);
-
-    expect(getUserDetails.mock.calls).toHaveLength(1);
-    expect(getUserDetails.mock.calls[0][0]).toBe(req);
-    expect(res.render.mock.calls[0][1].user).toMatchObject({
-      id: 'user1',
-    });
   });
 
   it('then it should get the services for a user', async () => {

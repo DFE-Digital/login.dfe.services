@@ -1,11 +1,10 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getUserDetails, getSingleServiceForUser } = require('./utils');
+const { getSingleServiceForUser } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
 const get = async (req, res) => {
-  const user = await getUserDetails(req);
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
@@ -16,7 +15,11 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     organisationDetails,
     service: userService,
-    user,
+    user: {
+      firstName: req.session.user.firstName,
+      lastName: req.session.user.lastName,
+      email: req.session.user.email,
+    },
     serviceRoles,
     selectedRoles: [],
   };
