@@ -23,6 +23,7 @@
                 </dd>
             </div>
         </dl>
+        <% if (locals.services.length > 0) { %>
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <div class="form-group  <%= (locals.validationMessages.services !== undefined) ? 'form-group-error' : '' %>">
@@ -55,5 +56,8 @@
                 <a href="" class="button button-secondary">Cancel</a>
             </div>
         </form>
+        <% } else { %>
+        <p> No services available </p>
+        <% } %>
     </div>
 </div>
