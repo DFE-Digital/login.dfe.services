@@ -84,6 +84,7 @@ const validate = async (req) => {
 
 const post = async (req, res) => {
   const model = await validate(req);
+
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
     return res.render('users/views/newUserDetails', model);
@@ -99,9 +100,9 @@ const post = async (req, res) => {
 
   if (model.isDSIUser) {
     req.session.user.uid = model.uid;
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`)
+    return req.query.review ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user?review=true`) : res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`)
   } else {
-    return res.redirect('associate-services');
+    return req.query.review ? res.redirect('confirm-new-user') : res.redirect('associate-services')
   }
 
 };

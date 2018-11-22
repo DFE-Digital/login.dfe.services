@@ -70,7 +70,6 @@ const post = async (req, res) => {
   }
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
-
   if (req.session.user.isInvite) {
     //audit invitation
     logger.audit(`${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: ${uid})`, {

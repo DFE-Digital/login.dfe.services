@@ -19,7 +19,7 @@
                 </dt>
                 <dd class="app-check-your-answers__change ">
                     <% if (locals.user.isInvite) {%>
-                    <a href="">
+                    <a href="/approvals/<%=locals.organisationDetails.organisation.id%>/users/new-user?review=true">
                         Change
                     </a>
                     <% } %>
