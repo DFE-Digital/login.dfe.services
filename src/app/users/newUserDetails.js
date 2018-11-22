@@ -37,10 +37,6 @@ const validate = async (req) => {
     isDSIUser: false,
   };
 
-  //TODO: check existing invitation
-  const existingUser = await Account.getById(model.email, req.id);
-  const existingInvitation = await Account.getInvitationByEmail(model.email);
-
   if (!model.firstName) {
     model.validationMessages.firstName = 'Please enter a first name';
   }
@@ -53,29 +49,34 @@ const validate = async (req) => {
     model.validationMessages.email = 'Please enter an email address';
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
     model.validationMessages.email = 'Please enter a valid email address';
-  } else if (existingUser) {
-    const userOrganisations = await getOrganisationAndServiceForUser(existingUser.claims.sub, req.id);
-    const isUserInOrg = userOrganisations.find(x => x.organisation.id === req.params.orgId);
-    if (isUserInOrg) {
-      model.validationMessages.email = `A DfE Sign-in user already exists with that email address for ${isUserInOrg.organisation.name}`;
-    } else {
-      model.isDSIUser = true;
-      model.firstName = existingUser.claims.given_name;
-      model.lastName = existingUser.claims.family_name;
-      model.email = existingUser.claims.email;
-      model.uid = existingUser.claims.sub;
-    }
-  } else if (existingInvitation) {
-    const invitationOrganisations = await getOrganisationAndServiceForInvitation(existingInvitation.id);
-    const isInvitationInOrg = invitationOrganisations.find(x => x.organisation.id === req.params.orgId);
-    if (isInvitationInOrg) {
-      model.validationMessages.email = `A DfE Sign-in user already exists with that email address for ${isInvitationInOrg.organisation.name}`;
-    } else {
-      model.isDSIUser = true;
-      model.firstName = existingInvitation.firstName;
-      model.lastName = existingInvitation.lastName;
-      model.email = existingInvitation.email;
-      model.uid = `inv-${existingInvitation.id}`
+  } else {
+    const existingUser = await Account.getById(model.email, req.id);
+    const existingInvitation = await Account.getInvitationByEmail(model.email);
+
+    if (existingUser) {
+      const userOrganisations = await getOrganisationAndServiceForUser(existingUser.claims.sub, req.id);
+      const isUserInOrg = userOrganisations.find(x => x.organisation.id === req.params.orgId);
+      if (isUserInOrg) {
+        model.validationMessages.email = `A DfE Sign-in user already exists with that email address for ${isUserInOrg.organisation.name}`;
+      } else {
+        model.isDSIUser = true;
+        model.firstName = existingUser.claims.given_name;
+        model.lastName = existingUser.claims.family_name;
+        model.email = existingUser.claims.email;
+        model.uid = existingUser.claims.sub;
+      }
+    } else if (existingInvitation) {
+      const invitationOrganisations = await getOrganisationAndServiceForInvitation(existingInvitation.id);
+      const isInvitationInOrg = invitationOrganisations.find(x => x.organisation.id === req.params.orgId);
+      if (isInvitationInOrg) {
+        model.validationMessages.email = `A DfE Sign-in user already exists with that email address for ${isInvitationInOrg.organisation.name}`;
+      } else {
+        model.isDSIUser = true;
+        model.firstName = existingInvitation.firstName;
+        model.lastName = existingInvitation.lastName;
+        model.email = existingInvitation.email;
+        model.uid = `inv-${existingInvitation.id}`
+      }
     }
   }
   return model;
