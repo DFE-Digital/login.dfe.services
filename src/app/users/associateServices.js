@@ -19,6 +19,7 @@ const get = async (req, res) => {
   const model = {
     csrfToken: req.csrfToken(),
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
+    user: req.session.user,
     validationMessages: {},
     backLink: 'new-user-details',
     currentPage: 'users',
@@ -36,6 +37,7 @@ const validate = async (req) => {
 
   const model = {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
+    user: req.session.user,
     backLink: 'new-user-details',
     currentPage: 'users',
     organisationDetails,

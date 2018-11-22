@@ -30,6 +30,7 @@ const get = async (req, res) => {
       lastName: req.session.user.lastName,
       email: req.session.user.email,
       isInvite: req.session.user.isInvite ? req.session.user.isInvite : false,
+      uid: req.session.user.uid ? req.session.user.uid : '',
     },
     services,
     organisationDetails,
