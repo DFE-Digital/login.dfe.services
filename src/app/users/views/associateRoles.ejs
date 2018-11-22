@@ -47,6 +47,8 @@
                                 <label for="<%=role.id%>"><%=role.name%></label>
                             </div>
                         <% } %>
+                    <% } else { %>
+                            <legend><h2 class="heading-small">No available roles for <%= locals.serviceDetails.name %>, continue to add this service.</h2></legend>
                     <% } %>
                 </fieldset>
             </div>

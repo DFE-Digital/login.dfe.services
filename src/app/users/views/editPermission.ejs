@@ -1,9 +1,9 @@
 <div class="grid-row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            Confirm <%=locals.user.organisation.roleId === 10000 ? 'revoke approver' : 'approver';%> access
+            Confirm <%=locals.user.organisation.roleId === 10000 ? 'remove approver' : 'approver';%> access
         </h1>
-        <p class="lede">Please review these details before <%=locals.user.organisation.roleId === 10000 ? 'revoking' : 'granting';%> <%= locals.user.firstName %> <%= locals.user.lastName %> approver access to <%=locals.organisationDetails.organisation.name%></p>
+        <p class="lede">Please review these details before <%=locals.user.organisation.roleId === 10000 ? 'removing' : 'granting';%> <%= locals.user.firstName %> <%= locals.user.lastName %> approver access to <%=locals.organisationDetails.organisation.name%></p>
 
         <dl class="app-check-your-answers app-check-your-answers--short">
 
