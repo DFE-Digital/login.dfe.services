@@ -1,8 +1,10 @@
 'use strict';
-const {getAllServices} = require('./../../infrastructure/applications');
-const {listRolesOfService, addInvitationService, addUserService} = require('./../../infrastructure/access');
-const {putUserInOrganisation, putInvitationInOrganisation} = require('./../../infrastructure/organisations');
+const { getAllServices } = require('./../../infrastructure/applications');
+const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
+const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../infrastructure/organisations');
 const Account = require('./../../infrastructure/account');
+const logger = require('./../../infrastructure/logger');
+
 const get = async (req, res) => {
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const services = req.session.user.services.map(service => ({
@@ -65,15 +67,40 @@ const post = async (req, res) => {
       }
     }
   }
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
+  const org = organisationDetails.organisation.name;
 
   if (req.session.user.isInvite) {
+    //audit invitation
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: ${uid})`, {
+      type: 'approver',
+      subType: 'user-invited',
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      invitedUserEmail: req.session.user.email,
+      invitedUser: uid,
+      organisationId: organisationId,
+    });
+
     res.flash('info', req.params.uid ? `User ${req.session.user.email} added to organisation` : `Invitation email sent to ${req.session.user.email}`);
     res.redirect(`/approvals/${organisationId}/users`);
   } else {
+    // audit add services to existing user
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) added services for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
+      type: 'approver',
+      subType: 'user-services-added',
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      editedUser: uid,
+      editedFields: [{
+        name: 'add_services',
+        newValue: req.session.user.services,
+      }],
+    });
+
     res.flash('info', `Services successfully added`);
     res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`)
   }
-  //TODO: Audit invite new user, add existing user, add existing invitation
 };
 
 module.exports = {
