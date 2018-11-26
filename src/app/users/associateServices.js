@@ -1,6 +1,6 @@
 'use strict';
-const {getAllServices} = require('./../../infrastructure/applications');
-const {getAllServicesForUserInOrg} = require('./utils');
+const { getAllServices } = require('./../../infrastructure/applications');
+const { getAllServicesForUserInOrg } = require('./utils');
 
 const getAllAvailableServices = async (req) => {
   const allServices = await getAllServices(req.id);

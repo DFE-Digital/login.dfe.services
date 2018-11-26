@@ -48,7 +48,6 @@ const post = async (req, res) => {
     return res.redirect(`${req.session.user.services[nextService].serviceId}`)
   }
   else {
-    //TODO: redirect to the review page
     return req.session.user.uid ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`) : res.redirect(`/approvals/${req.params.orgId}/users/confirm-new-user`);
   }
 };

@@ -27,6 +27,10 @@ class Account {
     return Promise.resolve(null);
   }
 
+  static async getInvitationByEmail() {
+    return Promise.resolve(null);
+  }
+
   static async validatePassword() {
     return Promise.resolve(true);
   }
