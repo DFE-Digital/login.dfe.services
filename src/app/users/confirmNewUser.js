@@ -6,6 +6,10 @@ const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 
 const get = async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect(`/approvals/${req.params.orgId}/users`)
+  }
+
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const services = req.session.user.services.map(service => ({
     id: service.serviceId,
@@ -38,6 +42,10 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
+  if (!req.session.user) {
+    res.redirect(`/approvals/${req.params.orgId}/users`)
+  }
+
   let uid = req.params.uid;
   const organisationId = req.params.orgId;
 

@@ -24,6 +24,9 @@ const getSelectedRoles = async (req) => {
 };
 
 const get = async (req, res) => {
+  if (!req.session.service || !req.session.user) {
+    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`)
+  }
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
@@ -44,6 +47,9 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`)
+  }
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
   const serviceId = req.params.sid;

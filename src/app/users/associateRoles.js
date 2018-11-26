@@ -5,6 +5,10 @@ const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
 const get = async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect(`/approvals/${req.params.orgId}/users`)
+  }
+
   const totalNumberOfServices = req.session.user.services.length;
   const currentService = req.session.user.services.findIndex(x => x.serviceId === req.params.sid) + 1;
 
@@ -33,8 +37,11 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
-  const currentService = req.session.user.services.findIndex(x => x.serviceId === req.params.sid);
+  if (!req.session.user) {
+    res.redirect(`/approvals/${req.params.orgId}/users`)
+  }
 
+  const currentService = req.session.user.services.findIndex(x => x.serviceId === req.params.sid);
   let selectedRoles = req.body.role ? req.body.role : [];
 
   if(!(selectedRoles instanceof Array)){

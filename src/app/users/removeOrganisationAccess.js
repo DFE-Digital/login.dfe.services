@@ -6,6 +6,9 @@ const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../.
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 
 const get = async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`)
+  }
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
@@ -26,6 +29,9 @@ const get = async (req, res) => {
 
 //TODO: remove services from access
 const post = async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`)
+  }
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
   const servicesForUser = await getAllServicesForUserInOrg(uid, organisationId, req.id);

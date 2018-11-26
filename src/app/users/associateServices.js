@@ -1,6 +1,6 @@
 'use strict';
-const { getAllServices } = require('./../../infrastructure/applications');
-const { getAllServicesForUserInOrg } = require('./utils');
+const {getAllServices} = require('./../../infrastructure/applications');
+const {getAllServicesForUserInOrg} = require('./utils');
 
 const getAllAvailableServices = async (req) => {
   const allServices = await getAllServices(req.id);
@@ -13,6 +13,10 @@ const getAllAvailableServices = async (req) => {
 };
 
 const get = async (req, res) => {
+
+  if (!req.session.user) {
+    return res.redirect(`/approvals/${req.params.orgId}/users`)
+  }
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
 
@@ -52,6 +56,10 @@ const validate = async (req) => {
 };
 
 const post = async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect(`/approvals/${req.params.orgId}/users`)
+  }
+
   const model = await validate(req);
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
@@ -62,7 +70,14 @@ const post = async (req, res) => {
   if (!(selectedServices instanceof Array)) {
     selectedServices = [req.body.service];
   }
-  req.session.user.services = selectedServices.map(serviceId => ({serviceId, roles: []}));
+
+  req.session.user.services = selectedServices.map((serviceId) => {
+    const existingServiceSelections = req.session.user.services ? req.session.user.services.find(x => x.serviceId === serviceId) : undefined;
+    return {
+      serviceId,
+      roles: existingServiceSelections ? existingServiceSelections.roles : [],
+    };
+  });
 
   const service = req.session.user.services[0].serviceId;
   return res.redirect(`associate-services/${service}`)
