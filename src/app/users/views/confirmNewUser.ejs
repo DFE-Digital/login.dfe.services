@@ -87,11 +87,11 @@
             <% if (locals.services.length > 0) { %>
                 <% for (let i = 0; i< locals.services.length; i++) { %>
                     <% const service = locals.services[i]; %>
-                    <div class="app-check-your-answers__contents">
-                        <dt class="app-check-your-answers__question">
+                    <div class="app-check-your-answers__contents__group">
+                        <dt class="app-check-your-answers__group__title">
                             Service
                         </dt>
-                        <dd class="app-check-your-answers__answer">
+                        <dd class="app-check-your-answers__group">
                             <%= service.name%>
                         </dd>
                     </div>
