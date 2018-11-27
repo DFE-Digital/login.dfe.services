@@ -43,7 +43,7 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    res.redirect(`/approvals/${req.params.orgId}/users`)
+    return res.redirect(`/approvals/${req.params.orgId}/users`)
   }
 
   let uid = req.params.uid;
@@ -54,7 +54,7 @@ const post = async (req, res) => {
     uid = `inv-${invitationId}`;
   }
 
-  //if existing invitation
+  //if existing invitation or new invite
   if (uid.startsWith('inv-')) {
     const invitationId = uid.substr(4);
     await putInvitationInOrganisation(invitationId, organisationId, 0, req.id);
@@ -76,6 +76,7 @@ const post = async (req, res) => {
       }
     }
   }
+
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
   if (req.session.user.isInvite) {
@@ -92,6 +93,7 @@ const post = async (req, res) => {
 
     res.flash('info', req.params.uid ? `User ${req.session.user.email} added to organisation` : `Invitation email sent to ${req.session.user.email}`);
     res.redirect(`/approvals/${organisationId}/users`);
+
   } else {
     // audit add services to existing user
     logger.audit(`${req.user.email} (id: ${req.user.sub}) added services for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {

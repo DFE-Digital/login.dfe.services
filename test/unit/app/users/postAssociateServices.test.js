@@ -12,7 +12,7 @@ jest.mock('./../../../../src/app/users/utils');
 const { getAllServices } = require('./../../../../src/infrastructure/applications');
 const { getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
 
-describe('when displaying the associate services view', () => {
+describe('when adding services to a user', () => {
 
   let req;
   let res;

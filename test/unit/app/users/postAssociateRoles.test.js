@@ -80,4 +80,32 @@ describe('when selecting the roles for a service', () => {
     expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`);
   });
 
+  it('then it should redirect to the next service if one exists', async () => {
+    req.session.user.services = [
+      {
+        serviceId: 'service1',
+        roles: [],
+      },
+      {
+        serviceId: 'service2',
+        roles: [],
+      }
+    ];
+    await postAssociateRoles(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe('service2');
+  });
+
+  it('then it should redirect to users list if no user in session', async () => {
+    req.session.user = null;
+    await postAssociateRoles(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users`);
+  });
+
+
+
+
 });
