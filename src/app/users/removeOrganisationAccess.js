@@ -22,7 +22,7 @@ const get = async (req, res) => {
       email: req.session.user.email,
     },
     currentPage: 'users',
-    backLink: 'users-details',
+    backLink: 'services',
     services: servicesForUser,
   });
 };

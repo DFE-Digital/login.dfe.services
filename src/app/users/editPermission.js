@@ -12,7 +12,7 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     organisationDetails,
     currentPage: 'users',
-    backLink: 'users-details',
+    backLink: 'services',
     validationMessages: {},
     user,
 

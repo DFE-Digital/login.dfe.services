@@ -13,7 +13,7 @@ const get = async (req, res) => {
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const serviceRoles = await policyEngine.getRolesAvailableForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const model = {
-    backLink: 'user-details',
+    backLink: '../',
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisationDetails,

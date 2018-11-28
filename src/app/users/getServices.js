@@ -16,7 +16,7 @@ const action = async (req, res) => {
   req.session.user.services = [];
 
   return res.render('users/views/services', {
-    backLink: 'users-list',
+    backLink: '../',
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisationDetails,

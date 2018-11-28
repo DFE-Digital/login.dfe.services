@@ -6,7 +6,7 @@ const get = async (req, res) => {
   }
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
   return res.render('users/views/confirmExistingUser', {
-    backLink: 'new-user',
+    backLink: `/approvals/${req.params.orgId}/users/new-user`,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     user: req.session.user,

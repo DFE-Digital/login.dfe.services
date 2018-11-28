@@ -35,7 +35,7 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     organisationDetails,
     currentPage: 'users',
-    backLink: 'edit-service',
+    backLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}`,
     user: {
       firstName: req.session.user.firstName,
       lastName: req.session.user.lastName,

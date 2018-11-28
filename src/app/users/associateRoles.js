@@ -23,7 +23,7 @@ const get = async (req, res) => {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
     validationMessages: {},
-    backLink: 'associate-services',
+    backLink: true,
     currentPage: 'users',
     organisationDetails,
     selectedRoles,

@@ -10,7 +10,7 @@ const get = (req, res) => {
     lastName: '',
     email: '',
     validationMessages: {},
-    backLink: 'users-list',
+    backLink: './',
     currentPage: 'users',
     organisationId: req.params.orgId,
   };
@@ -31,7 +31,7 @@ const validate = async (req) => {
     email: req.body.email || '',
     uid: '',
     validationMessages: {},
-    backLink: 'users-list',
+    backLink: './',
     currentPage: 'users',
     organisationId: req.params.orgId,
     isDSIUser: false,

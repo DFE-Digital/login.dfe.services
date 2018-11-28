@@ -12,7 +12,7 @@ const get = async (req, res) => {
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   return res.render('users/views/removeService', {
-    backLink: 'edit-services',
+    backLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}`,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisationDetails,

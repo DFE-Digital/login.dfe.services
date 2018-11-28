@@ -26,7 +26,7 @@ const get = async (req, res) => {
     service.roles = roleDetails;
   }
   return res.render('users/views/confirmNewUser', {
-    backLink: 'select-roles',
+    backLink: true,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     user: {

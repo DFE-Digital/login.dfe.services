@@ -91,7 +91,7 @@ describe('when adding services to a user', () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: 'token',
       name: 'test name',
-      backLink: 'new-user-details',
+      backLink: 'services',
       currentPage: 'users',
       organisationDetails:  undefined,
       selectedServices:  undefined,
