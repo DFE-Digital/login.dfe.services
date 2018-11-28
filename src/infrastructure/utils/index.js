@@ -61,7 +61,7 @@ const asyncMiddleware = fn =>
   };
 
 const setConfigContext = (req, res, next) => {
-  res.locals.profilesUrl = config.hostingEnvironment.profilesUrl;
+  res.locals.profilesUrl = config.hostingEnvironment.profileUrl;
   next();
 };
 
