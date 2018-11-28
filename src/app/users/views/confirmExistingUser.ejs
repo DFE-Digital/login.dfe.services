@@ -1,42 +1,47 @@
 <div class="grid-row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            Confirm <%=locals.user.organisation.roleId === 10000 ? 'remove approver' : 'approver';%> access
+            User already registered on DfE Sign-in
         </h1>
-        <p class="lede">Please review these details before <%=locals.user.organisation.roleId === 10000 ? 'removing' : 'granting';%> <%= locals.user.firstName %> <%= locals.user.lastName %> approver access to <%=locals.organisationDetails.organisation.name%></p>
+        <p class="lede">Please review these details and select continue to add this user to <%= locals.organisationDetails.organisation.name%>.</p>
 
         <dl class="app-check-your-answers app-check-your-answers--short">
 
             <div class="app-check-your-answers__contents">
                 <dt class="app-check-your-answers__title">
-                    User
+                    First name
                 </dt>
                 <dd class="app-check-your-answers__answer">
-                    <%= locals.user.firstName %> <%= locals.user.lastName %>
+                    <%=locals.user.firstName%>
                 </dd>
             </div>
 
             <div class="app-check-your-answers__contents">
                 <dt class="app-check-your-answers__title">
-                    Organisation
+                    Last name
                 </dt>
                 <dd class="app-check-your-answers__answer">
-                    <%=locals.organisationDetails.organisation.name%>
+                    <%=locals.user.lastName%>
+                </dd>
+            </div>
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    Email address
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%=locals.user.email%>
                 </dd>
             </div>
         </dl>
 
         <form method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <% if (locals.user.organisation.roleId === 10000) { %>
-            <input type="hidden" name="selectedLevel" value="0"/>
-            <% } else { %>
-            <input type="hidden" name="selectedLevel" value="10000"/>
-            <% } %>
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Continue</button>
-                <a href="./" class="button button-secondary">Cancel</a>
+                <a href="../" class="button button-secondary">Cancel</a>
             </div>
         </form>
+
     </div>
 </div>

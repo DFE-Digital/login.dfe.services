@@ -1,6 +1,7 @@
 const config = require('./../config');
 const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
-const rp = require('request-promise').defaults({
+
+const rp = require('login.dfe.request-promise-retry').defaults({
   agent: new KeepAliveAgent({
     maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
     maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
@@ -26,11 +27,8 @@ const callApi = async (method, endpoint, correlationId, body) => {
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401 || status === 404) {
+    if (status === 404) {
       return undefined;
-    }
-    if (status === 409) {
-      return false;
     }
     throw e;
   }
@@ -80,6 +78,20 @@ const updateInvitationService = async (iid, sid, oid, roles, correlationId) => {
   return callApi('PATCH', `/invitations/${iid}/services/${sid}/organisations/${oid}`, correlationId, body);
 };
 
+const addUserService = async (uid, sid, oid, roles, correlationId) => {
+  const body = {
+    roles,
+  };
+  return callApi('PUT', `users/${uid}/services/${sid}/organisations/${oid}`, correlationId, body);
+};
+
+const addInvitationService = async (iid, sid, oid, roles, correlationId) => {
+  const body = {
+    roles,
+  };
+  return callApi('PUT', `invitations/${iid}/services/${sid}/organisations/${oid}`, correlationId, body);
+};
+
 module.exports = {
   getServicesForUser,
   getServicesForInvitation,
@@ -90,4 +102,6 @@ module.exports = {
   removeServiceFromInvitation,
   updateUserService,
   updateInvitationService,
+  addUserService,
+  addInvitationService,
 };

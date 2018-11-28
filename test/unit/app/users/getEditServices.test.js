@@ -5,7 +5,7 @@ jest.mock('login.dfe.policy-engine');
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
 jest.mock('./../../../../src/app/users/utils');
-const { getUserDetails, getSingleServiceForUser } = require('./../../../../src/app/users/utils');
+const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
 
 
 describe('when displaying the edit service view', () => {
@@ -21,6 +21,13 @@ describe('when displaying the edit service view', () => {
       uid: 'user1',
       orgId: 'org1',
       sid: 'service1',
+    };
+    req.session = {
+      user: {
+        email: 'test@test.com',
+        firstName: 'test',
+        lastName: 'name',
+      },
     };
     req.user = {
       sub: 'user1',
@@ -48,11 +55,6 @@ describe('when displaying the edit service view', () => {
     }];
     res = mockResponse();
 
-    getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({
-      id: 'user1',
-    });
-
 
     getSingleServiceForUser.mockReset();
     getSingleServiceForUser.mockReturnValue({
@@ -63,16 +65,6 @@ describe('when displaying the edit service view', () => {
     });
 
     getEditService = require('./../../../../src/app/users/editServices').get;
-  });
-
-  it('then it should get the users details', async () => {
-    await getEditService(req, res);
-
-    expect(getUserDetails.mock.calls).toHaveLength(1);
-    expect(getUserDetails.mock.calls[0][0]).toBe(req);
-    expect(res.render.mock.calls[0][1].user).toMatchObject({
-      id: 'user1',
-    });
   });
 
   it('then it should get the selected user service', async () => {

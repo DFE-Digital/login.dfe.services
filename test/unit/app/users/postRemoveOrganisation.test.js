@@ -8,10 +8,17 @@ jest.mock('./../../../../src/infrastructure/organisations', () => {
     deleteUserOrganisation: jest.fn(),
   };
 });
+
+jest.mock('./../../../../src/infrastructure/access', () => {
+  return {
+    removeServiceFromUser: jest.fn(),
+    removeServiceFromInvitation: jest.fn(),
+  };
+});
 jest.mock('./../../../../src/app/users/utils');
 
 const logger = require('./../../../../src/infrastructure/logger');
-const { getUserDetails, getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
+const { getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
 const { deleteInvitationOrganisation, deleteUserOrganisation } = require('./../../../../src/infrastructure/organisations');
 
 describe('when removing organisation access', () => {
@@ -26,6 +33,13 @@ describe('when removing organisation access', () => {
     req.params = {
       uid: 'user1',
       orgId: 'org1',
+    };
+    req.session = {
+      user: {
+        email: 'test@test.com',
+        firstName: 'test',
+        lastName: 'name',
+      },
     };
     req.user = {
       sub: 'user1',
@@ -54,11 +68,12 @@ describe('when removing organisation access', () => {
     req.body = {
       selectedOrganisation: 'organisationId',
     };
-
-    getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({
-      id: 'user1',
-      email: 'email@email.com'
+    getAllServicesForUserInOrg.mockReset();
+    getAllServicesForUserInOrg.mockReturnValue({
+      id: 'service1',
+      dateActivated: '10/10/2018',
+      name: 'service name',
+      status: 'active',
     });
 
     res = mockResponse();
@@ -88,7 +103,7 @@ describe('when removing organisation access', () => {
     await postRemoveOrganisationAccess(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('user.one@unit.test (id: user1) removed organisation organisationName (id: org1) for user email@email.com (id: user1)');
+    expect(logger.audit.mock.calls[0][0]).toBe('user.one@unit.test (id: user1) removed organisation organisationName (id: org1) for user test@test.com (id: user1)');
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
       type: 'approver',
       subType: 'user-org-deleted',

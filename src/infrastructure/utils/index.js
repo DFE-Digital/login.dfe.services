@@ -14,9 +14,11 @@ const isLoggedIn = (req, res, next) => {
 };
 
 const isApprover = (req, res, next) => {
-  const userApproverOrgs = req.userOrganisations.filter(x => x.role.id === 10000);
-  if (userApproverOrgs.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())) {
-    return next();
+  if (req.userOrganisations) {
+    const userApproverOrgs = req.userOrganisations.filter(x => x.role.id === 10000);
+    if (userApproverOrgs.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())) {
+      return next();
+    }
   }
   return res.status(401).render('errors/views/notAuthorised');
 };
@@ -41,9 +43,12 @@ const setUserContext = async (req, res, next) => {
     res.locals.displayName = getUserDisplayName(req.user);
     const organisations = await getOrganisationAndServiceForUser(req.user.sub, req.id);
     req.userOrganisations = organisations;
-
-    if (req.userOrganisations) {
-      res.locals.isApprover = req.userOrganisations.filter(x => x.role.id === 10000).length > 0
+    try {
+      if (req.userOrganisations) {
+        res.locals.isApprover = req.userOrganisations.filter(x => x.role.id === 10000).length > 0
+      }
+    } catch (e) {
+      return e;
     }
   }
   next();

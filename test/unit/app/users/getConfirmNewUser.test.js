@@ -5,21 +5,25 @@ jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../u
 jest.mock('./../../../../src/infrastructure/access', () => {
   return {
     listRolesOfService: jest.fn(),
+    addInvitationService: jest.fn(),
+    addUserService: jest.fn(),
+  };
+});
+jest.mock('./../../../../src/infrastructure/applications', () => {
+  return {
+    getAllServices: jest.fn(),
   };
 });
 
-
-jest.mock('./../../../../src/app/users/utils');
-
-const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
 const { listRolesOfService } = require('./../../../../src/infrastructure/access');
+const { getAllServices } = require('./../../../../src/infrastructure/applications');
 
-describe('when displaying the confirm edit service view', () => {
+describe('when displaying the confirm new user view', () => {
 
   let req;
   let res;
 
-  let getConfirmEditService;
+  let getConfirmNewUser;
 
   beforeEach(() => {
     req = mockRequest();
@@ -33,11 +37,11 @@ describe('when displaying the confirm edit service view', () => {
         email: 'test@test.com',
         firstName: 'test',
         lastName: 'name',
-      },
-      service: {
-        roles : [
-          'role1',
-          'role2'
+        services: [
+          {
+            serviceId: 'service1',
+            roles: [],
+          }
         ],
       },
     };
@@ -68,14 +72,6 @@ describe('when displaying the confirm edit service view', () => {
     }];
     res = mockResponse();
 
-    getSingleServiceForUser.mockReset();
-    getSingleServiceForUser.mockReturnValue({
-      id: 'service1',
-      dateActivated: '10/10/2018',
-      name: 'service name',
-      status: 'active',
-    });
-
     listRolesOfService.mockReset();
     listRolesOfService.mockReturnValue([{
       code: 'role_code',
@@ -85,56 +81,74 @@ describe('when displaying the confirm edit service view', () => {
         id: 'status_id'
       },
     }]);
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+        isExternalService: true,
+      }]
+    });
 
-    getConfirmEditService = require('./../../../../src/app/users/confirmEditService').get;
+
+    getConfirmNewUser = require('./../../../../src/app/users/confirmNewUser').get;
   });
 
-  it('then it should get the selected user service', async () => {
-    await getConfirmEditService(req, res);
+  it('then it should get all services', async () => {
+    await getConfirmNewUser(req, res);
 
-    expect(getSingleServiceForUser.mock.calls).toHaveLength(1);
-    expect(getSingleServiceForUser.mock.calls[0][0]).toBe('user1');
-    expect(getSingleServiceForUser.mock.calls[0][1]).toBe('org1');
-    expect(getSingleServiceForUser.mock.calls[0][2]).toBe('service1');
-    expect(getSingleServiceForUser.mock.calls[0][3]).toBe('correlationId');
+    expect(getAllServices.mock.calls).toHaveLength(1);
+    expect(getAllServices.mock.calls[0][0]).toBe('correlationId');
   });
 
-  it('then it should get the selected roles', async () => {
-    await getConfirmEditService(req, res);
+  it('then it should list all roles of service', async () => {
+    await getConfirmNewUser(req, res);
 
     expect(listRolesOfService.mock.calls).toHaveLength(1);
     expect(listRolesOfService.mock.calls[0][0]).toBe('service1');
     expect(listRolesOfService.mock.calls[0][1]).toBe('correlationId');
   });
 
-  it('then it should return the confirm edit services view', async () => {
-    await getConfirmEditService(req, res);
+  it('then it should return the confirm new user view', async () => {
+    await getConfirmNewUser(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/confirmEditService');
+    expect(res.render.mock.calls[0][0]).toBe('users/views/confirmNewUser');
   });
 
   it('then it should include csrf token', async () => {
-    await getConfirmEditService(req, res);
+    await getConfirmNewUser(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
     });
   });
 
-  it('then it should include the organisation details', async () => {
-    await getConfirmEditService(req, res);
+  it('then it should include the users details', async () => {
+    await getConfirmNewUser(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      organisationDetails: req.organisationDetails,
+      user: {
+        firstName: 'test',
+        lastName: 'name',
+        email: 'test@test.com',
+        isInvite: false,
+        uid: ''
+      }
     });
   });
 
   it('then it should include the service details', async () => {
-    await getConfirmEditService(req, res);
+    await getConfirmNewUser(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      service: getSingleServiceForUser(),
+      services: [{
+        id: 'service1',
+        name: 'service name',
+        roles: [],
+      }]
     });
   });
 

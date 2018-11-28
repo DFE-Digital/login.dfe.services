@@ -1,17 +1,22 @@
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 
+jest.mock('login.dfe.policy-engine');
+
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
-jest.mock('./../../../../src/app/users/utils');
+jest.mock('./../../../../src/infrastructure/applications', () => {
+  return {
+    getApplication: jest.fn(),
+  };
+});
 
-const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
+const { getApplication } = require('./../../../../src/infrastructure/applications');
 
-describe('when displaying the remove service access view', () => {
+describe('when displaying the associate roles view', () => {
 
   let req;
   let res;
 
-  let getRemoveService;
+  let getAssociateRoles;
 
   beforeEach(() => {
     req = mockRequest();
@@ -25,6 +30,12 @@ describe('when displaying the remove service access view', () => {
         email: 'test@test.com',
         firstName: 'test',
         lastName: 'name',
+        services: [
+          {
+            serviceId: 'service1',
+            roles: [],
+          }
+        ]
       },
     };
     req.user = {
@@ -53,36 +64,18 @@ describe('when displaying the remove service access view', () => {
     }];
     res = mockResponse();
 
-    getSingleServiceForUser.mockReset();
-    getSingleServiceForUser.mockReturnValue({
-      id: 'service1',
-      dateActivated: '10/10/2018',
-      name: 'service name',
-      status: 'active',
-    });
-
-    getRemoveService = require('./../../../../src/app/users/removeServiceAccess').get;
+    getAssociateRoles = require('./../../../../src/app/users/associateRoles').get;
   });
 
-  it('then it should get the selected user service', async () => {
-    await getRemoveService(req, res);
-
-    expect(getSingleServiceForUser.mock.calls).toHaveLength(1);
-    expect(getSingleServiceForUser.mock.calls[0][0]).toBe('user1');
-    expect(getSingleServiceForUser.mock.calls[0][1]).toBe('org1');
-    expect(getSingleServiceForUser.mock.calls[0][2]).toBe('service1');
-    expect(getSingleServiceForUser.mock.calls[0][3]).toBe('correlationId');
-  });
-
-  it('then it should return the confirm remove service view', async () => {
-    await getRemoveService(req, res);
+  it('then it should return the associate roles view', async () => {
+    await getAssociateRoles(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/removeService');
+    expect(res.render.mock.calls[0][0]).toBe('users/views/associateRoles');
   });
 
   it('then it should include csrf token', async () => {
-    await getRemoveService(req, res);
+    await getAssociateRoles(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
@@ -90,18 +83,32 @@ describe('when displaying the remove service access view', () => {
   });
 
   it('then it should include the organisation details', async () => {
-    await getRemoveService(req, res);
+    await getAssociateRoles(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       organisationDetails: req.organisationDetails,
     });
   });
 
-  it('then it should include the service details', async () => {
-    await getRemoveService(req, res);
+  it('then it should include the number of selected services', async () => {
+    await getAssociateRoles(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      service: getSingleServiceForUser(),
+      totalNumberOfServices: req.session.user.services.length,
     });
+  });
+
+  it('then it should include the current service', async () => {
+    await getAssociateRoles(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      currentService: 1,
+    });
+  });
+
+  it('then it should get the service details', async () => {
+    await getAssociateRoles(req, res);
+    expect(getApplication.mock.calls).toHaveLength(1);
+    expect(getApplication.mock.calls[0][0]).toBe('service1');
   });
 });

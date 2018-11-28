@@ -1,7 +1,7 @@
 const Account = require('./Account');
 const config = require('./../config');
 const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
-const rp = require('request-promise').defaults({
+const rp = require('login.dfe.request-promise-retry').defaults({
   agent: new KeepAliveAgent({
     maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
     maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
@@ -57,6 +57,17 @@ class DirectoriesApiAccount extends Account {
     return new DirectoriesApiAccount(response.result);
   }
 
+  static async getInvitationByEmail (email) {
+    const response = await callDirectoriesApi(`invitations/by-email/${email}`, null, 'GET');
+    if (!response.success) {
+      if (response.statusCode === 404) {
+        return null;
+      }
+      throw new Error(response.errorMessage);
+    }
+    return response.result;
+  }
+
   async validatePassword(password) {
     const username = this.claims.email;
     const response = await callDirectoriesApi('users/authenticate', {
@@ -85,6 +96,21 @@ class DirectoriesApiAccount extends Account {
       throw new Error(response.errorMessage);
     }
     return response.result.map(a => new DirectoriesApiAccount(a));
+  }
+
+  static async createInvite(firstName, lastName, email) {
+    const response = await callDirectoriesApi(`invitations`, {
+      firstName,
+      lastName,
+      email,
+    });
+    if (!response.success) {
+      if (response.statusCode === 404) {
+        return null;
+      }
+      throw new Error(response.errorMessage);
+    }
+    return response.result.id;
   }
 }
 

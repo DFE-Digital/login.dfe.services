@@ -2,6 +2,12 @@
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const { getAllUsersForOrg } = require('../../infrastructure/search');
 
+const clearUserSessionData = (req) => {
+  if (req.session.user) {
+    req.session.user = undefined;
+  }
+};
+
 const search = async (req) => {
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
@@ -27,6 +33,7 @@ const search = async (req) => {
 };
 
 const get = async (req, res) => {
+  clearUserSessionData(req);
   const result = await search(req);
   return res.render('users/views/usersList', {
     title: 'Users',

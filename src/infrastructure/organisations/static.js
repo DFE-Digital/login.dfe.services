@@ -2,6 +2,10 @@ const getOrganisationAndServiceForUser = async (userId, correlationId) => {
   return Promise.resolve([]);
 };
 
+const getOrganisationAndServiceForInvitation = async (invitationId, correlationId) => {
+  return Promise.resolve([]);
+};
+
 const getOrganisationUsersForApproval = async (userId) => {
   return Promise.resolve([ {
     org_id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
@@ -59,5 +63,6 @@ module.exports = {
   getAllUsersForOrganisation,
   deleteInvitationOrganisation,
   deleteUserOrganisation,
-  putInvitationInOrganisation
+  putInvitationInOrganisation,
+  getOrganisationAndServiceForInvitation
 };

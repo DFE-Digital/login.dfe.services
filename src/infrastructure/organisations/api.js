@@ -1,7 +1,7 @@
 const config = require('./../config');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
-const rp = require('request-promise').defaults({
+const rp = require('login.dfe.request-promise-retry').defaults({
   agent: new KeepAliveAgent({
     maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
     maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
@@ -63,6 +63,10 @@ const putInvitationInOrganisation = async (invitationId, orgId, role, correlatio
   return callApi('PUT', `/organisations/${orgId}/invitations/${invitationId}`, correlationId, {roleId: role});
 };
 
+const getOrganisationAndServiceForInvitation = async (invitationId, correlationId) => {
+  return callApi('GET', `/invitations/v2/${invitationId}`, correlationId);
+}
+
 
 
 
@@ -75,4 +79,5 @@ module.exports = {
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   putInvitationInOrganisation,
+  getOrganisationAndServiceForInvitation,
 };

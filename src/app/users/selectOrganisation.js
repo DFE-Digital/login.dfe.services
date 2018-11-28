@@ -1,6 +1,5 @@
 'use strict';
-
-const get = async (req, res) => {
+const getNaturalIdentifiers = async (req) => {
   for (let i= 0; i < req.userOrganisations.length; i++) {
     const org = req.userOrganisations[i];
     if (org.organisation) {
@@ -19,6 +18,10 @@ const get = async (req, res) => {
       }
     }
   }
+};
+
+const get = async (req, res) => {
+  await getNaturalIdentifiers(req);
   return res.render('users/views/selectOrganisation', {
     csrfToken: req.csrfToken(),
     title: 'Select Organisation',
@@ -45,6 +48,7 @@ const validate = (req) => {
 };
 
 const post = async (req, res) => {
+  await getNaturalIdentifiers(req);
   const model = validate(req);
 
   if (Object.keys(model.validationMessages).length > 0) {

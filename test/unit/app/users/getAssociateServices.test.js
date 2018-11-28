@@ -1,17 +1,23 @@
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
+
+jest.mock('./../../../../src/infrastructure/applications', () => {
+  return {
+    getAllServices: jest.fn(),
+  };
+});
 jest.mock('./../../../../src/app/users/utils');
 
-const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
+const { getAllServices } = require('./../../../../src/infrastructure/applications');
+const { getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
 
-describe('when displaying the remove service access view', () => {
+describe('when displaying the associate service view', () => {
 
   let req;
   let res;
 
-  let getRemoveService;
+  let getAssociateServices;
 
   beforeEach(() => {
     req = mockRequest();
@@ -53,36 +59,37 @@ describe('when displaying the remove service access view', () => {
     }];
     res = mockResponse();
 
-    getSingleServiceForUser.mockReset();
-    getSingleServiceForUser.mockReturnValue({
-      id: 'service1',
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+        isExternalService: true,
+      }]
+    });
+    getAllServicesForUserInOrg.mockReset();
+    getAllServicesForUserInOrg.mockReturnValue([{
+      id: 'service2',
       dateActivated: '10/10/2018',
       name: 'service name',
       status: 'active',
-    });
+      isExternalService: true,
+    }]);
 
-    getRemoveService = require('./../../../../src/app/users/removeServiceAccess').get;
+    getAssociateServices = require('./../../../../src/app/users/associateServices').get;
   });
 
-  it('then it should get the selected user service', async () => {
-    await getRemoveService(req, res);
-
-    expect(getSingleServiceForUser.mock.calls).toHaveLength(1);
-    expect(getSingleServiceForUser.mock.calls[0][0]).toBe('user1');
-    expect(getSingleServiceForUser.mock.calls[0][1]).toBe('org1');
-    expect(getSingleServiceForUser.mock.calls[0][2]).toBe('service1');
-    expect(getSingleServiceForUser.mock.calls[0][3]).toBe('correlationId');
-  });
-
-  it('then it should return the confirm remove service view', async () => {
-    await getRemoveService(req, res);
+  it('then it should return the associate services view', async () => {
+    await getAssociateServices(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/removeService');
+    expect(res.render.mock.calls[0][0]).toBe('users/views/associateServices');
   });
 
   it('then it should include csrf token', async () => {
-    await getRemoveService(req, res);
+    await getAssociateServices(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
@@ -90,18 +97,24 @@ describe('when displaying the remove service access view', () => {
   });
 
   it('then it should include the organisation details', async () => {
-    await getRemoveService(req, res);
+    await getAssociateServices(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       organisationDetails: req.organisationDetails,
     });
   });
 
-  it('then it should include the service details', async () => {
-    await getRemoveService(req, res);
+  it('then it should include the services', async () => {
+    await getAssociateServices(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      service: getSingleServiceForUser(),
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+      }],
     });
   });
+
 });

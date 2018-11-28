@@ -10,22 +10,22 @@
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            <%= locals.user.name%>
+            <%= locals.user.firstName%> <%= locals.user.lastName%>
             <small><%= locals.user.email %></small>
         </h1>
         <dl class="inline condensed">
             <dt class="label">Account Status:</dt>
             <dd><%=locals.user.status.description%></dd>
             <dt class="label">Is approver:</dt>
-            <dd><%=locals.user.organisation[0].roleId === 10000 ? 'Yes' : 'No';%></dd>
+            <dd><%=locals.user.organisation.roleId === 10000 ? 'Yes' : 'No';%></dd>
         </dl>
     </div>
     <div class="col-4">
             <aside>
                 <h2 class="heading-medium">Actions</h2>
                 <ul class="list">
-                    <li><a href="">Add services</a></li>
-                    <li><a href="edit-permission"><%=locals.user.organisation[0].roleId === 10000 ? 'Revoke approver access' : 'Make approver';%></a></li>
+                    <li><a href="associate-services">Add services</a></li>
+                    <li><a href="edit-permission"><%=locals.user.organisation.roleId === 10000 ? 'Remove approver access' : 'Make approver';%></a></li>
                     <li><a href="remove-organisation">Remove from organisation</a></li>
                 </ul>
             </aside>

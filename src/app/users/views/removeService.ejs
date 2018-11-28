@@ -3,7 +3,7 @@
         <h1 class="heading-xlarge">
             Confirm service removal
         </h1>
-        <p class="lede">Please review these details before removing the service.</p>
+        <p class="lede">Please review these details before removing the service and any roles associated.</p>
 
         <dl class="app-check-your-answers app-check-your-answers--short">
 
@@ -12,7 +12,7 @@
                     User
                 </dt>
                 <dd class="app-check-your-answers__answer">
-                    <%=locals.user.name%>
+                    <%=locals.user.firstName%> <%=locals.user.lastName%>
                 </dd>
             </div>
 
