@@ -1,9 +1,10 @@
 'use strict';
-const { getAllServices, getApplication } = require('./../../infrastructure/applications');
+const { getAllServices } = require('./../../infrastructure/applications');
 const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
 const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../infrastructure/organisations');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -50,13 +51,8 @@ const post = async (req, res) => {
   const organisationId = req.params.orgId;
 
   if (!uid) {
-    let serviceId;
-    if (req.session.user.services.length === 1) {
-      serviceId = req.session.user.services[0].serviceId
-    } else {
-      // get serviceId for services page
-    }
-    const invitationId = await Account.createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email);
+    const redirectUri = `https://${config.hostingEnvironment.host}/auth`;
+    const invitationId = await Account.createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, 'services', redirectUri);
     uid = `inv-${invitationId}`;
   }
 
