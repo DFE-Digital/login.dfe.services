@@ -38,7 +38,9 @@
             <div class="form-group">
                 <fieldset>
                     <% if (locals.serviceRoles.length > 0) { %>
-                        <legend><h2 class="heading-small">Select all required roles</h2></legend>
+                        <legend>
+                            <span class="body-text">Select all required roles</span>
+                        </legend>
 
                         <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
                             <% const role = locals.serviceRoles[i]; %>
@@ -53,7 +55,7 @@
                             </div>
                         <% } %>
                     <% } else { %>
-                            <legend><h2 class="heading-small">No available roles for <%= locals.serviceDetails.name %>, continue to add this service.</h2></legend>
+                            <legend><h2 class="heading-small">There are no available roles for <%= locals.serviceDetails.name %>.</h2></legend>
                     <% } %>
                 </fieldset>
             </div>

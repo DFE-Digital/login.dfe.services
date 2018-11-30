@@ -53,7 +53,7 @@ const post = async (req, res) => {
       newValue: undefined,
     }],
   });
-  res.flash('info', `${req.session.user.firstName} ${req.session.user.lastName} has been removed from ${service.name}`);
+  res.flash('info', `${service.name} has been removed from ${req.session.user.firstName} ${req.session.user.lastName}`);
   return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
 };
 
