@@ -51,7 +51,35 @@ const getById = async (userId, correlationId) => {
   }
 };
 
+const updateIndex = async (userId, organisations, correlationId) => {
+  const token = await jwtStrategy(config.search.service).getBearerToken();
+  try {
+    await rp({
+      method: 'PATCH',
+      uri: `${config.search.service.url}/users/${userId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      body: {
+        organisations,
+      },
+      json: true,
+    });
+    return true;
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return undefined;
+    }
+    if (e.statusCode === 400) {
+      return undefined;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   getAllUsersForOrg,
   getById,
+  updateIndex,
 };

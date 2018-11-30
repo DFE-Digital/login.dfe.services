@@ -1,5 +1,6 @@
 'use strict';
 const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../infrastructure/organisations');
+const { getById, updateIndex } = require ('./../../infrastructure/search');
 const logger = require('./../../infrastructure/logger');
 const { getUserDetails } = require('./utils');
 
@@ -32,6 +33,18 @@ const post = async (req, res) => {
   } else {
     await putUserInOrganisation(uid, organisationId, 1, role, req.id);
   }
+  // patch search indexer with new role
+  const getAllUserDetails = await getById(uid, req.id);
+  const allOrganisationDetails = getAllUserDetails.organisations;
+  const updatedOrganisationDetails = allOrganisationDetails.map( org => {
+    if (org.id === organisationId) {
+      return Object.assign({}, org, {roleId:role})
+    }
+    return org
+  });
+
+  await updateIndex(uid, updatedOrganisationDetails, req.id);
+
   logger.audit(`${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for org ${organisationDetails.organisation.name} (id: ${organisationId}) for user ${user.email} (id: ${uid})`, {
     type: 'approver',
     subType: 'user-org-permission-edited',
