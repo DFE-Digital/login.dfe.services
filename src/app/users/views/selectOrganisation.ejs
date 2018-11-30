@@ -1,9 +1,9 @@
 <div class="grid-row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            Select your organisation
+            Select organisation
         </h1>
-        <p>You are an approver for multiple organisations. Select the organisation that you want to manage users for.</p>
+        <p>Select the organisation that you want to manage users for.</p>
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
             <div class="form-group <%= (locals.validationMessages.selectedOrganisation !== undefined) ? 'form-group-error' : '' %>">
