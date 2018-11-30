@@ -44,7 +44,7 @@ const getAllServicesForUserInOrg = async (userId, organisationId, correlationId)
 };
 
 const getSingleServiceForUser = async (userId, organisationId, serviceId, correlationId) => {
-  const userService = userId.startsWith('-inv') ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId) : await getSingleUserService(userId, serviceId, organisationId, correlationId);
+  const userService = userId.startsWith('inv-') ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId) : await getSingleUserService(userId, serviceId, organisationId, correlationId);
   const application = await getApplication(userService.serviceId);
   return {
     id: userService.serviceId,

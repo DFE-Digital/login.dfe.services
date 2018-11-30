@@ -4,6 +4,7 @@ const { listRolesOfService, addInvitationService, addUserService } = require('./
 const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../infrastructure/organisations');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -50,7 +51,8 @@ const post = async (req, res) => {
   const organisationId = req.params.orgId;
 
   if (!uid) {
-    const invitationId = await Account.createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email);
+    const redirectUri = `https://${config.hostingEnvironment.host}/auth`;
+    const invitationId = await Account.createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, 'services', redirectUri);
     uid = `inv-${invitationId}`;
   }
 
