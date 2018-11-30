@@ -10,11 +10,20 @@ jest.mock('./../../../../src/infrastructure/organisations', () => {
   };
 });
 
+jest.mock('./../../../../src/infrastructure/search', () => {
+  return {
+    getById: jest.fn(),
+    updateIndex: jest.fn(),
+  };
+});
+
+
 jest.mock('./../../../../src/app/users/utils');
 
 const logger = require('./../../../../src/infrastructure/logger');
 const { getUserDetails } = require('./../../../../src/app/users/utils');
 const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../../../src/infrastructure/organisations');
+const { getById, updateIndex } = require('./../../../../src/infrastructure/search');
 
 describe('when editing organisation permission level', () => {
 
@@ -56,12 +65,26 @@ describe('when editing organisation permission level', () => {
     }];
     req.body = {
       selectedOrganisation: 'organisationId',
+      selectedLevel: 10000,
     };
 
     getUserDetails.mockReset();
     getUserDetails.mockReturnValue({
       id: 'user1',
       email: 'email@email.com'
+    });
+
+    getById.mockReset();
+    getById.mockReturnValue({
+      organisations: [
+        {
+          id: "org1",
+          name: "organisationId",
+          categoryId: "004",
+          statusId: 1,
+          roleId: 0
+        },
+      ]
     });
 
     res = mockResponse();
@@ -87,11 +110,21 @@ describe('when editing organisation permission level', () => {
     expect(putUserInOrganisation.mock.calls[0][1]).toBe('org1');
   });
 
+  it('then it should update the search index with the new roleId', async () => {
+
+    await postEditPermission(req,res);
+    expect(updateIndex.mock.calls).toHaveLength(1);
+    expect(updateIndex.mock.calls[0][0]).toBe('user1');
+    expect(updateIndex.mock.calls[0][1]).toEqual(
+      [{"categoryId": "004", "id": "org1", "name": "organisationId", "roleId": 10000, "statusId": 1}]
+    );
+  });
+
   it('then it should should audit permission level being edited', async () => {
     await postEditPermission(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('user.one@unit.test (id: user1) edited permission level to end user for org organisationName (id: org1) for user email@email.com (id: user1)');
+    expect(logger.audit.mock.calls[0][0]).toBe('user.one@unit.test (id: user1) edited permission level to approver for org organisationName (id: org1) for user email@email.com (id: user1)');
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
       type: 'approver',
       subType: 'user-org-permission-edited',
@@ -101,7 +134,7 @@ describe('when editing organisation permission level', () => {
       editedFields: [
         {
           name: 'edited_permission',
-          newValue: 'end user',
+          newValue: 'approver',
         }
       ],
     });
