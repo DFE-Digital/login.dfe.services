@@ -15,11 +15,19 @@ jest.mock('./../../../../src/infrastructure/access', () => {
     removeServiceFromInvitation: jest.fn(),
   };
 });
+
+jest.mock('./../../../../src/infrastructure/search', () => {
+  return {
+    getById: jest.fn(),
+    updateIndex: jest.fn(),
+  };
+});
 jest.mock('./../../../../src/app/users/utils');
 
 const logger = require('./../../../../src/infrastructure/logger');
 const { getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
 const { deleteInvitationOrganisation, deleteUserOrganisation } = require('./../../../../src/infrastructure/organisations');
+const { getById, updateIndex } = require('./../../../../src/infrastructure/search');
 
 describe('when removing organisation access', () => {
 
@@ -76,6 +84,19 @@ describe('when removing organisation access', () => {
       status: 'active',
     });
 
+    getById.mockReset();
+    getById.mockReturnValue({
+      organisations: [
+        {
+          id: "org1",
+          name: "organisationId",
+          categoryId: "004",
+          statusId: 1,
+          roleId: 0
+        },
+      ]
+    });
+
     res = mockResponse();
     postRemoveOrganisationAccess = require('./../../../../src/app/users/removeOrganisationAccess').post;
   });
@@ -97,6 +118,16 @@ describe('when removing organisation access', () => {
     expect(deleteUserOrganisation.mock.calls).toHaveLength(1);
     expect(deleteUserOrganisation.mock.calls[0][0]).toBe('user1');
     expect(deleteUserOrganisation.mock.calls[0][1]).toBe('org1');
+  });
+
+  it('then it should patch the user with the org removed', async () => {
+    await postRemoveOrganisationAccess(req, res);
+
+    expect(updateIndex.mock.calls).toHaveLength(1);
+    expect(updateIndex.mock.calls[0][0]).toBe('user1');
+    expect(updateIndex.mock.calls[0][1]).toEqual(
+      []
+    );
   });
 
   it('then it should should audit user being removed from org', async () => {

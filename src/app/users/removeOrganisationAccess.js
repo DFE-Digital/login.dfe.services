@@ -4,6 +4,7 @@ const logger = require('./../../infrastructure/logger');
 const { getAllServicesForUserInOrg } = require('./utils');
 const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../../infrastructure/organisations');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
+const { getById, updateIndex } = require ('./../../infrastructure/search');
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -27,7 +28,7 @@ const get = async (req, res) => {
   });
 };
 
-//TODO: remove services from access
+
 const post = async (req, res) => {
   if (!req.session.user) {
     return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`)
@@ -49,6 +50,12 @@ const post = async (req, res) => {
     }
     await deleteUserOrganisation(uid, organisationId, req.id);
   }
+  // patch search indexer to remove org
+  const getAllUserDetails = await getById(uid, req.id);
+  const currentOrganisationDetails = getAllUserDetails.organisations;
+  const updatedOrganisationDetails = currentOrganisationDetails.filter(org => org.id !== organisationId);
+  await updateIndex(uid, updatedOrganisationDetails, req.id);
+
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
 
