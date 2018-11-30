@@ -25,7 +25,7 @@ describe('when selecting an organisation', () => {
         }
       }],
     };
-    req.userOrganisations = {
+    req.userOrganisations = [{
       organisation: {
         id: 'organisationId',
         name: 'organisationName',
@@ -34,7 +34,7 @@ describe('when selecting an organisation', () => {
         id: 0,
         name: 'category name'
       }
-    };
+    }];
     req.body = {
       selectedOrganisation: 'organisationId',
     };

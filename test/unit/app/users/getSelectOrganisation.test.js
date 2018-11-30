@@ -25,7 +25,7 @@ describe('when displaying the multiple organisation selection', () => {
         }
       }],
     };
-    req.userOrganisations = {
+    req.userOrganisations = [{
       organisation: {
         id: 'organisationId',
         name: 'organisationName',
@@ -34,7 +34,7 @@ describe('when displaying the multiple organisation selection', () => {
         id: 0,
         name: 'category name'
       }
-    };
+    }];
     res = mockResponse();
 
     getMultipleOrgSelection = require('./../../../../src/app/users/selectOrganisation').get;
