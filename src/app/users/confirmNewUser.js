@@ -1,7 +1,8 @@
 'use strict';
 const { getAllServices } = require('./../../infrastructure/applications');
 const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
-const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../infrastructure/organisations');
+const { putUserInOrganisation, putInvitationInOrganisation, getOrganisationById } = require('./../../infrastructure/organisations');
+const { getById, updateIndex } = require ('./../../infrastructure/search');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
@@ -78,7 +79,21 @@ const post = async (req, res) => {
       }
     }
   }
-
+  // patch search index with organisation added to existing user or inv
+  if (req.params.uid) {
+    const getAllUserDetails = await getById(uid, req.id);
+    const organisation = await getOrganisationById(organisationId, req.id);
+    const currentOrganisationDetails = getAllUserDetails.organisations;
+    const newOrgDetails = {
+      id: organisation.id,
+      name: organisation.name,
+      categoryId: organisation.Category,
+      statusId: organisation.Status,
+      roleId: 0,
+    };
+    currentOrganisationDetails.push(newOrgDetails);
+    await updateIndex(uid, currentOrganisationDetails, req.id);
+  }
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
   if (req.session.user.isInvite) {
