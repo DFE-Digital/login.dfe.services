@@ -67,6 +67,11 @@ describe('when displaying the associate service view', () => {
         name: 'service name',
         status: 'active',
         isExternalService: true,
+        relyingParty: {
+          params: {
+
+          }
+        }
       }]
     });
     getAllServicesForUserInOrg.mockReset();
