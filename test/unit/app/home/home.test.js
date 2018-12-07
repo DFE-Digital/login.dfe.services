@@ -50,11 +50,11 @@ describe('when displaying current organisation and service mapping', () => {
     });
   });
 
-  it('then it should render list of services if not logged in', async () => {
+  it('then it should render landing page if not logged in', async () => {
     await home(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('home/views/externalServices');
+    expect(res.render.mock.calls[0][0]).toBe('home/views/landingPage');
   });
 
   it('then it should include services in model', async () => {
@@ -65,12 +65,10 @@ describe('when displaying current organisation and service mapping', () => {
     expect(res.render.mock.calls[0][1].services).toEqual(
       [
         {
-          description: 'service description',
           id: 'Service One',
           isExternalService: true,
           isMigrated: true,
           name: 'Service One',
-          serviceUrl: 'http://service.one/login',
         }
         ]
     )
