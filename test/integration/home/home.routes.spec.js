@@ -26,11 +26,11 @@ describe('Integration tests for', () => {
         app.locals.moment = moment;
       });
 
-      it('Get / should return status 200', async () => {
+      it('Get / should return status 500', async () => {
         const home = require('../../../src/app/home/index');
         app.use('/', home(null));
         const response = await request(app).get('/');
-        expect(response.statusCode).toBe(200);
+        expect(response.statusCode).toBe(500);
       });
     });
     describe('as an unauthenticated user', () => {
