@@ -2,32 +2,17 @@ jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
   getUsersById: jest.fn(),
 }));
-jest.mock('./../../../../src/infrastructure/access', () => ({
-  getServicesForUser: jest.fn(),
-}));
 jest.mock('./../../../../src/infrastructure/applications', () => ({
-  getApplication: jest.fn(),
+  getAllServices: jest.fn(),
 }));
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const Account = require('./../../../../src/infrastructure/account');
-const { getServicesForUser } = require('./../../../../src/infrastructure/access');
-const { getApplication } = require('./../../../../src/infrastructure/applications');
+const { getAllServices } = require('./../../../../src/infrastructure/applications');
 const home = require('./../../../../src/app/home/home');
 
 const res = mockResponse();
-const userAccess = [
-  { serviceId: 'service1' }
-];
-const application = {
-  name: 'Service One',
-  relyingParty: {
-    service_home: 'http://service.one/login',
-    redirect_uris: [
-      'http://service.one/login/cb'
-    ],
-  },
-};
+
 
 describe('when displaying current organisation and service mapping', () => {
   let req;
@@ -45,91 +30,49 @@ describe('when displaying current organisation and service mapping', () => {
       id: 'user1',
     });
 
-    getServicesForUser.mockReset().mockReturnValue(userAccess);
 
-    getApplication.mockReset().mockReturnValue(application);
+    getAllServices.mockReset().mockReturnValue({
+      services: [
+        {
+          id: 'Service One',
+          name: 'Service One',
+          description: 'service description',
+          isExternalService: true,
+          isMigrated: true,
+          relyingParty: {
+            service_home: 'http://service.one/login',
+            redirect_uris: [
+              'http://service.one/login/cb'
+            ],
+          },
+        }
+        ]
+    });
   });
 
-  it('then it should render external services if not logged in', async () => {
+  it('then it should render landing page if not logged in', async () => {
     await home(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('home/views/home');
+    expect(res.render.mock.calls[0][0]).toBe('home/views/landingPage');
   });
 
-  it('then it should include current user account in model', async () => {
-    await home(req, res);
-
-    expect(res.render.mock.calls[0][1].user).toBeDefined();
-    expect(res.render.mock.calls[0][1].user).toEqual({
-      id: 'user1',
-    });
-  });
-
-  it('then it should include mapped services for user', async () => {
-    await home(req, res);
-
-    expect(res.render.mock.calls[0][1].services).toBeDefined();
-    expect(res.render.mock.calls[0][1].services).toHaveLength(1);
-    expect(res.render.mock.calls[0][1].services[0]).toEqual({
-      id: 'service1',
-      name: 'Service One',
-      serviceUrl: 'http://service.one/login',
-    });
-  });
-
-  it('then it should render home view wih no services if user has no service mappings', async () => {
-    getServicesForUser.mockReturnValue(undefined);
-
+  it('then it should include services in model', async () => {
     await home(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('home/views/home');
     expect(res.render.mock.calls[0][1].services).toBeDefined();
-    expect(res.render.mock.calls[0][1].services).toHaveLength(0);
+    expect(res.render.mock.calls[0][1].services).toEqual(
+      [
+        {
+          id: 'Service One',
+          isExternalService: true,
+          isMigrated: true,
+          name: 'Service One',
+        }
+        ]
+    )
   });
 
-  it('then it should map serviceUrl from service_home when available', async () => {
-    getApplication.mockReset().mockReturnValue({
-      name: 'Service One',
-      relyingParty: {
-        service_home: 'http://service.one/login',
-        redirect_uris: [
-          'http://service.one/login/cb'
-        ],
-      },
-    });
 
-    await home(req, res);
-
-    expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe('http://service.one/login');
-  });
-
-  it('then it should map serviceUrl from first redirect if service_home not available', async () => {
-    getApplication.mockReset().mockReturnValue({
-      name: 'Service One',
-      relyingParty: {
-        redirect_uris: [
-          'http://service.one/login/cb'
-        ],
-      },
-    });
-
-    await home(req, res);
-
-    expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe('http://service.one/login/cb');
-  });
-
-  it('then it should set serviceUrl to # if no service_home or redirects available', async () => {
-    getApplication.mockReset().mockReturnValue({
-      name: 'Service One',
-      relyingParty: {
-        redirect_uris: [],
-      },
-    });
-
-    await home(req, res);
-
-    expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe('#');
-  });
 });
