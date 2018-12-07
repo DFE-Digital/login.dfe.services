@@ -13,7 +13,7 @@ const home = () => {
   logger.info('Mounting home routes');
 
   router.get('/', asyncWrapper(getIndex));
-  router.get('/services', isLoggedIn, asyncWrapper(getServices));
+  router.get('/my-services', isLoggedIn, asyncWrapper(getServices));
   return router;
 };
 
