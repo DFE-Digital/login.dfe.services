@@ -81,7 +81,7 @@
     <div class="global-navigation">
         <nav>
             <ul>
-                <% if (!locals.loggedOut) { %>
+                <% if (locals.isLoggedIn) { %>
                     <li><a href="/my-services" class="<%= locals.currentPage === 'services' ? 'current' : '' %>">Services</a></li>
                     <li><a href="/organisations" class="<%= locals.currentPage === 'organisations' ? 'current' : '' %>">Organisations</a></li>
                     <li><a href="<%=locals.urls.profile%>">Profile</a></li>
@@ -89,12 +89,7 @@
                     <li><a href ="/approvals/users" class="<%= locals.currentPage === 'users' ? 'current': '' %>">Users</a></li>
                     <% } %>
                     <li class="pull-right"><a href="/signout">Sign out</a> </li>
-                <% } else { %>
-                        <li><a href="/my-services" class="<%= locals.currentPage === 'services' ? 'current' : '' %>">My Services</a></li>
-                        <li><a href="/organisations" class="<%= locals.currentPage === 'organisations' ? 'current' : '' %>">My Organisations</a></li>
-                        <li><a href="<%=locals.urls.profile%>">My Profile</a></li>
-                        <li class="pull-right"><a href="/my-services">Sign-in</a> </li>
-                <% }%>
+                <% } %>
 
             </ul>
         </nav>
