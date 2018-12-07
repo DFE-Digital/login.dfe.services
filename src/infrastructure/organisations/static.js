@@ -43,6 +43,10 @@ const getAllUsersForOrganisation = async(orgId, correlationId) => {
   }]);
 };
 
+const getOrganisationById = async (orgId, correlationId) => {
+  return Promise.resolve({})
+};
+
 const deleteInvitationOrganisation = async(invitationId, organisationId, correlationId) => {
   return Promise.resolve();
 };
@@ -64,5 +68,6 @@ module.exports = {
   deleteInvitationOrganisation,
   deleteUserOrganisation,
   putInvitationInOrganisation,
-  getOrganisationAndServiceForInvitation
+  getOrganisationAndServiceForInvitation,
+  getOrganisationById,
 };
