@@ -107,6 +107,7 @@ const init = async () => {
       title: 'DfE Sign-in',
     },
     gaTrackingId: config.hostingEnvironment.gaTrackingId,
+    useApproverJourney: config.toggles.useApproverJourney,
   });
 
   passport.use('oidc', await getPassportStrategy());
