@@ -67,6 +67,11 @@ describe('when adding services to a user', () => {
         name: 'service name',
         status: 'active',
         isExternalService: true,
+        relyingParty: {
+          params: {
+
+          }
+        }
       }]
     });
     getAllServicesForUserInOrg.mockReset();
@@ -102,6 +107,11 @@ describe('when adding services to a user', () => {
           name: 'service name',
           status: 'active',
           isExternalService: true,
+          relyingParty: {
+            params: {
+
+            }
+          }
         }
       ],
       user: {
