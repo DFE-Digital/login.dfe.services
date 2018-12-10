@@ -67,6 +67,10 @@ const getOrganisationAndServiceForInvitation = async (invitationId, correlationI
   return callApi('GET', `/invitations/v2/${invitationId}`, correlationId);
 };
 
+const getOrganisationById = async (orgId, correlationId) => {
+  return callApi('GET', `organisations/${orgId}`, correlationId);
+};
+
 
 
 
@@ -80,4 +84,5 @@ module.exports = {
   deleteInvitationOrganisation,
   putInvitationInOrganisation,
   getOrganisationAndServiceForInvitation,
+  getOrganisationById,
 };
