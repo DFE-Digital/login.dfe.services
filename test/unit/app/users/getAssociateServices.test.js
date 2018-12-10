@@ -67,6 +67,11 @@ describe('when displaying the associate service view', () => {
         name: 'service name',
         status: 'active',
         isExternalService: true,
+        relyingParty: {
+          params: {
+
+          }
+        }
       }]
     });
     getAllServicesForUserInOrg.mockReset();
@@ -101,6 +106,127 @@ describe('when displaying the associate service view', () => {
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       organisationDetails: req.organisationDetails,
+    });
+  });
+
+  it('then it should check if external service with no params', async () => {
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+        isExternalService: true,
+        relyingParty: {
+        }
+      }]
+    });
+    await getAssociateServices(req, res);
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+      }],
+    });
+  });
+
+  it('then it should display service if external service with params but no hideApprover', async () => {
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+        isExternalService: true,
+        relyingParty: {
+          params: {
+          }
+        }
+      }]
+    });
+    await getAssociateServices(req, res);
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+      }],
+    });
+  });
+
+  it('then it should not display service if not external service', async () => {
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+        isExternalService: false,
+        relyingParty: {
+          params: {
+            hideApprover: false,
+          }
+        }
+      }]
+    });
+    await getAssociateServices(req, res);
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      services: [],
+    });
+  });
+
+  it('then it should display service if external service with params but hideApprover false', async () => {
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+        isExternalService: true,
+        relyingParty: {
+          params: {
+            hideApprover: false,
+          }
+        }
+      }]
+    });
+    await getAssociateServices(req, res);
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+      }],
+    });
+  });
+
+  it('then it should not display service if external service with params but hideApprover true', async () => {
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+        isExternalService: true,
+        relyingParty: {
+          params: {
+            hideApprover: 'true',
+          }
+        }
+      }]
+    });
+    await getAssociateServices(req, res);
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      services: [],
     });
   });
 

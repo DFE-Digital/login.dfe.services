@@ -13,6 +13,7 @@ jest.mock('./../../../../src/infrastructure/organisations', () => {
   return {
     putUserInOrganisation: jest.fn(),
     putInvitationInOrganisation: jest.fn(),
+    getOrganisationById: jest.fn(),
   };
 });
 
@@ -20,10 +21,18 @@ jest.mock('./../../../../src/infrastructure/account', () => ({
   createInvite: jest.fn(),
 }));
 
+jest.mock('./../../../../src/infrastructure/search', () => {
+  return {
+    getById: jest.fn(),
+    updateIndex: jest.fn(),
+  };
+});
+
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 
 const { addInvitationService, addUserService } = require('./../../../../src/infrastructure/access');
-const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../../../src/infrastructure/organisations');
+const { putUserInOrganisation, putInvitationInOrganisation, getOrganisationById } = require('./../../../../src/infrastructure/organisations');
+const { getById, updateIndex } = require('./../../../../src/infrastructure/search');
 const Account = require('./../../../../src/infrastructure/account');
 const logger = require('./../../../../src/infrastructure/logger');
 
@@ -87,8 +96,26 @@ describe('when inviting a new user', () => {
     putUserInOrganisation.mockReset();
     addInvitationService.mockReset();
     addUserService.mockReset();
+    getOrganisationById.mockReset();
+    getOrganisationById.mockReturnValue({
+      id: 'org1',
+      name: 'organisationName',
+      Category: '000',
+      Status: '1',
+    });
 
-
+    getById.mockReset();
+    getById.mockReturnValue({
+      organisations: [
+        {
+          id: "org1",
+          name: "organisationId",
+          categoryId: "004",
+          statusId: 1,
+          roleId: 0
+        },
+      ]
+    });
     postConfirmNewUser = require('./../../../../src/app/users/confirmNewUser').post;
   });
 
@@ -163,6 +190,31 @@ describe('when inviting a new user', () => {
     expect(addUserService.mock.calls[0][2]).toBe('org1');
     expect(addUserService.mock.calls[0][3]).toEqual([]);
     expect(addUserService.mock.calls[0][4]).toBe('correlationId');
+  });
+
+  it('then it should patch the user with the org added if existing user', async () => {
+    await postConfirmNewUser(req, res);
+
+    expect(updateIndex.mock.calls).toHaveLength(1);
+    expect(updateIndex.mock.calls[0][0]).toBe('user1');
+    expect(updateIndex.mock.calls[0][1]).toEqual(
+      [
+        {
+        categoryId: "004",
+        id: "org1",
+        name: "organisationId",
+        roleId: 0,
+        statusId: 1
+        },
+        {
+          categoryId: "000",
+          id: "org1",
+          name: "organisationName",
+          roleId: 0,
+          statusId: "1"
+        }
+        ]
+    );
   });
 
   it('then it should should audit an invited user', async () => {
