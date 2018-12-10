@@ -11,6 +11,10 @@ const identifyingPartySchema = new SimpleSchema({
   clockTolerance: SimpleSchema.Integer,
 });
 
+const togglesSchema = new SimpleSchema({
+  useApproverJourney: Boolean,
+});
+
 const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
   hostingEnvironment: schemas.hostingEnvironment,
@@ -21,6 +25,7 @@ const schema = new SimpleSchema({
   access: schemas.apiClient,
   hotConfig: schemas.apiClient,
   search: schemas.apiClient,
+  toggles: togglesSchema,
 });
 
 module.exports.validate = () => {
