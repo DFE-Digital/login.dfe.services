@@ -23,7 +23,7 @@
                     <%
                     for (let s = 0; s < services.length; s++) {
                         const service = services[s];
-                        if (service.isMigrated === true && service.isExternalService === true) {
+                        if (service.isExternalService === true) {
                     %>
                         <li><%=service.name%></li>
                     <% } %>
