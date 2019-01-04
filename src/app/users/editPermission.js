@@ -43,7 +43,7 @@ const post = async (req, res) => {
     return org
   });
 
-  await updateIndex(uid, updatedOrganisationDetails, req.id);
+  await updateIndex(uid, updatedOrganisationDetails, null, req.id);
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for org ${organisationDetails.organisation.name} (id: ${organisationId}) for user ${user.email} (id: ${uid})`, {
     type: 'approver',

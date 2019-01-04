@@ -51,9 +51,16 @@ const getById = async (userId, correlationId) => {
   }
 };
 
-const updateIndex = async (userId, organisations, correlationId) => {
+const updateIndex = async (userId, organisations, email, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
+    const body = {};
+    if (organisations) {
+      body.organisations = organisations;
+    }
+    if (email) {
+      body.email = email;
+    }
     await rp({
       method: 'PATCH',
       uri: `${config.search.service.url}/users/${userId}`,
@@ -61,9 +68,7 @@ const updateIndex = async (userId, organisations, correlationId) => {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      body: {
-        organisations,
-      },
+      body,
       json: true,
     });
     return true;
