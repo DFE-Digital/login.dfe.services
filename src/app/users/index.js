@@ -29,10 +29,13 @@ const users = (csrf) => {
 
   router.get('/users', asyncWrapper((req, res) => {
     req.userOrganisations = req.userOrganisations.filter(x => x.role.id === 10000);
+    if (req.userOrganisations.length === 0) {
+      return res.status(401).render('errors/views/notAuthorised');
+    }
     if (req.userOrganisations.length === 1) {
-      res.redirect(`${req.userOrganisations[0].organisation.id}/users`);
+      return res.redirect(`${req.userOrganisations[0].organisation.id}/users`);
     } else {
-      res.redirect(`/approvals/select-organisation`);
+      return res.redirect(`/approvals/select-organisation`);
     }
   }));
 
