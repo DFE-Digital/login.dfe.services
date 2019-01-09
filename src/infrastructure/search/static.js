@@ -6,7 +6,7 @@ const getById = async (userId, correlationId) => {
   return Promise.resolve([]);
 };
 
-const updateIndex = async (userId, organisations, correlationId) => {
+const updateIndex = async (userId, organisations, email, correlationId) => {
   return Promise.resolve();
 };
 

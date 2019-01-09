@@ -22,6 +22,7 @@ const action = async (req, res) => {
     organisationDetails,
     services: servicesForUser,
     user,
+    isInvitation: req.params.uid.startsWith('inv-'),
   });
 };
 

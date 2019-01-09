@@ -54,7 +54,7 @@ const post = async (req, res) => {
   const getAllUserDetails = await getById(uid, req.id);
   const currentOrganisationDetails = getAllUserDetails.organisations;
   const updatedOrganisationDetails = currentOrganisationDetails.filter(org => org.id !== organisationId);
-  await updateIndex(uid, updatedOrganisationDetails, req.id);
+  await updateIndex(uid, updatedOrganisationDetails, null, req.id);
 
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;

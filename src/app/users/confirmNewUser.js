@@ -92,7 +92,7 @@ const post = async (req, res) => {
       roleId: 0,
     };
     currentOrganisationDetails.push(newOrgDetails);
-    await updateIndex(uid, currentOrganisationDetails, req.id);
+    await updateIndex(uid, currentOrganisationDetails, null, req.id);
   }
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
