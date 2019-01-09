@@ -18,6 +18,7 @@ const { get: getConfirmExistingUser, post: postConfirmExistingUser } = require('
 const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
 const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');
 const { get: getConfirmNewUser, post: postConfirmNewUser} = require ('./confirmNewUser');
+const { get: getResendInvitation, post: postResendInvitation } = require('./resendInvitation');
 
 const router = express.Router({ mergeParams: true });
 
@@ -69,6 +70,7 @@ const users = (csrf) => {
   }));
   router.get('/:orgId/users/:uid/services', csrf, isApprover, asyncWrapper(getServices));
 
+
   router.get('/:orgId/users/:uid/services/:sid', csrf, isApprover, asyncWrapper(getEditService));
   router.post('/:orgId/users/:uid/services/:sid', csrf, isApprover, asyncWrapper(postEditService));
   router.get('/:orgId/users/:uid/services/:sid/confirm-edit-service', csrf, isApprover, asyncWrapper(getConfirmEditService));
@@ -80,6 +82,9 @@ const users = (csrf) => {
   router.post('/:orgId/users/:uid/remove-organisation', csrf, isApprover, asyncWrapper(postRemoveOrganisation));
   router.get('/:orgId/users/:uid/edit-permission', csrf, isApprover, asyncWrapper(getEditPermission));
   router.post('/:orgId/users/:uid/edit-permission', csrf, isApprover, asyncWrapper(postEditPermission));
+
+  router.get('/:orgId/users/:uid/resend-invitation', csrf, isApprover, asyncWrapper(getResendInvitation));
+  router.post('/:orgId/users/:uid/resend-invitation', csrf, isApprover, asyncWrapper(postResendInvitation));
 
   router.get('/select-organisation', csrf, asyncWrapper(getSelectOrganisation));
   router.post('/select-organisation', csrf, asyncWrapper(postSelectOrganisation));
