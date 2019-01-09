@@ -12,7 +12,7 @@ const getApproversDetails = async (organisations) => {
   if (distinctApproverIds.length === 0) {
     return [];
   }
-  return Account.getUsersById(distinctApproverIds);
+  return Account.getUsersByIdV2(distinctApproverIds);
 };
 
 const mapRole = (role) => {
