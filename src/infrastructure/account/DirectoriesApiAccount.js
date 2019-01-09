@@ -23,7 +23,7 @@ const callDirectoriesApi = async (resource, body, method = 'POST') => {
       },
       json: true,
     };
-    if (method === 'POST') {
+    if (method === 'POST' || method === 'PATCH') {
       opts.body = body;
     }
     const result = await rp(opts);
@@ -115,6 +115,31 @@ class DirectoriesApiAccount extends Account {
       throw new Error(response.errorMessage);
     }
     return response.result.id;
+  }
+
+  static async updateInvite(id, email) {
+    const response = await callDirectoriesApi(`invitations/${id}`, {
+      email,
+    }, 'PATCH');
+    if (!response.success) {
+      if (response.statusCode === 404) {
+        return null;
+      }
+      throw new Error(response.errorMessage);
+    }
+    return true;
+  }
+
+  static async resendInvitation(id) {
+    const response = await callDirectoriesApi(`invitations/${id}/resend`);
+
+    if(!response.success){
+      if (response.statusCode === 404) {
+        return null;
+      }
+      throw new Error(response.errorMessage);
+    }
+    return true;
   }
 }
 

@@ -18,6 +18,7 @@ const getUserDetails = async (req) => {
     status: mapUserStatus(user.statusId),
     organisation: organisationDetails,
     lastLogin: user.lastLogin,
+    deactivated: user.statusId === -2,
   };
 };
 
