@@ -96,21 +96,42 @@ describe('when inviting a new user', () => {
     putUserInOrganisation.mockReset();
     addInvitationService.mockReset();
     addUserService.mockReset();
-    getOrganisationById.mockReset();
-    getOrganisationById.mockReturnValue({
-      id: 'org1',
-      name: 'organisationName',
-      Category: '000',
-      Status: '1',
+    getOrganisationById.mockReset().mockReturnValue({
+      id: 'org2',
+      name: 'organisation two',
+      category: {
+        'id': '001',
+        'name': 'Establishment'
+      },
+      urn: '12345',
+      uid: null,
+      ukprn: null,
+      establishmentNumber: '9876',
+      status: {
+        id: 1,
+        name: 'Open'
+      },
+      closedOn: null,
+      address: null,
+      telephone: null,
+      localAuthority: {
+        id: 'la1',
+        name: 'local authority 1',
+        code: '456'
+      },
+      statutoryLowAge: null,
+      statutoryHighAge: null,
+      legacyId: '789654',
+      companyRegistrationNumber: null,
     });
 
     getById.mockReset();
     getById.mockReturnValue({
       organisations: [
         {
-          id: "org1",
-          name: "organisationId",
-          categoryId: "004",
+          id: 'org1',
+          name: 'organisationId',
+          categoryId: '004',
           statusId: 1,
           roleId: 0
         },
@@ -200,20 +221,23 @@ describe('when inviting a new user', () => {
     expect(updateIndex.mock.calls[0][1]).toEqual(
       [
         {
-        categoryId: "004",
-        id: "org1",
-        name: "organisationId",
-        roleId: 0,
-        statusId: 1
+          categoryId: '004',
+          id: 'org1',
+          name: 'organisationId',
+          roleId: 0,
+          statusId: 1
         },
         {
-          categoryId: "000",
-          id: "org1",
-          name: "organisationName",
+          categoryId: '001',
+          id: 'org2',
+          name: 'organisation two',
+          urn: '12345',
+          establishmentNumber: '9876',
+          laNumber: '456',
           roleId: 0,
-          statusId: "1"
+          statusId: 1
         }
-        ]
+      ]
     );
   });
 

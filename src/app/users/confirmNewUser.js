@@ -87,8 +87,12 @@ const post = async (req, res) => {
     const newOrgDetails = {
       id: organisation.id,
       name: organisation.name,
-      categoryId: organisation.Category,
-      statusId: organisation.Status,
+      urn: organisation.urn || undefined,
+      uid: organisation.uid || undefined,
+      establishmentNumber: organisation.establishmentNumber || undefined,
+      laNumber: organisation.localAuthority ? organisation.localAuthority.code : undefined,
+      categoryId: organisation.category.id,
+      statusId: organisation.status.id,
       roleId: 0,
     };
     currentOrganisationDetails.push(newOrgDetails);
