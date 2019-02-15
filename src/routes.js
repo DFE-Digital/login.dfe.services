@@ -15,13 +15,18 @@ const routes = (app, csrf) => {
   // auth callbacks
   app.get('/auth', passport.authenticate('oidc'));
   app.get('/auth/cb', (req, res, next) => {
-    passport.authenticate('oidc',(err, user) => {
-      let redirectUrl = '/';
+    const defaultLoggedInPath = '/my-services';
+
+    if (req.query.error === 'sessionexpired') {
+      return res.redirect(defaultLoggedInPath);
+    }
+    passport.authenticate('oidc', (err, user) => {
+      let redirectUrl = defaultLoggedInPath;
 
       if (err) {
         if (err.message.match(/state\smismatch/)) {
           req.session = null;
-          return res.redirect('/');
+          return res.redirect(defaultLoggedInPath);
         }
         logger.error(`Error in auth callback - ${err}`);
         return next(err);
