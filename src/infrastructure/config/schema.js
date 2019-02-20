@@ -11,18 +11,38 @@ const identifyingPartySchema = new SimpleSchema({
   clockTolerance: SimpleSchema.Integer,
 });
 
+const accessIdentifiers = new SimpleSchema({
+  identifiers: {
+    type: Object,
+  },
+  'identifiers.service': patterns.uuid,
+  'identifiers.organisation': patterns.uuid,
+});
+
+accessIdentifiers.extend(schemas.apiClient);
+
 const togglesSchema = new SimpleSchema({
   useApproverJourney: Boolean,
 });
 
+const hostingEnvironment = new SimpleSchema({
+  manageUrl: {
+    type: String,
+    regEx: patterns.url,
+    optional: true,
+  },
+});
+
+hostingEnvironment.extend(schemas.hostingEnvironment);
+
 const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
-  hostingEnvironment: schemas.hostingEnvironment,
+  hostingEnvironment,
   identifyingParty: identifyingPartySchema,
   directories: schemas.apiClient,
   organisations: schemas.apiClient,
   applications: schemas.apiClient,
-  access: schemas.apiClient,
+  access: accessIdentifiers,
   hotConfig: schemas.apiClient,
   search: schemas.apiClient,
   toggles: togglesSchema,
