@@ -15,7 +15,8 @@ const get = async (req, res) => {
   const serviceDetails = await getApplication(req.params.sid, req.id);
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const uid = req.params.uid && !req.params.uid.startsWith('inv-') ? req.params.uid : undefined;
-  const serviceRoles = await policyEngine.getRolesAvailableForUser(uid, req.params.orgId, req.params.sid, req.id);
+  const policyResult = await policyEngine.getPolicyApplicationResultsForUser(uid, req.params.orgId, req.params.sid, req.id);
+  const serviceRoles = policyResult.rolesAvailableToUser;
   const selectedRoles = req.session.user.services ? req.session.user.services.find(x => x.serviceId === req.params.sid) : [];
 
   const model = {
