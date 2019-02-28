@@ -2,7 +2,7 @@
 const { getAllServices } = require('./../../infrastructure/applications');
 const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
 const { putUserInOrganisation, putInvitationInOrganisation, getOrganisationById } = require('./../../infrastructure/organisations');
-const { getById, updateIndex } = require ('./../../infrastructure/search');
+const { getById, updateIndex } = require('./../../infrastructure/search');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
@@ -45,7 +45,11 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`)
+    return res.redirect(`/approvals/${req.params.orgId}/users`);
+  }
+  if (!req.userOrganisations) {
+    logger.warn('No req.userOrganisations on post of confirmNewUser');
+    return res.redirect(`/approvals/${req.params.orgId}/users`);
   }
 
   let uid = req.params.uid;
