@@ -87,20 +87,26 @@ const post = async (req, res) => {
   if (req.params.uid) {
     const getAllUserDetails = await getById(req.params.uid, req.id);
     const organisation = await getOrganisationById(organisationId, req.id);
-    const currentOrganisationDetails = getAllUserDetails.organisations;
-    const newOrgDetails = {
-      id: organisation.id,
-      name: organisation.name,
-      urn: organisation.urn || undefined,
-      uid: organisation.uid || undefined,
-      establishmentNumber: organisation.establishmentNumber || undefined,
-      laNumber: organisation.localAuthority ? organisation.localAuthority.code : undefined,
-      categoryId: organisation.category.id,
-      statusId: organisation.status.id,
-      roleId: 0,
-    };
-    currentOrganisationDetails.push(newOrgDetails);
-    await updateIndex(req.params.uid, currentOrganisationDetails, null, req.id);
+    if (!getAllUserDetails) {
+      logger.error(`Failed to find user ${req.params.uid} when confirming change of user permissions`, { correlationId: req.id });
+    } else if (!organisation) {
+      logger.error(`Failed to find organisation ${organisationId} when confirming change of user permissions`, { correlationId: req.id })
+    } else {
+      const currentOrganisationDetails = getAllUserDetails.organisations;
+      const newOrgDetails = {
+        id: organisation.id,
+        name: organisation.name,
+        urn: organisation.urn || undefined,
+        uid: organisation.uid || undefined,
+        establishmentNumber: organisation.establishmentNumber || undefined,
+        laNumber: organisation.localAuthority ? organisation.localAuthority.code : undefined,
+        categoryId: organisation.category.id,
+        statusId: organisation.status.id,
+        roleId: 0,
+      };
+      currentOrganisationDetails.push(newOrgDetails);
+      await updateIndex(req.params.uid, currentOrganisationDetails, null, req.id);
+    }
   }
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
