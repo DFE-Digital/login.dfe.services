@@ -85,7 +85,7 @@ const post = async (req, res) => {
   }
   // patch search index with organisation added to existing user or inv
   if (req.params.uid) {
-    const getAllUserDetails = await getById(uid, req.id);
+    const getAllUserDetails = await getById(req.params.uid, req.id);
     const organisation = await getOrganisationById(organisationId, req.id);
     const currentOrganisationDetails = getAllUserDetails.organisations;
     const newOrgDetails = {
@@ -100,7 +100,7 @@ const post = async (req, res) => {
       roleId: 0,
     };
     currentOrganisationDetails.push(newOrgDetails);
-    await updateIndex(uid, currentOrganisationDetails, null, req.id);
+    await updateIndex(req.params.uid, currentOrganisationDetails, null, req.id);
   }
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
