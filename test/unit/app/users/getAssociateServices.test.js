@@ -1,16 +1,21 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-
 jest.mock('./../../../../src/infrastructure/applications', () => {
   return {
     getAllServices: jest.fn(),
   };
 });
 jest.mock('./../../../../src/app/users/utils');
+jest.mock('login.dfe.policy-engine');
 
+const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { getAllServices } = require('./../../../../src/infrastructure/applications');
 const { getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
+const PolicyEngine = require('login.dfe.policy-engine');
+
+const policyEngine = {
+  getPolicyApplicationResultsForUser: jest.fn(),
+  validate: jest.fn(),
+};
 
 describe('when displaying the associate service view', () => {
 
@@ -82,6 +87,13 @@ describe('when displaying the associate service view', () => {
       status: 'active',
       isExternalService: true,
     }]);
+
+    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
+      policiesAppliedForUser: [],
+      rolesAvailableToUser: [],
+      serviceAvailableToUser: true,
+    });
+    PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getAssociateServices = require('./../../../../src/app/users/associateServices').get;
   });
@@ -242,5 +254,48 @@ describe('when displaying the associate service view', () => {
       }],
     });
   });
+  it('then it should exclude services that are not available based on policies', async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: 'service1',
+          name: 'service one',
+          isExternalService: true,
+          relyingParty: {
+            params: {}
+          }
+        },
+        {
+          id: 'service2',
+          name: 'service two',
+          isExternalService: true,
+          relyingParty: {
+            params: {}
+          }
+        },
+      ]
+    });
+    getAllServicesForUserInOrg.mockReturnValue([]);
+    policyEngine.getPolicyApplicationResultsForUser.mockImplementation((userId, organisationId, serviceId) => ({
+      policiesAppliedForUser: [],
+      rolesAvailableToUser: [],
+      serviceAvailableToUser: serviceId === 'service2',
+    }));
 
+    await getAssociateServices(req, res);
+
+    expect(policyEngine.getPolicyApplicationResultsForUser).toHaveBeenCalledTimes(2);
+    expect(policyEngine.getPolicyApplicationResultsForUser).toHaveBeenCalledWith('user1', 'org1', 'service1', req.id);
+    expect(policyEngine.getPolicyApplicationResultsForUser).toHaveBeenCalledWith('user1', 'org1', 'service2', req.id);
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      services: [{
+        id: 'service2',
+        name: 'service two',
+        isExternalService: true,
+        relyingParty: {
+          params: {}
+        }
+      }],
+    });
+  });
 });

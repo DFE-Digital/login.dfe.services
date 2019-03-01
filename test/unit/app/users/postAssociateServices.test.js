@@ -1,16 +1,21 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-
 jest.mock('./../../../../src/infrastructure/applications', () => {
   return {
     getAllServices: jest.fn(),
   };
 });
 jest.mock('./../../../../src/app/users/utils');
+jest.mock('login.dfe.policy-engine');
 
+const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { getAllServices } = require('./../../../../src/infrastructure/applications');
 const { getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
+const PolicyEngine = require('login.dfe.policy-engine');
+
+const policyEngine = {
+  getPolicyApplicationResultsForUser: jest.fn(),
+  validate: jest.fn(),
+};
 
 describe('when adding services to a user', () => {
 
@@ -83,6 +88,13 @@ describe('when adding services to a user', () => {
       isExternalService: true,
     }]);
 
+    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
+      policiesAppliedForUser: [],
+      rolesAvailableToUser: [],
+      serviceAvailableToUser: true,
+    });
+    PolicyEngine.mockReset().mockImplementation(() => policyEngine);
+
     postAssociateServices = require('./../../../../src/app/users/associateServices').post;
   });
 
@@ -121,6 +133,27 @@ describe('when adding services to a user', () => {
       },
       validationMessages: {
         services: 'At least one service must be selected',
+      },
+    });
+  });
+
+  it('then it should render view if a selected service is no longer available', async () => {
+    req.body.service = [
+      'service1',
+    ];
+    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
+      policiesAppliedForUser: [],
+      rolesAvailableToUser: [],
+      serviceAvailableToUser: false,
+    });
+
+    await postAssociateServices(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('users/views/associateServices');
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      validationMessages: {
+        services: 'A service was selected that is no longer available',
       },
     });
   });
