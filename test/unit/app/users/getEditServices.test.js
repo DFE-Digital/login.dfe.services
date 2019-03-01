@@ -1,12 +1,14 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-
-jest.mock('login.dfe.policy-engine');
-
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-
+jest.mock('login.dfe.policy-engine');
 jest.mock('./../../../../src/app/users/utils');
+
+const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
+const PolicyEngine = require('login.dfe.policy-engine');
 const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
 
+const policyEngine = {
+  getPolicyApplicationResultsForUser: jest.fn(),
+};
 
 describe('when displaying the edit service view', () => {
 
@@ -55,6 +57,10 @@ describe('when displaying the edit service view', () => {
     }];
     res = mockResponse();
 
+    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
+      rolesAvailableToUser: [],
+    });
+    PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getSingleServiceForUser.mockReset();
     getSingleServiceForUser.mockReturnValue({

@@ -1,6 +1,10 @@
 'use strict';
+const config = require('./../../infrastructure/config');
 const {getAllServices} = require('./../../infrastructure/applications');
 const {getAllServicesForUserInOrg} = require('./utils');
+const PolicyEngine = require('login.dfe.policy-engine');
+
+const policyEngine = new PolicyEngine(config);
 
 const getAllAvailableServices = async (req) => {
   const allServices = await getAllServices(req.id);
@@ -9,7 +13,14 @@ const getAllAvailableServices = async (req) => {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
     externalServices = externalServices.filter(ex => !allUserServicesInOrg.find(as => as.id === ex.id));
   }
-  return externalServices;
+  const servicesNotAvailableThroughPolicies = [];
+  for (let i = 0; i < externalServices.length; i++) {
+    const policyResult = await policyEngine.getPolicyApplicationResultsForUser(req.params.uid, req.params.orgId, externalServices[i].id, req.id);
+    if (!policyResult.serviceAvailableToUser) {
+      servicesNotAvailableThroughPolicies.push(externalServices[i].id);
+    }
+  }
+  return externalServices.filter(x => !servicesNotAvailableThroughPolicies.find(y => x.id === y));
 };
 
 const get = async (req, res) => {
@@ -62,6 +73,9 @@ const validate = async (req) => {
   };
   if (!model.selectedServices) {
     model.validationMessages.services = 'At least one service must be selected';
+  }
+  if (model.selectedServices && model.selectedServices.filter(sid => !externalServices.find(s => s.id.toLowerCase() === sid.toLowerCase())).length > 0) {
+    model.validationMessages.services = 'A service was selected that is no longer available';
   }
   return model;
 };

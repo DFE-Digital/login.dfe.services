@@ -1,7 +1,4 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-
 jest.mock('login.dfe.policy-engine');
-
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 jest.mock('./../../../../src/infrastructure/applications', () => {
   return {
@@ -9,7 +6,13 @@ jest.mock('./../../../../src/infrastructure/applications', () => {
   };
 });
 
+const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
+const PolicyEngine = require('login.dfe.policy-engine');
 const { getApplication } = require('./../../../../src/infrastructure/applications');
+
+const policyEngine = {
+  getPolicyApplicationResultsForUser: jest.fn(),
+};
 
 describe('when displaying the associate roles view', () => {
 
@@ -63,6 +66,11 @@ describe('when displaying the associate roles view', () => {
       }
     }];
     res = mockResponse();
+
+    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
+      rolesAvailableToUser: [],
+    });
+    PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getAssociateRoles = require('./../../../../src/app/users/associateRoles').get;
   });
