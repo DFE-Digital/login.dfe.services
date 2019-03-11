@@ -10,12 +10,19 @@ const rp = require('login.dfe.request-promise-retry').defaults({
 });
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
-const getAllUsersForOrg = async (page, orgId, correlationId) => {
+const getAllUsersForOrg = async (page, orgId, sortBy, sortDirection, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
+    let endpoint = `${config.search.service.url}/users/?page=${page}&filter_organisations=${orgId}`;
+    if (sortBy) {
+      endpoint += `&sortBy=${sortBy}`;
+    }
+    if (sortDirection) {
+      endpoint += `&sortDirection=${sortDirection}`;
+    }
     return await rp({
       method: 'GET',
-      uri: `${config.search.service.url}/users/?page=${page}&filter_organisations=${orgId}`,
+      uri: endpoint,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
