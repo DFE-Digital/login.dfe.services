@@ -111,7 +111,7 @@ describe('when adding services to a user', () => {
       backLink: 'services',
       currentPage: 'users',
       organisationDetails:  undefined,
-      selectedServices:  undefined,
+      selectedServices:  [],
       services: [
         {
           id: 'service1',

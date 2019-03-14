@@ -68,7 +68,7 @@ const getOrganisationAndServiceForInvitation = async (invitationId, correlationI
 };
 
 const getOrganisationById = async (orgId, correlationId) => {
-  return callApi('GET', `organisations/${orgId}`, correlationId);
+  return callApi('GET', `organisations/v2/${orgId}`, correlationId);
 };
 
 
