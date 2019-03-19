@@ -15,7 +15,7 @@ const getAllAvailableServices = async (req) => {
   }
   const servicesNotAvailableThroughPolicies = [];
   for (let i = 0; i < externalServices.length; i++) {
-    const policyResult = await policyEngine.getPolicyApplicationResultsForUser(req.params.uid, req.params.orgId, externalServices[i].id, req.id);
+    const policyResult = await policyEngine.getPolicyApplicationResultsForUser((!req.params.uid || req.params.uid.startsWith('inv-')) ? undefined : req.params.uid, req.params.orgId, externalServices[i].id, req.id);
     if (!policyResult.serviceAvailableToUser) {
       servicesNotAvailableThroughPolicies.push(externalServices[i].id);
     }
@@ -61,6 +61,13 @@ const validate = async (req) => {
   } else {
     backRedirect = 'services'
   }
+
+  let selectedServices = [];
+  if (req.body.service && req.body.service instanceof Array) {
+    selectedServices = req.body.service;
+  } else if (req.body.service) {
+    selectedServices = [req.body.service];
+  }
   const model = {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
@@ -68,10 +75,10 @@ const validate = async (req) => {
     currentPage: 'users',
     organisationDetails,
     services: externalServices,
-    selectedServices: req.body.service,
+    selectedServices,
     validationMessages: {},
   };
-  if (!model.selectedServices) {
+  if (model.selectedServices.length < 1) {
     model.validationMessages.services = 'At least one service must be selected';
   }
   if (model.selectedServices && model.selectedServices.filter(sid => !externalServices.find(s => s.id.toLowerCase() === sid.toLowerCase())).length > 0) {
@@ -91,12 +98,9 @@ const post = async (req, res) => {
     return res.render('users/views/associateServices', model);
   }
 
-  let selectedServices = req.body.service;
-  if (!(selectedServices instanceof Array)) {
-    selectedServices = [req.body.service];
-  }
 
-  req.session.user.services = selectedServices.map((serviceId) => {
+
+  req.session.user.services = model.selectedServices.map((serviceId) => {
     const existingServiceSelections = req.session.user.services ? req.session.user.services.find(x => x.serviceId === serviceId) : undefined;
     return {
       serviceId,
