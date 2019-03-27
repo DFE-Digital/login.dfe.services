@@ -16,7 +16,11 @@ const search = async (req) => {
   if (isNaN(page)) {
     page = 1;
   }
-  const usersForOrganisation = await getAllUsersForOrg(page, organisationId, req.id);
+
+  let sortBy = paramsSource.sort ? paramsSource.sort : 'searchableName';
+  let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
+
+  const usersForOrganisation = await getAllUsersForOrg(page, organisationId, sortBy, sortAsc ? 'asc' : 'desc', req.id);
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
     const user = usersForOrganisation.users[i];
     const organisation = user.organisations.filter(x => x.id === organisationId);
@@ -25,11 +29,31 @@ const search = async (req) => {
   }
   return {
     page,
+    sortBy,
+    sortOrder: sortAsc ? 'asc' : 'desc',
     usersForOrganisation,
     organisationDetails,
     numberOfPages: usersForOrganisation.numberOfPages,
     totalNumberOfResults: usersForOrganisation.totalNumberOfResults,
-  }
+    sort: {
+      searchableName: {
+        nextDirection: sortBy === 'searchableName' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'searchableName',
+      },
+      searchableEmail: {
+        nextDirection: sortBy === 'searchableEmail' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'searchableEmail',
+      },
+      lastLogin: {
+        nextDirection: sortBy === 'lastLogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'lastLogin',
+      },
+      statusId: {
+        nextDirection: sortBy === 'statusId' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'statusId',
+      },
+    }
+  };
 };
 
 const get = async (req, res) => {
@@ -41,6 +65,9 @@ const get = async (req, res) => {
     currentPage: 'users',
     usersForOrganisation: result.usersForOrganisation,
     page: result.page,
+    sort: result.sort,
+    sortBy: result.sortBy,
+    sortOrder: result.sortOrder,
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
     organisationDetails: result.organisationDetails,
@@ -55,6 +82,9 @@ const post = async (req, res) => {
     currentPage: 'users',
     usersForOrganisation: result.usersForOrganisation,
     page: result.page,
+    sort: result.sort,
+    sortBy: result.sortBy,
+    sortOrder: result.sortOrder,
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
     organisationDetails: result.organisationDetails,
