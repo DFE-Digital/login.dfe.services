@@ -105,6 +105,7 @@ const init = async () => {
     },
     app: {
       title: 'DfE Sign-in',
+      environmentBannerMessage: config.hostingEnvironment.environmentBannerMessage,
     },
     gaTrackingId: config.hostingEnvironment.gaTrackingId,
     useApproverJourney: config.toggles.useApproverJourney,

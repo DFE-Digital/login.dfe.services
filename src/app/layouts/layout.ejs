@@ -47,6 +47,11 @@
 </div>
 
 <div class="wrapper">
+    <%if(app.environmentBannerMessage) {%>
+    <div class="environment-banner">
+        <div><%-app.environmentBannerMessage%></div>
+    </div>
+    <%}%>
 
     <header id="global-header">
         <div class="header-wrapper">
