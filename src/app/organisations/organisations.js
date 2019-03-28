@@ -1,7 +1,6 @@
 'use strict';
 
 const { getOrganisationAndServiceForUser } = require('./../../infrastructure/organisations');
-const { getOidcClients } = require('./../../infrastructure/hotConfig');
 const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
@@ -32,7 +31,6 @@ const mapRole = (role) => {
 const getAndMapOrganisationsAndServices = async (account, correlationId) => {
   const organisations = await getOrganisationAndServiceForUser(account.id, correlationId);
   const allApprovers = await getApproversDetails(organisations, correlationId);
-  const oidcClients = await getOidcClients(correlationId);
 
   return organisations.map((organisation) => {
     const approvers = organisation.approvers.map((approverId) => {

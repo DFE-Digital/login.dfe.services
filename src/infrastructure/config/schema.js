@@ -23,7 +23,6 @@ const schema = new SimpleSchema({
   organisations: schemas.apiClient,
   applications: schemas.apiClient,
   access: schemas.apiClient,
-  hotConfig: schemas.apiClient,
   search: schemas.apiClient,
   toggles: togglesSchema,
 });
