@@ -150,7 +150,9 @@ const init = async () => {
       logger.info(`Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port} with config:\n${JSON.stringify(config)}`);
     });
   } else if (config.hostingEnvironment.env === 'docker') {
-    logger.info(`Server listening on http://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`)
+    app.listen(config.hostingEnvironment.port, () => {
+      logger.info(`Server listening on http://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`)
+    });
   } else {
     app.listen(process.env.PORT, () => {
       logger.info(`Server listening on http://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`);
