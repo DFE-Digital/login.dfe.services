@@ -135,7 +135,7 @@ const init = async () => {
     errorPageRenderer,
   }));
 
-  if (config.hostingEnvironment.env === 'dev' || config.hostingEnvironment.env === 'docker') {
+  if (config.hostingEnvironment.env === 'dev') {
     app.proxy = true;
 
     const options = {
@@ -150,6 +150,7 @@ const init = async () => {
       logger.info(`Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port} with config:\n${JSON.stringify(config)}`);
     });
   } else if (config.hostingEnvironment.env === 'docker') {
+    process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
     app.listen(config.hostingEnvironment.port, () => {
       logger.info(`Server listening on http://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`)
     });
