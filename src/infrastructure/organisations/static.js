@@ -2,6 +2,10 @@ const getOrganisationAndServiceForUser = async (userId, correlationId) => {
   return Promise.resolve([]);
 };
 
+const getOrganisationAndServiceForUserV2 = async (userId, correlationId) => {
+  return Promise.resolve([]);
+};
+
 const getOrganisationAndServiceForInvitation = async (invitationId, correlationId) => {
   return Promise.resolve([]);
 };
@@ -70,4 +74,5 @@ module.exports = {
   putInvitationInOrganisation,
   getOrganisationAndServiceForInvitation,
   getOrganisationById,
+  getOrganisationAndServiceForUserV2,
 };
