@@ -2,7 +2,7 @@
 
 const config = require('./../config');
 const {getServicesForUser} = require('../../infrastructure/access');
-const { getOrganisationAndServiceForUser } = require('./../organisations');
+const { getOrganisationAndServiceForUserV2 } = require('./../organisations');
 const APPROVER = 10000;
 
 const isLoggedIn = (req, res, next) => {
@@ -42,7 +42,7 @@ const setUserContext = async (req, res, next) => {
   if (req.user) {
     res.locals.user = req.user;
     res.locals.displayName = getUserDisplayName(req.user);
-    const organisations = await getOrganisationAndServiceForUser(req.user.sub, req.id);
+    const organisations = await getOrganisationAndServiceForUserV2(req.user.sub, req.id);
     req.userOrganisations = organisations;
     try {
       if (req.userOrganisations) {
