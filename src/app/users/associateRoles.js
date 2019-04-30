@@ -1,16 +1,20 @@
 'use strict';
 const config = require('./../../infrastructure/config');
 const { getApplication } = require('./../../infrastructure/applications');
+const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
 const getViewModel = async (req) => {
   const totalNumberOfServices = req.session.user.services.length;
   const currentService = req.session.user.services.findIndex(x => x.serviceId === req.params.sid) + 1;
-
   const serviceDetails = await getApplication(req.params.sid, req.id);
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
-  const policyResult = await policyEngine.getPolicyApplicationResultsForUser(undefined, req.params.orgId, req.params.sid, req.id);
+
+  const userOrganisations = !req.params.uid.startsWith('inv-') ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id): undefined;
+  const userAccessToSpecifiedOrganisation = userOrganisations ? userOrganisations.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase()) : undefined;
+  const policyResult = await policyEngine.getPolicyApplicationResultsForUser(userAccessToSpecifiedOrganisation ? req.params.uid : undefined, req.params.orgId, req.params.sid, req.id);
+
   const serviceRoles = policyResult.rolesAvailableToUser;
   const selectedRoles = req.session.user.services ? req.session.user.services.find(x => x.serviceId === req.params.sid) : [];
 
@@ -51,7 +55,10 @@ const post = async (req, res) => {
     selectedRoles = [req.body.role];
   }
 
-  const policyValidationResult = await policyEngine.validate(undefined, req.params.orgId, req.params.sid, selectedRoles, req.id);
+  const userOrganisations = !req.params.uid.startsWith('inv-') ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id): undefined;
+  const userAccessToSpecifiedOrganisation = userOrganisations ? userOrganisations.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase()) : undefined;
+  const policyValidationResult = await policyEngine.validate(userAccessToSpecifiedOrganisation ? req.params.uid : undefined, req.params.orgId, req.params.sid, selectedRoles, req.id);
+
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
     model.validationMessages.roles = policyValidationResult.map(x => x.message);
