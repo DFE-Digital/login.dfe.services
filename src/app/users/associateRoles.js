@@ -11,7 +11,7 @@ const getViewModel = async (req) => {
   const serviceDetails = await getApplication(req.params.sid, req.id);
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
 
-  const userOrganisations = !req.params.uid.startsWith('inv-') ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id): undefined;
+  const userOrganisations = (req.params.uid && !req.params.uid.startsWith('inv-')) ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id) : undefined;
   const userAccessToSpecifiedOrganisation = userOrganisations ? userOrganisations.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase()) : undefined;
   const policyResult = await policyEngine.getPolicyApplicationResultsForUser(userAccessToSpecifiedOrganisation ? req.params.uid : undefined, req.params.orgId, req.params.sid, req.id);
 
@@ -55,7 +55,7 @@ const post = async (req, res) => {
     selectedRoles = [req.body.role];
   }
 
-  const userOrganisations = !req.params.uid.startsWith('inv-') ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id): undefined;
+  const userOrganisations = (req.params.uid && !req.params.uid.startsWith('inv-')) ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id) : undefined;
   const userAccessToSpecifiedOrganisation = userOrganisations ? userOrganisations.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase()) : undefined;
   const policyValidationResult = await policyEngine.validate(userAccessToSpecifiedOrganisation ? req.params.uid : undefined, req.params.orgId, req.params.sid, selectedRoles, req.id);
 
