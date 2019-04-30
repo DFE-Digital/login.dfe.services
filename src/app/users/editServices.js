@@ -1,6 +1,7 @@
 'use strict';
 const config = require('./../../infrastructure/config');
 const { getSingleServiceForUser } = require('./utils');
+const { getApplication } = require('./../../infrastructure/applications');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
@@ -13,6 +14,7 @@ const get = async (req, res) => {
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const policyResult = await policyEngine.getPolicyApplicationResultsForUser(req.params.uid.startsWith('inv-') ? undefined : req.params.uid, req.params.orgId, req.params.sid, req.id);
   const serviceRoles = policyResult.rolesAvailableToUser;
+  const application = await getApplication(req.params.sid, req.id);
   const model = {
     backLink: '../',
     currentPage: 'users',
@@ -26,6 +28,7 @@ const get = async (req, res) => {
     },
     serviceRoles,
     selectedRoles: [],
+    roleMessage: application.relyingParty && application.relyingParty.params && application.relyingParty.params.serviceRoleMessage ? application.relyingParty.params.serviceRoleMessage : undefined,
   };
 
   if (req.session.service) {
