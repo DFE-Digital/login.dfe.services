@@ -110,7 +110,9 @@ describe('when displaying the edit service view', () => {
     await getEditService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      service: getSingleServiceForUser(),
+      service: {
+        name: 'service name',
+      },
     });
   });
 
