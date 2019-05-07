@@ -41,6 +41,7 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
       name: organisation.organisation.name,
       urn: organisation.organisation.urn,
       uid: organisation.organisation.uid,
+      status: organisation.organisation.status,
       role: mapRole(organisation.role),
       approvers,
     };
