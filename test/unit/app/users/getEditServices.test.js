@@ -1,11 +1,25 @@
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 jest.mock('login.dfe.policy-engine');
 jest.mock('./../../../../src/app/users/utils');
+jest.mock('./../../../../src/infrastructure/applications', () => {
+  return {
+    getApplication: jest.fn(),
+  };
+});
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
-
+const { getApplication } = require('./../../../../src/infrastructure/applications');
+const application = {
+  name: 'Service One',
+  relyingParty: {
+    service_home: 'http://service.one/login',
+    redirect_uris: [
+      'http://service.one/login/cb'
+    ],
+  },
+};
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
 };
@@ -55,6 +69,7 @@ describe('when displaying the edit service view', () => {
         name: 'category name'
       }
     }];
+    getApplication.mockReset().mockReturnValue(application);
     res = mockResponse();
 
     policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({

@@ -38,7 +38,11 @@
             <div class="form-group">
                 <fieldset>
                     <legend>
+                        <% if (locals.roleMessage) { %>
+                            <span class="body-text"><%= locals.roleMessage %></span>
+                        <% } else { %>
                         <span class="body-text">Select all required roles</span>
+                        <% } %>
                     </legend>
 
                     <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
