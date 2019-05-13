@@ -19,6 +19,7 @@ const getViewModel = async (req) => {
     organisationDetails,
     service: {
       name: userService.name,
+      id: userService.id,
     },
     validationMessages: {},
     user: {
