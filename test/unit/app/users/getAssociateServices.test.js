@@ -285,8 +285,8 @@ describe('when displaying the associate service view', () => {
     await getAssociateServices(req, res);
 
     expect(policyEngine.getPolicyApplicationResultsForUser).toHaveBeenCalledTimes(2);
-    expect(policyEngine.getPolicyApplicationResultsForUser).toHaveBeenCalledWith('user1', 'org1', 'service1', req.id);
-    expect(policyEngine.getPolicyApplicationResultsForUser).toHaveBeenCalledWith('user1', 'org1', 'service2', req.id);
+    expect(policyEngine.getPolicyApplicationResultsForUser).toHaveBeenCalledWith(undefined, 'org1', 'service1', req.id);
+    expect(policyEngine.getPolicyApplicationResultsForUser).toHaveBeenCalledWith(undefined, 'org1', 'service2', req.id);
     expect(res.render.mock.calls[0][1]).toMatchObject({
       services: [{
         id: 'service2',

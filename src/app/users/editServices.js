@@ -1,6 +1,7 @@
 'use strict';
 const config = require('./../../infrastructure/config');
 const { getSingleServiceForUser } = require('./utils');
+const { getApplication } = require('./../../infrastructure/applications');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
@@ -10,6 +11,7 @@ const getViewModel = async (req) => {
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const policyResult = await policyEngine.getPolicyApplicationResultsForUser(req.params.uid.startsWith('inv-') ? undefined : req.params.uid, req.params.orgId, req.params.sid, req.id);
   const serviceRoles = policyResult.rolesAvailableToUser;
+  const application = await getApplication(req.params.sid, req.id);
   return {
     backLink: '../',
     currentPage: 'users',
@@ -17,6 +19,7 @@ const getViewModel = async (req) => {
     organisationDetails,
     service: {
       name: userService.name,
+      id: userService.id,
     },
     validationMessages: {},
     user: {
@@ -26,6 +29,7 @@ const getViewModel = async (req) => {
     },
     serviceRoles,
     userService,
+    roleMessage: application.relyingParty && application.relyingParty.params && application.relyingParty.params.serviceRoleMessage ? application.relyingParty.params.serviceRoleMessage : undefined,
   };
 };
 
