@@ -19,9 +19,6 @@ const mockConfig = () => {
     applications: {
       type: 'static',
     },
-    hotConfig: {
-      type: 'static',
-    },
     directories: {
       type: 'static',
     },
