@@ -50,7 +50,8 @@ const get = async (req, res) => {
     currentPage: 'users',
     organisationDetails,
     services: externalServices,
-    selectedServices: req.session.user.services ? req.session.user.services : [],
+    selectedServices: req.session.user.services || [],
+    isInvite: req.session.user.isInvite,
   };
 
   res.render('users/views/associateServices', model);
@@ -80,9 +81,10 @@ const validate = async (req) => {
     organisationDetails,
     services: externalServices,
     selectedServices,
+    isInvite: req.session.user.isInvite,
     validationMessages: {},
   };
-  if (model.selectedServices.length < 1) {
+  if (!req.session.user.isInvite && model.selectedServices.length < 1) {
     model.validationMessages.services = 'At least one service must be selected';
   }
   if (model.selectedServices && model.selectedServices.filter(sid => !externalServices.find(s => s.id.toLowerCase() === sid.toLowerCase())).length > 0) {
@@ -102,8 +104,6 @@ const post = async (req, res) => {
     return res.render('users/views/associateServices', model);
   }
 
-
-
   req.session.user.services = model.selectedServices.map((serviceId) => {
     const existingServiceSelections = req.session.user.services ? req.session.user.services.find(x => x.serviceId === serviceId) : undefined;
     return {
@@ -111,6 +111,10 @@ const post = async (req, res) => {
       roles: existingServiceSelections ? existingServiceSelections.roles : [],
     };
   });
+
+  if (req.session.user.isInvite && model.selectedServices.length === 0) {
+    return res.redirect(`/approvals/${req.params.orgId}/users/confirm-new-user`);
+  }
 
   const service = req.session.user.services[0].serviceId;
   return res.redirect(`associate-services/${service}`)
