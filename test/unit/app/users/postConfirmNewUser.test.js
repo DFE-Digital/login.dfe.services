@@ -25,6 +25,7 @@ jest.mock('./../../../../src/infrastructure/search', () => {
   return {
     getById: jest.fn(),
     updateIndex: jest.fn(),
+    createIndex: jest.fn(),
   };
 });
 
@@ -32,7 +33,7 @@ jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../u
 
 const { addInvitationService, addUserService } = require('./../../../../src/infrastructure/access');
 const { putUserInOrganisation, putInvitationInOrganisation, getOrganisationById } = require('./../../../../src/infrastructure/organisations');
-const { getById, updateIndex } = require('./../../../../src/infrastructure/search');
+const { getById, updateIndex, createIndex } = require('./../../../../src/infrastructure/search');
 const Account = require('./../../../../src/infrastructure/account');
 const logger = require('./../../../../src/infrastructure/logger');
 
@@ -160,6 +161,7 @@ describe('when inviting a new user', () => {
 
   it('then it should add invitation to organisation', async () => {
     req.params.uid = 'inv-invite1';
+    req.session.user.isInvite = true;
     await postConfirmNewUser(req, res);
 
     expect(putInvitationInOrganisation.mock.calls).toHaveLength(1);
@@ -214,6 +216,8 @@ describe('when inviting a new user', () => {
   });
 
   it('then it should patch the user with the org added if existing user', async () => {
+    req.session.user.isInvite = true;
+
     await postConfirmNewUser(req, res);
 
     expect(updateIndex.mock.calls).toHaveLength(1);
