@@ -113,7 +113,7 @@ const post = async (req, res) => {
   });
 
   if (req.session.user.isInvite && model.selectedServices.length === 0) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/confirm-new-user`);
+    return res.redirect( req.params.uid ? `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`: `/approvals/${req.params.orgId}/users/confirm-new-user`);
   }
 
   const service = req.session.user.services[0].serviceId;
