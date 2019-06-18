@@ -68,7 +68,7 @@ const post = async (req, res) => {
     await Account.resendInvitation(req.params.uid.substr(4));
   } else {
     await Account.updateInvite(req.params.uid.substr(4), req.session.user.email);
-    await updateIndex(req.params.uid, null, req.session.user.email, req.id);
+    await updateIndex(req.params.uid, null, req.session.user.email, null, req.id);
   }
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.email} (id: ${req.session.user.uid})`, {
