@@ -2,7 +2,7 @@
 const { getAllServices } = require('./../../infrastructure/applications');
 const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
 const { putUserInOrganisation, putInvitationInOrganisation, getOrganisationById } = require('./../../infrastructure/organisations');
-const { getById, updateIndex } = require('./../../infrastructure/search');
+const { getById, updateIndex, createIndex } = require('./../../infrastructure/search');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
@@ -64,7 +64,9 @@ const post = async (req, res) => {
   //if existing invitation or new invite
   if (uid.startsWith('inv-')) {
     const invitationId = uid.substr(4);
-    await putInvitationInOrganisation(invitationId, organisationId, 0, req.id);
+    if (req.session.user.isInvite) {
+      await putInvitationInOrganisation(invitationId, organisationId, 0, req.id);
+    }
     if (req.session.user.services) {
       for (let i = 0; i < req.session.user.services.length; i++) {
         const service = req.session.user.services[i];
@@ -83,34 +85,41 @@ const post = async (req, res) => {
       }
     }
   }
-  // patch search index with organisation added to existing user or inv
-  if (req.params.uid) {
-    const getAllUserDetails = await getById(req.params.uid, req.id);
-    const organisation = await getOrganisationById(organisationId, req.id);
-    if (!getAllUserDetails) {
-      logger.error(`Failed to find user ${req.params.uid} when confirming change of user permissions`, { correlationId: req.id });
-    } else if (!organisation) {
-      logger.error(`Failed to find organisation ${organisationId} when confirming change of user permissions`, { correlationId: req.id })
-    } else {
-      const currentOrganisationDetails = getAllUserDetails.organisations;
-      const newOrgDetails = {
-        id: organisation.id,
-        name: organisation.name,
-        urn: organisation.urn || undefined,
-        uid: organisation.uid || undefined,
-        establishmentNumber: organisation.establishmentNumber || undefined,
-        laNumber: organisation.localAuthority ? organisation.localAuthority.code : undefined,
-        categoryId: organisation.category.id,
-        statusId: organisation.status.id,
-        roleId: 0,
-      };
-      currentOrganisationDetails.push(newOrgDetails);
-      await updateIndex(req.params.uid, currentOrganisationDetails, null, req.id);
-    }
-  }
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
+
   if (req.session.user.isInvite) {
+    if (req.params.uid) {
+      // patch search index with organisation added to existing user or inv
+      const getAllUserDetails = await getById(req.params.uid, req.id);
+      const organisation = await getOrganisationById(organisationId, req.id);
+      if (!getAllUserDetails) {
+        logger.error(`Failed to find user ${req.params.uid} when confirming change of user permissions`, {correlationId: req.id});
+      } else if (!organisation) {
+        logger.error(`Failed to find organisation ${organisationId} when confirming change of user permissions`, {correlationId: req.id})
+      } else {
+        const currentOrganisationDetails = getAllUserDetails.organisations;
+        const newOrgDetails = {
+          id: organisation.id,
+          name: organisation.name,
+          urn: organisation.urn || undefined,
+          uid: organisation.uid || undefined,
+          establishmentNumber: organisation.establishmentNumber || undefined,
+          laNumber: organisation.localAuthority ? organisation.localAuthority.code : undefined,
+          categoryId: organisation.category.id,
+          statusId: organisation.status.id,
+          roleId: 0,
+        };
+        currentOrganisationDetails.push(newOrgDetails);
+        await updateIndex(req.params.uid, currentOrganisationDetails, null, req.id);
+      }
+    } else {
+      // post new inv to search index
+      const createUserIndex = await createIndex(uid, req.id);
+      if (!createUserIndex) {
+        logger.error(`Failed to create user in index ${uid}`, {correlationId: req.id});
+      }
+    }
     //audit invitation
     logger.audit(`${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: ${uid})`, {
       type: 'approver',
@@ -124,8 +133,16 @@ const post = async (req, res) => {
 
     res.flash('info', req.params.uid ? `User ${req.session.user.email} added to organisation` : `Invitation email sent to ${req.session.user.email}`);
     res.redirect(`/approvals/${organisationId}/users`);
-
   } else {
+    const getAllUserDetails = await getById(uid, req.id);
+    if (!getAllUserDetails) {
+      logger.error(`Failed to find user ${uid} when confirming change of user services`, { correlationId: req.id });
+    } else {
+      let currentUserServices = getAllUserDetails.services || [];
+      const newServices = req.session.user.services.map(x => x.serviceId);
+      currentUserServices = currentUserServices.concat(newServices);
+      await updateIndex(uid, null, null, currentUserServices, req.id);
+    }
     // audit add services to existing user
     logger.audit(`${req.user.email} (id: ${req.user.sub}) added services for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
       type: 'approver',
