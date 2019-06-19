@@ -32,7 +32,7 @@
                     <p class="error-message" id="validation-selected-organisation"><%=locals.validationMessages.services%></p>
                     <% } %>
                     <legend>
-                        <span class="body-text">Select all required services</span>
+                        <span class="body-text"><%= locals.isInvite ? 'You can continue without selecting any services': 'Select all required services'%></span>
                     </legend>
 
                     <% for (let i = 0; i < locals.services.length; i++) { %>
