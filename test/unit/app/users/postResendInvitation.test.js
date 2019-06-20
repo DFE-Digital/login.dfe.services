@@ -15,6 +15,7 @@ jest.mock('./../../../../src/infrastructure/search', () => {
     updateIndex: jest.fn(),
   };
 });
+jest.mock('./../../../../src/app/users/utils');
 
 const Account = require('./../../../../src/infrastructure/account');
 const { updateIndex } = require('./../../../../src/infrastructure/search');
