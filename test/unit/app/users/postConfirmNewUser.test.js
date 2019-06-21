@@ -29,6 +29,8 @@ jest.mock('./../../../../src/infrastructure/search', () => {
   };
 });
 
+jest.mock('./../../../../src/app/users/utils');
+
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 
 const { addInvitationService, addUserService } = require('./../../../../src/infrastructure/access');
@@ -97,6 +99,7 @@ describe('when inviting a new user', () => {
     putUserInOrganisation.mockReset();
     addInvitationService.mockReset();
     addUserService.mockReset();
+    createIndex.mockReset();
     getOrganisationById.mockReset().mockReturnValue({
       id: 'org2',
       name: 'organisation two',
@@ -136,7 +139,8 @@ describe('when inviting a new user', () => {
           statusId: 1,
           roleId: 0
         },
-      ]
+      ],
+      services: []
     });
     postConfirmNewUser = require('./../../../../src/app/users/confirmNewUser').post;
   });

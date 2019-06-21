@@ -3,6 +3,8 @@
 const logger = require('./../../infrastructure/logger');
 const { getSingleServiceForUser } = require('./utils');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
+const { getById, updateIndex } = require('./../../infrastructure/search');
+const { waitForIndexToUpdate } = require('./utils');
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -39,6 +41,14 @@ const post = async (req, res) => {
   } else {
     await removeServiceFromUser(uid, serviceId, organisationId, req.id);
   }
+
+  const getAllUserDetails = await getById(uid, req.id);
+  const currentServiceDetails = getAllUserDetails.services;
+  const serviceRemoved = currentServiceDetails.findIndex(x => x === serviceId);
+  const updatedServiceDetails = currentServiceDetails.filter((_, index) => index !== serviceRemoved);
+  await updateIndex(uid, null, null, updatedServiceDetails, req.id);
+  await waitForIndexToUpdate(uid, (updated) => updated.services.length === updatedServiceDetails.length);
+
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
   logger.audit(`${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
