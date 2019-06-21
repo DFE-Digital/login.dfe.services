@@ -2,7 +2,7 @@
 const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../infrastructure/organisations');
 const { getById, updateIndex } = require ('./../../infrastructure/search');
 const logger = require('./../../infrastructure/logger');
-const { getUserDetails } = require('./utils');
+const { getUserDetails, waitForIndexToUpdate } = require('./utils');
 
 
 const get = async (req, res) => {
@@ -44,6 +44,7 @@ const post = async (req, res) => {
   });
 
   await updateIndex(uid, updatedOrganisationDetails, null, null, req.id);
+  await waitForIndexToUpdate(uid, (updated) => ((updated.organisations.find(x => x.id === organisationId)).roleId) === role);
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for org ${organisationDetails.organisation.name} (id: ${organisationId}) for user ${user.email} (id: ${uid})`, {
     type: 'approver',

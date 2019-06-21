@@ -3,6 +3,7 @@ const { getAllServices } = require('./../../infrastructure/applications');
 const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
 const { putUserInOrganisation, putInvitationInOrganisation, getOrganisationById } = require('./../../infrastructure/organisations');
 const { getById, updateIndex, createIndex } = require('./../../infrastructure/search');
+const { waitForIndexToUpdate } = require('./utils');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
@@ -112,6 +113,7 @@ const post = async (req, res) => {
         };
         currentOrganisationDetails.push(newOrgDetails);
         await updateIndex(req.params.uid, currentOrganisationDetails, null, req.id);
+        await waitForIndexToUpdate(req.params.uid, (updated) => updated.organisations.length === currentOrganisationDetails.length)
       }
     } else {
       // post new inv to search index
@@ -119,6 +121,7 @@ const post = async (req, res) => {
       if (!createUserIndex) {
         logger.error(`Failed to create user in index ${uid}`, {correlationId: req.id});
       }
+      await waitForIndexToUpdate(uid);
     }
     //audit invitation
     logger.audit(`${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: ${uid})`, {
@@ -142,6 +145,7 @@ const post = async (req, res) => {
       const newServices = req.session.user.services.map(x => x.serviceId);
       currentUserServices = currentUserServices.concat(newServices);
       await updateIndex(uid, null, null, currentUserServices, req.id);
+      await waitForIndexToUpdate(uid, (updated) => updated.services.length === currentUserServices.length);
     }
     // audit add services to existing user
     logger.audit(`${req.user.email} (id: ${req.user.sub}) added services for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {

@@ -3,6 +3,7 @@ const { emailPolicy } = require('login.dfe.validation');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 const { updateIndex } = require ('./../../infrastructure/search');
+const { waitForIndexToUpdate } = require('./utils');
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -69,6 +70,7 @@ const post = async (req, res) => {
   } else {
     await Account.updateInvite(req.params.uid.substr(4), req.session.user.email);
     await updateIndex(req.params.uid, null, req.session.user.email, null, req.id);
+    await waitForIndexToUpdate(req.params.uid, (updated) => updated.email === req.session.user.email);
   }
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.email} (id: ${req.session.user.uid})`, {
