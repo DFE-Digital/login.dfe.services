@@ -13,7 +13,8 @@ const getViewModel = async (req) => {
   const serviceRoles = policyResult.rolesAvailableToUser;
   const application = await getApplication(req.params.sid, req.id);
   return {
-    backLink: '../',
+    backLink: true,
+    cancelLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/services`,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisationDetails,
