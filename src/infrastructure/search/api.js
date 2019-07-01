@@ -58,7 +58,7 @@ const getById = async (userId, correlationId) => {
   }
 };
 
-const updateIndex = async (userId, organisations, email, correlationId) => {
+const updateIndex = async (userId, organisations, email, services, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
     const body = {};
@@ -67,6 +67,9 @@ const updateIndex = async (userId, organisations, email, correlationId) => {
     }
     if (email) {
       body.email = email;
+    }
+    if (services) {
+      body.services = services;
     }
     await rp({
       method: 'PATCH',
@@ -90,8 +93,33 @@ const updateIndex = async (userId, organisations, email, correlationId) => {
   }
 };
 
+const createIndex = async (id, correlationId) => {
+  const token = await jwtStrategy(config.search.service).getBearerToken();
+  try {
+    await rp({
+      method: 'POST',
+      uri: `${config.search.service.url}/users/update-index`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      body: {
+        id
+      },
+      json: true,
+    });
+    return true;
+  } catch (e) {
+    if (e.statusCode === 404 || e.statusCode === 400 || e.statusCode === 403) {
+      return undefined;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   getAllUsersForOrg,
   getById,
   updateIndex,
+  createIndex,
 };

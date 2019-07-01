@@ -54,8 +54,32 @@ const getSingleServiceForUser = async (userId, organisationId, serviceId, correl
   };
 };
 
+const delay = async (milliseconds) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+};
+
+const waitForIndexToUpdate = async (uid, updatedCheck) => {
+  const abandonTime = Date.now() + 10000;
+  let hasBeenUpdated = false;
+  while (!hasBeenUpdated && Date.now() < abandonTime) {
+    const updated = await getById(uid);
+    if (updatedCheck) {
+      hasBeenUpdated = updatedCheck(updated);
+    } else {
+      hasBeenUpdated = updated;
+    }
+    if (!hasBeenUpdated) {
+      await delay(200);
+    }
+  }
+};
+
+
 module.exports = {
   getUserDetails,
   getAllServicesForUserInOrg,
   getSingleServiceForUser,
+  waitForIndexToUpdate,
 };

@@ -15,6 +15,7 @@ jest.mock('./../../../../src/infrastructure/search', () => {
     updateIndex: jest.fn(),
   };
 });
+jest.mock('./../../../../src/app/users/utils');
 
 const Account = require('./../../../../src/infrastructure/account');
 const { updateIndex } = require('./../../../../src/infrastructure/search');
@@ -192,7 +193,8 @@ describe('when resending an invitation', () => {
     expect(updateIndex.mock.calls[0][0]).toBe('user1');
     expect(updateIndex.mock.calls[0][1]).toEqual(null);
     expect(updateIndex.mock.calls[0][2]).toEqual('johndoe@gmail.com');
-    expect(updateIndex.mock.calls[0][3]).toEqual('correlationId');
+    expect(updateIndex.mock.calls[0][3]).toEqual(null);
+    expect(updateIndex.mock.calls[0][4]).toEqual('correlationId');
   });
 
   it('then it should resend invite if email not changed', async () => {
