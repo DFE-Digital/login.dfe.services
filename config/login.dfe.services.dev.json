@@ -33,9 +33,6 @@
   "organisations": {
     "type":"static"
   },
-  "hotConfig": {
-    "type":"static"
-  },
   "access": {
     "type":"static"
   },
