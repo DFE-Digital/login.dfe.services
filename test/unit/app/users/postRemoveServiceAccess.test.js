@@ -10,10 +10,16 @@ jest.mock('./../../../../src/infrastructure/access', () => {
 });
 
 jest.mock('./../../../../src/app/users/utils');
-
+jest.mock('./../../../../src/infrastructure/search', () => {
+  return {
+    getById: jest.fn(),
+    updateIndex: jest.fn(),
+  };
+});
 const logger = require('./../../../../src/infrastructure/logger');
 const { getUserDetails, getSingleServiceForUser } = require('./../../../../src/app/users/utils');
 const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../../../src/infrastructure/access');
+const { getById } = require('./../../../../src/infrastructure/search');
 
 describe('when removing service access', () => {
 
@@ -77,6 +83,21 @@ describe('when removing service access', () => {
       name: 'service name',
       status: 'active',
     });
+
+    getById.mockReset();
+    getById.mockReturnValue({
+      organisations: [
+        {
+          id: "org1",
+          name: "organisationId",
+          categoryId: "004",
+          statusId: 1,
+          roleId: 0
+        },
+      ],
+      services: []
+    });
+
 
     res = mockResponse();
     postRemoveServiceAccess = require('./../../../../src/app/users/removeServiceAccess').post;

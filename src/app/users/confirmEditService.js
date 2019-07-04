@@ -36,6 +36,7 @@ const get = async (req, res) => {
     organisationDetails,
     currentPage: 'users',
     backLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}`,
+    cancelLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/services`,
     user: {
       firstName: req.session.user.firstName,
       lastName: req.session.user.lastName,

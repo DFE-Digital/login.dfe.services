@@ -19,7 +19,7 @@
     <article class="organisation-services">
         <section class="organisation">
             <header>
-                <h2><%=organisation.name%></h2>
+                <h2><%=organisation.name%> <%= organisation.status ? `(${organisation.status.name})` : '' %></h2>
             </header>
             <div class="user">
                 <div class="role <%=organisation.role.id%>" tabindex="0" title="You are an <%=organisation.role.name%> at <%=organisation.name%>"><%=organisation.role.name%></div>

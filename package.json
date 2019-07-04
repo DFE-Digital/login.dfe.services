@@ -39,7 +39,7 @@
     "login.dfe.express-error-handling": "git+https://github.com/DFE-Digital/login.dfe.express-error-handling.git#v1.4",
     "login.dfe.healthcheck": "git+https://github.com/DFE-Digital/login.dfe.healthcheck.git#v1.4.5",
     "login.dfe.jwt-strategies": "github:DFE-Digital/login.dfe.jwt-strategies#v2.0.1",
-    "login.dfe.policy-engine": "git+https://github.com/DFE-Digital/login.dfe.policy-engine.git#v2.0.4",
+    "login.dfe.policy-engine": "git+https://github.com/DFE-Digital/login.dfe.policy-engine.git#v2.0.6",
     "login.dfe.request-promise-retry": "git+https://github.com/DFE-Digital/login.dfe.request-promise-retry.git#v1.1",
     "login.dfe.sanitization": "git+https://github.com/DFE-Digital/login.dfe.sanitization.git#v1.0.1",
     "login.dfe.validation": "git+https://github.com/DFE-Digital/login.dfe.validation.git",
@@ -47,7 +47,6 @@
     "moment": "^2.19.3",
     "openid-client": "^2.3.1",
     "passport": "^0.4.0",
-    "request-promise": "^4.2.2",
     "simpl-schema": "^1.5.3",
     "winston": "^2.4.0"
   },

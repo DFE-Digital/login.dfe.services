@@ -9,7 +9,7 @@
 <% } %>
 
 <h1 class="heading-xlarge">Users
-    <small><%= locals.organisationDetails.organisation.name%></small>
+    <small><%= locals.organisationDetails.organisation.name%> <%=locals.organisationDetails.organisation.status ? `(${locals.organisationDetails.organisation.status.name})` : '' %></small>
 </h1>
 <div class="row row-spacer">
     <div class="col-6 pull-right">
