@@ -121,10 +121,12 @@
                 </div>
             <% } %>
         </dl>
-        <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessage) { %>
-            <div class="panel panel-border-wide">
-                <p><%- locals.serviceDetails.relyingParty.params.serviceConfirmMessage %></p>
-            </div>
+        <% if (locals.serviceMessages.length > 0) { %>
+                <% for (let i = 0; i < locals.serviceMessages.length; i++) { %>
+                <div class="panel panel-border-wide">
+                    <p> <%- locals.serviceMessages[i] %> </p>
+                </div>
+                <% } %>
         <% } %>
 
         <form method="post">

@@ -18,13 +18,20 @@ const get = async (req, res) => {
     id: service.serviceId,
     name: '',
     roles: service.roles,
+    serviceMessage: '',
   }));
+  const serviceMessages = [];
+
   const allServices = await getAllServices(req.id);
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
     const serviceDetails = allServices.services.find(x => x.id === service.id);
     const allRolesOfService = await listRolesOfService(service.id, req.id);
     const roleDetails = allRolesOfService.filter(x => service.roles.find(y => y.toLowerCase() === x.id.toLowerCase()));
+    const serviceMessage = serviceDetails.relyingParty && serviceDetails.relyingParty.params && serviceDetails.relyingParty.params.serviceConfirmMessage;
+    if (serviceMessage) {
+      serviceMessages.push(serviceMessage);
+    }
     service.name = serviceDetails.name;
     service.roles = roleDetails;
   }
@@ -40,6 +47,7 @@ const get = async (req, res) => {
       uid: req.session.user.uid ? req.session.user.uid : '',
     },
     services,
+    serviceMessages,
     organisationDetails,
   });
 };
