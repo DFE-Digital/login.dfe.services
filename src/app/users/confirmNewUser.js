@@ -19,6 +19,7 @@ const get = async (req, res) => {
     name: '',
     roles: service.roles,
   }));
+
   const allServices = await getAllServices(req.id);
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
