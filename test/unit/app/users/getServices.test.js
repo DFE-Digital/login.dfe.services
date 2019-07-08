@@ -2,7 +2,14 @@ const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 jest.mock('./../../../../src/app/users/utils');
+jest.mock('./../../../../src/infrastructure/applications', () => {
+  return {
+    getAllServices: jest.fn(),
+  };
+});
+
 const { getUserDetails, getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
+const { getAllServices } = require('./../../../../src/infrastructure/applications');
 const getServices = require('./../../../../src/app/users/getServices');
 
 describe('when displaying the users services', () => {
@@ -49,13 +56,28 @@ describe('when displaying the users services', () => {
 
 
     getAllServicesForUserInOrg.mockReset();
-    getAllServicesForUserInOrg.mockReturnValue({
+    getAllServicesForUserInOrg.mockReturnValue([{
       id: 'service1',
       dateActivated: '10/10/2018',
       name: 'service name',
       status: 'active',
-    });
+    }]);
 
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+        isExternalService: true,
+        relyingParty: {
+          params: {
+
+          }
+        }
+      }]
+    });
   });
 
   it('then it should get the users details', async () => {
