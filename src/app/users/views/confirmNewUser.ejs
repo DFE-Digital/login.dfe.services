@@ -2,24 +2,24 @@
     <div class="col-8">
         <% if (locals.user.isInvite) { %>
             <h1 class="heading-xlarge">
-            Review invite details
+                Review invite details
             </h1>
-            <p>The user will have to confirm their email address and create a password before their account is active.</p>
+            <p>The user will have to confirm their email address and create a password before their account is
+                active.</p>
         <% } else { %>
-                <h1 class="heading-xlarge">
-                    Review new services
-                </h1>
-                <p>Please review these details before granting access</p>
-            <% } %>
-
-            <dl class="app-check-your-answers app-check-your-answers--short">
+            <h1 class="heading-xlarge">
+                Review new services
+            </h1>
+            <p>Please review these details before granting access</p>
+        <% } %>
+        <dl class="app-check-your-answers app-check-your-answers--short">
             <div class="app-check-your-answers__contents">
                 <dt class="app-check-your-answers__title">
                     Personal details
                 </dt>
                 <dd class="app-check-your-answers__change ">
-                    <% if (locals.user.isInvite) {%>
-                    <a href="/approvals/<%=locals.organisationDetails.organisation.id%>/users/new-user?review=true">
+                    <% if (locals.user.isInvite) { %>
+                    <a href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/new-user?review=true">
                         Change
                     </a>
                     <% } %>
@@ -30,7 +30,7 @@
                     First name
                 </dt>
                 <dd class="app-check-your-answers__answer">
-                    <%=locals.user.firstName%>
+                    <%= locals.user.firstName %>
                 </dd>
             </div>
 
@@ -39,7 +39,7 @@
                     Last name
                 </dt>
                 <dd class="app-check-your-answers__answer">
-                    <%=locals.user.lastName%>
+                    <%= locals.user.lastName %>
                 </dd>
 
             </div>
@@ -49,11 +49,10 @@
                     Email Address
                 </dt>
                 <dd class="app-check-your-answers__answer">
-                    <%=locals.user.email%>
+                    <%= locals.user.email %>
                 </dd>
             </div>
         </dl>
-
 
         <dl class="app-check-your-answers app-check-your-answers--short">
             <div class="app-check-your-answers__contents">
@@ -67,7 +66,7 @@
                     Name
                 </dt>
                 <dd class="app-check-your-answers__answer">
-                    <%=locals.organisationDetails.organisation.name%>
+                    <%= locals.organisationDetails.organisation.name %>
                 </dd>
             </div>
         </dl>
@@ -78,21 +77,21 @@
                     Services
                 </dt>
                 <dd class="app-check-your-answers__change ">
-                    <a href= "associate-services" >
+                    <a href="associate-services">
                         Change
                     </a>
                 </dd>
             </div>
 
             <% if (locals.services.length > 0) { %>
-                <% for (let i = 0; i< locals.services.length; i++) { %>
+                <% for (let i = 0; i < locals.services.length; i++) { %>
                     <% const service = locals.services[i]; %>
                     <div class="app-check-your-answers__contents__group">
                         <dt class="app-check-your-answers__group__title">
                             Service
                         </dt>
                         <dd class="app-check-your-answers__group">
-                            <%= service.name%>
+                            <%= service.name %>
                         </dd>
                     </div>
                     <div class="app-check-your-answers__contents">
@@ -104,13 +103,13 @@
                                 <% for (let x = 0; x < locals.services[i].roles.length; x++) { %>
                                     <% const role = locals.services[i].roles[x]; %>
                                     <%= role.name %> <br>
-                                    <% } %>
-                                <% } else { %>
-                                    No roles selected
                                 <% } %>
+                            <% } else { %>
+                                No roles selected
+                            <% } %>
                         </dd>
                     </div>
-                    <% } %>
+                <% } %>
             <% } else { %>
                 <div class="app-check-your-answers__contents__group">
                     <dt class="app-check-your-answers__group__title">
@@ -122,12 +121,20 @@
                 </div>
             <% } %>
         </dl>
+        <% if (locals.serviceMessages.length > 0) { %>
+                <% for (let i = 0; i < locals.serviceMessages.length; i++) { %>
+                <div class="panel panel-border-wide">
+                    <p> <%- locals.serviceMessages[i] %> </p>
+                </div>
+                <% } %>
+        <% } %>
 
         <form method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Submit</button>
-                <a href="<%= locals.user.uid && locals.user.isInvite ? "./../" : "./"%>" class="button button-secondary">Cancel</a>
+                <a href="<%= locals.user.uid && locals.user.isInvite ? "./../" : "./" %>"
+                   class="button button-secondary">Cancel</a>
             </div>
         </form>
     </div>
