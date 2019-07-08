@@ -121,13 +121,6 @@
                 </div>
             <% } %>
         </dl>
-        <% if (locals.serviceMessages.length > 0) { %>
-                <% for (let i = 0; i < locals.serviceMessages.length; i++) { %>
-                <div class="panel panel-border-wide">
-                    <p> <%- locals.serviceMessages[i] %> </p>
-                </div>
-                <% } %>
-        <% } %>
 
         <form method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
