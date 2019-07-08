@@ -18,7 +18,6 @@ const get = async (req, res) => {
     id: service.serviceId,
     name: '',
     roles: service.roles,
-    serviceMessage: '',
   }));
   const serviceMessages = [];
 
