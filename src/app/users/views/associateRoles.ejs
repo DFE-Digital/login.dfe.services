@@ -1,12 +1,12 @@
 <div class="row">
     <div class="col-8">
-        <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessage) { %>
+        <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader) { %>
             <div class="notice" style="margin-top: 1.25em;">
                 <i class="icon icon-important">
                     <span class="visually-hidden">Warning</span>
                 </i>
                 <strong class="bold-small">
-                    <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessage %>
+                    <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader %>
                 </strong>
             </div>
         <% } %>
@@ -76,6 +76,12 @@
                     <% } %>
                 </fieldset>
             </div>
+            <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter) { %>
+                <div class="panel panel-border-wide">
+                    <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter %>
+                </div>
+            <% } %>
+
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Continue</button>
                 <a href="<%= locals.user.uid && locals.user.isInvite ? "./../../" : "./../"%>" class="button button-secondary">Cancel</a>
