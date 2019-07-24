@@ -60,7 +60,7 @@ const get = async (req, res) => {
   clearUserSessionData(req);
   const result = await search(req);
   return res.render('users/views/usersList', {
-    title: 'Users',
+    title: 'Manage users',
     csrfToken: req.csrfToken(),
     currentPage: 'users',
     usersForOrganisation: result.usersForOrganisation,
@@ -77,7 +77,7 @@ const get = async (req, res) => {
 const post = async (req, res) => {
   const result = await search(req);
   return res.render('users/views/usersList', {
-    title: 'Users',
+    title: 'Manage users',
     csrfToken: req.csrfToken(),
     currentPage: 'users',
     usersForOrganisation: result.usersForOrganisation,
