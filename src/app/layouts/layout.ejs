@@ -89,11 +89,12 @@
                 <% if (locals.isLoggedIn) { %>
                     <li><a href="/my-services" class="<%= locals.currentPage === 'services' ? 'current' : '' %>">Services</a></li>
                     <li><a href="/organisations" class="<%= locals.currentPage === 'organisations' ? 'current' : '' %>">Organisations</a></li>
-                    <li><a href="<%=locals.urls.profile%>">Profile</a></li>
                     <% if (locals.isApprover && locals.useApproverJourney) { %>
-                    <li><a href ="/approvals/users" class="<%= locals.currentPage === 'users' ? 'current': '' %>">Users</a></li>
+                    <li><a href ="/approvals/users" class="<%= locals.currentPage === 'users' ? 'current': '' %>">Manage users</a></li>
                     <% } %>
                     <li class="pull-right"><a href="/signout">Sign out</a> </li>
+                    <li class="pull-right"><a href="<%=locals.urls.help%>/contact">Help</a></li>
+                    <li class="pull-right"><a href="<%=locals.urls.profile%>">Profile</a></li>
                 <% } %>
 
             </ul>
