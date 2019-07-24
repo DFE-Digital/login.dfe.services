@@ -92,9 +92,12 @@
                     <% if (locals.isApprover && locals.useApproverJourney) { %>
                     <li><a href ="/approvals/users" class="<%= locals.currentPage === 'users' ? 'current': '' %>">Manage users</a></li>
                     <% } %>
-                    <li class="pull-right"><a href="/signout">Sign out</a> </li>
-                    <li class="pull-right"><a href="<%=locals.urls.help%>/contact">Help</a></li>
-                    <li class="pull-right"><a href="<%=locals.urls.profile%>">Profile</a></li>
+                    <div class="pull-right">
+                        <li><a href="<%=locals.urls.profile%>">Profile</a></li>
+                        <li><a href="<%=locals.urls.help%>/contact">Help</a></li>
+                        <li><a href="/signout">Sign out</a> </li>
+                    </div>
+
                 <% } %>
 
             </ul>
