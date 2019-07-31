@@ -8,8 +8,9 @@
 </div>
 <% } %>
 
-<h1 class="heading-xlarge">Manage users
-    <small><%= locals.organisationDetails.organisation.name%> <%=locals.organisationDetails.organisation.status ? `(${locals.organisationDetails.organisation.status.name})` : '' %></small>
+<h1 class="heading-xlarge">
+    <span class="heading-secondary"><%= locals.organisationDetails.organisation.name%> <%=locals.organisationDetails.organisation.status ? `(${locals.organisationDetails.organisation.status.name})` : '' %></span>
+    Manage users
 </h1>
 <div class="row row-spacer">
     <div class="col-6 pull-right">
