@@ -34,8 +34,8 @@ const mockLogger = () => {
   };
 };
 
-const mockRequest = () => {
-  return {
+const mockRequest = (customRequest = {}) => {
+  return Object.assign( {
     params: {
       uuid: '123-abc',
     },
@@ -45,7 +45,7 @@ const mockRequest = () => {
     query: {},
     csrfToken: jest.fn().mockReturnValue('token'),
     isAuthenticated: jest.fn().mockReturnValue(true),
-  };
+  }, customRequest);
 };
 const mockResponse = () => {
   return {
