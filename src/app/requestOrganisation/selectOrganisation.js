@@ -16,7 +16,6 @@ const buildModel = async (req, results) => {
   const model = {
     csrfToken: req.csrfToken(),
     criteria: inputSource.criteria || '',
-    backLink: true,
   };
   if (results) {
     model.organisations = results.organisations;

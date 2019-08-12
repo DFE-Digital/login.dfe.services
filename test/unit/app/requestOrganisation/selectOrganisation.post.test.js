@@ -59,7 +59,6 @@ describe('when showing the searching for a organisation', () => {
       page: 1,
       totalNumberOfPages: 2,
       totalNumberOfRecords: 49,
-      backLink: true
     });
   });
 

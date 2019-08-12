@@ -80,6 +80,10 @@ const searchOrganisations = async (criteria, pageNumber, filterCategories, filte
   return getPageOfOrganisations(pageNumber, correlationId);
 };
 
+const createUserOrganisationRequest = async (userId, orgId, reason, correlationId) => {
+  return Promise.resolve();
+};
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -94,4 +98,5 @@ module.exports = {
   getOrganisationById,
   getOrganisationAndServiceForUserV2,
   searchOrganisations,
+  createUserOrganisationRequest,
 };

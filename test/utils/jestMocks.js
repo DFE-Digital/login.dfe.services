@@ -22,6 +22,9 @@ const mockConfig = () => {
     directories: {
       type: 'static',
     },
+    notifications:{
+      connectionString: 'test',
+    },
   };
 };
 
