@@ -86,6 +86,11 @@ const searchOrganisations = async (criteria, pageNumber, filterCategories, filte
   return callApi('GET', uri, correlationId, undefined);
 };
 
+const createUserOrganisationRequest = async (userId, orgId, reason, correlationId) => {
+  const request = await callApi('POST', `/organisations/${orgId}/users/${userId}/requests`, correlationId, {reason});
+  return request;
+};
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -100,4 +105,5 @@ module.exports = {
   getOrganisationById,
   getOrganisationAndServiceForUserV2,
   searchOrganisations,
+  createUserOrganisationRequest,
 };

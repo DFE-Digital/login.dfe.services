@@ -13,6 +13,11 @@ const identifyingPartySchema = new SimpleSchema({
 
 const togglesSchema = new SimpleSchema({
   useApproverJourney: Boolean,
+  useRequestOrganisation: Boolean,
+});
+
+const notificationsSchema = new SimpleSchema({
+  connectionString: patterns.redis
 });
 
 const schema = new SimpleSchema({
@@ -25,6 +30,7 @@ const schema = new SimpleSchema({
   access: schemas.apiClient,
   search: schemas.apiClient,
   toggles: togglesSchema,
+  notifications: notificationsSchema,
 });
 
 module.exports.validate = () => {

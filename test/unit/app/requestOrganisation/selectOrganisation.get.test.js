@@ -38,11 +38,4 @@ describe('when showing the search for organisation page', () => {
     });
   });
 
-  it('then it should include the back link', async () => {
-    await get(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      backLink: true,
-    });
-  });
 });
