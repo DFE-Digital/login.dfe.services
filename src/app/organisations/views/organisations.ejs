@@ -2,6 +2,17 @@
     <div class="col-8">
         <h1 class="heading-xlarge">Organisations</h1>
     </div>
+
+    <% if (locals.useRequestOrg) { %>
+    <div class="col-4">
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <ul class="list">
+                <li><a href="/request-organisation/search">Request an organisation</a> </li>
+            </ul>
+        </aside>
+    </div>
+    <% } %>
 </div>
 
 <% if (organisations.length === 0) { %>

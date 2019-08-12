@@ -75,7 +75,16 @@ const getOrganisationAndServiceForUserV2 = async (userId, correlationId) => {
   return callApi('GET', `/organisations/v2/associated-with-user/${userId}`, correlationId);
 };
 
-
+const searchOrganisations = async (criteria, pageNumber, filterCategories, filterStates, correlationId) => {
+  let uri = `/organisations?search=${criteria}&page=${pageNumber}`;
+  if (filterCategories && filterCategories.length > 0) {
+    uri += `&filtercategory=${filterCategories.join('&filtercategory=')}`;
+  }
+  if (filterStates && filterStates.length > 0) {
+    uri += `&filterstatus=${filterStates.join('&filterstatus=')}`;
+  }
+  return callApi('GET', uri, correlationId, undefined);
+};
 
 
 module.exports = {
@@ -90,4 +99,5 @@ module.exports = {
   getOrganisationAndServiceForInvitation,
   getOrganisationById,
   getOrganisationAndServiceForUserV2,
+  searchOrganisations,
 };

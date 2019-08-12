@@ -8,6 +8,7 @@ const signOut = require('./app/signOut');
 const healthCheck = require('login.dfe.healthcheck');
 const organisations = require('./app/organisations');
 const users = require('./app/users');
+const requestOrganisation = require('./app/requestOrganisation');
 const { getOrganisationAndServiceForUser } = require('./infrastructure/organisations');
 
 const routes = (app, csrf) => {
@@ -58,6 +59,9 @@ const routes = (app, csrf) => {
   app.use('/organisations', organisations(csrf));
   if (config.toggles.useApproverJourney) {
     app.use('/approvals', users(csrf));
+  }
+  if (config.toggles.useRequestOrganisation) {
+    app.use('/request-organisation', requestOrganisation(csrf));
   }
   app.get('*', (req, res) => {
     res.status(404).render('errors/views/notFound');

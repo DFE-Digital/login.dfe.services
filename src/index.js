@@ -109,6 +109,7 @@ const init = async () => {
     },
     gaTrackingId: config.hostingEnvironment.gaTrackingId,
     useApproverJourney: config.toggles.useApproverJourney,
+    useRequestOrg: config.toggles.useRequestOrganisation,
   });
 
   passport.use('oidc', await getPassportStrategy());
