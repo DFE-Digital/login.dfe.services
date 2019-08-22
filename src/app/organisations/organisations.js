@@ -51,12 +51,14 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
 const organisations = async (req, res) => {
   const account = Account.fromContext(req.user);
   const organisations = await getAndMapOrganisationsAndServices(account, req.id);
+  const approverRequests = req.organisationRequests || [];
 
   return res.render('organisations/views/organisations', {
     title: 'Organisations',
     user: account,
     organisations,
-    currentPage: 'organisations'
+    currentPage: 'organisations',
+    approverRequests,
   });
 };
 
