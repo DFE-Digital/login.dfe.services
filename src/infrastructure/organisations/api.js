@@ -95,6 +95,10 @@ const getAllRequestsForApprover = async (userId, correlationId) => {
   return callApi('GET', `/organisations/requests-for-approval/${userId}`, correlationId);
 };
 
+const getRequestsForOrganisation = async (organisationId, correlationId) => {
+  return callApi('GET', `/organisations/${organisationId}/requests`, correlationId);
+};
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -111,4 +115,5 @@ module.exports = {
   searchOrganisations,
   createUserOrganisationRequest,
   getAllRequestsForApprover,
+  getRequestsForOrganisation,
 };

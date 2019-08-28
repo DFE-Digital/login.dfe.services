@@ -61,7 +61,7 @@ const post = async (req, res) => {
       validationMessages: { selectedOrganisation: 'An organisation must be selected' },
     });
   }
-  return res.redirect(`/access-requests/${selectedOrg}`)
+  return res.redirect(`/access-requests/${selectedOrg}/requests`)
 };
 
 module.exports = {
