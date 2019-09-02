@@ -57,7 +57,7 @@ describe('when selecting an organisation to manage requests', () => {
   it('then it should redirect to the selected organisation', async () => {
     await postMultipleOrgSelection(req, res);
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/access-requests/${req.body.selectedOrganisation}`);
+    expect(res.redirect.mock.calls[0][0]).toBe(`/access-requests/${req.body.selectedOrganisation}/requests`);
   });
 
   it('then it should render validation message if no selected organisation', async () => {
