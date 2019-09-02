@@ -24,12 +24,14 @@ const getAndMapServices = async (account, correlationId) => {
 const getServices = async (req, res) => {
   const account = Account.fromContext(req.user);
   const services = await getAndMapServices(account, req.id);
+  const approverRequests = req.organisationRequests || [];
 
   return res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
     services,
-    currentPage: 'services'
+    currentPage: 'services',
+    approverRequests,
   });
 };
 
