@@ -99,6 +99,10 @@ const getRequestsForOrganisation = async (organisationId, correlationId) => {
   return callApi('GET', `/organisations/${organisationId}/requests`, correlationId);
 };
 
+const getRequestById = async (requestId, correlationId) => {
+  return callApi('GET', `/organisations/requests/${requestId}`, correlationId);
+};
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -116,4 +120,5 @@ module.exports = {
   createUserOrganisationRequest,
   getAllRequestsForApprover,
   getRequestsForOrganisation,
+  getRequestById,
 };

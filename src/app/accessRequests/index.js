@@ -9,6 +9,8 @@ const router = express.Router({ mergeParams: true });
 const { get: getAccessRequests, post: postAccessRequests } = require('./accessRequests');
 const { get: getSelectOrganisation, post: postSelectOrganisation } = require('./selectOrganisation');
 const getOrganisationRequests = require('./getOrganisationRequests');
+const { get: getReviewOrganisationRequest, post: postReviewOrganisationRequest } = require('./reviewOrganisationRequest');
+const { get: getRejectOrganisationRequest, post: postRejectOrganisationRequest } = require('./rejectOrganisationRequest');
 
 const action = (csrf) => {
   logger.info('Mounting accessRequest routes');
@@ -30,6 +32,10 @@ const action = (csrf) => {
   }));
 
   router.get('/:orgId/requests', csrf, isApprover, asyncWrapper(getOrganisationRequests));
+  router.get('/:orgId/requests/:rid', csrf, isApprover, asyncWrapper(getReviewOrganisationRequest));
+  router.post('/:orgId/requests/:rid', csrf, isApprover, asyncWrapper(postReviewOrganisationRequest));
+  router.get('/:orgId/requests/:rid/rejected', csrf, isApprover, asyncWrapper(getRejectOrganisationRequest));
+  router.post('/:orgId/requests/:rid/rejected', csrf, isApprover, asyncWrapper(postRejectOrganisationRequest));
 
   //router.get('/',csrf, asyncWrapper(getAccessRequests));
   // router.post('/',csrf, asyncWrapper(postAccessRequests));
