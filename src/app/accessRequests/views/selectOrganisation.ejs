@@ -19,7 +19,10 @@
                         <input id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>">
                         <label for="<%= org.organisation.id %>">
                             <span class="form-label-bold">
-                                <%= org.organisation.name %> <%= org.requestCount ? (org.requestCount > 1 ? `(${org.requestCount} Requests)` : `(${org.requestCount} Request)`) : '' %>
+                                <%= org.organisation.name %>
+                                <% if (org.requestCount) { %>
+                                    <span class="badge"><%=org.requestCount%></span>
+                                <% } %>
                             </span>
                             <% if (org.naturalIdentifiers) { %>
                                 <span class="form-hint">

@@ -88,6 +88,10 @@ const getAllRequestsForApprover = async (userId, correlationId) => {
   return Promise.resolve();
 };
 
+const getRequestsForOrganisation = async (organisationId, correlationId) => {
+  return Promise.resolve();
+};
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -104,4 +108,5 @@ module.exports = {
   searchOrganisations,
   createUserOrganisationRequest,
   getAllRequestsForApprover,
+  getRequestsForOrganisation,
 };

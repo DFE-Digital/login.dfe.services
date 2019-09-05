@@ -1,0 +1,31 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="heading-xlarge">
+            <span class="heading-secondary"><%= locals.organisation.name%> <%= locals.organisation.status ? `(${locals.organisation.status.name})` : '' %></span>
+            Requests
+        </h1>
+
+        <nav>
+            <ul class="tabs" role="tablist">
+                <li class="active">Organisation requests <span class="badge"><%= locals.requests.length %></span></li>
+            </ul>
+        </nav>
+        <div class="pane">
+            <% if (locals.requests.length > 0) { %>
+                <% for (let i = 0; i < locals.requests.length; i++) { %>
+                <div class="requestV2">
+                    <p>
+                        Request from <b><%= locals.requests[i].usersEmail %></b> -
+                        <time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time>
+                    </p>
+                    <a href="requests/<%= locals.requests[i].id %>" class="button-respond">Review request</a>
+                </div>
+                <% } %>
+            <% } else { %>
+                <div class="empty-state">
+                    <p>You have no outstanding requests for <%= locals.organisation.name %></p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>

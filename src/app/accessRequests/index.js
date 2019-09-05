@@ -1,13 +1,14 @@
 'use strict';
 
 const express = require('express');
-const { isLoggedIn } = require('../../infrastructure/utils');
+const { isLoggedIn, isApprover } = require('../../infrastructure/utils');
 const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const router = express.Router({ mergeParams: true });
 const { get: getAccessRequests, post: postAccessRequests } = require('./accessRequests');
 const { get: getSelectOrganisation, post: postSelectOrganisation } = require('./selectOrganisation');
+const getOrganisationRequests = require('./getOrganisationRequests');
 
 const action = (csrf) => {
   logger.info('Mounting accessRequest routes');
@@ -22,11 +23,13 @@ const action = (csrf) => {
       return res.status(401).render('errors/views/notAuthorised');
     }
     if (orgs.length === 1) {
-      return res.redirect(`/access-requests/${req.userOrganisations[0].organisation.id}`);
+      return res.redirect(`/access-requests/${req.userOrganisations[0].organisation.id}/requests`);
     } else {
       return res.redirect(`/access-requests/select-organisation`);
     }
   }));
+
+  router.get('/:orgId/requests', csrf, isApprover, asyncWrapper(getOrganisationRequests));
 
   //router.get('/',csrf, asyncWrapper(getAccessRequests));
   // router.post('/',csrf, asyncWrapper(postAccessRequests));
