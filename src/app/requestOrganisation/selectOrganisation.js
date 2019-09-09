@@ -1,4 +1,4 @@
-const { searchOrganisations } = require('./../../infrastructure/organisations');
+const { searchOrganisations, getRequestsForOrganisation, getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 
 const search = async (req) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
@@ -14,8 +14,8 @@ const buildModel = async (req, results) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
 
   const model = {
-    csrfToken: req.csrfToken(),
     criteria: inputSource.criteria || '',
+    validationMessages: {},
   };
   if (results) {
     model.organisations = results.organisations;
@@ -28,16 +28,35 @@ const buildModel = async (req, results) => {
 
 const get = async (req, res) => {
   const model = await buildModel(req);
+  model.csrfToken = req.csrfToken();
   return res.render('requestOrganisation/views/search', model);
 };
 
+
 const post = async (req, res) => {
+  const searchResults = await search(req);
+  const model = await buildModel(req, searchResults);
+  model.csrfToken = req.csrfToken();
+
   if (req.body.selectedOrganisation) {
+    // check if associated to org
+    const userOrgs = await getOrganisationAndServiceForUserV2(req.user.sub, req.id);
+    const userAssociatedToOrg = userOrgs ? userOrgs.find(x => x.organisation.id === req.body.selectedOrganisation) : null;
+    if (userAssociatedToOrg) {
+      model.validationMessages.selectedOrganisation = 'You are already linked to this organisation';
+      return res.render('requestOrganisation/views/search', model);
+    }
+
+    // check if outstanding request
+    const requestsForOrg = await getRequestsForOrganisation(req.body.selectedOrganisation, req.id);
+    const userRequested = requestsForOrg ? requestsForOrg.find(x => x.user_id === req.user.sub) : null;
+    if (userRequested) {
+      model.validationMessages.selectedOrganisation = 'You have already requested this organisation';
+      return res.render('requestOrganisation/views/search', model);
+    }
     req.session.organisationId = req.body.selectedOrganisation;
     return res.redirect('review');
   }
-  const searchResults = await search(req);
-  const model = await buildModel(req, searchResults);
   return res.render('requestOrganisation/views/search', model);
 };
 
