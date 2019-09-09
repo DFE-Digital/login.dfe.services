@@ -96,6 +96,10 @@ const getRequestById = async (requestId, correlationId) => {
   return Promise.resolve();
 };
 
+const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {
+  return Promise.resolve();
+};
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -114,4 +118,5 @@ module.exports = {
   getAllRequestsForApprover,
   getRequestsForOrganisation,
   getRequestById,
+  updateRequestById,
 };

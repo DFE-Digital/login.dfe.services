@@ -25,7 +25,7 @@ const action = (csrf) => {
       return res.status(401).render('errors/views/notAuthorised');
     }
     if (orgs.length === 1) {
-      return res.redirect(`/access-requests/${req.userOrganisations[0].organisation.id}/requests`);
+      return res.redirect(`/access-requests/${orgs[0].organisation.id}/requests`);
     } else {
       return res.redirect(`/access-requests/select-organisation`);
     }

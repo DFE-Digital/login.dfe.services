@@ -1,26 +1,23 @@
-const { getRequestById, putUserInOrganisation } = require('./../../infrastructure/organisations');
-const Account = require('./../../infrastructure/account');
+const { putUserInOrganisation, updateRequestById, getOrganisationById } = require('./../../infrastructure/organisations');
+const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
+const { getById, updateIndex } = require('./../../infrastructure/search');
+const { waitForIndexToUpdate } = require('../users/utils');
+const { getAndMapOrgRequest } = require('./utils');
+const NotificationClient = require('login.dfe.notifications.client');
 
-const getAndMapOrgRequest = async (req) => {
-  const request = await getRequestById(req.params.rid, req.id);
-  let mappedRequest;
-  if (request) {
-    const user = request.status.id === 0 || request.status.id === 2 ? await Account.getById(request.user_id) : await Account.getById(request.actioned_by);
-    const usersName = user ? `${user.claims.given_name} ${user.claims.family_name}` : '';
-    const usersEmail = user ? user.claims.email : '';
-    mappedRequest = Object.assign({usersName, usersEmail}, request);
-  }
-  return mappedRequest;
-};
+const notificationClient = new NotificationClient({
+  connectionString: config.notifications.connectionString,
+});
 
 const get = async (req, res) => {
-  //TODO - check if org request has been actioned
   const request = await getAndMapOrgRequest(req);
 
   return res.render('accessRequests/views/reviewOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Review request - DfE Sign-in',
     backLink: true,
+    cancelLink: `/access-requests/${req.params.orgId}/requests`,
     request,
     selectedResponse: null,
     validationMessages: {},
@@ -32,6 +29,7 @@ const validate = async (req) => {
   const model = {
     title: 'Review request - DfE Sign-in',
     backLink: true,
+    cancelLink: `/access-requests/${req.params.orgId}/requests`,
     request,
     selectedResponse: req.body.selectedResponse,
     validationMessages: {},
@@ -52,16 +50,57 @@ const post = async (req, res) => {
     return res.render('accessRequests/views/reviewOrganisationRequest', model);
   }
 
-  if (model.selectedResponse === 'Rejected') {
-    return res.redirect('rejected')
+  if (model.selectedResponse === 'reject') {
+    return res.redirect(`${model.request.id}/rejected`)
+  }
+  const actionedDate = Date.now();
+  await putUserInOrganisation(model.request.user_id, model.request.org_id, 0, null, req.id);
+  await updateRequestById(model.request.id, 1, req.user.sub, null, actionedDate, req.id);
+
+  // patch search index with organisation added to user
+  const getAllUserDetails = await getById(model.request.user_id, req.id);
+  const organisation = await getOrganisationById(model.request.org_id, req.id);
+  if (!getAllUserDetails) {
+    logger.error(`Failed to find user ${model.request.user_id} when confirming change of organisations`, {correlationId: req.id});
+  } else if (!organisation) {
+    logger.error(`Failed to find organisation ${model.request.org_id} when confirming change of organisations`, {correlationId: req.id})
+  } else {
+    const currentOrganisationDetails = getAllUserDetails.organisations;
+    const newOrgDetails = {
+      id: organisation.id,
+      name: organisation.name,
+      urn: organisation.urn || undefined,
+      uid: organisation.uid || undefined,
+      establishmentNumber: organisation.establishmentNumber || undefined,
+      laNumber: organisation.localAuthority ? organisation.localAuthority.code : undefined,
+      categoryId: organisation.category.id,
+      statusId: organisation.status.id,
+      roleId: 0,
+    };
+    currentOrganisationDetails.push(newOrgDetails);
+    await updateIndex(model.request.user_id, currentOrganisationDetails, null, req.id);
+    await waitForIndexToUpdate(model.request.user_id, (updated) => updated.organisations.length === currentOrganisationDetails.length);
   }
 
-  await putUserInOrganisation(model.request.user_id, model.request.org_id, 0, null, req.id);
-  // if approved then do -
-  // add user to org
-  // patch the request
-  // redirect to users profile
-  //send email
+  //send approved email
+  await notificationClient.sendAccessRequest(model.request.usersEmail, model.request.usersName, organisation.name, true, null);
+
+  //audit organisation approved
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`, {
+    type: 'approver',
+    subType: 'approved-org',
+    userId: req.user.sub,
+    editedUser: model.request.user_id,
+    editedFields: [{
+      name: 'new_organisation',
+      oldValue: undefined,
+      newValue: model.request.org_id,
+    }],
+  });
+
+  res.flash('info', `Request approved - an email has been sent to ${model.request.usersEmail}. You can now add services for this user.`);
+  return res.redirect(`/approvals/${model.request.org_id}/users/${model.request.user_id}/services`);
+
 
 
 };
