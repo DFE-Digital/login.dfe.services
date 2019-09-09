@@ -9,6 +9,8 @@ const router = express.Router({ mergeParams: true });
 const { get: getAccessRequests, post: postAccessRequests } = require('./accessRequests');
 const { get: getSelectOrganisation, post: postSelectOrganisation } = require('./selectOrganisation');
 const getOrganisationRequests = require('./getOrganisationRequests');
+const { get: getReviewOrganisationRequest, post: postReviewOrganisationRequest } = require('./reviewOrganisationRequest');
+const { get: getRejectOrganisationRequest, post: postRejectOrganisationRequest } = require('./rejectOrganisationRequest');
 
 const action = (csrf) => {
   logger.info('Mounting accessRequest routes');
@@ -23,13 +25,17 @@ const action = (csrf) => {
       return res.status(401).render('errors/views/notAuthorised');
     }
     if (orgs.length === 1) {
-      return res.redirect(`/access-requests/${req.userOrganisations[0].organisation.id}/requests`);
+      return res.redirect(`/access-requests/${orgs[0].organisation.id}/requests`);
     } else {
       return res.redirect(`/access-requests/select-organisation`);
     }
   }));
 
   router.get('/:orgId/requests', csrf, isApprover, asyncWrapper(getOrganisationRequests));
+  router.get('/:orgId/requests/:rid', csrf, isApprover, asyncWrapper(getReviewOrganisationRequest));
+  router.post('/:orgId/requests/:rid', csrf, isApprover, asyncWrapper(postReviewOrganisationRequest));
+  router.get('/:orgId/requests/:rid/rejected', csrf, isApprover, asyncWrapper(getRejectOrganisationRequest));
+  router.post('/:orgId/requests/:rid/rejected', csrf, isApprover, asyncWrapper(postRejectOrganisationRequest));
 
   //router.get('/',csrf, asyncWrapper(getAccessRequests));
   // router.post('/',csrf, asyncWrapper(postAccessRequests));

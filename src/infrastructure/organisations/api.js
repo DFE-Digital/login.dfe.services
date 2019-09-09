@@ -99,6 +99,27 @@ const getRequestsForOrganisation = async (organisationId, correlationId) => {
   return callApi('GET', `/organisations/${organisationId}/requests`, correlationId);
 };
 
+const getRequestById = async (requestId, correlationId) => {
+  return callApi('GET', `/organisations/requests/${requestId}`, correlationId);
+};
+
+const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {
+  const body = {};
+  if (status) {
+    body.status = status
+  }
+  if (actionedBy) {
+    body.actioned_by = actionedBy
+  }
+  if (actionedReason) {
+    body.actioned_reason = actionedReason
+  }
+  if (actionedAt) {
+    body.actioned_at = actionedAt
+  }
+  return callApi('PATCH', `/organisations/requests/${requestId}`, correlationId, body);
+};
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -116,4 +137,6 @@ module.exports = {
   createUserOrganisationRequest,
   getAllRequestsForApprover,
   getRequestsForOrganisation,
+  getRequestById,
+  updateRequestById,
 };
