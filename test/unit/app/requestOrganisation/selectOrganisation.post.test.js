@@ -3,7 +3,7 @@ jest.mock('./../../../../src/infrastructure/organisations');
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { post } = require('./../../../../src/app/requestOrganisation/selectOrganisation');
-const { searchOrganisations } = require('./../../../../src/infrastructure/organisations');
+const { searchOrganisations, getRequestsForOrganisation, getOrganisationAndServiceForUserV2 } = require('./../../../../src/infrastructure/organisations');
 
 const res = mockResponse();
 
@@ -30,6 +30,24 @@ describe('when showing the searching for a organisation', () => {
       totalNumberOfRecords: 49,
       page: 1,
     });
+    getRequestsForOrganisation.mockReset();
+    getRequestsForOrganisation.mockReturnValue([{
+      id: 'requestId',
+      org_id: 'organisationId',
+      org_name: 'organisationName',
+      user_id: 'user2',
+      status: {
+        id: 0,
+        name: 'pending',
+      },
+      created_date: '2019-08-12',
+    }]);
+    getOrganisationAndServiceForUserV2.mockReset();
+    getOrganisationAndServiceForUserV2.mockReturnValue([{
+     organisation: {
+       id: 'organisationId',
+     }
+    }]);
 
     res.mockResetAll();
   });
@@ -82,6 +100,57 @@ describe('when showing the searching for a organisation', () => {
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe('review');
     expect(res.render.mock.calls).toHaveLength(0);
-    expect(searchOrganisations.mock.calls).toHaveLength(0);
+  });
+
+  it('then it should render with error if already apart of org', async () => {
+    req.body.selectedOrganisation = 'organisationId';
+
+    await post(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('requestOrganisation/views/search');
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      csrfToken: 'token',
+      criteria: 'organisation one',
+      organisations: [{
+        id: 'org1',
+      }],
+      page: 1,
+      totalNumberOfPages: 2,
+      totalNumberOfRecords: 49,
+      validationMessages: {selectedOrganisation: 'You are already linked to this organisation'}
+    });
+  });
+
+  it('then it should render with error if outstanding request for org', async () => {
+    req.body.selectedOrganisation = 'org1';
+
+    getRequestsForOrganisation.mockReturnValue([{
+      id: 'requestId',
+      org_id: 'organisationId',
+      org_name: 'organisationName',
+      user_id: 'user1',
+      status: {
+        id: 0,
+        name: 'pending',
+      },
+      created_date: '2019-08-12',
+    }]);
+
+    await post(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('requestOrganisation/views/search');
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      csrfToken: 'token',
+      criteria: 'organisation one',
+      organisations: [{
+        id: 'org1',
+      }],
+      page: 1,
+      totalNumberOfPages: 2,
+      totalNumberOfRecords: 49,
+      validationMessages: {selectedOrganisation: 'You have already requested this organisation'}
+    });
   });
 });
