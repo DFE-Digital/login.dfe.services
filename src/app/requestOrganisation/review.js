@@ -19,6 +19,7 @@ const get = async (req, res) => {
     title: 'Confirm Request - DfE Sign-in',
     organisation,
     reason: '',
+    currentPage: 'organisations',
     validationMessages: {},
   });
 };
@@ -31,6 +32,7 @@ const post = async (req, res) => {
       title: 'Confirm Request - DfE Sign-in',
       organisation,
       reason: req.body.reason,
+      currentPage: 'organisations',
       validationMessages: {reason: 'Reason cannot be longer than 1000 characters'},
     })
   }
