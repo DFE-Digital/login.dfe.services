@@ -1,9 +1,10 @@
 'use strict';
 
-const { getOrganisationAndServiceForUser } = require('./../../infrastructure/organisations');
+const { getOrganisationAndServiceForUser, getPendingRequestsAssociatedWithUser } = require('./../../infrastructure/organisations');
 const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
+const sortBy = require('lodash/sortBy');
 
 const getApproversDetails = async (organisations) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
@@ -41,6 +42,7 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
       name: organisation.organisation.name,
       urn: organisation.organisation.urn,
       uid: organisation.organisation.uid,
+      ukprn: organisation.organisation.ukprn,
       status: organisation.organisation.status,
       role: mapRole(organisation.role),
       approvers,
@@ -48,15 +50,31 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
   })
 };
 
+const getAndMapPendingRequests = async (account, correlationId) => {
+  const pendingUserRequests = await getPendingRequestsAssociatedWithUser(account.id, correlationId);
+  return pendingUserRequests.map((org) => ({
+    id: org.org_id,
+    name: org.org_name,
+    urn: org.urn,
+    ukprn: org.ukprn,
+    uid: org.uid,
+    status: org.org_status,
+    requestDate: org.created_date,
+  }))
+};
+
 const organisations = async (req, res) => {
   const account = Account.fromContext(req.user);
   const organisations = await getAndMapOrganisationsAndServices(account, req.id);
+  const organisationRequests = await getAndMapPendingRequests(account, req.id);
+  const allOrgs = organisations.concat(organisationRequests);
+  const sortedOrgs = sortBy(allOrgs, 'name');
   const approverRequests = req.organisationRequests || [];
 
   return res.render('organisations/views/organisations', {
     title: 'Organisations',
     user: account,
-    organisations,
+    organisations: sortedOrgs,
     currentPage: 'organisations',
     approverRequests,
   });

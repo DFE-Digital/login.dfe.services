@@ -120,6 +120,10 @@ const updateRequestById = async (requestId, status, actionedBy, actionedReason, 
   return callApi('PATCH', `/organisations/requests/${requestId}`, correlationId, body);
 };
 
+const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
+  return callApi('GET', `/organisations/requests-for-user/${userId}`, correlationId);
+};
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -139,4 +143,5 @@ module.exports = {
   getRequestsForOrganisation,
   getRequestById,
   updateRequestById,
+  getPendingRequestsAssociatedWithUser,
 };

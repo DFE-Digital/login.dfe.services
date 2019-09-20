@@ -73,6 +73,7 @@ describe('when reviewing an organisation request', () => {
     expect(res.render.mock.calls[0][0]).toBe('requestOrganisation/views/review');
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: 'token',
+      currentPage: 'organisations',
       organisation: {
         id: 'org1',
         name: 'organisation two',

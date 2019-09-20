@@ -15,6 +15,7 @@ const buildModel = async (req, results) => {
 
   const model = {
     criteria: inputSource.criteria || '',
+    currentPage: 'organisations',
     validationMessages: {},
   };
   if (results) {
