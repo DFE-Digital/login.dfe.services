@@ -8,6 +8,16 @@
     </div>
 <% } %>
 
+<% if (locals.flash.warn) { %>
+    <div class="row">
+        <div class="col-12">
+            <div class="notification notification-information">
+                <%= locals.flash.warn %>
+            </div>
+        </div>
+    </div>
+<% } %>
+
 <div class="row">
     <div class="col-12">
         <h1 class="heading-xlarge">
