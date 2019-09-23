@@ -91,6 +91,39 @@ const createUserOrganisationRequest = async (userId, orgId, reason, correlationI
   return request;
 };
 
+const getAllRequestsForApprover = async (userId, correlationId) => {
+  return callApi('GET', `/organisations/requests-for-approval/${userId}`, correlationId);
+};
+
+const getRequestsForOrganisation = async (organisationId, correlationId) => {
+  return callApi('GET', `/organisations/${organisationId}/requests`, correlationId);
+};
+
+const getRequestById = async (requestId, correlationId) => {
+  return callApi('GET', `/organisations/requests/${requestId}`, correlationId);
+};
+
+const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {
+  const body = {};
+  if (status) {
+    body.status = status
+  }
+  if (actionedBy) {
+    body.actioned_by = actionedBy
+  }
+  if (actionedReason) {
+    body.actioned_reason = actionedReason
+  }
+  if (actionedAt) {
+    body.actioned_at = actionedAt
+  }
+  return callApi('PATCH', `/organisations/requests/${requestId}`, correlationId, body);
+};
+
+const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
+  return callApi('GET', `/organisations/requests-for-user/${userId}`, correlationId);
+};
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -106,4 +139,9 @@ module.exports = {
   getOrganisationAndServiceForUserV2,
   searchOrganisations,
   createUserOrganisationRequest,
+  getAllRequestsForApprover,
+  getRequestsForOrganisation,
+  getRequestById,
+  updateRequestById,
+  getPendingRequestsAssociatedWithUser,
 };

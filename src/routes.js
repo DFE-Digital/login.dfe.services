@@ -55,13 +55,13 @@ const routes = (app, csrf) => {
   app.use('/healthcheck', healthCheck({ config }));
   app.use('/', home(csrf));
   app.use('/signout', signOut(csrf));
-  // app.use('/access-requests', accessRequests(csrf));
   app.use('/organisations', organisations(csrf));
   if (config.toggles.useApproverJourney) {
     app.use('/approvals', users(csrf));
   }
   if (config.toggles.useRequestOrganisation) {
     app.use('/request-organisation', requestOrganisation(csrf));
+    app.use('/access-requests', accessRequests(csrf));
   }
   app.get('*', (req, res) => {
     res.status(404).render('errors/views/notFound');

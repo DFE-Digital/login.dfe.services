@@ -84,6 +84,26 @@ const createUserOrganisationRequest = async (userId, orgId, reason, correlationI
   return Promise.resolve();
 };
 
+const getAllRequestsForApprover = async (userId, correlationId) => {
+  return Promise.resolve();
+};
+
+const getRequestsForOrganisation = async (organisationId, correlationId) => {
+  return Promise.resolve();
+};
+
+const getRequestById = async (requestId, correlationId) => {
+  return Promise.resolve();
+};
+
+const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {
+  return Promise.resolve();
+};
+
+const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
+  return Promise.resolve();
+};
+
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -99,4 +119,9 @@ module.exports = {
   getOrganisationAndServiceForUserV2,
   searchOrganisations,
   createUserOrganisationRequest,
+  getAllRequestsForApprover,
+  getRequestsForOrganisation,
+  getRequestById,
+  updateRequestById,
+  getPendingRequestsAssociatedWithUser,
 };
