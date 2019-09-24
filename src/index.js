@@ -95,13 +95,15 @@ const init = async () => {
   app.use(flash());
 
 
-
+  let assetsUrl = config.hostingEnvironment.assetsUrl || 'https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/';
+  assetsUrl = assetsUrl.endsWith('/') ? assetsUrl.substr(0, assetsUrl.length - 1) : assetsUrl;
   Object.assign(app.locals, {
     moment,
     urls: {
       help: config.hostingEnvironment.helpUrl,
       profile: config.hostingEnvironment.profileUrl,
       interactions: config.hostingEnvironment.interactionsUrl,
+      assets: assetsUrl,
     },
     app: {
       title: 'DfE Sign-in',
