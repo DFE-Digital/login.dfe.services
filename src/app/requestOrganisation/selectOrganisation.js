@@ -2,7 +2,7 @@ const { searchOrganisations, getRequestsForOrganisation, getOrganisationAndServi
 
 const search = async (req) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
-  const criteria = inputSource.criteria || '';
+  const criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
   let pageNumber = parseInt(inputSource.page) || 1;
   if (isNaN(pageNumber)) {
     pageNumber = 1;

@@ -13,6 +13,10 @@ const notificationClient = new NotificationClient({
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);
 
+  if (request.status.id === -1 || request.status.id === 1) {
+    res.flash('warn', `Request already actioned by ${request.usersEmail}`);
+    return res.redirect(`/access-requests/${req.params.orgId}/requests`);
+  }
   return res.render('accessRequests/views/reviewOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Review request - DfE Sign-in',
