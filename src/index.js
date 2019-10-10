@@ -104,6 +104,7 @@ const init = async () => {
       profile: config.hostingEnvironment.profileUrl,
       interactions: config.hostingEnvironment.interactionsUrl,
       assets: assetsUrl,
+      survey: config.hostingEnvironment.surveyUrl,
     },
     app: {
       title: 'DfE Sign-in',
