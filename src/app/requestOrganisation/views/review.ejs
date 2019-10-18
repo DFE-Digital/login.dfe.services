@@ -81,7 +81,7 @@
             <% } %>
         </dl>
 
-        <form method="post">
+        <form method="post" class="prevent-form-double-submission">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
             <input type="hidden" value="<%=locals.organisation.id%>" name="organisationId"/>
             <input type="hidden" value="<%=locals.organisation.name%>" name="organisationName"/>
