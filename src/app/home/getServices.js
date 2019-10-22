@@ -11,19 +11,36 @@ const getAndMapServices = async (account, correlationId) => {
     id: sa.serviceId,
     name: '',
     serviceUrl: '',
+    roles: sa.roles,
   })), 'id');
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
-    const application = await getApplication(service.id);
-    service.name = application.name;
-    service.serviceUrl = (application.relyingParty ? (application.relyingParty.service_home || application.relyingParty.redirect_uris[0]) : undefined) || '#';
+    if (service && !service.isRole) {
+      const application = await getApplication(service.id);
+      if (application.relyingParty && application.relyingParty.params && application.relyingParty.params.showRolesOnServices === 'true') {
+        for (let r = 0; r < service.roles.length; r++) {
+          const role = service.roles[r];
+          services.push({
+            id: role.id,
+            name: role.name,
+            serviceUrl: application.relyingParty && application.relyingParty.params && application.relyingParty.params[role.code] ? application.relyingParty.params[role.code] : '',
+            isRole: true,
+          })
+        }
+        service.hideService = true;
+      } else {
+        service.name = application.name;
+        service.serviceUrl = (application.relyingParty ? (application.relyingParty.service_home || application.relyingParty.redirect_uris[0]) : undefined) || '#';
+      }
+    }
   }
   return sortBy(services, 'name');
 };
 
 const getServices = async (req, res) => {
   const account = Account.fromContext(req.user);
-  const services = await getAndMapServices(account, req.id);
+  const allServices = await getAndMapServices(account, req.id);
+  const services = allServices.filter(x => !x.hideService);
   const approverRequests = req.organisationRequests || [];
 
   return res.render('home/views/services', {
