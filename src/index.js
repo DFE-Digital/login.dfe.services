@@ -133,6 +133,7 @@ const init = async () => {
 
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer({
     help: config.hostingEnvironment.helpUrl,
+    assets: assetsUrl,
   }, config.hostingEnvironment.env === 'dev');
   app.use(getErrorHandler({
     logger,
