@@ -7,12 +7,12 @@ const sortBy = require('lodash/sortBy');
 
 const getAndMapServices = async (account, correlationId) => {
   const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
-  const services = uniqBy(serviceAccess.map((sa) => ({
+  const services = serviceAccess.map((sa) => ({
     id: sa.serviceId,
     name: '',
     serviceUrl: '',
     roles: sa.roles,
-  })), 'id');
+  }));
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
     if (service && !service.isRole) {
@@ -40,7 +40,7 @@ const getAndMapServices = async (account, correlationId) => {
 const getServices = async (req, res) => {
   const account = Account.fromContext(req.user);
   const allServices = await getAndMapServices(account, req.id);
-  const services = allServices.filter(x => !x.hideService);
+  const services = uniqBy(allServices.filter(x => !x.hideService), 'id');
   const approverRequests = req.organisationRequests || [];
 
   return res.render('home/views/services', {
