@@ -3,11 +3,13 @@ const { searchOrganisations, getRequestsForOrganisation, getOrganisationAndServi
 const search = async (req) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
   const criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
+  const filterStatus = [1,3,4];
+
   let pageNumber = parseInt(inputSource.page) || 1;
   if (isNaN(pageNumber)) {
     pageNumber = 1;
   }
-  return await searchOrganisations(criteria, pageNumber, undefined, undefined, req.id);
+  return await searchOrganisations(criteria, pageNumber, undefined, filterStatus, req.id);
 };
 
 const buildModel = async (req, results) => {
