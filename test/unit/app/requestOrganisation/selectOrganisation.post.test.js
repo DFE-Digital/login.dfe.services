@@ -59,7 +59,7 @@ describe('when showing the searching for a organisation', () => {
     expect(searchOrganisations.mock.calls[0][0]).toBe('organisation one');
     expect(searchOrganisations.mock.calls[0][1]).toBe(1);
     expect(searchOrganisations.mock.calls[0][2]).toBeUndefined();
-    expect(searchOrganisations.mock.calls[0][3]).toBeUndefined();
+    expect(searchOrganisations.mock.calls[0][3]).toMatchObject([1,3,4]);
     expect(searchOrganisations.mock.calls[0][4]).toBe('correlationId');
   });
 
