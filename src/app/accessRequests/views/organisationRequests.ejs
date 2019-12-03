@@ -33,9 +33,16 @@
         <div class="pane">
             <% if (locals.requests.length > 0) { %>
                 <% for (let i = 0; i < locals.requests.length; i++) { %>
-                <div class="requestV2">
+                <div class="requestV2 <%= locals.requests[i].status && locals.requests[i].status.id === 2 ? 'overdue' : '' %>">
                     <p>
-                        Request from <b><%= locals.requests[i].usersEmail %></b> -
+                        <% if (locals.requests[i].status && locals.requests[i].status.id === 2) { %>
+                            <span class="overdue-text">
+                                Overdue request from
+                            </span>
+                        <% } else { %>
+                                Request from
+                        <% }%>
+                            <b><%= locals.requests[i].usersEmail %></b> -
                         <time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time>
                     </p>
                     <a href="requests/<%= locals.requests[i].id %>" class="button-respond">Review request</a>
