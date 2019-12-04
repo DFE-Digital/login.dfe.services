@@ -64,7 +64,9 @@
                 <a href="<%= locals.cancelLink %>" class="button button-secondary">Cancel</a>
             </div>
         </form>
-        <% } %>
+        <%}else {%>
+            <legend><h2 class="heading-small">There are no available roles for <%= locals.service.name %>.</h2></legend>
+        <%}%>
     </div>
     <div class="col-4">
         <aside>
