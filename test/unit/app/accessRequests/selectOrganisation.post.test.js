@@ -69,6 +69,7 @@ describe('when selecting an organisation to manage requests', () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: 'token',
       backLink: true,
+      "currentPage": "users",
       selectedOrganisation: undefined,
       organisations: req.userOrganisations,
       title: 'Select Organisation - DfE Sign-in',
