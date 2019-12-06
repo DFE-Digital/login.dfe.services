@@ -98,6 +98,7 @@ describe('when reviewing an organisation request', () => {
       backLink: true,
       cancelLink: '/access-requests/org1/requests',
       csrfToken: 'token',
+      currentPage: 'users',
       request: {
         actioned_by: null,
         actioned_date: null,
@@ -152,6 +153,7 @@ describe('when reviewing an organisation request', () => {
       backLink: true,
       cancelLink: '/access-requests/org1/requests',
       csrfToken: 'token',
+      currentPage: 'users',
       request: {
         actioned_by: null,
         actioned_date: null,

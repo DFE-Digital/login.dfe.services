@@ -16,6 +16,7 @@ const get = async (req, res) => {
     cancelLink: `/access-requests/${req.params.orgId}/requests`,
     reason: '',
     validationMessages: {},
+    currentPage: 'users',
   })
 };
 
@@ -58,6 +59,7 @@ const post = async (req, res) => {
     userId: req.user.sub,
     editedUser: model.request.user_id,
     reason: model.reason,
+    currentPage: 'users',
   });
 
   res.flash('info', `Request rejected - an email has been sent to ${model.request.usersEmail}.`);

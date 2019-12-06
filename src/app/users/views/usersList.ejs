@@ -1,3 +1,14 @@
+<% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
+    <div class="panel panel-border-narrow alert-default" tabindex="0">
+        <% if (locals.approverRequests.length === 1) { %>
+            <p>There is <strong class="bold-small"><%= locals.approverRequests.length %> request</strong> you need to
+                action - <a href="/access-requests">view requests</a></p>
+        <% } else { %>
+            <p>There are <strong class="bold-small"><%= locals.approverRequests.length %> requests</strong> you need to
+                action - <a href="/access-requests">view requests</a></p>
+        <% } %>
+    </div>
+<% } %>
 <% if (locals.flash.info) { %>
 <div class="row">
     <div class="col-12">
@@ -8,16 +19,22 @@
 </div>
 <% } %>
 
-<h1 class="heading-xlarge">
-    <span class="heading-secondary"><%= locals.organisationDetails.organisation.name%> <%=locals.organisationDetails.organisation.status ? `(${locals.organisationDetails.organisation.status.name})` : '' %></span>
-    Manage users
-</h1>
-<div class="row row-spacer">
-    <div class="col-6 pull-right">
-        <div class="pull-right">
-            <a href="/approvals/<%=locals.organisationDetails.organisation.id %>/users/new-user" class="button button-secondary">Invite user</a>
-        </div>
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            <span class="heading-secondary"><%= locals.organisationDetails.organisation.name%> <%=locals.organisationDetails.organisation.status ? `(${locals.organisationDetails.organisation.status.name})` : '' %></span>
+            Manage users
+        </h1>
     </div>
+        <div class="col-4">
+            <aside>
+                <h2 class="heading-medium">Actions</h2>
+                <ul class="list">
+                    <li><a href="/approvals/<%=locals.organisationDetails.organisation.id%>/users/new-user">Invite user</a></li>
+                    <li><a href="/access-requests/<%=locals.organisationDetails.organisation.id%>/requests">View requests</a></li>
+                </ul>
+            </aside>
+        </div>
 </div>
 
 <%

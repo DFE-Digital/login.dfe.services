@@ -25,6 +25,7 @@ const get = async (req, res) => {
     request,
     selectedResponse: null,
     validationMessages: {},
+    currentPage: 'users',
   })
 };
 
@@ -37,6 +38,7 @@ const validate = async (req) => {
     request,
     selectedResponse: req.body.selectedResponse,
     validationMessages: {},
+    currentPage: 'users',
   };
   if (model.selectedResponse === undefined || model.selectedResponse === null) {
     model.validationMessages.selectedResponse = 'Approve or Reject must be selected';
