@@ -25,6 +25,7 @@ const get = async (req, res) => {
     request,
     selectedResponse: null,
     validationMessages: {},
+    currentPage: 'users',
   })
 };
 

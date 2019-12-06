@@ -45,6 +45,7 @@ const get = async (req, res) => {
     selectedOrganisation: null,
     backLink: true,
     validationMessages: {},
+    currentPage: 'users',
   });
 };
 
@@ -59,6 +60,7 @@ const post = async (req, res) => {
       selectedOrganisation: selectedOrg,
       backLink: true,
       validationMessages: { selectedOrganisation: 'An organisation must be selected' },
+      currentPage: 'users',
     });
   }
   return res.redirect(`/access-requests/${selectedOrg}/requests`)

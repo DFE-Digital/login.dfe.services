@@ -34,6 +34,7 @@ const getOrganisationRequests = async (req, res) => {
     csrfToken: req.csrfToken(),
     title: 'Requests - DfE Sign-in',
     organisation: organisationDetails.organisation,
+    currentPage: 'users',
     requests,
   });
 };
