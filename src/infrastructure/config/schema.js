@@ -20,6 +20,13 @@ const notificationsSchema = new SimpleSchema({
   connectionString: patterns.redis
 });
 
+const organisationRequestsSchema = new SimpleSchema({
+  requestLimit: {
+    type: SimpleSchema.Integer,
+    optional: true,
+  },
+});
+
 const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
   hostingEnvironment: schemas.hostingEnvironment,
@@ -31,6 +38,10 @@ const schema = new SimpleSchema({
   search: schemas.apiClient,
   toggles: togglesSchema,
   notifications: notificationsSchema,
+  organisationRequests: {
+    type: organisationRequestsSchema,
+    optional: true,
+  },
 });
 
 module.exports.validate = () => {

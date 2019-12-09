@@ -1,7 +1,7 @@
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 
-const { getOrganisationById, createUserOrganisationRequest } = require('./../../infrastructure/organisations');
+const { getOrganisationById, createUserOrganisationRequest, getRequestsForOrganisation, getPendingRequestsAssociatedWithUser } = require('./../../infrastructure/organisations');
 
 const NotificationClient = require('login.dfe.notifications.client');
 
@@ -24,18 +24,39 @@ const get = async (req, res) => {
   });
 };
 
-const post = async (req, res) => {
-  if (req.body.reason.length > 1000) {
-    const organisation = await getOrganisationById(req.session.organisationId, req.id);
-    return res.render('requestOrganisation/views/review', {
-      csrfToken: req.csrfToken(),
-      title: 'Confirm Request - DfE Sign-in',
-      organisation,
-      reason: req.body.reason,
-      currentPage: 'organisations',
-      validationMessages: {reason: 'Reason cannot be longer than 1000 characters'},
-    })
+const validate = async (req) => {
+  const organisation = await getOrganisationById(req.session.organisationId, req.id);
+  const requestLimit = config.organisationRequests.requestLimit || 10;
+  const model = {
+    title: 'Confirm Request - DfE Sign-in',
+    organisation,
+    reason: req.body.reason,
+    currentPage: 'organisations',
+    validationMessages: {},
+  };
+  if (model.reason.length > 1000) {
+    model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
   }
+  if ((await getRequestsForOrganisation(req.session.organisationId, req.id)).length > requestLimit) {
+    model.validationMessages.limitOrg = 'Organisation has reached the limit for requests'
+  }
+  if ((await getPendingRequestsAssociatedWithUser(req.user.sub, req.id)).length > requestLimit) {
+    model.validationMessages.limitUser = 'You have reached your limit for requests'
+  }
+  if (model.validationMessages.limitOrg || model.validationMessages.limitUser) {
+    model.validationMessages.limit = 'A current request needs to be actioned before new requests can be made'
+  }
+  return model;
+};
+
+const post = async (req, res) => {
+  const model = await validate(req);
+
+  if (Object.keys(model.validationMessages).length > 0) {
+    model.csrfToken = req.csrfToken();
+    return res.render('requestOrganisation/views/review', model);
+  }
+
   const request = await createUserOrganisationRequest(req.user.sub, req.body.organisationId, req.body.reason, req.id);
 
   await notificationClient.sendUserOrganisationRequest(request);
