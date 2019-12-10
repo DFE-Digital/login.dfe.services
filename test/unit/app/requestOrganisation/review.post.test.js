@@ -7,7 +7,7 @@ jest.mock('login.dfe.notifications.client');
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { post } = require('./../../../../src/app/requestOrganisation/review');
 const res = mockResponse();
-const { createUserOrganisationRequest, getOrganisationById, getRequestsForOrganisation, getPendingRequestsAssociatedWithUser } = require('./../../../../src/infrastructure/organisations');
+const { createUserOrganisationRequest, getOrganisationById, getRequestsForOrganisation, getPendingRequestsAssociatedWithUser, getApproversForOrganisation } = require('./../../../../src/infrastructure/organisations');
 const logger = require('./../../../../src/infrastructure/logger');
 
 const NotificationClient = require('login.dfe.notifications.client');
@@ -73,6 +73,7 @@ describe('when reviewing an organisation request', () => {
       created_date: '2019-08-12',
     }]);
     getPendingRequestsAssociatedWithUser.mockReset();
+    getApproversForOrganisation.mockReturnValue(["111","222"]);
     getPendingRequestsAssociatedWithUser.mockReturnValue([{
       id: 'requestId',
       org_id: 'organisationId',
