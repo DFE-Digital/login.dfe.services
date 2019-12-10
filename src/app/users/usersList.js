@@ -13,7 +13,6 @@ const search = async (req) => {
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const paramsSource = req.method === 'POST' ? req.body : req.query;
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
-  const approverRequests = req.organisationRequests || [];
   if (isNaN(page)) {
     page = 1;
   }
@@ -34,7 +33,6 @@ const search = async (req) => {
     sortOrder: sortAsc ? 'asc' : 'desc',
     usersForOrganisation,
     organisationDetails,
-    approverRequests,
     numberOfPages: usersForOrganisation.numberOfPages,
     totalNumberOfResults: usersForOrganisation.totalNumberOfResults,
     sort: {
@@ -73,7 +71,6 @@ const get = async (req, res) => {
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
     organisationDetails: result.organisationDetails,
-    approverRequests:result.approverRequests,
   });
 };
 
@@ -91,7 +88,6 @@ const post = async (req, res) => {
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
     organisationDetails: result.organisationDetails,
-    approverRequests:result.approverRequests,
   });
 };
 

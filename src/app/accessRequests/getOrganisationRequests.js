@@ -36,6 +36,7 @@ const getOrganisationRequests = async (req, res) => {
     organisation: organisationDetails.organisation,
     currentPage: 'users',
     requests,
+    backLink: true,
   });
 };
 
