@@ -124,6 +124,9 @@ const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
   return callApi('GET', `/organisations/requests-for-user/${userId}`, correlationId);
 };
 
+const getApproversForOrganisation = async (orgId, correlationId) => {
+  return callApi('GET', `organisations/${orgId}/approvers`, correlationId);
+};
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -144,4 +147,5 @@ module.exports = {
   getRequestById,
   updateRequestById,
   getPendingRequestsAssociatedWithUser,
+  getApproversForOrganisation,
 };

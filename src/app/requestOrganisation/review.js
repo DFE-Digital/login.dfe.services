@@ -1,7 +1,7 @@
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 
-const { getOrganisationById, createUserOrganisationRequest, getRequestsForOrganisation, getPendingRequestsAssociatedWithUser } = require('./../../infrastructure/organisations');
+const { getOrganisationById, createUserOrganisationRequest, getRequestsForOrganisation, getPendingRequestsAssociatedWithUser, getApproversForOrganisation } = require('./../../infrastructure/organisations');
 
 const NotificationClient = require('login.dfe.notifications.client');
 
@@ -72,8 +72,11 @@ const post = async (req, res) => {
     userEmail: req.user.email,
     organisationId: req.body.organisationId,
   });
-
-  res.flash('info', `Your request has been sent to approvers at ${req.body.organisationName}`);
+  if ((await getApproversForOrganisation(req.body.organisationId, req.id)).length > 0) {
+    res.flash('info', `Your request has been sent to approvers at ${req.body.organisationName}`);
+  }else {
+    res.flash('info', `There are no approvers at ${req.body.organisationName} so your request has been forwarded to the DfE Sign-in Helpdesk.`);
+  }
   return res.redirect('/organisations')
 };
 

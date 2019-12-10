@@ -104,6 +104,9 @@ const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
   return Promise.resolve();
 };
 
+const getApproversForOrganisation = async (organisationId, correlationId) => {
+  return Promise.resolve();
+};
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -124,4 +127,5 @@ module.exports = {
   getRequestById,
   updateRequestById,
   getPendingRequestsAssociatedWithUser,
+  getApproversForOrganisation,
 };
