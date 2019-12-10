@@ -61,7 +61,7 @@
             <% } %>
         </dl>
 
-        <form method="post">
+        <form method="post" class="prevent-form-double-submission">
             <div class="form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'form-group-error' : '' %>">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <fieldset class="inline">
