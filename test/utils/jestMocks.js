@@ -25,6 +25,9 @@ const mockConfig = () => {
     notifications:{
       connectionString: 'test',
     },
+    organisationRequests: {
+      requestLimit: 3
+    }
   };
 };
 

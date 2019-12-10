@@ -26,7 +26,7 @@ const get = async (req, res) => {
 
 const validate = async (req) => {
   const organisation = await getOrganisationById(req.session.organisationId, req.id);
-  const requestLimit = config.organisationRequests.requestLimit || 10;
+  const requestLimit = config.organisationRequests ? config.organisationRequests.requestLimit : 10;
   const model = {
     title: 'Confirm Request - DfE Sign-in',
     organisation,
@@ -50,6 +50,9 @@ const validate = async (req) => {
 };
 
 const post = async (req, res) => {
+  if (!req.session.organisationId) {
+    return res.redirect('search');
+  }
   const model = await validate(req);
 
   if (Object.keys(model.validationMessages).length > 0) {

@@ -7,7 +7,7 @@ jest.mock('login.dfe.notifications.client');
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { post } = require('./../../../../src/app/requestOrganisation/review');
 const res = mockResponse();
-const { createUserOrganisationRequest, getOrganisationById } = require('./../../../../src/infrastructure/organisations');
+const { createUserOrganisationRequest, getOrganisationById, getRequestsForOrganisation, getPendingRequestsAssociatedWithUser } = require('./../../../../src/infrastructure/organisations');
 const logger = require('./../../../../src/infrastructure/logger');
 
 const NotificationClient = require('login.dfe.notifications.client');
@@ -60,6 +60,30 @@ describe('when reviewing an organisation request', () => {
         'name': 'Establishment'
       },
     });
+    getRequestsForOrganisation.mockReset();
+    getRequestsForOrganisation.mockReturnValue([{
+      id: 'requestId',
+      org_id: 'organisationId',
+      org_name: 'organisationName',
+      user_id: 'user2',
+      status: {
+        id: 0,
+        name: 'pending',
+      },
+      created_date: '2019-08-12',
+    }]);
+    getPendingRequestsAssociatedWithUser.mockReset();
+    getPendingRequestsAssociatedWithUser.mockReturnValue([{
+      id: 'requestId',
+      org_id: 'organisationId',
+      org_name: 'organisationName',
+      user_id: 'user2',
+      status: {
+        id: 0,
+        name: 'pending',
+      },
+      created_date: '2019-08-12',
+    }]);
     res.mockResetAll();
   });
 
@@ -89,6 +113,79 @@ describe('when reviewing an organisation request', () => {
         }
     });
   });
+
+  it('then it should render error view if org requests are over limit', async () => {
+    getRequestsForOrganisation.mockReset();
+    getRequestsForOrganisation.mockReturnValue([
+      {
+      id: 'requestId',
+      org_id: 'organisationId',
+      org_name: 'organisationName',
+      user_id: 'user2',
+      status: {
+        id: 0,
+        name: 'pending',
+      },
+      created_date: '2019-08-12',
+      },
+      {
+        id: 'request2',
+        org_id: 'organisationId',
+        org_name: 'organisationName',
+        user_id: 'user2',
+        status: {
+          id: 0,
+          name: 'pending',
+        },
+        created_date: '2019-08-12',
+      },
+      {
+        id: 'request3',
+        org_id: 'organisationId',
+        org_name: 'organisationName',
+        user_id: 'user2',
+        status: {
+          id: 0,
+          name: 'pending',
+        },
+        created_date: '2019-08-12',
+      },
+      {
+        id: 'request4',
+        org_id: 'organisationId',
+        org_name: 'organisationName',
+        user_id: 'user2',
+        status: {
+          id: 0,
+          name: 'pending',
+        },
+        created_date: '2019-08-12',
+      },
+      ]);
+    await post(req, res);
+    expect(sendUserOrganisationRequest.mock.calls).toHaveLength(0);
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('requestOrganisation/views/review');
+    expect(res.render.mock.calls[0][1]).toEqual({
+      csrfToken: 'token',
+      currentPage: 'organisations',
+      organisation: {
+        id: 'org1',
+        name: 'organisation two',
+        category: {
+          'id': '001',
+          'name': 'Establishment'
+        },
+      },
+      reason: req.body.reason,
+      title: 'Confirm Request - DfE Sign-in',
+      validationMessages: {
+        limitOrg: 'Organisation has reached the limit for requests',
+        limit: 'A current request needs to be actioned before new requests can be made'
+      }
+    });
+  });
+
   it('then it should create the organisation request', async () => {
     await post(req, res);
 
