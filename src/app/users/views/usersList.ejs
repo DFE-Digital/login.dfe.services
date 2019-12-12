@@ -20,7 +20,9 @@
                 <h2 class="heading-medium">Actions</h2>
                 <ul class="list">
                     <li><a href="/approvals/<%=locals.organisationDetails.organisation.id%>/users/new-user">Invite user</a></li>
-                    <li><a href="/access-requests/<%=locals.organisationDetails.organisation.id%>/requests">View requests</a></li>
+                    <% if (locals.useRequestOrg) { %>
+                        <li><a href="/access-requests/<%=locals.organisationDetails.organisation.id%>/requests">View requests</a></li>
+                    <% } %>
                 </ul>
             </aside>
         </div>
