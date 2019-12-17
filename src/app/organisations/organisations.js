@@ -60,8 +60,16 @@ const getAndMapPendingRequests = async (account, correlationId) => {
     uid: org.uid,
     status: org.org_status,
     requestDate: org.created_date,
+    requestStatus: org.status.id,
   }))
 };
+
+const disableRequestOrgLink = async (orgRequests, organisations)=>{
+  if(organisations && organisations.length <= 0 && orgRequests && orgRequests.length > 0) {
+     return true;
+  }
+  return false;
+}
 
 const organisations = async (req, res) => {
   const account = Account.fromContext(req.user);
@@ -70,6 +78,7 @@ const organisations = async (req, res) => {
   const allOrgs = organisations.concat(organisationRequests);
   const sortedOrgs = sortBy(allOrgs, 'name');
   const approverRequests = req.organisationRequests || [];
+  const disableReqOrgLink = await disableRequestOrgLink(organisationRequests, organisations );
 
   return res.render('organisations/views/organisations', {
     title: 'Organisations',
@@ -77,6 +86,7 @@ const organisations = async (req, res) => {
     organisations: sortedOrgs,
     currentPage: 'organisations',
     approverRequests,
+    disableReqOrgLink,
   });
 };
 

@@ -10,16 +10,112 @@
 
 <div class ="servicesv2">
     <div class="row">
+        <% if (services.length === 0) { %>
         <div class="col-8">
             <h1 class="heading-xlarge">
-                Services
+                Welcome to DfE sign-in
             </h1>
-            <p>A list of services you have access to is displayed below. To access a service, please select the required link.</p>
-            <% if (services.length === 0) { %>
-                <div class="empty-state">
-                    <p>You have no services assigned, please contact your <a href="organisations">approver</a>.</p>
+            <p>Complete the following steps to finish setting up your account.</p>
+                <div>
+                    <ol class="task-list">
+                        <li>
+                            <h2 class="task-list-section">
+                                <span class="task-list-section-number">1. </span> Verify your account
+                            </h2>
+                            <ul class="task-list-items">
+                                <li class="task-list-item">
+                                    <p class="task-name">
+                                        Verify your email address
+                                    </p>
+                                    <strong class="task-completed" >Completed</strong>
+                                </li>
+                                <li class="task-list-item">
+                                    <p class="task-name">
+                                        Set password for account
+                                    </p>
+                                    <strong class="task-completed">Completed</strong>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <h2 class="task-list-section">
+                                <span class="task-list-section-number">2. </span> Connect to an organisation
+                            </h2>
+                            <ul class="task-list-items">
+                                <li class="task-list-item">
+                              <% if(!taskListStatus.hasOrgAssigned) { %>
+                                    <a href="/request-organisation/search">
+                                        Request access to an organisation
+                                    </a>
+                                        <% } else { %>
+                                    <p class="task-name" style="width: 50%">
+                                        Request access to an organisation
+                                    </p>
+                                      <% } %>
+                                  <% if(!taskListStatus.hasOrgAssigned) { %>
+                                    <a class="button button-start task-button-start pull-right" href="/request-organisation/search" role="button">Next Action</a>
+                                      <% } else { %>
+                                    <strong class="task-completed">Completed</strong>
+                                      <% } %>
+                                </li>
+                                <li class="task-list-item">
+                                    <p class="task-name">
+                                        Await approval from organisation
+                                    </p>
+                                    <% if(taskListStatus.hasRequestPending) { %>
+                                    <strong class="task-pending">Pending</strong>
+                                    <% } else if( taskListStatus.hasRequestRejected ) { %>
+                                        <strong class="task-rejected">Rejected</strong>
+                                    <% } else if( taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending ) { %>
+                                        <strong class="task-completed">Completed</strong>
+                                 <% } %>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                         <!--   {% if action === "accepted" %}-->
+                            <h2 class="task-list-section">
+                                <span class="task-list-section-number">3. </span> Get access to services
+                            </h2>
+                            <ul class="task-list-items">
+                                <li class="task-list-item">
+                                    <p class="task-name">
+                                        Email organisation's approver for access to services
+                                    </p>
+                                    <% if (approvers.length === 0) { %>
+                                       <!-- Add what if there are no approvers -->
+                                    <% } else if (approvers.length < 5) { %>
+                                        <ul>
+                                            <% for (let a = 0; a < approvers.length; a++) { %>
+                                            <li><a href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %></a> </li>
+                                            <% } %>
+                                        </ul>
+                                    <% } else { %> </br>
+                            <article class="organisation-services" style="margin-bottom: 0">
+                                <section class="organisation" style="padding: 0; margin:0;">
+                                    <div class="user">
+                                       <a href="" class="info-link" style="float: none;"><%= approvers.length %> approvers</a>
+                                    </div>
+                                    <div class="meta js-hidden">
+                                        <div class="approvers">
+                                            <dl class="inline condensed small-dt">
+                                                <ul>
+                                                    <% for (let a = 0; a < approvers.length; a++) { %>
+                                                    <li><a href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %></a> </li>
+                                                    <% } %>
+                                                </ul>
+                                            </dl>
+                                        </div>
+                                    </div>
+                                </section>
+                            </article>
+
+                                        <% }%>
+                                        </li>
+                            </ul>
+                        </li>
+                    </ol>
                 </div>
-            <% } %>
             <article class="organisation-services">
                 <section>
                     <ul class="service-list">
@@ -39,6 +135,32 @@
                 </section>
             </article>
         </div>
+        <% } else { %>
+        <div class="col-8">
+            <h1 class="heading-xlarge">
+                Services
+            </h1>
+            <p>A list of services you have access to is displayed below. To access a service, please select the required link.</p>
+            <article class="organisation-services">
+                <section>
+                    <ul class="service-list">
+                        <%
+                        for (let s = 0; s < services.length; s++) {
+                            const service = services[s];
+                        %>
+                        <li>
+                            <div class="links">
+                                <div class="service-link">
+                                    <a href="<%=service.serviceUrl%>" class="service-link"><%=service.name%></a>
+                                </div>
+                            </div>
+                        </li>
+                        <% } %>
+                    </ul>
+                </section>
+            </article>
+        </div>
+        <% } %>
         <div class="col-4">
             <aside>
                 <h2 class="heading-medium">Actions</h2>
