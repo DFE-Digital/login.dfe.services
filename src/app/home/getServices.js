@@ -51,7 +51,7 @@ const getApproversDetails = async (organisations) => {
 
 // This function should execute only if there are no services available for the user.
 const getTasksListStatusAndApprovers = async (account, correlationId) => {
-  let taskListStatus = {hasOrgAssigned :false, hasServiceAssigned :false, hasRequestPending :false, hasRequestRejected: false};
+  let taskListStatus = {hasOrgAssigned :false, hasServiceAssigned :false, hasRequestPending :false, hasRequestRejected: false, approverForOrg: null};
   let approvers=[];
   const organisations = await getOrganisationAndServiceForUser(account.id, correlationId);
   const allApprovers = await getApproversDetails(organisations, correlationId)
@@ -62,6 +62,9 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
     organisations.forEach((organisation) => {
       if(organisation.services && organisation.services.length > 0){
         taskListStatus.hasServiceAssigned = true;
+      }
+      if(organisation.role.id === 10000) {
+        taskListStatus.approverForOrg = organisation.organisation.id;
       }
       approvers = organisation.approvers.map((approverId) => {
         return allApprovers.find(x => x.id.toLowerCase() === approverId.toLowerCase());
