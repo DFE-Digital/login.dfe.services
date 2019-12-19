@@ -108,6 +108,10 @@ const getApproversForOrganisation = async (organisationId, correlationId) => {
   return Promise.resolve();
 };
 
+const getLatestRequestAssociatedWithUser = async (userId, correlationId) => {
+  return Promise.resolve();
+};
+
 module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
@@ -128,4 +132,5 @@ module.exports = {
   updateRequestById,
   getPendingRequestsAssociatedWithUser,
   getApproversForOrganisation,
+  getLatestRequestAssociatedWithUser,
 };

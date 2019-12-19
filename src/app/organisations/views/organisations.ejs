@@ -28,7 +28,7 @@
 
     </div>
 
-    <% if (locals.useRequestOrg) { %>
+    <% if (locals.useRequestOrg && !disableReqOrgLink) { %>
         <div class="col-4">
             <aside>
                 <h2 class="heading-medium">Actions</h2>
@@ -42,7 +42,7 @@
 
 <div class="row">
     <div class="col-8">
-        <% if (organisations.length === 0) { %>
+        <% if (organisations.length <= 0) { %>
             <div class="empty-state">
                 <% if (locals.useRequestOrg) { %>
                     <p>You are not linked to any organisations in DfE Sign-in. You can <a href="/request-organisation/search">request an organisation</a> to be linked to your account.</p>

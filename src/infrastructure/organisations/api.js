@@ -128,6 +128,10 @@ const getApproversForOrganisation = async (orgId, correlationId) => {
   return callApi('GET', `organisations/${orgId}/approvers`, correlationId);
 };
 
+const getLatestRequestAssociatedWithUser = async (userId, correlationId) => {
+  return callApi('GET', `/organisations/latest-request-for-user/${userId}`, correlationId);
+};
+
 module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
@@ -148,4 +152,5 @@ module.exports = {
   updateRequestById,
   getPendingRequestsAssociatedWithUser,
   getApproversForOrganisation,
+  getLatestRequestAssociatedWithUser,
 };
