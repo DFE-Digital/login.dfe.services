@@ -27,6 +27,10 @@ const mockConfig = () => {
     },
     organisationRequests: {
       requestLimit: 3
+    },
+    toggles: {
+      useApproverJourney: true,
+      useRequestOrganisation: true
     }
   };
 };
