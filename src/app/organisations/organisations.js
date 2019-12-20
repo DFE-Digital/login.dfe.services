@@ -5,6 +5,7 @@ const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const sortBy = require('lodash/sortBy');
+const config = require('./../../infrastructure/config');
 
 const getApproversDetails = async (organisations) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
@@ -65,7 +66,7 @@ const getAndMapPendingRequests = async (account, correlationId) => {
 };
 
 const disableRequestOrgLink = async (orgRequests, organisations)=>{
-  if(organisations && organisations.length <= 0 && orgRequests && orgRequests.length > 0) {
+  if(config.toggles.useRequestOrganisation && organisations && organisations.length <= 0 && orgRequests && orgRequests.length > 0) {
      return true;
   }
   return false;

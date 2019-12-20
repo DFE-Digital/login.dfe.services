@@ -7,6 +7,7 @@ const uniq = require('lodash/uniq');
 const uniqBy = require('lodash/uniqBy');
 const sortBy = require('lodash/sortBy');
 const { getOrganisationAndServiceForUser, getPendingRequestsAssociatedWithUser, getLatestRequestAssociatedWithUser } = require('./../../infrastructure/organisations');
+const config = require('./../../infrastructure/config');
 
 const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
@@ -103,7 +104,7 @@ const getServices = async (req, res) => {
   const services = uniqBy(allServices.filter(x => !x.hideService), 'id');
   const approverRequests = req.organisationRequests || [];
   let taskListStatusAndApprovers;
-  if  (services.length <= 0) {
+  if  (config.toggles.useRequestOrganisation && services.length <= 0) {
     taskListStatusAndApprovers = await getTasksListStatusAndApprovers(account, req.id);
   }
   return res.render('home/views/services', {
@@ -114,6 +115,7 @@ const getServices = async (req, res) => {
     approverRequests,
     taskListStatus : taskListStatusAndApprovers ? taskListStatusAndApprovers.taskListStatus : null,
     approvers : taskListStatusAndApprovers ? taskListStatusAndApprovers.approvers : null,
+    enableTaskList: config.toggles.useRequestOrganisation,
   });
 };
 
