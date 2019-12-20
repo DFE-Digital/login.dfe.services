@@ -162,8 +162,16 @@
                         %>
                         <li>
                             <div class="links">
-                                <div class="service-link">
-                                    <a href="<%=service.serviceUrl%>" class="service-link"><%=service.name%></a>
+                                <div class="<%= service.disabled ? 'service-link-disabled' : 'service-link'%>">
+                                    <% if (service.disabled) { %>
+                                        <span class="date">Available: <%=service.date%></span>
+                                        <h3 class="heading-small"><%=service.name%></h3>
+                                    <% } else { %>
+                                        <a href="<%=service.serviceUrl%>" class="service-link"><%=service.name%></a>
+                                    <% } %>
+                                    <% if (service.description) { %>
+                                        <p class="service-descriptionv2"><%= service.description %></p>
+                                    <% } %>
                                 </div>
                             </div>
                         </li>
