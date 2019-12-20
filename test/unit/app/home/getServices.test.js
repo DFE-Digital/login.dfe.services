@@ -1,6 +1,7 @@
 jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
   getUsersById: jest.fn(),
+  getById: jest.fn(),
 }));
 jest.mock('./../../../../src/infrastructure/applications', () => ({
   getApplication: jest.fn(),
@@ -52,6 +53,11 @@ describe('when displaying the users services', () => {
     getServicesForUser.mockReset().mockReturnValue(userAccess);
 
     getApplication.mockReset().mockReturnValue(application);
+    Account.getById.mockReset().mockReturnValue({
+      claims: {
+        sub: 'user1',
+      }
+    });
   });
 
   it('then it should render the logged in services view', async () => {

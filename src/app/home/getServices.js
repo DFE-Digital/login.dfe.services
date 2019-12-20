@@ -9,6 +9,8 @@ const sortBy = require('lodash/sortBy');
 const { getOrganisationAndServiceForUser, getPendingRequestsAssociatedWithUser, getLatestRequestAssociatedWithUser } = require('./../../infrastructure/organisations');
 
 const getAndMapServices = async (account, correlationId) => {
+  const user = await Account.getById(account.id);
+  const isMigrated =  user && user.claims ? user.claims.isMigrated : false;
   const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
   const services = serviceAccess.map((sa) => ({
     id: sa.serviceId,
@@ -36,6 +38,15 @@ const getAndMapServices = async (account, correlationId) => {
         service.serviceUrl = (application.relyingParty ? (application.relyingParty.service_home || application.relyingParty.redirect_uris[0]) : undefined) || '#';
       }
     }
+  }
+  // temporary disabled myesf service for users who were invited
+  if (isMigrated) {
+    services.push({
+      name: 'Manage Your Education and Skills Funding',
+      description: 'Use this service to: sign documents, view your funding allocations, view the funding you\'ve received, manage apprenticeship details, and tell us about subcontractors',
+      disabled: true,
+      date: '2 March 2020',
+    })
   }
   return sortBy(services, 'name');
 };

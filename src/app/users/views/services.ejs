@@ -21,8 +21,14 @@
             <tbody>
             <% for (let i = 0; i < locals.services.length; i++) { %>
                     <% const service = locals.services[i]; %>
-                    <tr>
-                        <td> <a href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>"><%=service.name%></a></td>
+                    <tr class="<%= service.disabled ? 'pending' : '' %>">
+                        <td>
+                            <% if (service.disabled) { %>
+                                <p style="margin: 0"><%=service.name%></p>
+                            <% } else { %>
+                            <a href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>"><%=service.name%></a>
+                            <% } %>
+                        </td>
                         <% if (service.dateActivated) { %>
                         <td><%=locals.moment(service.dateActivated).format('DD MMM YYYY')%></td>
                         <%} else {%>
