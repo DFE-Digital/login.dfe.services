@@ -32,8 +32,8 @@ const validate = async (req) => {
   };
   if (model.reason.length > 1000) {
     model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
-  } else if (model.request.status.id === -1 || model.request.status.id === 1) {
-    model.validationMessages.reason = `Request already actioned by ${model.request.usersEmail}`
+  } else if (model.request.approverEmail) {
+    model.validationMessages.reason = `Request already actioned by ${model.request.approverEmail}`
   }
   return model;
 };

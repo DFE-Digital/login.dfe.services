@@ -128,6 +128,8 @@ describe('when reviewing an organisation request', () => {
     getAndMapOrgRequest.mockReset().mockReturnValue({
       usersName: 'John Doe',
       usersEmail: 'john.doe@email.com',
+      approverName: 'Jane Doe',
+      approverEmail: 'jane.doe@email.com',
       id: 'requestId',
       org_id: 'org1',
       org_name: 'Org 1',
@@ -169,12 +171,14 @@ describe('when reviewing an organisation request', () => {
         },
         user_id: 'userId',
         usersEmail: 'john.doe@email.com',
-        usersName: 'John Doe'
+        usersName: 'John Doe',
+        approverName: 'Jane Doe',
+        approverEmail: 'jane.doe@email.com',
       },
       selectedResponse: 'approve',
       title: 'Review request - DfE Sign-in',
       validationMessages: {
-        selectedResponse: 'Request already actioned by john.doe@email.com'
+        selectedResponse: 'Request already actioned by jane.doe@email.com'
       }
     });
   });
