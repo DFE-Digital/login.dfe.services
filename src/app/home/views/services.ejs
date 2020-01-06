@@ -153,6 +153,11 @@
                 Services
             </h1>
             <p>A list of services you have access to is displayed below. To access a service, please select the required link.</p>
+            <% if (services.length === 0) { %>
+                <div class="empty-state">
+                    <p>You have no services assigned, please contact your <a href="organisations">approver</a>.</p>
+                </div>
+            <% } %>
             <article class="organisation-services">
                 <section>
                     <ul class="service-list">
