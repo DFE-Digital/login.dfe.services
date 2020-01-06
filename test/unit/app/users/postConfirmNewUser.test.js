@@ -14,6 +14,7 @@ jest.mock('./../../../../src/infrastructure/organisations', () => {
     putUserInOrganisation: jest.fn(),
     putInvitationInOrganisation: jest.fn(),
     getOrganisationById: jest.fn(),
+    getPendingRequestsAssociatedWithUser: jest.fn(),
   };
 });
 
@@ -34,7 +35,7 @@ jest.mock('./../../../../src/app/users/utils');
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 
 const { addInvitationService, addUserService } = require('./../../../../src/infrastructure/access');
-const { putUserInOrganisation, putInvitationInOrganisation, getOrganisationById } = require('./../../../../src/infrastructure/organisations');
+const { putUserInOrganisation, putInvitationInOrganisation, getOrganisationById, getPendingRequestsAssociatedWithUser } = require('./../../../../src/infrastructure/organisations');
 const { getById, updateIndex, createIndex } = require('./../../../../src/infrastructure/search');
 const Account = require('./../../../../src/infrastructure/account');
 const logger = require('./../../../../src/infrastructure/logger');
@@ -90,6 +91,18 @@ describe('when inviting a new user', () => {
         name: 'category name'
       }
     }];
+    getPendingRequestsAssociatedWithUser.mockReset();
+    getPendingRequestsAssociatedWithUser.mockReturnValue([{
+      id: 'requestId',
+      org_id: 'organisationId',
+      org_name: 'organisationName',
+      user_id: 'user2',
+      status: {
+        id: 0,
+        name: 'pending',
+      },
+      created_date: '2019-08-12',
+    }]);
     res = mockResponse();
 
     Account.createInvite.mockReset();

@@ -1,7 +1,7 @@
 'use strict';
 const { getAllServices } = require('./../../infrastructure/applications');
 const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
-const { putUserInOrganisation, putInvitationInOrganisation, getOrganisationById } = require('./../../infrastructure/organisations');
+const { putUserInOrganisation, putInvitationInOrganisation, getOrganisationById, getPendingRequestsAssociatedWithUser, updateRequestById } = require('./../../infrastructure/organisations');
 const { getById, updateIndex, createIndex } = require('./../../infrastructure/search');
 const { waitForIndexToUpdate } = require('./utils');
 const Account = require('./../../infrastructure/account');
@@ -79,6 +79,12 @@ const post = async (req, res) => {
     //if existing user not in org
     if (req.session.user.isInvite) {
       await putUserInOrganisation(uid, organisationId, 0, req.id);
+      const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(uid,req.id);
+      const requestForOrg = pendingOrgRequests.find(x => x.org_id === organisationId);
+      if (requestForOrg) {
+        // mark request as approved if outstanding for same org
+        await updateRequestById(requestForOrg.id, 1, req.user.sub, null, Date.now(), req.id);
+      }
     }
     if (req.session.user.services) {
       for (let i = 0; i < req.session.user.services.length; i++) {
