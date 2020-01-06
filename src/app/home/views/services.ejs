@@ -185,7 +185,11 @@
             <aside>
                 <h2 class="heading-medium">Actions</h2>
                 <ul class="list">
-                    <li><a href="organisations">My approvers</a> </li>
+                    <% if (locals.isApprover) { %>
+                        <li><a href="<%=locals.addServicesRedirect%>">Add services</a> </li>
+                        <li><a href="<%=locals.editServicesRedirect%>">Edit services</a> </li>
+                    <% } %>
+                    <li><a href="organisations">See my approvers</a> </li>
                 </ul>
             </aside>
         </div>

@@ -56,7 +56,15 @@ const post = async (req, res) => {
     model.csrfToken = req.csrfToken();
     return res.render('users/views/selectOrganisation', model);
   }
-  return res.redirect(`/approvals/${model.selectedOrganisation}/users`)
+
+
+    if (req.query.services === 'add') {
+      return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`)
+    } else if (req.query.services === 'edit') {
+      return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`)
+    } else {
+      return res.redirect(`/approvals/${model.selectedOrganisation}/users`)
+    }
 };
 
 module.exports = {

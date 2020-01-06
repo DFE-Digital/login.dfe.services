@@ -107,6 +107,27 @@ const getServices = async (req, res) => {
   if  (config.toggles.useRequestOrganisation && services.length <= 0) {
     taskListStatusAndApprovers = await getTasksListStatusAndApprovers(account, req.id);
   }
+
+  let addServicesRedirect;
+  let editServicesRedirect;
+  const approverOrgs = req.userOrganisations ? req.userOrganisations.filter(x => x.role.id === 10000) : null;
+  if (approverOrgs && approverOrgs.length > 0) {
+    req.session.user = {
+      uid: req.user.sub,
+      firstName: req.user.given_name,
+      lastName: req.user.family_name,
+      email: req.user.email,
+      services: [],
+    };
+    if (approverOrgs.length === 1) {
+      addServicesRedirect = `approvals/${approverOrgs[0].organisation.id}/users/${req.user.sub}/associate-services`;
+      editServicesRedirect = `approvals/${approverOrgs[0].organisation.id}/users/${req.user.sub}`;
+    } else {
+      addServicesRedirect = '/approvals/select-organisation?services=add';
+      editServicesRedirect = '/approvals/select-organisation?services=edit';
+    }
+  }
+
   return res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
@@ -116,6 +137,8 @@ const getServices = async (req, res) => {
     taskListStatus : taskListStatusAndApprovers ? taskListStatusAndApprovers.taskListStatus : null,
     approvers : taskListStatusAndApprovers ? taskListStatusAndApprovers.approvers : null,
     enableTaskList: config.toggles.useRequestOrganisation,
+    addServicesRedirect,
+    editServicesRedirect,
   });
 };
 
