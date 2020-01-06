@@ -79,6 +79,8 @@ describe('when rejecting an organisation request', () => {
     getAndMapOrgRequest.mockReset().mockReturnValue({
       usersName: 'John Doe',
       usersEmail: 'john.doe@email.com',
+      approverName: 'Jane Doe',
+      approverEmail: 'jane.doe@email.com',
       id: 'requestId',
       org_id: 'org1',
       org_name: 'Org 1',
@@ -118,12 +120,14 @@ describe('when rejecting an organisation request', () => {
         },
         user_id: 'userId',
         usersEmail: 'john.doe@email.com',
-        usersName: 'John Doe'
+        usersName: 'John Doe',
+        approverName: 'Jane Doe',
+        approverEmail: 'jane.doe@email.com',
       },
       reason: 'reason for rejection',
       title: 'Reason for rejection - DfE Sign-in',
       validationMessages: {
-        reason: 'Request already actioned by john.doe@email.com'
+        reason: 'Request already actioned by jane.doe@email.com'
       }
     });
   });

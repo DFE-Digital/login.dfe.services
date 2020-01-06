@@ -5,10 +5,13 @@ const getAndMapOrgRequest = async (req) => {
   const request = await getRequestById(req.params.rid, req.id);
   let mappedRequest;
   if (request) {
-    const user = request.status.id === 0 || request.status.id === 2 ? await Account.getById(request.user_id) : await Account.getById(request.actioned_by);
+    const approver = request.actioned_by ? await Account.getById(request.actioned_by) : null;
+    const user = await Account.getById(request.user_id);
     const usersName = user ? `${user.claims.given_name} ${user.claims.family_name}` : '';
     const usersEmail = user ? user.claims.email : '';
-    mappedRequest = Object.assign({usersName, usersEmail}, request);
+    const approverName = approver ? `${approver.given_name} ${approver.family_name}` : '';
+    const approverEmail = approver ? approver.email : '';
+    mappedRequest = Object.assign({usersName, usersEmail, approverName, approverEmail}, request);
   }
   return mappedRequest;
 };
