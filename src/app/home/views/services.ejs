@@ -53,7 +53,7 @@
                                     </p>
                                       <% } %>
                                   <% if(!taskListStatus.hasOrgAssigned) { %>
-                                    <a class="button button-start task-button-start pull-right" href="/request-organisation/search" role="button">Next Action</a>
+                                    <a class="button pull-right" href="/request-organisation/search" role="button">Next Action</a>
                                       <% } else { %>
                                     <strong class="task-completed">Completed</strong>
                                       <% } %>
@@ -88,7 +88,7 @@
                                 <% } else if(taskListStatus.approverForOrg) { %>
                                     <li class="task-list-item">
                                         <a href='/approvals/<%=taskListStatus.approverForOrg%>/users/<%=user.id%>/associate-services'>Add services</a>
-                                        <a class="button button-start task-button-start pull-right" href='/approvals/<%=taskListStatus.approverForOrg%>/users/<%=user.id%>/associate-services' role="button">Next Action</a>
+                                        <a class="button pull-right" href='/approvals/<%=taskListStatus.approverForOrg%>/users/<%=user.id%>/associate-services' role="button">Next Action</a>
                                     </li>
                                 <% } else { %>
                                 <li class="task-list-item">
