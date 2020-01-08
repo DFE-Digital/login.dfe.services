@@ -120,7 +120,6 @@ class DirectoriesApiAccount extends Account {
         clientId,
         redirectUri,
       },
-      requestOrigin:'approver',
       approverEmail,
       orgName,
     });
