@@ -56,10 +56,11 @@ const post = async (req, res) => {
 
   let uid = req.params.uid;
   const organisationId = req.params.orgId;
+  const organisation = await getOrganisationById(organisationId, req.id);
 
   if (!uid) {
     const redirectUri = `https://${config.hostingEnvironment.host}/auth`;
-    const invitationId = await Account.createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, 'services', redirectUri);
+    const invitationId = await Account.createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, 'services', redirectUri, req.user.email, organisation.name);
     uid = `inv-${invitationId}`;
   }
 
@@ -100,7 +101,6 @@ const post = async (req, res) => {
     if (req.params.uid) {
       // patch search index with organisation added to existing user or inv
       const getAllUserDetails = await getById(req.params.uid, req.id);
-      const organisation = await getOrganisationById(organisationId, req.id);
       if (!getAllUserDetails) {
         logger.error(`Failed to find user ${req.params.uid} when confirming change of user permissions`, {correlationId: req.id});
       } else if (!organisation) {

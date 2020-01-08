@@ -111,7 +111,7 @@ class DirectoriesApiAccount extends Account {
     return response.result.map(a => new DirectoriesApiAccount(a));
   }
 
-  static async createInvite(firstName, lastName, email, clientId, redirectUri) {
+  static async createInvite(firstName, lastName, email, clientId, redirectUri, approverEmail, orgName) {
     const response = await callDirectoriesApi(`invitations`, {
       firstName,
       lastName,
@@ -120,6 +120,9 @@ class DirectoriesApiAccount extends Account {
         clientId,
         redirectUri,
       },
+      requestOrigin:'approver',
+      approverEmail,
+      orgName,
     });
     if (!response.success) {
       if (response.statusCode === 404) {
