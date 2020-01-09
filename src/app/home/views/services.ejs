@@ -87,8 +87,8 @@
                                     </p></li>
                                 <% } else if(taskListStatus.approverForOrg) { %>
                                     <li class="task-list-item">
-                                        <a href='/approvals/<%=taskListStatus.approverForOrg%>/users/<%=user.id%>/associate-services'>Add services</a>
-                                        <a class="button pull-right" href='/approvals/<%=taskListStatus.approverForOrg%>/users/<%=user.id%>/associate-services' role="button">Next Action</a>
+                                        <a href='<%=locals.addServicesRedirect%>'>Add services</a>
+                                        <a class="button pull-right" href='<%=locals.addServicesRedirect%>' role="button">Next Action</a>
                                     </li>
                                 <% } else { %>
                                 <li class="task-list-item">
