@@ -78,7 +78,14 @@
                                 <span class="task-list-section-number">3. </span> Get access to services
                             </h2>
                             <ul class="task-list-items">
-                                <% if (approvers.length === 0 && taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending &&
+                                <% if (taskListStatus.multiOrgDetails.orgs > 1 && taskListStatus.multiOrgDetails.approvers >= 1 &&
+                                        !taskListStatus.approverForOrg) { %>
+                                <li class="task-list-item">
+                                    <p class="task-name">
+                                        Email organisation's approver for access to services
+                                    </p>  <a href="/organisations">See my approvers</a>
+                                </li>
+                                <% } else if (approvers.length === 0 && taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending &&
                                         !taskListStatus.hasRequestRejected) { %>
                                 <!-- Add what if there are no approvers -->
                                 <li class="task-list-item">
@@ -95,9 +102,7 @@
                                     <p class="task-name">
                                         Email organisation's approver for access to services
                                     </p>
-                                    <% if (taskListStatus.multiOrgWithApprovers > 1) { %>
-                                        <a href="/organisations">See my approvers</a>
-                                    <% } else if (approvers.length < 5) { %>
+                                    <% if (approvers.length < 5) { %>
                                         <ul>
                                             <% for (let a = 0; a < approvers.length; a++) { %>
                                             <li><a href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %></a> </li>

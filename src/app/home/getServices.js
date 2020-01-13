@@ -63,7 +63,7 @@ const getApproversDetails = async (organisations) => {
 
 // This function should execute only if there are no services available for the user.
 const getTasksListStatusAndApprovers = async (account, correlationId) => {
-  let taskListStatus = {hasOrgAssigned :false, hasServiceAssigned :false, hasRequestPending :false, hasRequestRejected: false, approverForOrg: null, multiOrgWithApprovers: 0};
+  let taskListStatus = {hasOrgAssigned :false, hasServiceAssigned :false, hasRequestPending :false, hasRequestRejected: false, approverForOrg: null, multiOrgDetails:{orgs:0,approvers:0}};
   let approvers = [];
   const organisations = await getOrganisationAndServiceForUser(account.id, correlationId);
   const allApprovers = await getApproversDetails(organisations, correlationId);
@@ -71,6 +71,9 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
   // Check for organisations and services for the user account
   if (organisations && organisations.length > 0) {
     taskListStatus.hasOrgAssigned = true;
+    if(organisations){
+      taskListStatus.multiOrgDetails.orgs = organisations.length;
+    }
     organisations.forEach((organisation) => {
       if (organisation.services && organisation.services.length > 0) {
         taskListStatus.hasServiceAssigned = true;
@@ -81,8 +84,8 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
       approvers = organisation.approvers.map((approverId) => {
         return allApprovers.find(x => x.id.toLowerCase() === approverId.toLowerCase());
       });
-      if(approvers){
-        ++taskListStatus.multiOrgWithApprovers;
+      if(approvers && approvers.length > 0){
+        ++taskListStatus.multiOrgDetails.approvers;
       }
     });
   } else {
