@@ -1,4 +1,5 @@
 'use strict';
+const _ = require('lodash');
 const config = require('./../../infrastructure/config');
 const { getSingleServiceForUser } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
@@ -53,7 +54,7 @@ const post = async (req, res) => {
     selectedRoles = [req.body.role];
   }
 
-  if(!haveRolesBeenUpdated(req, selectedRoles)){
+  if(haveRolesBeenUpdated(req, selectedRoles)){
     return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
   }
 
@@ -80,9 +81,8 @@ const saveRoleInSession = (req, selectedRoles) => {
 
 const haveRolesBeenUpdated= (req, selectedRoles) => {
   if(req.session.service 
-    && req.session.service.roles  
-    && req.session.service.roles.length === selectedRoles.length){
-      return false;
+    && req.session.service.roles){
+      return _.isEqual(req.session.service.roles.map( item => item.id).sort(),selectedRoles.sort());
   }
   return true;
 }
