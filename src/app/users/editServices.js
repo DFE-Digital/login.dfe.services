@@ -1,4 +1,5 @@
 'use strict';
+const _ = require('lodash');
 const config = require('./../../infrastructure/config');
 const { getSingleServiceForUser } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
@@ -41,6 +42,7 @@ const get = async (req, res) => {
   const model = await getViewModel(req);
 
   model.service.roles = model.userService.roles;
+  saveRoleInSession(req,model.service.roles);
 
   return res.render('users/views/editServices', model);
 };
@@ -50,6 +52,10 @@ const post = async (req, res) => {
   let selectedRoles = req.body.role ? req.body.role : [];
   if (!(selectedRoles instanceof Array)) {
     selectedRoles = [req.body.role];
+  }
+
+  if(haveRolesBeenUpdated(req, selectedRoles)){
+    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
   }
 
   const policyValidationResult = await policyEngine.validate( req.params.uid.startsWith('inv-') ? undefined : req.params.uid, req.params.orgId, req.params.sid, selectedRoles, req.id);
@@ -62,11 +68,24 @@ const post = async (req, res) => {
     return res.render('users/views/editServices', model);
   }
 
+  saveRoleInSession(req,selectedRoles);
+
+  return res.redirect(`${req.params.sid}/confirm-edit-service`)
+};
+
+const saveRoleInSession = (req, selectedRoles) => {
   req.session.service = {
     roles: selectedRoles
   };
-  return res.redirect(`${req.params.sid}/confirm-edit-service`)
 };
+
+const haveRolesBeenUpdated= (req, selectedRoles) => {
+  if(req.session.service 
+    && req.session.service.roles){
+      return _.isEqual(req.session.service.roles.map( item => item.id).sort(),selectedRoles.sort());
+  }
+  return true;
+}
 
 module.exports = {
   get,
