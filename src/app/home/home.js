@@ -3,7 +3,7 @@
 const { getAllServices } = require('./../../infrastructure/applications');
 const uniqBy = require('lodash/uniqBy');
 const sortBy = require('lodash/sortBy');
-
+const config = require('./../../infrastructure/config');
 
 const getAndMapExternalServices = async (correlationId) => {
   const allServices = await getAllServices(correlationId) || [];
@@ -12,6 +12,8 @@ const getAndMapExternalServices = async (correlationId) => {
     name: service.name,
     isMigrated: service.isMigrated,
     isExternalService: service.isExternalService,
+    profileUrl: config.hostingEnvironment.profileUrl,
+
   })), 'id');
    return sortBy(services, 'name');
 };
