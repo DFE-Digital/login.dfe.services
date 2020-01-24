@@ -24,7 +24,7 @@ const action = async (req, res) => {
       name: 'Manage Your Education and Skills Funding',
       disabled: true,
       status: {
-        description: '2 March 2020',
+        description: 'March 2020',
       }
     })
   }
