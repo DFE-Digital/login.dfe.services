@@ -12,18 +12,19 @@ const getAndMapExternalServices = async (correlationId) => {
     name: service.name,
     isMigrated: service.isMigrated,
     isExternalService: service.isExternalService,
-    profileUrl: config.hostingEnvironment.profileUrl,
-
   })), 'id');
    return sortBy(services, 'name');
 };
 
 const home = async (req, res) => {
   const services = await getAndMapExternalServices(req.id);
+  const requestOrganisationToggle = config.toggles.useRequestOrganisation?config.toggles.useRequestOrganisation:false;
   return res.render('home/views/landingPage', {
     title: 'DfE Sign-in',
     services,
     loggedOut: true,
+    profileUrl: config.hostingEnvironment.profileUrl,
+    requestOrganisationToggle
   });
 };
 

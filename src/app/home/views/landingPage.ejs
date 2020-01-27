@@ -8,10 +8,16 @@
     <div class="col-8">
         <p class="lede">DfE Sign-in is the new way to access your DfE online services and has now replaced Secure Access.</p>
         <h2 class="heading-medium">Before you start</h2>
+        <% if (requestOrganisationToggle) { %>
         <p>You'll either need:</p>
+        <% } else { %>
+         <p>You'll need:</p>
+        <% } %>
         <ul class="list list-bullet">
             <li><b>An existing DfE Sign-in account.</b> This will be the email address and password you created when you first accessed DfE Sign-in.</li>
-            <li><b>To create a DfE Sign-in account.</b>  If you haven’t used DfE Sign-in before you’ll need to <a href="<%=profileUrl%>/register">create a new account</a>.</li>
+<% if (requestOrganisationToggle) { %>
+            <li><b>To create a DfE Sign-in account.</b>  If you haven’t used DfE Sign-in before you’ll need to <a href="<%=profileUrl%>/register">create a DfE Sign-in account</a>.</li>
+<% } %>
         </ul>
         <a class="button button-start" href="/my-services" role="button">Start now</a>
         <details class="services-dropdown">
