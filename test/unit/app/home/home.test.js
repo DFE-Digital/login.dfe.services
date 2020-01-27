@@ -10,7 +10,7 @@ const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const Account = require('./../../../../src/infrastructure/account');
 const { getAllServices } = require('./../../../../src/infrastructure/applications');
 const home = require('./../../../../src/app/home/home');
-
+jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 const res = mockResponse();
 
 
@@ -69,6 +69,7 @@ describe('when displaying current organisation and service mapping', () => {
           isExternalService: true,
           isMigrated: true,
           name: 'Service One',
+
         }
         ]
     )
