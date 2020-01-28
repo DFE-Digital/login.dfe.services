@@ -3,7 +3,8 @@ const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../
 const { getById, updateIndex } = require ('./../../infrastructure/search');
 const logger = require('./../../infrastructure/logger');
 const { getUserDetails, waitForIndexToUpdate } = require('./utils');
-
+const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
 
 const get = async (req, res) => {
   const user = await getUserDetails(req);
@@ -26,12 +27,16 @@ const post = async (req, res) => {
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
+  const organisationName = organisationDetails.organisation.name;
   const permissionName = role === 10000 ? 'approver' : 'end user';
 
   if(uid.startsWith('inv-')) {
     await putInvitationInOrganisation(uid.substr(4), organisationId, role, req.id);
   } else {
     await putUserInOrganisation(uid, organisationId, 1, role, req.id);
+    const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});    
+    await notificationClient.sendUserPermissionChanged(user.email, user.firstName, user.lastName, organisationName, permissionName);
+    res.flash('info', `Email notification of user permission changed to ${permissionName}, sent to ${user.firstName} ${user.lastName}`);
   }
   // patch search indexer with new role
   const getAllUserDetails = await getById(uid, req.id);

@@ -40,13 +40,20 @@ const { getById, updateIndex, createIndex } = require('./../../../../src/infrast
 const Account = require('./../../../../src/infrastructure/account');
 const logger = require('./../../../../src/infrastructure/logger');
 
+jest.mock('login.dfe.notifications.client');
+const notificationClient = require('login.dfe.notifications.client');
+
 describe('when inviting a new user', () => {
 
   let req;
   let res;
 
   let postConfirmNewUser;
-
+  const expectedOrgName = 'organisationName';
+  const expectedEmailAddress = 'test@test.com';
+  const expectedFirstName = 'test';
+  const expectedLastName = 'name';
+  
   beforeEach(() => {
     req = mockRequest();
     req.params = {
@@ -156,6 +163,12 @@ describe('when inviting a new user', () => {
       services: []
     });
     postConfirmNewUser = require('./../../../../src/app/users/confirmNewUser').post;
+    sendUserAddedToOrganisationStub = jest.fn();
+    sendServiceAddedStub = jest.fn();
+    notificationClient.mockReset().mockImplementation(() => ({
+      sendUserAddedToOrganisation: sendUserAddedToOrganisationStub,
+      sendServiceAdded: sendServiceAddedStub
+    }));
   });
 
   it('then it should redirect to users list if no user in session', async () => {
@@ -294,9 +307,11 @@ describe('when inviting a new user', () => {
     req.session.user.isInvite = true;
     await postConfirmNewUser(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(1);
+    expect(res.flash.mock.calls).toHaveLength(3);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`User test@test.com added to organisation`)
+    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of new organisation organisationName association, sent to test name`);
+    expect(res.flash.mock.calls[1][1]).toBe(`Email notification of added services, sent to test name`);
+    expect(res.flash.mock.calls[2][1]).toBe(`User test@test.com added to organisation`);
   });
 
   it('then a flash message is displayed for a user being invited', async () => {
@@ -343,9 +358,39 @@ describe('when inviting a new user', () => {
     req.session.user.uid = 'user1';
     await postConfirmNewUser(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(1);
+    expect(res.flash.mock.calls).toHaveLength(2);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`Services successfully added`)
+    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of added services, sent to test name`)
   });
 
+  it('then it should send an email notification to user when added to organisation', async () => {
+    req.params.uid = 'user1';
+    req.session.user.uid = 'user1';
+    req.session.user.isInvite = true;
+
+    await postConfirmNewUser(req, res);
+
+    expect(sendUserAddedToOrganisationStub.mock.calls).toHaveLength(1);
+
+    expect(sendUserAddedToOrganisationStub.mock.calls[0][0]).toBe(expectedEmailAddress);
+    expect(sendUserAddedToOrganisationStub.mock.calls[0][1]).toBe(expectedFirstName);
+    expect(sendUserAddedToOrganisationStub.mock.calls[0][2]).toBe(expectedLastName);
+    expect(sendUserAddedToOrganisationStub.mock.calls[0][3]).toBe(expectedOrgName);
+  
+  });
+
+  it('then it should send an email notification to user when service added', async () => {
+    req.params.uid = 'user1';
+    req.session.user.uid = 'user1';
+    req.session.user.isInvite = true;
+
+    await postConfirmNewUser(req, res);
+
+    expect(sendServiceAddedStub.mock.calls).toHaveLength(1);
+
+    expect(sendServiceAddedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
+    expect(sendServiceAddedStub.mock.calls[0][1]).toBe(expectedFirstName);
+    expect(sendServiceAddedStub.mock.calls[0][2]).toBe(expectedLastName);
+  
+  });
 });

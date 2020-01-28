@@ -23,6 +23,8 @@ jest.mock('./../../../../src/infrastructure/search', () => {
   };
 });
 jest.mock('./../../../../src/app/users/utils');
+jest.mock('login.dfe.notifications.client');
+const notificationClient = require('login.dfe.notifications.client');
 
 const logger = require('./../../../../src/infrastructure/logger');
 const { getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
@@ -35,6 +37,10 @@ describe('when removing organisation access', () => {
   let res;
 
   let postRemoveOrganisationAccess;
+  const organisationName = 'organisationName';
+  const expectedEmailAddress = 'test@test.com';
+  const expectedFirstName = 'test';
+  const expectedLastName = 'name';
 
   beforeEach(() => {
     req = mockRequest();
@@ -44,9 +50,9 @@ describe('when removing organisation access', () => {
     };
     req.session = {
       user: {
-        email: 'test@test.com',
-        firstName: 'test',
-        lastName: 'name',
+        email: expectedEmailAddress,
+        firstName: expectedFirstName,
+        lastName: expectedLastName,
       },
     };
     req.user = {
@@ -55,7 +61,7 @@ describe('when removing organisation access', () => {
       organisations: [{
         organisation: {
           id: 'organisationId',
-          name: 'organisationName',
+          name: organisationName,
         },
         role: {
           id: 0,
@@ -66,7 +72,7 @@ describe('when removing organisation access', () => {
     req.userOrganisations = [{
       organisation: {
         id: 'org1',
-        name: 'organisationName',
+        name: organisationName,
       },
       role: {
         id: 0,
@@ -89,7 +95,7 @@ describe('when removing organisation access', () => {
       organisations: [
         {
           id: "org1",
-          name: "organisationId",
+          name: "organisationName",
           categoryId: "004",
           statusId: 1,
           roleId: 0
@@ -99,6 +105,10 @@ describe('when removing organisation access', () => {
 
     res = mockResponse();
     postRemoveOrganisationAccess = require('./../../../../src/app/users/removeOrganisationAccess').post;
+    sendUserRemovedFromOrganisationStub = jest.fn();
+    notificationClient.mockReset().mockImplementation(() => ({
+      sendUserRemovedFromOrganisation: sendUserRemovedFromOrganisationStub,
+    }));
   });
 
   it('then it should delete org for invitation if request for invitation', async () => {
@@ -161,8 +171,22 @@ describe('when removing organisation access', () => {
   it('then a flash message is shown to the user', async () => {
     await postRemoveOrganisationAccess(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(1);
+    expect(res.flash.mock.calls).toHaveLength(2);
     expect(res.flash.mock.calls[0][0]).toBe('info');
+    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of user been removed from  ${req.userOrganisations[0].organisation.name}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
+    expect(res.flash.mock.calls[1][0]).toBe('info');
+    expect(res.flash.mock.calls[1][1]).toBe(`test name has been removed from ${req.userOrganisations[0].organisation.name}`);
   });
 
+  it('then it should send an email notification to user', async () => {
+    await postRemoveOrganisationAccess(req, res);
+
+    expect(sendUserRemovedFromOrganisationStub.mock.calls).toHaveLength(1);
+
+    expect(sendUserRemovedFromOrganisationStub.mock.calls[0][0]).toBe(expectedEmailAddress);
+    expect(sendUserRemovedFromOrganisationStub.mock.calls[0][1]).toBe(expectedFirstName);
+    expect(sendUserRemovedFromOrganisationStub.mock.calls[0][2]).toBe(expectedLastName);
+    expect(sendUserRemovedFromOrganisationStub.mock.calls[0][3]).toBe(organisationName);
+  
+  });
 });
