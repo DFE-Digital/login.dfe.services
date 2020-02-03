@@ -160,10 +160,8 @@ describe('when removing service access', () => {
   it('then a flash message is shown to the user', async () => {
     await postRemoveServiceAccess(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(2);
+    expect(res.flash.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of service service name removed for  ${req.userOrganisations[0].organisation.name}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
-    expect(res.flash.mock.calls[1][0]).toBe('info');
-    expect(res.flash.mock.calls[1][1]).toBe(`service name successfully removed`);
+    expect(res.flash.mock.calls[0][1]).toBe(`service name successfully removed`);
   });
 });

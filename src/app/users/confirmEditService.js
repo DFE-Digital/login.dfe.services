@@ -64,7 +64,6 @@ const post = async (req, res) => {
     await updateUserService(uid, serviceId, organisationId, selectedRoles.selectedRoleIds, req.id);
     const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
     await notificationClient.sendServiceAdded(req.session.user.email, req.session.user.firstName, req.session.user.lastName);
-    res.flash('info', `Email notification of added services, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
   }
 
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);

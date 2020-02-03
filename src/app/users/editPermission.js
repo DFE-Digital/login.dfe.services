@@ -36,7 +36,6 @@ const post = async (req, res) => {
     await putUserInOrganisation(uid, organisationId, 1, role, req.id);
     const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});    
     await notificationClient.sendUserPermissionChanged(user.email, user.firstName, user.lastName, organisationName, permissionName);
-    res.flash('info', `Email notification of user permission changed to ${permissionName}, sent to ${user.firstName} ${user.lastName}`);
   }
   // patch search indexer with new role
   const getAllUserDetails = await getById(uid, req.id);

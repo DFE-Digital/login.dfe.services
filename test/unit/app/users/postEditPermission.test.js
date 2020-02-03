@@ -165,8 +165,9 @@ describe('when editing organisation permission level', () => {
   it('then a flash message is shown to the user', async () => {
     await postEditPermission(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(2);
+    expect(res.flash.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
+    expect(res.flash.mock.calls[0][1]).toBe(`${expectedEmailAddress} now has approver access`);
   });
 
   it('then it should send an email notification to user that its permission has changed to approver', async () => {
