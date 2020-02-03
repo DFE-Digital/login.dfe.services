@@ -5,6 +5,11 @@ const { getSingleServiceForUser } = require('./utils');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 const { getById, updateIndex } = require('./../../infrastructure/search');
 const { waitForIndexToUpdate } = require('./utils');
+const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
+const notificationClient = new NotificationClient({
+  connectionString: config.notifications.connectionString,
+});
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -36,11 +41,15 @@ const post = async (req, res) => {
   const serviceId = req.params.sid;
   const organisationId = req.params.orgId;
   const service = await getSingleServiceForUser(uid, organisationId, serviceId, req.id);
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
+  const org = organisationDetails.organisation.name;
 
   if(uid.startsWith('inv-')) {
     await removeServiceFromInvitation(uid.substr(4), serviceId, organisationId, req.id);
   } else {
     await removeServiceFromUser(uid, serviceId, organisationId, req.id);
+    await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name,);
+    res.flash('info', `Email notification of service ${service.name} removed for  ${org}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
   }
 
   const getAllUserDetails = await getById(uid, req.id);
@@ -50,8 +59,8 @@ const post = async (req, res) => {
   await updateIndex(uid, null, null, updatedServiceDetails, req.id);
   await waitForIndexToUpdate(uid, (updated) => updated.services.length === updatedServiceDetails.length);
 
-  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
-  const org = organisationDetails.organisation.name;
+ 
+
   logger.audit(`${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
     type: 'approver',
     subType: 'user-service-deleted',

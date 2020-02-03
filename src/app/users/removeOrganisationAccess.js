@@ -1,6 +1,8 @@
 'use strict';
 
 const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
 const { getAllServicesForUserInOrg, waitForIndexToUpdate } = require('./utils');
 const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../../infrastructure/organisations');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
@@ -36,6 +38,8 @@ const post = async (req, res) => {
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
   const servicesForUser = await getAllServicesForUserInOrg(uid, organisationId, req.id);
+  const getAllUserDetails = await getById(uid, req.id);
+  const currentOrganisationDetails = getAllUserDetails.organisations;
 
   if(uid.startsWith('inv-')) {
     for (let i = 0; i < servicesForUser.length; i++) {
@@ -48,11 +52,16 @@ const post = async (req, res) => {
       const service = servicesForUser[i];
       await removeServiceFromUser(uid, service.id, organisationId, req.id);
     }
+    const organisation = currentOrganisationDetails.filter(org => org.id === organisationId);
     await deleteUserOrganisation(uid, organisationId, req.id);
+    const notificationClient = new NotificationClient({
+      connectionString: config.notifications.connectionString,
+    });    
+    await notificationClient.sendUserRemovedFromOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, organisation[0].name);
+    res.flash('info', `Email notification of user been removed from  ${organisation[0].name}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
   }
+ 
   // patch search indexer to remove org
-  const getAllUserDetails = await getById(uid, req.id);
-  const currentOrganisationDetails = getAllUserDetails.organisations;
   const updatedOrganisationDetails = currentOrganisationDetails.filter(org => org.id !== organisationId);
   await updateIndex(uid, updatedOrganisationDetails, null, null, req.id);
   await waitForIndexToUpdate(uid, (updated) => updated.organisations.length === updatedOrganisationDetails.length);

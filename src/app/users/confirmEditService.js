@@ -2,6 +2,8 @@
 const logger = require('./../../infrastructure/logger');
 const { getSingleServiceForUser } = require('./utils');
 const { listRolesOfService, updateUserService, updateInvitationService } = require ('./../../infrastructure/access');
+const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
 
 const getSelectedRoles = async (req) => {
   let selectedRoleIds = req.session.service.roles;
@@ -60,6 +62,9 @@ const post = async (req, res) => {
     await updateInvitationService(uid.substr(4), serviceId, organisationId, selectedRoles.selectedRoleIds, req.id);
   } else {
     await updateUserService(uid, serviceId, organisationId, selectedRoles.selectedRoleIds, req.id);
+    const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
+    await notificationClient.sendServiceAdded(req.session.user.email, req.session.user.firstName, req.session.user.lastName);
+    res.flash('info', `Email notification of added services, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
   }
 
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);

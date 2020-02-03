@@ -12,7 +12,8 @@ jest.mock('./../../../../src/infrastructure/access', () => {
 
 
 jest.mock('./../../../../src/app/users/utils');
-
+jest.mock('login.dfe.notifications.client');
+const notificationClient = require('login.dfe.notifications.client');
 const logger = require('./../../../../src/infrastructure/logger');
 const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
 const { updateUserService, updateInvitationService, listRolesOfService } = require('./../../../../src/infrastructure/access');
@@ -24,6 +25,9 @@ describe('when editing a service for a user', () => {
   let res;
 
   let postConfirmEditService;
+  const expectedEmailAddress = 'test@test.com';
+  const expectedFirstName = 'test';
+  const expectedLastName = 'name';
 
   beforeEach(() => {
     req = mockRequest();
@@ -95,6 +99,10 @@ describe('when editing a service for a user', () => {
 
     res = mockResponse();
     postConfirmEditService = require('./../../../../src/app/users/confirmEditService').post;
+    sendServiceAddedStub = jest.fn();
+    notificationClient.mockReset().mockImplementation(() => ({
+      sendServiceAdded: sendServiceAddedStub,
+    }));
   });
 
   it('then it should edit service for invitation if request for invitation', async () => {
@@ -152,10 +160,23 @@ describe('when editing a service for a user', () => {
   it('then a flash message is shown to the user', async () => {
     await postConfirmEditService(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(1);
+    expect(res.flash.mock.calls).toHaveLength(2);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`service name updated successfully`)
+    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of added services, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
+    expect(res.flash.mock.calls[1][0]).toBe('info');
+    expect(res.flash.mock.calls[1][1]).toBe(`service name updated successfully`);
   });
 
+  it('then it should send an email notification to user when service added', async () => {
+    
+    await postConfirmEditService(req, res);
+
+    expect(sendServiceAddedStub.mock.calls).toHaveLength(1);
+
+    expect(sendServiceAddedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
+    expect(sendServiceAddedStub.mock.calls[0][1]).toBe(expectedFirstName);
+    expect(sendServiceAddedStub.mock.calls[0][2]).toBe(expectedLastName);
+  
+  });
 
 });

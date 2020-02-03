@@ -7,6 +7,7 @@ const { waitForIndexToUpdate } = require('./utils');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -64,6 +65,9 @@ const post = async (req, res) => {
     uid = `inv-${invitationId}`;
   }
 
+  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
+  const org = organisationDetails.organisation.name;
+
   //if existing invitation or new invite
   if (uid.startsWith('inv-')) {
     const invitationId = uid.substr(4);
@@ -78,6 +82,7 @@ const post = async (req, res) => {
     }
   } else {
     //if existing user not in org
+    const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString,});
     if (req.session.user.isInvite) {
       await putUserInOrganisation(uid, organisationId, 0, req.id);
       const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(uid,req.id);
@@ -86,16 +91,21 @@ const post = async (req, res) => {
         // mark request as approved if outstanding for same org
         await updateRequestById(requestForOrg.id, 1, req.user.sub, null, Date.now(), req.id);
       }
+      await notificationClient.sendUserAddedToOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, org);
+      res.flash('info', `Email notification of new organisation ${org} association, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
     }
     if (req.session.user.services) {
       for (let i = 0; i < req.session.user.services.length; i++) {
         const service = req.session.user.services[i];
         await addUserService(uid, service.serviceId, organisationId, service.roles, req.id);
       }
+      if(req.session.user.services.length > 0){
+        await notificationClient.sendServiceAdded(req.session.user.email, req.session.user.firstName, req.session.user.lastName);
+        res.flash('info', `Email notification of added services, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
+      }
     }
   }
-  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
-  const org = organisationDetails.organisation.name;
+ 
 
   if (req.session.user.isInvite) {
     if (req.params.uid) {
