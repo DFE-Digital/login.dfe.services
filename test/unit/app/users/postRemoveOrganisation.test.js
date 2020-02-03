@@ -175,7 +175,7 @@ describe('when removing organisation access', () => {
     expect(res.flash.mock.calls[0][0]).toBe('info');
     expect(res.flash.mock.calls[0][1]).toBe(`Email notification of user been removed from  ${req.userOrganisations[0].organisation.name}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
     expect(res.flash.mock.calls[1][0]).toBe('info');
-    expect(res.flash.mock.calls[1][1]).toBe(`test name has been removed from ${req.userOrganisations[0].organisation.name}`);
+    expect(res.flash.mock.calls[1][1]).toBe(`${expectedEmailAddress} removed from organisation`);
   });
 
   it('then it should send an email notification to user', async () => {

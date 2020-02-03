@@ -62,7 +62,7 @@ const post = async (req, res) => {
       newValue: permissionName,
     }],
   });
-  res.flash('info', role === 10000 ? `${user.firstName} ${user.lastName} now has approver access to ${organisationDetails.organisation.name}` : `${user.firstName} ${user.lastName} approver access has been removed for ${organisationDetails.organisation.name}` );
+  res.flash('info', role === 10000 ? `${user.email} now has approver access` : `${user.email} now has end user access` );
   return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
 };
 

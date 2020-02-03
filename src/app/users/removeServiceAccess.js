@@ -71,9 +71,9 @@ const post = async (req, res) => {
       name: 'remove_service',
       oldValue: serviceId,
       newValue: undefined,
-    }],
+    }], 
   });
-  res.flash('info', `${service.name} has been removed from ${req.session.user.firstName} ${req.session.user.lastName}`);
+  res.flash('info', `${service.name} successfully removed`);
   return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
 };
 

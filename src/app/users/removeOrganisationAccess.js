@@ -80,7 +80,7 @@ const post = async (req, res) => {
       newValue: undefined,
     }],
   });
-  res.flash('info', `${req.session.user.firstName} ${req.session.user.lastName} has been removed from ${org}`);
+  res.flash('info', `${req.session.user.email} removed from organisation`);
   return res.redirect(`/approvals/${organisationId}/users`);
 };
 
