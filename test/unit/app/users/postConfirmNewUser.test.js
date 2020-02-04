@@ -307,11 +307,9 @@ describe('when inviting a new user', () => {
     req.session.user.isInvite = true;
     await postConfirmNewUser(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(3);
+    expect(res.flash.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of new organisation organisationName association, sent to test name`);
-    expect(res.flash.mock.calls[1][1]).toBe(`Email notification of added services, sent to test name`);
-    expect(res.flash.mock.calls[2][1]).toBe(`User test@test.com added to organisation`);
+    expect(res.flash.mock.calls[0][1]).toBe(`User test@test.com added to organisation`);
   });
 
   it('then a flash message is displayed for a user being invited', async () => {
@@ -358,9 +356,9 @@ describe('when inviting a new user', () => {
     req.session.user.uid = 'user1';
     await postConfirmNewUser(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(2);
+    expect(res.flash.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of added services, sent to test name`)
+    expect(res.flash.mock.calls[0][1]).toBe(`Services successfully added`);
   });
 
   it('then it should send an email notification to user when added to organisation', async () => {
