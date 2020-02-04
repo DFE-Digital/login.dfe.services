@@ -92,7 +92,6 @@ const post = async (req, res) => {
         await updateRequestById(requestForOrg.id, 1, req.user.sub, null, Date.now(), req.id);
       }
       await notificationClient.sendUserAddedToOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, org);
-      res.flash('info', `Email notification of new organisation ${org} association, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
     }
     if (req.session.user.services) {
       for (let i = 0; i < req.session.user.services.length; i++) {
@@ -101,7 +100,6 @@ const post = async (req, res) => {
       }
       if(req.session.user.services.length > 0){
         await notificationClient.sendServiceAdded(req.session.user.email, req.session.user.firstName, req.session.user.lastName);
-        res.flash('info', `Email notification of added services, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
       }
     }
   }

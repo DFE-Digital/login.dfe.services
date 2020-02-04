@@ -58,7 +58,6 @@ const post = async (req, res) => {
       connectionString: config.notifications.connectionString,
     });    
     await notificationClient.sendUserRemovedFromOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, organisation[0].name);
-    res.flash('info', `Email notification of user been removed from  ${organisation[0].name}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
   }
  
   // patch search indexer to remove org
@@ -80,7 +79,7 @@ const post = async (req, res) => {
       newValue: undefined,
     }],
   });
-  res.flash('info', `${req.session.user.firstName} ${req.session.user.lastName} has been removed from ${org}`);
+  res.flash('info', `${req.session.user.email} removed from organisation`);
   return res.redirect(`/approvals/${organisationId}/users`);
 };
 

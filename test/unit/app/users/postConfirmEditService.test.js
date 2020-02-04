@@ -160,11 +160,9 @@ describe('when editing a service for a user', () => {
   it('then a flash message is shown to the user', async () => {
     await postConfirmEditService(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(2);
+    expect(res.flash.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of added services, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
-    expect(res.flash.mock.calls[1][0]).toBe('info');
-    expect(res.flash.mock.calls[1][1]).toBe(`service name updated successfully`);
+    expect(res.flash.mock.calls[0][1]).toBe(`service name updated successfully`);
   });
 
   it('then it should send an email notification to user when service added', async () => {

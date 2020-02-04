@@ -49,7 +49,6 @@ const post = async (req, res) => {
   } else {
     await removeServiceFromUser(uid, serviceId, organisationId, req.id);
     await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name,);
-    res.flash('info', `Email notification of service ${service.name} removed for  ${org}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
   }
 
   const getAllUserDetails = await getById(uid, req.id);
@@ -71,9 +70,9 @@ const post = async (req, res) => {
       name: 'remove_service',
       oldValue: serviceId,
       newValue: undefined,
-    }],
+    }], 
   });
-  res.flash('info', `${service.name} has been removed from ${req.session.user.firstName} ${req.session.user.lastName}`);
+  res.flash('info', `${service.name} successfully removed`);
   return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
 };
 

@@ -36,7 +36,6 @@ const post = async (req, res) => {
     await putUserInOrganisation(uid, organisationId, 1, role, req.id);
     const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});    
     await notificationClient.sendUserPermissionChanged(user.email, user.firstName, user.lastName, organisationName, permissionName);
-    res.flash('info', `Email notification of user permission changed to ${permissionName}, sent to ${user.firstName} ${user.lastName}`);
   }
   // patch search indexer with new role
   const getAllUserDetails = await getById(uid, req.id);
@@ -62,7 +61,7 @@ const post = async (req, res) => {
       newValue: permissionName,
     }],
   });
-  res.flash('info', role === 10000 ? `${user.firstName} ${user.lastName} now has approver access to ${organisationDetails.organisation.name}` : `${user.firstName} ${user.lastName} approver access has been removed for ${organisationDetails.organisation.name}` );
+  res.flash('info', role === 10000 ? `${user.email} now has approver access` : `${user.email} now has end user access` );
   return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
 };
 
