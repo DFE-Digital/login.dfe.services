@@ -48,7 +48,7 @@ const post = async (req, res) => {
     await removeServiceFromInvitation(uid.substr(4), serviceId, organisationId, req.id);
   } else {
     await removeServiceFromUser(uid, serviceId, organisationId, req.id);
-    await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name,);
+    await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name,org);
   }
 
   const getAllUserDetails = await getById(uid, req.id);
