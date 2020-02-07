@@ -4,14 +4,15 @@
             Confirm <%=locals.user.organisation.roleId === 10000 ? 'remove approver' : 'approver';%> access
         </h1>
         <p class="lede">Please review these details before <%=locals.user.organisation.roleId === 10000 ? 'removing' : 'granting';%> approver access to <%=locals.organisationDetails.organisation.name%> for <%= locals.user.firstName %> <%= locals.user.lastName %></p>
-
-        <p>As an approver, <%= locals.user.firstName %> <%= locals.user.lastName %> will be able to:</p>
-        <ul class="list list-bullet">
-            <li>invite new users to DfE Sign-in</li>
-            <li>approve requests to your organisation</li>
-            <li>add and remove user access to services</li>
-            <li>edit permission levels</li>
-        </ul>
+        <% if(locals.user.organisation.roleId !== 10000) { %>
+            <p>As an approver, <%= locals.user.firstName %> <%= locals.user.lastName %> will be able to:</p>
+            <ul class="list list-bullet">
+                <li>invite new users to DfE Sign-in</li>
+                <li>approve requests to your organisation</li>
+                <li>add and remove user access to services</li>
+                <li>edit permission levels</li>
+            </ul>
+        <% } %>
         <dl class="app-check-your-answers app-check-your-answers--short">
 
             <div class="app-check-your-answers__contents">
