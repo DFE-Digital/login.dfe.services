@@ -112,6 +112,10 @@ const getLatestRequestAssociatedWithUser = async (userId, correlationId) => {
   return Promise.resolve();
 };
 
+const getCategories = async () => {
+  return Promise.resolve();
+}
+
 module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
@@ -133,4 +137,5 @@ module.exports = {
   getPendingRequestsAssociatedWithUser,
   getApproversForOrganisation,
   getLatestRequestAssociatedWithUser,
+  getCategories
 };
