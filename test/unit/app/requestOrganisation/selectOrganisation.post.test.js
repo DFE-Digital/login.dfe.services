@@ -3,7 +3,7 @@ jest.mock('./../../../../src/infrastructure/organisations');
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { post } = require('./../../../../src/app/requestOrganisation/selectOrganisation');
-const { searchOrganisations, getRequestsForOrganisation, getOrganisationAndServiceForUserV2 } = require('./../../../../src/infrastructure/organisations');
+const { searchOrganisations, getRequestsForOrganisation, getOrganisationAndServiceForUserV2, getCategories } = require('./../../../../src/infrastructure/organisations');
 
 const res = mockResponse();
 
@@ -30,6 +30,12 @@ describe('when showing the searching for a organisation', () => {
       totalNumberOfRecords: 49,
       page: 1,
     });
+
+    getCategories.mockReset().mockReturnValue([{
+      id:'001',
+      name: 'some category name'
+    }]);
+
     getRequestsForOrganisation.mockReset();
     getRequestsForOrganisation.mockReturnValue([{
       id: 'requestId',
@@ -58,7 +64,7 @@ describe('when showing the searching for a organisation', () => {
     expect(searchOrganisations.mock.calls).toHaveLength(1);
     expect(searchOrganisations.mock.calls[0][0]).toBe('organisation one');
     expect(searchOrganisations.mock.calls[0][1]).toBe(1);
-    expect(searchOrganisations.mock.calls[0][2]).toBeUndefined();
+    expect(searchOrganisations.mock.calls[0][2]).toMatchObject(['001']);
     expect(searchOrganisations.mock.calls[0][3]).toMatchObject([1,3,4]);
     expect(searchOrganisations.mock.calls[0][4]).toBe('correlationId');
   });

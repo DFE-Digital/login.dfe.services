@@ -1,16 +1,26 @@
-const { searchOrganisations, getRequestsForOrganisation, getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
+const { searchOrganisations, getRequestsForOrganisation, getOrganisationAndServiceForUserV2, getCategories} = require('./../../infrastructure/organisations');
+
 
 const search = async (req) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
   const criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
   const filterStatus = [1,3,4];
+  const filterOutOrgNames = ['Department for Education'];
+  const organisationCategoriesFilter = await retrieveOrganisationCategories();
 
   let pageNumber = parseInt(inputSource.page) || 1;
   if (isNaN(pageNumber)) {
     pageNumber = 1;
   }
-  return await searchOrganisations(criteria, pageNumber, undefined, filterStatus, req.id);
+  return await searchOrganisations(criteria, pageNumber,organisationCategoriesFilter, filterStatus, req.id,filterOutOrgNames);
 };
+
+const retrieveOrganisationCategories = async () => {
+  const orgCategories = await getCategories();
+  return orgCategories.map((cat) => { return cat.id }).filter((id) => {
+    return id !== '011';
+  })
+}
 
 const buildModel = async (req, results) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
