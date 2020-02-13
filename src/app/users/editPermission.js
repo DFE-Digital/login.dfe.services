@@ -1,6 +1,7 @@
 'use strict';
 const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../infrastructure/organisations');
 const { getById, updateIndex } = require ('./../../infrastructure/search');
+const { isServiceEmailNotificationAllowed } = require ('./../../infrastructure/applications');
 const logger = require('./../../infrastructure/logger');
 const { getUserDetails, waitForIndexToUpdate } = require('./utils');
 const config = require('./../../infrastructure/config');
@@ -29,13 +30,16 @@ const post = async (req, res) => {
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const organisationName = organisationDetails.organisation.name;
   const permissionName = role === 10000 ? 'approver' : 'end user';
+  const isEmailAllowed = await isServiceEmailNotificationAllowed();
 
   if(uid.startsWith('inv-')) {
     await putInvitationInOrganisation(uid.substr(4), organisationId, role, req.id);
   } else {
     await putUserInOrganisation(uid, organisationId, 1, role, req.id);
-    const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});    
-    await notificationClient.sendUserPermissionChanged(user.email, user.firstName, user.lastName, organisationName, permissionName);
+    if(isEmailAllowed){
+      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});    
+      await notificationClient.sendUserPermissionChanged(user.email, user.firstName, user.lastName, organisationName, permissionName);
+    }
   }
   // patch search indexer with new role
   const getAllUserDetails = await getById(uid, req.id);
