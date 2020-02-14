@@ -3,6 +3,7 @@
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
+const { isServiceEmailNotificationAllowed } = require ('./../../infrastructure/applications');
 const { getAllServicesForUserInOrg, waitForIndexToUpdate } = require('./utils');
 const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../../infrastructure/organisations');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
@@ -15,7 +16,7 @@ const get = async (req, res) => {
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
-
+  
   return res.render('users/views/removeOrganisation', {
     csrfToken: req.csrfToken(),
     organisationDetails,
@@ -40,6 +41,7 @@ const post = async (req, res) => {
   const servicesForUser = await getAllServicesForUserInOrg(uid, organisationId, req.id);
   const getAllUserDetails = await getById(uid, req.id);
   const currentOrganisationDetails = getAllUserDetails.organisations;
+  const isEmailAllowed = await isServiceEmailNotificationAllowed();
 
   if(uid.startsWith('inv-')) {
     for (let i = 0; i < servicesForUser.length; i++) {
@@ -54,10 +56,10 @@ const post = async (req, res) => {
     }
     const organisation = currentOrganisationDetails.filter(org => org.id === organisationId);
     await deleteUserOrganisation(uid, organisationId, req.id);
-    const notificationClient = new NotificationClient({
-      connectionString: config.notifications.connectionString,
-    });    
-    await notificationClient.sendUserRemovedFromOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, organisation[0].name);
+    if(isEmailAllowed){
+      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});    
+      await notificationClient.sendUserRemovedFromOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, organisation[0].name);
+    }
   }
  
   // patch search indexer to remove org

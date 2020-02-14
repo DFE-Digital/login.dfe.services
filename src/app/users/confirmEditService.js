@@ -4,6 +4,7 @@ const { getSingleServiceForUser } = require('./utils');
 const { listRolesOfService, updateUserService, updateInvitationService } = require ('./../../infrastructure/access');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
+const { isServiceEmailNotificationAllowed } = require ('./../../infrastructure/applications');
 
 const getSelectedRoles = async (req) => {
   let selectedRoleIds = req.session.service.roles;
@@ -56,14 +57,17 @@ const post = async (req, res) => {
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
   const serviceId = req.params.sid;
+  const isEmailAllowed = await isServiceEmailNotificationAllowed();
   const service = await getSingleServiceForUser(uid, organisationId, serviceId, req.id);
   const selectedRoles = await getSelectedRoles(req);
   if(uid.startsWith('inv-')) {
     await updateInvitationService(uid.substr(4), serviceId, organisationId, selectedRoles.selectedRoleIds, req.id);
   } else {
     await updateUserService(uid, serviceId, organisationId, selectedRoles.selectedRoleIds, req.id);
-    const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
-    await notificationClient.sendServiceAdded(req.session.user.email, req.session.user.firstName, req.session.user.lastName);
+    if(isEmailAllowed){
+      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
+      await notificationClient.sendServiceAdded(req.session.user.email, req.session.user.firstName, req.session.user.lastName);
+    }
   }
 
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);

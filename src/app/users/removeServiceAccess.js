@@ -7,9 +7,7 @@ const { getById, updateIndex } = require('./../../infrastructure/search');
 const { waitForIndexToUpdate } = require('./utils');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
+const { isServiceEmailNotificationAllowed } = require ('./../../infrastructure/applications');
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -43,12 +41,16 @@ const post = async (req, res) => {
   const service = await getSingleServiceForUser(uid, organisationId, serviceId, req.id);
   const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
+  const isEmailAllowed = await isServiceEmailNotificationAllowed();
 
   if(uid.startsWith('inv-')) {
     await removeServiceFromInvitation(uid.substr(4), serviceId, organisationId, req.id);
   } else {
     await removeServiceFromUser(uid, serviceId, organisationId, req.id);
-    await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name,org);
+    if(isEmailAllowed){
+      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
+      await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name,org);
+    }
   }
 
   const getAllUserDetails = await getById(uid, req.id);
@@ -57,7 +59,6 @@ const post = async (req, res) => {
   const updatedServiceDetails = currentServiceDetails.filter((_, index) => index !== serviceRemoved);
   await updateIndex(uid, null, null, updatedServiceDetails, req.id);
   await waitForIndexToUpdate(uid, (updated) => updated.services.length === updatedServiceDetails.length);
-
  
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
