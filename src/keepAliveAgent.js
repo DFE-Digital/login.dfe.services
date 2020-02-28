@@ -1,4 +1,5 @@
 const KeepAliveAgent = require('agentkeepalive');
+const config = require('./infrastructure/config');
 
 module.exports = new KeepAliveAgent({
     maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
