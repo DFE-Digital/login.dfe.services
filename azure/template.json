@@ -17,7 +17,7 @@
         "appServicePlanSku": {
             "type": "string",
             "metadata": {
-                "description": "The name of the App Service Plan"
+                "description": "The sku of the App Service Plan"
             }
         },
         "appServicePlanRG": {
