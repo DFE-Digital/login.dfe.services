@@ -19,24 +19,12 @@ const { setUserContext, asyncMiddleware, setConfigContext } = require('./infrast
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
-const KeepAliveAgent = require('agentkeepalive');
 
 const registerRoutes = require('./routes');
 
-configSchema.validate();
+https.globalAgent.maxSockets = http.globalAgent.maxSockets = config.hostingEnvironment.agentKeepAlive.maxSockets || 50;
 
-http.GlobalAgent = new KeepAliveAgent({
-  maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-  maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-  timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-  keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-});
-https.GlobalAgent = new KeepAliveAgent({
-  maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-  maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-  timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-  keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-});
+configSchema.validate();
 
 const init = async () => {
 
