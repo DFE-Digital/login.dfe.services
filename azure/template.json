@@ -132,7 +132,10 @@
                         "value": "[reference(resourceId(parameters('certificateResourceGroup'), 'Microsoft.Web/certificates', parameters('certificateName')), '2016-03-01').Thumbprint]"
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "[parameters('appServicePlanName')]"
+            ]
         }
     ]
 }
