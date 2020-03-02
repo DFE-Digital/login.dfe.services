@@ -3,7 +3,6 @@
 const mockConfig = () => {
   return {
     hostingEnvironment: {
-      agentKeepAlive: {},
       env: 'test-run',
     },
     loggerSettings: {},
@@ -22,7 +21,7 @@ const mockConfig = () => {
     directories: {
       type: 'static',
     },
-    notifications:{
+    notifications: {
       connectionString: 'test',
     },
     organisationRequests: {
@@ -45,7 +44,7 @@ const mockLogger = () => {
 };
 
 const mockRequest = (customRequest = {}) => {
-  return Object.assign( {
+  return Object.assign({
     params: {
       uuid: '123-abc',
     },

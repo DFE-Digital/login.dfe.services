@@ -1,14 +1,6 @@
 const config = require('./../config');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
-const rp = require('login.dfe.request-promise-retry').defaults({
-  agent: new KeepAliveAgent({
-    maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-    maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-    timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-    keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-  }),
-});
+const rp = require('login.dfe.request-promise-retry');
 
 const callApi = async (method, path, correlationId, body) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
@@ -22,7 +14,7 @@ const callApi = async (method, path, correlationId, body) => {
     headers: {
       authorization: `bearer ${token}`,
       'x-correlation-id':
-      correlationId,
+        correlationId,
     },
     json: true,
   };
@@ -40,8 +32,8 @@ const getOrganisationUsersForApproval = async (userId, correlationId) => {
   return callApi('GET', `/organisations/users-for-approval/${userId}`, correlationId);
 };
 
-const putUserInOrganisation = async(userId, orgId, status, role, reason, correlationId) => {
-  return callApi('PUT', `/organisations/${orgId}/users/${userId}`, correlationId, {roleId:role, status, reason});
+const putUserInOrganisation = async (userId, orgId, status, role, reason, correlationId) => {
+  return callApi('PUT', `/organisations/${orgId}/users/${userId}`, correlationId, { roleId: role, status, reason });
 };
 
 const getAllUsersForOrganisation = async (orgId, correlationId) => {
@@ -52,7 +44,7 @@ const getServiceById = async (serviceId, correlationId) => {
   return await callApi(`services/${serviceId}`, 'GET', undefined, correlationId);
 };
 
-const deleteUserOrganisation = async (userId, organisationId, correlationId)  => {
+const deleteUserOrganisation = async (userId, organisationId, correlationId) => {
   return callApi('DELETE', `organisations/${organisationId}/users/${userId}`, correlationId);
 };
 const deleteInvitationOrganisation = async (invitationId, organisationId, correlationId) => {
@@ -60,7 +52,7 @@ const deleteInvitationOrganisation = async (invitationId, organisationId, correl
 };
 
 const putInvitationInOrganisation = async (invitationId, orgId, role, correlationId) => {
-  return callApi('PUT', `/organisations/${orgId}/invitations/${invitationId}`, correlationId, {roleId: role});
+  return callApi('PUT', `/organisations/${orgId}/invitations/${invitationId}`, correlationId, { roleId: role });
 };
 
 const getOrganisationAndServiceForInvitation = async (invitationId, correlationId) => {
@@ -90,7 +82,7 @@ const searchOrganisations = async (criteria, pageNumber, filterCategories, filte
 };
 
 const createUserOrganisationRequest = async (userId, orgId, reason, correlationId) => {
-  const request = await callApi('POST', `/organisations/${orgId}/users/${userId}/requests`, correlationId, {reason});
+  const request = await callApi('POST', `/organisations/${orgId}/users/${userId}/requests`, correlationId, { reason });
   return request;
 };
 
@@ -136,7 +128,7 @@ const getLatestRequestAssociatedWithUser = async (userId, correlationId) => {
 };
 
 const getCategories = async () => {
-  return callApi('GET','/organisations/categories');
+  return callApi('GET', '/organisations/categories');
 }
 
 module.exports = {
