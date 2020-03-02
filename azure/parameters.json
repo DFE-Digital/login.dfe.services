@@ -8,6 +8,9 @@
         "appServiceName": {
             "value": ""
         },
+        "appServicePlanSku": {
+            "value": ""
+        },
         "appServicePlanRG": {
             "value": ""
         },
