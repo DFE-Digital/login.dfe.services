@@ -18,7 +18,7 @@ const search = async (req) => {
 const retrieveOrganisationCategories = async () => {
   const orgCategories = await getCategories();
   return orgCategories.map((cat) => { return cat.id }).filter((id) => {
-    return id !== '011';
+    return id !== '011' && id !== '004';
   })
 }
 
