@@ -1,13 +1,5 @@
 const config = require('./../config');
-const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
-const rp = require('login.dfe.request-promise-retry').defaults({
-  agent: new KeepAliveAgent({
-    maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-    maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-    timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-    keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-  }),
-});
+const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 const servicesTogglePath = '/constants/toggleflags/email/services';
@@ -70,7 +62,7 @@ const getAllServices = async () => {
   return { services };
 };
 
-const getEmailToggleFlag = async(params) => {
+const getEmailToggleFlag = async (params) => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
   try {
     return await rp({
@@ -92,7 +84,7 @@ const getEmailToggleFlag = async(params) => {
 
 const retrieveToggleFlag = async (path) => {
   const emailToggleFlag = await getEmailToggleFlag(path);
-  if(emailToggleFlag && emailToggleFlag.length === 1){
+  if (emailToggleFlag && emailToggleFlag.length === 1) {
     return emailToggleFlag[0].flag;
   }
   return true;
