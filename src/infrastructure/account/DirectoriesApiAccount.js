@@ -1,14 +1,6 @@
 const Account = require('./Account');
 const config = require('./../config');
-const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
-const rp = require('login.dfe.request-promise-retry').defaults({
-  agent: new KeepAliveAgent({
-    maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-    maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-    timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-    keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-  }),
-});
+const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 
@@ -57,7 +49,7 @@ class DirectoriesApiAccount extends Account {
     return new DirectoriesApiAccount(response.result);
   }
 
-  static async getInvitationByEmail (email) {
+  static async getInvitationByEmail(email) {
     const response = await callDirectoriesApi(`invitations/by-email/${email}`, null, 'GET');
     if (!response.success) {
       if (response.statusCode === 404) {
@@ -148,7 +140,7 @@ class DirectoriesApiAccount extends Account {
   static async resendInvitation(id) {
     const response = await callDirectoriesApi(`invitations/${id}/resend`);
 
-    if(!response.success){
+    if (!response.success) {
       if (response.statusCode === 404) {
         return null;
       }
@@ -156,7 +148,7 @@ class DirectoriesApiAccount extends Account {
     }
     return true;
   }
-  static async getInvitationById (id) {
+  static async getInvitationById(id) {
     const response = await callDirectoriesApi(`invitations/${id}`, null, 'GET');
     if (!response.success) {
       if (response.statusCode === 404) {
