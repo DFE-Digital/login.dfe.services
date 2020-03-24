@@ -46,7 +46,7 @@ const getAndMapServices = async (account, correlationId) => {
       name: 'Manage Your Education and Skills Funding',
       description: 'Use this service to: sign documents, view your funding allocations, view the funding you\'ve received, manage apprenticeship details, and tell us about subcontractors',
       disabled: true,
-      date: 'March 2020',
+      date: '18 March 2020',
     })
   }
   return sortBy(services, 'name');

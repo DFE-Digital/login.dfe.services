@@ -11,7 +11,13 @@
         "appServicePlanName": {
             "type": "string",
             "metadata": {
-                "description": "The name of the App Service Plan"
+                "description": "The sku of the App Service"
+            }
+        },
+        "appServicePlanSku": {
+            "type": "object",
+            "metadata": {
+                "description": "The sku of the App Service Plan"
             }
         },
         "appServicePlanSku": {
@@ -28,7 +34,7 @@
         },
         "nodeVersion": {
             "type": "string",
-            "defaultValue": "8.9.4",
+            "defaultValue": "10.16.0",
             "metadata": {
                 "description": "The default NodeJS version that the App Service will run"
             }

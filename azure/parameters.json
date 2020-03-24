@@ -20,13 +20,13 @@
         "customHostName": {
             "value": ""
         },
+        "certificateName": {
+            "value": ""
+        },
         "keyVaultName": {
             "value": ""
         },
         "keyVaultResourceGroup": {
-            "value": ""
-        },
-        "certificateName": {
             "value": ""
         },
         "numberOfWorkers": {
