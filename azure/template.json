@@ -20,6 +20,12 @@
                 "description": "The sku of the App Service Plan"
             }
         },
+        "appServicePlanSku": {
+            "type": "object",
+            "metadata": {
+                "description": "The sku of the App Service Plan"
+            }
+        },
         "appServicePlanRG": {
             "type": "string",
             "metadata": {
