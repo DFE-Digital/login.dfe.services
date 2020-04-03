@@ -1,6 +1,6 @@
 'use strict';
 const { mapUserStatus } = require('./../../infrastructure/utils');
-const { getAllUsersForOrg } = require('../../infrastructure/search');
+const { getAllUsersForOrg } = require('../../infrastructure/organisation');
 
 const clearUserSessionData = (req) => {
   if (req.session.user) {
