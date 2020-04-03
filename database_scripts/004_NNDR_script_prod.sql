@@ -22,7 +22,7 @@ BEGIN TRAN INSERTNNDR
 
             INSERT INTO serviceRedirectUris (serviceId, redirectUrl) VALUES (@serviceId, 'https://nndrclaims.education.gov.uk/auth/cb');
 
-            INSERT INTO servicePostLogoutRedirectUris (serviceId, redirectUrl) VALUES (@serviceId, 'https://nndrclaims.education.gov.uk /signout/complete');
+            INSERT INTO servicePostLogoutRedirectUris (serviceId, redirectUrl) VALUES (@serviceId, 'https://nndrclaims.education.gov.uk/signout/complete');
 
             INSERT INTO serviceParams (serviceId, paramName, paramValue) VALUES (@serviceId, 'allowManageInvite', 'true');
 
