@@ -1,6 +1,7 @@
 'use strict';
 const { mapUserStatus } = require('./../../infrastructure/utils');
-const { getAllUsersForOrganisation } = require('../../infrastructure/organisations');
+const { getAllUsersForOrg } = require('../../infrastructure/search');
+const { getById } = require('../../infrastructure/account');
 
 const clearUserSessionData = (req) => {
   if (req.session.user) {
@@ -20,9 +21,13 @@ const search = async (req) => {
   let sortBy = paramsSource.sort ? paramsSource.sort : 'searchableName';
   let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
 
-  const usersForOrganisation = await getAllUsersForOrganisation( organisationId, req.id);
+  const usersForOrganisation = await getAllUsersForOrg(page, organisationId, sortBy, sortAsc ? 'asc' : 'desc', req.id);
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
     const user = usersForOrganisation.users[i];
+    if(req.user.sub === user.id){
+      const me = await getById(req.user.sub);
+      user.email = me.claims.email;
+    }
     const organisation = user.organisations.filter(x => x.id === organisationId);
     user.statusId = mapUserStatus(user.statusId);
     user.organisations = organisation
