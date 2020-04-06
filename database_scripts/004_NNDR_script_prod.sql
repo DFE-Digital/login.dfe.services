@@ -30,6 +30,7 @@ where [Name] = 'Academy national non-domestic rates (NNDR) claims')  = 0
     VALUES
         (@serviceId, 'refresh_token');
 
+
     INSERT INTO serviceRedirectUris
         (serviceId, redirectUrl)
     VALUES
