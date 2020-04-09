@@ -18,7 +18,7 @@ where [Name] = 'Academy national non-domestic rates (NNDR) claims')  = 0
     INSERT INTO service
         (id, name, description, clientId, clientSecret, apiSecret, tokenEndpointAuthMethod, serviceHome, postResetUrl, isExternalService, isMigrated, parentId, isChildService)
     VALUES
-        (@serviceId, 'Academy national non-domestic rates (NNDR) claims', null, 'NNDR', 'cat-automobile-tornado', 'arbalest-tenet-encircle-otis', 'client_secret_post', null, null, 1, 0, null, 0);
+        (@serviceId, 'Academy national non-domestic rates (NNDR) claims', null, 'NNDR', '????', '????', 'client_secret_post', null, null, 1, 0, null, 0);
 
     INSERT INTO serviceGrantTypes
         (serviceId, grantType)
