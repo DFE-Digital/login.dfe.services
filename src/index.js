@@ -71,7 +71,7 @@ const init = async () => {
   app.use(expressLayouts);
   app.set('layout', 'layouts/layout');
   app.use(session({
-    resave: true,
+    resave: false,
     saveUninitialized: true,
     secret: config.hostingEnvironment.sessionSecret,
     cookie: {
