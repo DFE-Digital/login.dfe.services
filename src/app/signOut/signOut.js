@@ -19,7 +19,8 @@ const signUserOut = (req, res) => {
     const issuer = passport._strategies.oidc._issuer;
     let returnUrl;
     if (req.query.redirected === 'true') {
-      returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
+      // returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
+      res.redirect(`${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/`);
     } else {
       returnUrl = `${config.hostingEnvironment.profileUrl}/signout?redirected=true`;
     }
