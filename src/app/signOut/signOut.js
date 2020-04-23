@@ -33,7 +33,7 @@ const signUserOut = (req, res) => {
       },
     })));
   } else if (req.query.redirected === 'true') {
-    res.redirect(`${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/`);
+    res.redirect(`${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`);
   }
   else {
     res.redirect('/');
