@@ -24,6 +24,11 @@ const signUserOut = (req, res) => {
     } else {
       returnUrl = `${config.hostingEnvironment.profileUrl}/signout?redirected=true`;
     }
+
+    if (req.query.redirect_uri) {
+      returnUrl += `&redirect_uri=${req.query.redirect_uri}`;
+    }
+
     req.logout();
     res.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
       search: null,
