@@ -17,22 +17,27 @@ const signUserOut = (req, res) => {
     });
     const idToken = req.user.id_token;
     const issuer = passport._strategies.oidc._issuer;
-    let returnUrl;
+    let returnUrl, skipIssuerSession = false;
     if (req.query.redirected === 'true' && !req.query.redirect_uri) {
       returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
     } else if (req.query.redirected === 'true' && req.query.redirect_uri) {
-      returnUrl = req.query.redirect_uri
+      returnUrl = req.query.redirect_uri;
+      skipIssuerSession = true;
     } else {
       returnUrl = `${config.hostingEnvironment.profileUrl}/signout`
     }
     req.logout();
-    res.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
-      search: null,
-      query: {
-        id_token_hint: idToken,
-        post_logout_redirect_uri: returnUrl,
-      },
-    })));
+    if (skipIssuerSession) {
+      res.redirect(returnUrl);
+    }else{
+      res.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
+        search: null,
+        query: {
+          id_token_hint: idToken,
+          post_logout_redirect_uri: returnUrl,
+        },
+      })));
+    }
   } else {
     res.redirect('/');
   }
