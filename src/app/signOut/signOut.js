@@ -7,7 +7,9 @@ const passport = require('passport');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 
-const signUserOut = (req, res) => {
+const servicePostLogoutStore = require('./../services/servicePostLogoutStore');
+
+const signUserOut = async (req, res) => {
   if (req.user.id_token) {
     logger.audit('User logged out', {
       type: 'Sign-out',
@@ -17,17 +19,19 @@ const signUserOut = (req, res) => {
     });
     const idToken = req.user.id_token;
     const issuer = passport._strategies.oidc._issuer;
-    let returnUrl, skipIssuerSession = false;
+    let returnUrl, skipIssuerSession = false , isValidRedirect = false;
     if (req.query.redirected === 'true' && !req.query.redirect_uri) {
       returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
     } else if (req.query.redirected === 'true' && req.query.redirect_uri) {
       returnUrl = req.query.redirect_uri;
       skipIssuerSession = true;
+      isValidRedirect = await isValidRedirectUrl(req.query.redirect_uri);
+
     } else {
       returnUrl = `${config.hostingEnvironment.profileUrl}/signout`
     }
     req.logout();
-    if (skipIssuerSession) {
+    if (skipIssuerSession && isValidRedirect) {
       res.redirect(returnUrl);
     }else{
       res.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
@@ -41,6 +45,15 @@ const signUserOut = (req, res) => {
   } else {
     res.redirect('/');
   }
+};
+
+const isValidRedirectUrl = async (url) => {
+  const getAllRedirectUrls = await servicePostLogoutStore.getServicePostLogoutRedirectsUrl(config.hostingEnvironment.serviceId);
+  const redirectUrl = getAllRedirectUrls.find(f=> f.redirectUrl===url);
+  if(redirectUrl){
+    return true;
+  }
+  return false;
 };
 
 module.exports = signUserOut;
