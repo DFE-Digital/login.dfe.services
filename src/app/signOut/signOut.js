@@ -26,7 +26,6 @@ const signUserOut = async (req, res) => {
       returnUrl = req.query.redirect_uri;
       skipIssuerSession = true;
       isValidRedirect = await isValidRedirectUrl(req.query.redirect_uri);
-
     } else {
       returnUrl = `${config.hostingEnvironment.profileUrl}/signout`
     }
@@ -48,10 +47,15 @@ const signUserOut = async (req, res) => {
 };
 
 const isValidRedirectUrl = async (url) => {
-  const getAllRedirectUrls = await servicePostLogoutStore.getServicePostLogoutRedirectsUrl(config.hostingEnvironment.serviceId);
-  const redirectUrl = getAllRedirectUrls.find(f=> f.redirectUrl===url);
-  if(redirectUrl){
-    return true;
+  try {
+    const getAllRedirectUrls = await servicePostLogoutStore.getServicePostLogoutRedirectsUrl(config.hostingEnvironment.serviceId);
+    const redirectUrl = getAllRedirectUrls.find(f => f.redirectUrl === url);
+    if (redirectUrl) {
+      return true;
+    }
+  } catch (e) {
+    logger.error(`error getting service post logout url`)
+    return false;
   }
   return false;
 };
