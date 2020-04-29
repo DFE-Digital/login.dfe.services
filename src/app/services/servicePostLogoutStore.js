@@ -25,7 +25,6 @@ const getServicePostLogoutRedirectsUrl = async (serviceId) => {
 
     } catch (e) {
         logger.error(`error getting service post logout url ${id} - ${e.message}  error: ${e}`);
-        throw e;
         return await Promise.reject(e)
     }
 };
