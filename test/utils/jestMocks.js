@@ -33,11 +33,11 @@ const mockConfig = () => {
       useRequestOrganisation: true
     },
     database: {
-      host: "s141d01-signin-shd-sql.database.windows.net",
-      username: "3Z4R66fCgTfaXbkukgpP",
-      password: "KGUTHYfWpUC2!amns7DF",
+      host: "host",
+      username: "user",
+      password: "password",
       dialect: "mssql",
-      name: "s141d01-signin-organisations-db",
+      name: "db",
       encrypt: true,
       schema: "dbo",
       pool: {
