@@ -4,6 +4,7 @@ const mockConfig = () => {
   return {
     hostingEnvironment: {
       env: 'test-run',
+      serviceId:'28388aeb-431b-49bc-9480-8db1b0bdd6e1'
     },
     loggerSettings: {},
     organisations: {
@@ -30,7 +31,22 @@ const mockConfig = () => {
     toggles: {
       useApproverJourney: true,
       useRequestOrganisation: true
-    }
+    },
+    database: {
+      host: "host",
+      username: "user",
+      password: "password",
+      dialect: "mssql",
+      name: "db",
+      encrypt: true,
+      schema: "dbo",
+      pool: {
+        max: 100,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
+      }
+    },
   };
 };
 
@@ -68,6 +84,7 @@ const mockResponse = () => {
     }
   };
 };
+
 
 module.exports = {
   mockRequest,
