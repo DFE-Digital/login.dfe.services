@@ -36,6 +36,7 @@ const schema = new SimpleSchema({
   applications: schemas.apiClient,
   access: schemas.apiClient,
   search: schemas.apiClient,
+  database: schemas.sequelizeConnection,
   toggles: togglesSchema,
   notifications: notificationsSchema,
   organisationRequests: {
