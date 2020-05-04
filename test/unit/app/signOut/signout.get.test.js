@@ -23,10 +23,8 @@ describe('when user signout a service via services', () => {
         organisationId: 'org1'
       },
       query: {
-        redirect_uri : 'https://localhost:40000/'
-      },
-      headers: {
-        redirected: true,
+        redirect_uri : 'https://localhost:40000/',
+        redirected: 'true',
       },
       logout:  ()=>{ return true;}
     });
