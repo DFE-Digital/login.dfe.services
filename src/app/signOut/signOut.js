@@ -19,9 +19,9 @@ const signUserOut = async (req, res) => {
     });
     const idToken = req.user.id_token;
     let returnUrl, skipIssuerSession = false , isValidRedirect = false;
-    if (req.query.redirected === 'true'  && !req.query.redirect_uri) {
+    if (req.query.redirected === 'true' && !req.query.redirect_uri) {
       returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
-    } else if (req.query.redirect_uri) {
+    } else if (req.query.redirected === 'true' && req.query.redirect_uri) {
       returnUrl = req.query.redirect_uri;
       skipIssuerSession = true;
       isValidRedirect = await isValidRedirectUrl(req.query.redirect_uri);
