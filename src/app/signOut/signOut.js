@@ -42,7 +42,13 @@ const signUserOut = async (req, res) => {
       })));
     }
   } else {
-    res.redirect('/');
+    const isValidRedirect = await isValidRedirectUrl(req.query.redirect_uri);
+    if(isValidRedirect){
+      res.redirect(req.query.redirect_uri ? req.query.redirect_uri : '/');
+    }else{
+      res.redirect('/');
+    }
+
   }
 };
 
