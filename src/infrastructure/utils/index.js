@@ -6,7 +6,7 @@ const { getOrganisationAndServiceForUserV2, getAllRequestsForApprover } = requir
 const APPROVER = 10000;
 
 const isLoggedIn = (req, res, next) => {
-  if (req.isAuthenticated()) {
+  if (req.isAuthenticated() || req.originalUrl === '/signout?redirected=true') {
     res.locals.isLoggedIn = true;
     return next();
   }
