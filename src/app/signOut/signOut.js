@@ -10,7 +10,7 @@ const logger = require('./../../infrastructure/logger');
 const servicePostLogoutStore = require('./../services/servicePostLogoutStore');
 
 const signUserOut = async (req, res) => {
-  if (req.user.id_token) {
+  if (req.user && req.user.id_token) {
     logger.audit('User logged out', {
       type: 'Sign-out',
       userId: req.user.sub,
@@ -42,7 +42,12 @@ const signUserOut = async (req, res) => {
       })));
     }
   } else {
-    const isValidRedirect = await isValidRedirectUrl(req.query.redirect_uri);
+    let isValidRedirect;
+    // Check for valid redirect URL
+    if(req.query.redirect_uri) {
+      isValidRedirect = await isValidRedirectUrl(req.query.redirect_uri);
+    }
+    // This is external service specific
     if(isValidRedirect){
       res.redirect(req.query.redirect_uri ? req.query.redirect_uri : '/');
     }else{
