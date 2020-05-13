@@ -11,6 +11,7 @@ jest.mock('./../../../../../src/infrastructure/config', () => {
     },
   };
 });
+const rp = require('login.dfe.request-promise-retry');
 
 describe('When validating a users password', () => {
   const user = { email: 'user.one@unit.test' };
@@ -18,7 +19,6 @@ describe('When validating a users password', () => {
 
   let account;
   let getBearerToken;
-  let rp = jest.fn();
 
   beforeEach(() => {
     getBearerToken = jest.fn().mockReturnValue('token');
@@ -27,31 +27,29 @@ describe('When validating a users password', () => {
       getBearerToken,
     }));
     rp.mockReset();
-    const requestPromise = require('login.dfe.request-promise-retry');
-    requestPromise.defaults.mockReturnValue(rp);
 
     const Account = require('./../../../../../src/infrastructure/account/DirectoriesApiAccount');
     account = Account.fromContext(user);
   });
 
-  // it('then it should authenticate user against directories api', async () => {
-  //   await account.validatePassword(password);
+   it('then it should authenticate user against directories api', async () => {
+     await account.validatePassword(password);
 
-  //   expect(rp.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0].method).toBe('POST');
-  //   expect(rp.mock.calls[0][0].uri).toBe('http://unit.test.local/users/authenticate');
-  //   expect(rp.mock.calls[0][0].body).toMatchObject({
-  //     username: user.email,
-  //     password,
-  //   });
-  // });
+     expect(rp.mock.calls).toHaveLength(1);
+     expect(rp.mock.calls[0][0].method).toBe('POST');
+     expect(rp.mock.calls[0][0].uri).toBe('http://unit.test.local/users/authenticate');
+     expect(rp.mock.calls[0][0].body).toMatchObject({
+       username: user.email,
+       password,
+     });
+   });
 
-  // it('then it should authorize api using jwt strategy', async () => {
-  //   await account.validatePassword(password);
+   it('then it should authorize api using jwt strategy', async () => {
+     await account.validatePassword(password);
 
-  //   expect(getBearerToken.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0].headers.authorization).toBe('bearer token');
-  // });
+     expect(getBearerToken.mock.calls).toHaveLength(1);
+     expect(rp.mock.calls[0][0].headers.authorization).toBe('bearer token');
+   });
 
   it('then it should return true is password is valid', async () => {
     const result = await account.validatePassword(password);
@@ -59,15 +57,15 @@ describe('When validating a users password', () => {
     expect(result).toBe(true);
   });
 
-  // it('then it should return false when api returns error', async () => {
-  //   rp.mockImplementation(() => {
-  //     const error = new Error('Unit test');
-  //     error.statusCode = 401;
-  //     throw error;
-  //   });
+   it('then it should return false when api returns error', async () => {
+     rp.mockImplementation(() => {
+       const error = new Error('Unit test');
+       error.statusCode = 401;
+       throw error;
+     });
 
-  //   const result = await account.validatePassword(password);
+     const result = await account.validatePassword(password);
 
-  //   expect(result).toBe(false);
-  // });
+     expect(result).toBe(false);
+   });
 });
