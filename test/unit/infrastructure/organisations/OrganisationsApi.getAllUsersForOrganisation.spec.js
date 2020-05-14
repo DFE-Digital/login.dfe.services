@@ -46,9 +46,7 @@ describe('when getting all users in an organisation', () => {
     adapter = require('./../../../../src/infrastructure/organisations/api');
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
-  });
+
 
    it('then it should query organisations api', async () => {
      await adapter.getAllUsersForOrganisation('user1');

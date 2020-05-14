@@ -33,9 +33,6 @@ describe('when putting a user in organisations for approval', () => {
     adapter = require('./../../../../src/infrastructure/organisations/api');
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
-  });
 
    it('then it should PUT details to the organisations api', async () => {
      await adapter.putUserInOrganisation('user1', 'org1', 'status1', 'role1', 'rejection-reason', 'correlationId');
