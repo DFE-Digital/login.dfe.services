@@ -8,7 +8,7 @@ const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 
 const signUserOut = (req, res) => {
-  if (req.user.id_token) {
+  if (req.user && req.user.id_token) {
     logger.audit('User logged out', {
       type: 'Sign-out',
       userId: req.user.sub,
@@ -17,7 +17,18 @@ const signUserOut = (req, res) => {
     });
     const idToken = req.user.id_token;
     const issuer = passport._strategies.oidc._issuer;
-    const returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
+    let returnUrl;
+    if (req.query.redirected === 'true') {
+      returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
+      // res.redirect(`${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/`);
+    } else {
+      returnUrl = `${config.hostingEnvironment.profileUrl}/signout?redirected=true`;
+    }
+
+    if (req.query.redirect_uri) {
+      returnUrl += `&redirect_uri=${req.query.redirect_uri}`;
+    }
+
     req.logout();
     res.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
       search: null,
@@ -26,7 +37,10 @@ const signUserOut = (req, res) => {
         post_logout_redirect_uri: returnUrl,
       },
     })));
-  } else {
+  } else if (req.query.redirected === 'true') {
+    res.redirect(`${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`);
+  }
+  else {
     res.redirect('/');
   }
 };
