@@ -28,7 +28,7 @@ const signUserOut = async (req, res) => {
     } else {
       returnUrl = `${config.hostingEnvironment.profileUrl}/signout`
     }
-    logout();
+    logout(req, res);
     if (skipIssuerSession && isValidRedirect) {
       res.redirect(returnUrl);
     }else{
