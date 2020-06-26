@@ -59,8 +59,7 @@ const signUserOut = async (req, res) => {
 
 const logout = (req, res) => {
   req.logout();
-  req.session.destroy(); // Needed to clear session and completely logout
-  res.clearCookie('connect.sid');
+  req.session = null; // Needed to clear session and completely logout
 }
 
 const isValidRedirectUrl = async (url) => {
