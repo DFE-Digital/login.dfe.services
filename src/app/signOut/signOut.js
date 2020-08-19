@@ -20,23 +20,23 @@ const signUserOut = async (req, res) => {
     const idToken = req.user.id_token;
     let returnUrl, skipIssuerSession = false , isValidRedirect = false;
     if (req.query.redirected === 'true' && !req.query.redirect_uri) {
+      logger.info('service signout :: there were no redirect_uri');
       returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
     } else if (req.query.redirected === 'true' && req.query.redirect_uri) {
+      logger.info('service signout :: there is redirect_uri');
       returnUrl = req.query.redirect_uri;
       skipIssuerSession = true;
       isValidRedirect = await isValidRedirectUrl(req.query.redirect_uri);
     } else {
-      returnUrl = `${config.hostingEnvironment.profileUrl}/signout?redirected=true`;
+      logger.info('service signout :: there is no redirect_uri and redirected');
+      returnUrl = `${config.hostingEnvironment.profileUrl}/signout`
     }
-
-    if (req.query.redirect_uri) {
-      returnUrl += `&redirect_uri=${req.query.redirect_uri}`;
-    }
-
-    req.logout();
+    logout(req, res);
     if (skipIssuerSession && isValidRedirect) {
+      logger.info('service signout :: there is skipIssuer and a valid redirect');
       res.redirect(returnUrl);
     }else{
+      logger.info('service signout :: there is no skipIssuer and no valid redirect');
       const issuer = passport._strategies.oidc._issuer;
       res.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
         search: null,
@@ -62,10 +62,16 @@ const signUserOut = async (req, res) => {
   }
 };
 
+const logout = (req, res) => {
+  req.logout();
+  req.session = null; // Needed to clear session and completely logout
+}
+
 const isValidRedirectUrl = async (url) => {
   try {
     const serviceId = config.hostingEnvironment.serviceId;
     if(!serviceId){
+      logger.error('service signout :: No serviceId configured');
       return false;
     }
     const getAllRedirectUrls = await servicePostLogoutStore.getServicePostLogoutRedirectsUrl(serviceId);
