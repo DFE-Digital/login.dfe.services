@@ -48,6 +48,7 @@ const signUserOut = async (req, res) => {
     }
   } else {
     let isValidRedirect;
+    logout(req, res);
     // Check for valid redirect URL
     if(req.query.redirect_uri) {
       isValidRedirect = await isValidRedirectUrl(req.query.redirect_uri);
