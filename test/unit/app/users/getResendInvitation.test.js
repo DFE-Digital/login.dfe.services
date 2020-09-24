@@ -3,7 +3,6 @@ const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
 describe('when displaying the resend invitation view', () => {
-
   let req;
   let res;
 
@@ -27,19 +26,20 @@ describe('when displaying the resend invitation view', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
-        organisation: {
-          id: 'organisationId',
-          name: 'organisationName',
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
         },
-        role: {
-          id: 0,
-          name: 'category name'
-        }
-      }],
+      ],
     };
     res = mockResponse();
-
 
     getResendInvitation = require('./../../../../src/app/users/resendInvitation').get;
   });
@@ -64,8 +64,8 @@ describe('when displaying the resend invitation view', () => {
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       user: {
-        name: 'test name'
-      }
+        name: 'test name',
+      },
     });
   });
 
@@ -73,7 +73,7 @@ describe('when displaying the resend invitation view', () => {
     await getResendInvitation(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      email: 'test@test.com'
+      email: 'test@test.com',
     });
   });
 });

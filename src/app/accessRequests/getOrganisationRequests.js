@@ -17,18 +17,18 @@ const getOrganisationRequests = async (req, res) => {
   let requests = await getRequestsForOrganisation(req.params.orgId, req.id);
 
   if (requests) {
-    const userList = await getUserDetails(requests) || [];
+    const userList = (await getUserDetails(requests)) || [];
 
     requests = requests.map((user) => {
-      const userFound = userList.find(c => c.claims.sub.toLowerCase() === user.user_id.toLowerCase());
+      const userFound = userList.find((c) => c.claims.sub.toLowerCase() === user.user_id.toLowerCase());
       const usersEmail = userFound ? userFound.claims.email : '';
-      return Object.assign({usersEmail}, user);
+      return Object.assign({ usersEmail }, user);
     });
 
     requests = sortBy(requests, ['created_date']);
   }
 
-  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
+  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
 
   return res.render('accessRequests/views/organisationRequests', {
     csrfToken: req.csrfToken(),

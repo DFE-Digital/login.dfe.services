@@ -8,14 +8,12 @@ jest.mock('./../../../../src/infrastructure/access', () => {
   };
 });
 
-
 jest.mock('./../../../../src/app/users/utils');
 
 const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
 const { listRolesOfService } = require('./../../../../src/infrastructure/access');
 
 describe('when displaying the confirm edit service view', () => {
-
   let req;
   let res;
 
@@ -35,37 +33,38 @@ describe('when displaying the confirm edit service view', () => {
         lastName: 'name',
       },
       service: {
-        roles : [
-          'role1',
-          'role2'
-        ],
+        roles: ['role1', 'role2'],
       },
     };
 
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     res = mockResponse();
 
     getSingleServiceForUser.mockReset();
@@ -77,14 +76,16 @@ describe('when displaying the confirm edit service view', () => {
     });
 
     listRolesOfService.mockReset();
-    listRolesOfService.mockReturnValue([{
-      code: 'role_code',
-      id: 'role_id',
-      name: 'role_name',
-      status: {
-        id: 'status_id'
+    listRolesOfService.mockReturnValue([
+      {
+        code: 'role_code',
+        id: 'role_id',
+        name: 'role_name',
+        status: {
+          id: 'status_id',
+        },
       },
-    }]);
+    ]);
 
     getConfirmEditService = require('./../../../../src/app/users/confirmEditService').get;
   });
@@ -137,5 +138,4 @@ describe('when displaying the confirm edit service view', () => {
       service: getSingleServiceForUser(),
     });
   });
-
 });

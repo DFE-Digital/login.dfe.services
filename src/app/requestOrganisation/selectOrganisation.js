@@ -1,10 +1,14 @@
-const { searchOrganisations, getRequestsForOrganisation, getOrganisationAndServiceForUserV2, getCategories} = require('./../../infrastructure/organisations');
-
+const {
+  searchOrganisations,
+  getRequestsForOrganisation,
+  getOrganisationAndServiceForUserV2,
+  getCategories,
+} = require('./../../infrastructure/organisations');
 
 const search = async (req) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
   const criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
-  const filterStatus = [1,3,4];
+  const filterStatus = [1, 3, 4];
   const filterOutOrgNames = ['Department for Education'];
   const organisationCategoriesFilter = await retrieveOrganisationCategories();
 
@@ -12,15 +16,26 @@ const search = async (req) => {
   if (isNaN(pageNumber)) {
     pageNumber = 1;
   }
-  return await searchOrganisations(criteria, pageNumber,organisationCategoriesFilter, filterStatus, req.id,filterOutOrgNames);
+  return await searchOrganisations(
+    criteria,
+    pageNumber,
+    organisationCategoriesFilter,
+    filterStatus,
+    req.id,
+    filterOutOrgNames,
+  );
 };
 
 const retrieveOrganisationCategories = async () => {
   const orgCategories = await getCategories();
-  return orgCategories.map((cat) => { return cat.id }).filter((id) => {
-    return id !== '011' && id !== '004';
-  })
-}
+  return orgCategories
+    .map((cat) => {
+      return cat.id;
+    })
+    .filter((id) => {
+      return id !== '011' && id !== '004';
+    });
+};
 
 const buildModel = async (req, results) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
@@ -46,7 +61,6 @@ const get = async (req, res) => {
   return res.render('requestOrganisation/views/search', model);
 };
 
-
 const post = async (req, res) => {
   const searchResults = await search(req);
   const model = await buildModel(req, searchResults);
@@ -55,7 +69,9 @@ const post = async (req, res) => {
   if (req.body.selectedOrganisation) {
     // check if associated to org
     const userOrgs = await getOrganisationAndServiceForUserV2(req.user.sub, req.id);
-    const userAssociatedToOrg = userOrgs ? userOrgs.find(x => x.organisation.id === req.body.selectedOrganisation) : null;
+    const userAssociatedToOrg = userOrgs
+      ? userOrgs.find((x) => x.organisation.id === req.body.selectedOrganisation)
+      : null;
     if (userAssociatedToOrg) {
       model.validationMessages.selectedOrganisation = 'You are already linked to this organisation';
       return res.render('requestOrganisation/views/search', model);
@@ -63,7 +79,7 @@ const post = async (req, res) => {
 
     // check if outstanding request
     const requestsForOrg = await getRequestsForOrganisation(req.body.selectedOrganisation, req.id);
-    const userRequested = requestsForOrg ? requestsForOrg.find(x => x.user_id === req.user.sub) : null;
+    const userRequested = requestsForOrg ? requestsForOrg.find((x) => x.user_id === req.user.sub) : null;
     if (userRequested) {
       model.validationMessages.selectedOrganisation = 'You have already requested this organisation';
       return res.render('requestOrganisation/views/search', model);

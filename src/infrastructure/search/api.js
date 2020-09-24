@@ -21,7 +21,6 @@ const getAllUsersForOrg = async (page, orgId, sortBy, sortDirection, correlation
       },
       json: true,
     });
-
   } catch (e) {
     if (e.statusCode === 404) {
       return undefined;
@@ -96,7 +95,7 @@ const createIndex = async (id, correlationId) => {
         'x-correlation-id': correlationId,
       },
       body: {
-        id
+        id,
       },
       json: true,
     });

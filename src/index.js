@@ -27,22 +27,23 @@ https.globalAgent.maxSockets = http.globalAgent.maxSockets = config.hostingEnvir
 configSchema.validate();
 
 const init = async () => {
-
   let expiryInMinutes = 30;
   const sessionExpiry = parseInt(config.hostingEnvironment.sessionCookieExpiryInMinutes);
   if (!isNaN(sessionExpiry)) {
     expiryInMinutes = sessionExpiry;
   }
 
-  const expiryDate = new Date(Date.now() + (60 * expiryInMinutes * 1000));
+  const expiryDate = new Date(Date.now() + 60 * expiryInMinutes * 1000);
 
   const app = express();
-  app.use(helmet({
-    noCache: true,
-    frameguard: {
-      action: 'deny',
-    },
-  }));
+  app.use(
+    helmet({
+      noCache: true,
+      frameguard: {
+        action: 'deny',
+      },
+    }),
+  );
 
   if (config.hostingEnvironment.env !== 'dev') {
     app.set('trust proxy', 1);
@@ -57,31 +58,34 @@ const init = async () => {
 
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser());
-  app.use(sanitization({
-    sanitizer: (key, value) => {
-      const fieldToNotSanitize = ['criteria', 'email', 'firstName', 'lastName', 'reason', 'organisationName'];
-      if (fieldToNotSanitize.find(x => x.toLowerCase() === key.toLowerCase())) {
-        return value;
-      }
-      return sanitization.defaultSanitizer(key, value);
-    },
-  }));
+  app.use(
+    sanitization({
+      sanitizer: (key, value) => {
+        const fieldToNotSanitize = ['criteria', 'email', 'firstName', 'lastName', 'reason', 'organisationName'];
+        if (fieldToNotSanitize.find((x) => x.toLowerCase() === key.toLowerCase())) {
+          return value;
+        }
+        return sanitization.defaultSanitizer(key, value);
+      },
+    }),
+  );
   app.set('view engine', 'ejs');
   app.set('views', path.resolve(__dirname, 'app'));
   app.use(expressLayouts);
   app.set('layout', 'layouts/layout');
-  app.use(session({
-    resave: true,
-    saveUninitialized: true,
-    secret: config.hostingEnvironment.sessionSecret,
-    cookie: {
-      httpOnly: true,
-      secure: true,
-      expires: expiryDate,
-    },
-  }));
+  app.use(
+    session({
+      resave: true,
+      saveUninitialized: true,
+      secret: config.hostingEnvironment.sessionSecret,
+      cookie: {
+        httpOnly: true,
+        secure: true,
+        expires: expiryDate,
+      },
+    }),
+  );
   app.use(flash());
-
 
   let assetsUrl = config.hostingEnvironment.assetsUrl || 'https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/';
   assetsUrl = assetsUrl.endsWith('/') ? assetsUrl.substr(0, assetsUrl.length - 1) : assetsUrl;
@@ -116,17 +120,21 @@ const init = async () => {
   //app.use(asyncMiddleware(setApproverContext));
   app.use(setConfigContext);
 
-
   registerRoutes(app, csrf);
 
-  const errorPageRenderer = ejsErrorPages.getErrorPageRenderer({
-    help: config.hostingEnvironment.helpUrl,
-    assets: assetsUrl,
-  }, config.hostingEnvironment.env === 'dev');
-  app.use(getErrorHandler({
-    logger,
-    errorPageRenderer,
-  }));
+  const errorPageRenderer = ejsErrorPages.getErrorPageRenderer(
+    {
+      help: config.hostingEnvironment.helpUrl,
+      assets: assetsUrl,
+    },
+    config.hostingEnvironment.env === 'dev',
+  );
+  app.use(
+    getErrorHandler({
+      logger,
+      errorPageRenderer,
+    }),
+  );
 
   if (config.hostingEnvironment.env === 'dev') {
     app.proxy = true;
@@ -140,12 +148,16 @@ const init = async () => {
     const server = https.createServer(options, app);
 
     server.listen(config.hostingEnvironment.port, () => {
-      logger.info(`Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port} with config:\n${JSON.stringify(config)}`);
+      logger.info(
+        `Dev server listening on https://${config.hostingEnvironment.host}:${
+          config.hostingEnvironment.port
+        } with config:\n${JSON.stringify(config)}`,
+      );
     });
   } else if (config.hostingEnvironment.env === 'docker') {
-    process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
     app.listen(config.hostingEnvironment.port, () => {
-      logger.info(`Server listening on http://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`)
+      logger.info(`Server listening on http://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`);
     });
   } else {
     app.listen(process.env.PORT, () => {
@@ -156,8 +168,8 @@ const init = async () => {
   return app;
 };
 
-const app = init().catch(((err) => {
+const app = init().catch((err) => {
   logger.error(err);
-}));
+});
 
 module.exports = app;

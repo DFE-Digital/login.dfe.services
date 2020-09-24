@@ -6,12 +6,16 @@ const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const uniqBy = require('lodash/uniqBy');
 const sortBy = require('lodash/sortBy');
-const { getOrganisationAndServiceForUser, getPendingRequestsAssociatedWithUser, getLatestRequestAssociatedWithUser } = require('./../../infrastructure/organisations');
+const {
+  getOrganisationAndServiceForUser,
+  getPendingRequestsAssociatedWithUser,
+  getLatestRequestAssociatedWithUser,
+} = require('./../../infrastructure/organisations');
 const config = require('./../../infrastructure/config');
 
 const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
-  const isMigrated =  user && user.claims ? user.claims.isMigrated : false;
+  const isMigrated = user && user.claims ? user.claims.isMigrated : false;
   const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
   const services = serviceAccess.map((sa) => ({
     id: sa.serviceId,
@@ -23,20 +27,30 @@ const getAndMapServices = async (account, correlationId) => {
     const service = services[i];
     if (service && !service.isRole) {
       const application = await getApplication(service.id);
-      if (application.relyingParty && application.relyingParty.params && application.relyingParty.params.showRolesOnServices === 'true') {
+      if (
+        application.relyingParty &&
+        application.relyingParty.params &&
+        application.relyingParty.params.showRolesOnServices === 'true'
+      ) {
         for (let r = 0; r < service.roles.length; r++) {
           const role = service.roles[r];
           services.push({
             id: role.id,
             name: role.name,
-            serviceUrl: application.relyingParty && application.relyingParty.params && application.relyingParty.params[role.code] ? application.relyingParty.params[role.code] : '',
+            serviceUrl:
+              application.relyingParty && application.relyingParty.params && application.relyingParty.params[role.code]
+                ? application.relyingParty.params[role.code]
+                : '',
             isRole: true,
-          })
+          });
         }
         service.hideService = true;
       } else {
         service.name = application.name;
-        service.serviceUrl = (application.relyingParty ? (application.relyingParty.service_home || application.relyingParty.redirect_uris[0]) : undefined) || '#';
+        service.serviceUrl =
+          (application.relyingParty
+            ? application.relyingParty.service_home || application.relyingParty.redirect_uris[0]
+            : undefined) || '#';
       }
     }
   }
@@ -44,10 +58,11 @@ const getAndMapServices = async (account, correlationId) => {
   if (isMigrated) {
     services.push({
       name: 'Manage Your Education and Skills Funding',
-      description: 'Use this service to: sign documents, view your funding allocations, view the funding you\'ve received, manage apprenticeship details, and tell us about subcontractors',
+      description:
+        "Use this service to: sign documents, view your funding allocations, view the funding you've received, manage apprenticeship details, and tell us about subcontractors",
       disabled: true,
       date: '18 March 2020',
-    })
+    });
   }
   return sortBy(services, 'name');
 };
@@ -63,7 +78,14 @@ const getApproversDetails = async (organisations) => {
 
 // This function should execute only if there are no services available for the user.
 const getTasksListStatusAndApprovers = async (account, correlationId) => {
-  let taskListStatus = {hasOrgAssigned :false, hasServiceAssigned :false, hasRequestPending :false, hasRequestRejected: false, approverForOrg: null, multiOrgDetails:{orgs:0,approvers:0}};
+  let taskListStatus = {
+    hasOrgAssigned: false,
+    hasServiceAssigned: false,
+    hasRequestPending: false,
+    hasRequestRejected: false,
+    approverForOrg: null,
+    multiOrgDetails: { orgs: 0, approvers: 0 },
+  };
   let approvers = [];
   const organisations = await getOrganisationAndServiceForUser(account.id, correlationId);
   const allApprovers = await getApproversDetails(organisations, correlationId);
@@ -71,7 +93,7 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
   // Check for organisations and services for the user account
   if (organisations && organisations.length > 0) {
     taskListStatus.hasOrgAssigned = true;
-    if(organisations){
+    if (organisations) {
       taskListStatus.multiOrgDetails.orgs = organisations.length;
     }
     organisations.forEach((organisation) => {
@@ -82,41 +104,44 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
         taskListStatus.approverForOrg = organisation.organisation.id;
       }
       approvers = organisation.approvers.map((approverId) => {
-        return allApprovers.find(x => x.id.toLowerCase() === approverId.toLowerCase());
+        return allApprovers.find((x) => x.id.toLowerCase() === approverId.toLowerCase());
       });
-      if(approvers && approvers.length > 0){
+      if (approvers && approvers.length > 0) {
         ++taskListStatus.multiOrgDetails.approvers;
       }
     });
   } else {
     // If no organisations assigned to a user account then check for pending requests.
     const pendingUserRequests = await getPendingRequestsAssociatedWithUser(account.id, correlationId);
-    if(pendingUserRequests && pendingUserRequests.length > 0) {
-          taskListStatus.hasRequestPending = true;
-          taskListStatus.hasOrgAssigned = true; // User has placed a request to add org, and the request is in pending state so this is true.
+    if (pendingUserRequests && pendingUserRequests.length > 0) {
+      taskListStatus.hasRequestPending = true;
+      taskListStatus.hasOrgAssigned = true; // User has placed a request to add org, and the request is in pending state so this is true.
     } else {
       const request = await getLatestRequestAssociatedWithUser(account.id, correlationId);
-      if(request && request.status.id===-1){
+      if (request && request.status.id === -1) {
         taskListStatus.hasRequestRejected = true;
       }
     }
   }
-  return {taskListStatus, approvers};
+  return { taskListStatus, approvers };
 };
 
 const getServices = async (req, res) => {
   const account = Account.fromContext(req.user);
   const allServices = await getAndMapServices(account, req.id);
-  const services = uniqBy(allServices.filter(x => !x.hideService), 'id');
+  const services = uniqBy(
+    allServices.filter((x) => !x.hideService),
+    'id',
+  );
   const approverRequests = req.organisationRequests || [];
   let taskListStatusAndApprovers;
-  if  (config.toggles.useRequestOrganisation && services.length <= 0) {
+  if (config.toggles.useRequestOrganisation && services.length <= 0) {
     taskListStatusAndApprovers = await getTasksListStatusAndApprovers(account, req.id);
   }
 
   let addServicesRedirect;
   let editServicesRedirect;
-  const approverOrgs = req.userOrganisations ? req.userOrganisations.filter(x => x.role.id === 10000) : null;
+  const approverOrgs = req.userOrganisations ? req.userOrganisations.filter((x) => x.role.id === 10000) : null;
   if (approverOrgs && approverOrgs.length > 0) {
     req.session.user = {
       uid: req.user.sub,
@@ -140,8 +165,8 @@ const getServices = async (req, res) => {
     services,
     currentPage: 'services',
     approverRequests,
-    taskListStatus : taskListStatusAndApprovers ? taskListStatusAndApprovers.taskListStatus : null,
-    approvers : taskListStatusAndApprovers ? taskListStatusAndApprovers.approvers : null,
+    taskListStatus: taskListStatusAndApprovers ? taskListStatusAndApprovers.taskListStatus : null,
+    approvers: taskListStatusAndApprovers ? taskListStatusAndApprovers.approvers : null,
     enableTaskList: config.toggles.useRequestOrganisation,
     addServicesRedirect,
     editServicesRedirect,

@@ -11,7 +11,7 @@ const clearUserSessionData = (req) => {
 
 const search = async (req) => {
   const organisationId = req.params.orgId;
-  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
+  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const paramsSource = req.method === 'POST' ? req.body : req.query;
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
   if (isNaN(page)) {
@@ -28,9 +28,9 @@ const search = async (req) => {
       const me = await getById(req.user.sub);
       user.email = me.claims.email;
     }
-    const organisation = user.organisations.filter(x => x.id === organisationId);
+    const organisation = user.organisations.filter((x) => x.id === organisationId);
     user.statusId = mapUserStatus(user.statusId);
-    user.organisations = organisation
+    user.organisations = organisation;
   }
   return {
     page,
@@ -57,7 +57,7 @@ const search = async (req) => {
         nextDirection: sortBy === 'statusId' ? (sortAsc ? 'desc' : 'asc') : 'asc',
         applied: sortBy === 'statusId',
       },
-    }
+    },
   };
 };
 

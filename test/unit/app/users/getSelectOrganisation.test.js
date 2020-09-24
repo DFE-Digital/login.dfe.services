@@ -3,7 +3,6 @@ const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
 describe('when displaying the multiple organisation selection', () => {
-
   let req;
   let res;
 
@@ -14,27 +13,31 @@ describe('when displaying the multiple organisation selection', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     res = mockResponse();
 
     getMultipleOrgSelection = require('./../../../../src/app/users/selectOrganisation').get;
@@ -54,5 +57,4 @@ describe('when displaying the multiple organisation selection', () => {
       csrfToken: 'token',
     });
   });
-
 });

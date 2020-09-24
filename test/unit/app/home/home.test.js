@@ -13,7 +13,6 @@ const home = require('./../../../../src/app/home/home');
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 const res = mockResponse();
 
-
 describe('when displaying current organisation and service mapping', () => {
   let req;
 
@@ -30,7 +29,6 @@ describe('when displaying current organisation and service mapping', () => {
       id: 'user1',
     });
 
-
     getAllServices.mockReset().mockReturnValue({
       services: [
         {
@@ -41,12 +39,10 @@ describe('when displaying current organisation and service mapping', () => {
           isMigrated: true,
           relyingParty: {
             service_home: 'http://service.one/login',
-            redirect_uris: [
-              'http://service.one/login/cb'
-            ],
+            redirect_uris: ['http://service.one/login/cb'],
           },
-        }
-        ]
+        },
+      ],
     });
   });
 
@@ -62,18 +58,13 @@ describe('when displaying current organisation and service mapping', () => {
 
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][1].services).toBeDefined();
-    expect(res.render.mock.calls[0][1].services).toEqual(
-      [
-        {
-          id: 'Service One',
-          isExternalService: true,
-          isMigrated: true,
-          name: 'Service One',
-
-        }
-        ]
-    )
+    expect(res.render.mock.calls[0][1].services).toEqual([
+      {
+        id: 'Service One',
+        isExternalService: true,
+        isMigrated: true,
+        name: 'Service One',
+      },
+    ]);
   });
-
-
 });

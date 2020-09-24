@@ -26,15 +26,13 @@ const callApi = async (method, endpoint, correlationId, body) => {
   }
 };
 
-
 const getServicesForUser = async (id, correlationId) => {
   return callApi('GET', `/users/${id}/services`, correlationId, undefined);
 };
 
 const getServicesForInvitation = async (iid, correlationId) => {
-  return callApi('GET', `/invitations/${iid}/services`, correlationId, undefined)
+  return callApi('GET', `/invitations/${iid}/services`, correlationId, undefined);
 };
-
 
 const getSingleUserService = async (id, sid, oid, correlationId) => {
   return callApi('GET', `/users/${id}/services/${sid}/organisations/${oid}`, correlationId, undefined);

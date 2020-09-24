@@ -1,7 +1,7 @@
 'use strict';
 const getNaturalIdentifiers = async (req) => {
-  req.userOrganisations = req.userOrganisations.filter(x => x.role.id === 10000);
-  for (let i= 0; i < req.userOrganisations.length; i++) {
+  req.userOrganisations = req.userOrganisations.filter((x) => x.role.id === 10000);
+  for (let i = 0; i < req.userOrganisations.length; i++) {
     const org = req.userOrganisations[i];
     if (org.organisation) {
       org.naturalIdentifiers = [];
@@ -9,13 +9,13 @@ const getNaturalIdentifiers = async (req) => {
       const uid = org.organisation.uid;
       const ukprn = org.organisation.ukprn;
       if (urn) {
-        org.naturalIdentifiers.push(`URN: ${urn}`)
+        org.naturalIdentifiers.push(`URN: ${urn}`);
       }
       if (uid) {
-        org.naturalIdentifiers.push(`UID: ${uid}`)
+        org.naturalIdentifiers.push(`UID: ${uid}`);
       }
       if (ukprn) {
-        org.naturalIdentifiers.push(`UKPRN: ${ukprn}`)
+        org.naturalIdentifiers.push(`UKPRN: ${ukprn}`);
       }
     }
   }
@@ -43,7 +43,7 @@ const validate = (req) => {
   };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
-    model.validationMessages.selectedOrganisation = 'Please select an organisation'
+    model.validationMessages.selectedOrganisation = 'Please select an organisation';
   }
   return model;
 };
@@ -57,14 +57,13 @@ const post = async (req, res) => {
     return res.render('users/views/selectOrganisation', model);
   }
 
-
-    if (req.query.services === 'add') {
-      return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`)
-    } else if (req.query.services === 'edit') {
-      return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`)
-    } else {
-      return res.redirect(`/approvals/${model.selectedOrganisation}/users`)
-    }
+  if (req.query.services === 'add') {
+    return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
+  } else if (req.query.services === 'edit') {
+    return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`);
+  } else {
+    return res.redirect(`/approvals/${model.selectedOrganisation}/users`);
+  }
 };
 
 module.exports = {

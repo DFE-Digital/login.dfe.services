@@ -19,7 +19,6 @@ const { listRolesOfService } = require('./../../../../src/infrastructure/access'
 const { getAllServices } = require('./../../../../src/infrastructure/applications');
 
 describe('when displaying the confirm new user view', () => {
-
   let req;
   let res;
 
@@ -41,7 +40,7 @@ describe('when displaying the confirm new user view', () => {
           {
             serviceId: 'service1',
             roles: [],
-          }
+          },
         ],
       },
     };
@@ -49,49 +48,56 @@ describe('when displaying the confirm new user view', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     res = mockResponse();
 
     listRolesOfService.mockReset();
-    listRolesOfService.mockReturnValue([{
-      code: 'role_code',
-      id: 'role_id',
-      name: 'role_name',
-      status: {
-        id: 'status_id'
+    listRolesOfService.mockReturnValue([
+      {
+        code: 'role_code',
+        id: 'role_id',
+        name: 'role_name',
+        status: {
+          id: 'status_id',
+        },
       },
-    }]);
+    ]);
     getAllServices.mockReset();
     getAllServices.mockReturnValue({
-      services: [{
-        id: 'service1',
-        dateActivated: '10/10/2018',
-        name: 'service name',
-        status: 'active',
-        isExternalService: true,
-      }]
+      services: [
+        {
+          id: 'service1',
+          dateActivated: '10/10/2018',
+          name: 'service name',
+          status: 'active',
+          isExternalService: true,
+        },
+      ],
     });
-
 
     getConfirmNewUser = require('./../../../../src/app/users/confirmNewUser').get;
   });
@@ -135,8 +141,8 @@ describe('when displaying the confirm new user view', () => {
         lastName: 'name',
         email: 'test@test.com',
         isInvite: false,
-        uid: ''
-      }
+        uid: '',
+      },
     });
   });
 
@@ -144,12 +150,13 @@ describe('when displaying the confirm new user view', () => {
     await getConfirmNewUser(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      services: [{
-        id: 'service1',
-        name: 'service name',
-        roles: [],
-      }]
+      services: [
+        {
+          id: 'service1',
+          name: 'service name',
+          roles: [],
+        },
+      ],
     });
   });
-
 });

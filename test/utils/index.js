@@ -32,6 +32,5 @@ const expressAuthenticationStub = (authenticated, extras) => {
 
 module.exports = {
   expressAppWithViews,
-  expressAuthenticationStub
+  expressAuthenticationStub,
 };
-

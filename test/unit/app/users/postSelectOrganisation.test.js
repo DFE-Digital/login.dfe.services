@@ -3,7 +3,6 @@ const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
 describe('when selecting an organisation', () => {
-
   let req;
   let res;
 
@@ -14,27 +13,31 @@ describe('when selecting an organisation', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     req.body = {
       selectedOrganisation: 'organisationId',
     };
@@ -64,5 +67,4 @@ describe('when selecting an organisation', () => {
       },
     });
   });
-
 });

@@ -16,7 +16,6 @@ const getApplication = async (idOrClientId, correlationId) => {
       },
       json: true,
     });
-
   } catch (e) {
     if (e.statusCode === 404) {
       return undefined;
@@ -73,14 +72,13 @@ const getEmailToggleFlag = async (params) => {
       },
       json: true,
     });
-
   } catch (e) {
     if (e.statusCode === 404) {
       return undefined;
     }
     throw e;
   }
-}
+};
 
 const retrieveToggleFlag = async (path) => {
   const emailToggleFlag = await getEmailToggleFlag(path);
@@ -88,14 +86,14 @@ const retrieveToggleFlag = async (path) => {
     return emailToggleFlag[0].flag;
   }
   return true;
-}
+};
 
 const isServiceEmailNotificationAllowed = async () => {
   return await retrieveToggleFlag(servicesTogglePath);
-}
+};
 
 module.exports = {
   getApplication,
   getAllServices,
-  isServiceEmailNotificationAllowed
+  isServiceEmailNotificationAllowed,
 };

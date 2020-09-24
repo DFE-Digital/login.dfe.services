@@ -7,7 +7,6 @@ jest.mock('./../../../../src/app/users/utils');
 const { getUserDetails, getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
 
 describe('when displaying the remove organisation', () => {
-
   let req;
   let res;
 
@@ -29,27 +28,31 @@ describe('when displaying the remove organisation', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     res = mockResponse();
 
     getAllServicesForUserInOrg.mockReset();
@@ -72,7 +75,6 @@ describe('when displaying the remove organisation', () => {
     expect(getAllServicesForUserInOrg.mock.calls[0][2]).toBe('correlationId');
   });
 
-
   it('then it should return the services view', async () => {
     await getRemoveOrganisation(req, res);
 
@@ -87,5 +89,4 @@ describe('when displaying the remove organisation', () => {
       csrfToken: 'token',
     });
   });
-
 });

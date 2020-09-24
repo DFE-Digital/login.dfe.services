@@ -9,7 +9,11 @@ jest.mock('login.dfe.notifications.client');
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { post } = require('./../../../../src/app/accessRequests/reviewOrganisationRequest');
 const res = mockResponse();
-const { putUserInOrganisation, updateRequestById, getOrganisationById } = require('./../../../../src/infrastructure/organisations');
+const {
+  putUserInOrganisation,
+  updateRequestById,
+  getOrganisationById,
+} = require('./../../../../src/infrastructure/organisations');
 const { getById, updateIndex } = require('./../../../../src/infrastructure/search');
 const { getAndMapOrgRequest } = require('./../../../../src/app/accessRequests/utils');
 const logger = require('./../../../../src/infrastructure/logger');
@@ -18,7 +22,7 @@ const NotificationClient = require('login.dfe.notifications.client');
 const sendAccessRequest = jest.fn();
 NotificationClient.mockImplementation(() => {
   return {
-    sendAccessRequest
+    sendAccessRequest,
   };
 });
 
@@ -31,13 +35,13 @@ describe('when reviewing an organisation request', () => {
     req = mockRequest({
       user: {
         sub: 'user1',
-        email: 'email@email.com'
+        email: 'email@email.com',
       },
       params: {
-        orgId: 'org1'
+        orgId: 'org1',
       },
       body: {
-        selectedResponse: 'approve'
+        selectedResponse: 'approve',
       },
     });
 
@@ -54,16 +58,16 @@ describe('when reviewing an organisation request', () => {
       id: 'org1',
       name: 'organisation two',
       category: {
-        'id': '001',
-        'name': 'Establishment'
+        id: '001',
+        name: 'Establishment',
       },
       status: {
-        id: 1
-      }
+        id: 1,
+      },
     });
     getById.mockReset();
     getById.mockReturnValue({
-      organisations: []
+      organisations: [],
     });
     getAndMapOrgRequest.mockReset().mockReturnValue({
       usersName: 'John Doe',
@@ -79,8 +83,8 @@ describe('when reviewing an organisation request', () => {
       reason: '',
       status: {
         id: 0,
-        name: 'Pending'
-      }
+        name: 'Pending',
+      },
     });
     res.mockResetAll();
   });
@@ -110,17 +114,17 @@ describe('when reviewing an organisation request', () => {
         reason: '',
         status: {
           id: 0,
-          name: 'Pending'
+          name: 'Pending',
         },
         user_id: 'userId',
         usersEmail: 'john.doe@email.com',
-        usersName: 'John Doe'
+        usersName: 'John Doe',
       },
       selectedResponse: null,
       title: 'Review request - DfE Sign-in',
       validationMessages: {
-      selectedResponse: 'Approve or Reject must be selected'
-      }
+        selectedResponse: 'Approve or Reject must be selected',
+      },
     });
   });
 
@@ -141,8 +145,8 @@ describe('when reviewing an organisation request', () => {
       reason: '',
       status: {
         id: 1,
-        name: 'approved'
-      }
+        name: 'approved',
+      },
     });
 
     await post(req, res);
@@ -167,7 +171,7 @@ describe('when reviewing an organisation request', () => {
         reason: '',
         status: {
           id: 1,
-          name: 'approved'
+          name: 'approved',
         },
         user_id: 'userId',
         usersEmail: 'john.doe@email.com',
@@ -178,8 +182,8 @@ describe('when reviewing an organisation request', () => {
       selectedResponse: 'approve',
       title: 'Review request - DfE Sign-in',
       validationMessages: {
-        selectedResponse: 'Request already actioned by jane.doe@email.com'
-      }
+        selectedResponse: 'Request already actioned by jane.doe@email.com',
+      },
     });
   });
 
@@ -216,12 +220,11 @@ describe('when reviewing an organisation request', () => {
   });
 
   it('then it should update the search index with the new org', async () => {
-
-    await post(req,res);
+    await post(req, res);
     expect(updateIndex.mock.calls).toHaveLength(1);
     expect(updateIndex.mock.calls[0][0]).toBe('userId');
-    expect(updateIndex.mock.calls[0][1]).toEqual(
-      [{
+    expect(updateIndex.mock.calls[0][1]).toEqual([
+      {
         categoryId: '001',
         establishmentNumber: undefined,
         id: 'org1',
@@ -230,9 +233,9 @@ describe('when reviewing an organisation request', () => {
         roleId: 0,
         statusId: 1,
         uid: undefined,
-        urn: undefined
-      }]
-    );
+        urn: undefined,
+      },
+    ]);
   });
 
   it('then it should should audit approved org request', async () => {
@@ -245,11 +248,13 @@ describe('when reviewing an organisation request', () => {
       subType: 'approved-org',
       userId: 'user1',
       editedUser: 'userId',
-      editedFields: [{
-        name: 'new_organisation',
-        newValue: 'org1',
-        oldValue: undefined
-      }]
+      editedFields: [
+        {
+          name: 'new_organisation',
+          newValue: 'org1',
+          oldValue: undefined,
+        },
+      ],
     });
   });
 

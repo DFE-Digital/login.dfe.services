@@ -6,7 +6,8 @@ const WinstonSequelizeTransport = require('login.dfe.audit.winston-sequelize-tra
 const appInsights = require('applicationinsights');
 const AppInsightsTransport = require('login.dfe.winston-appinsights');
 
-const logLevel = (config && config.loggerSettings && config.loggerSettings.logLevel) ? config.loggerSettings.logLevel : 'info';
+const logLevel =
+  config && config.loggerSettings && config.loggerSettings.logLevel ? config.loggerSettings.logLevel : 'info';
 
 const loggerConfig = {
   levels: {
@@ -27,7 +28,7 @@ const loggerConfig = {
   transports: [],
 };
 
-loggerConfig.transports.push(new (winston.transports.Console)({ level: logLevel, colorize: true }));
+loggerConfig.transports.push(new winston.transports.Console({ level: logLevel, colorize: true }));
 
 const sequelizeTransport = WinstonSequelizeTransport(config);
 
@@ -36,19 +37,22 @@ if (sequelizeTransport) {
 }
 
 if (config.hostingEnvironment.applicationInsights) {
-  appInsights.setup(config.hostingEnvironment.applicationInsights)
+  appInsights
+    .setup(config.hostingEnvironment.applicationInsights)
     .setAutoCollectConsole(false, false)
     .setSendLiveMetrics(config.loggerSettings.aiSendLiveMetrics || false)
     .start();
-  loggerConfig.transports.push(new AppInsightsTransport({
-    client: appInsights.defaultClient,
-    applicationName: config.loggerSettings.applicationName || 'Services',
-    type: 'event',
-    treatErrorsAsExceptions: true,
-  }));
+  loggerConfig.transports.push(
+    new AppInsightsTransport({
+      client: appInsights.defaultClient,
+      applicationName: config.loggerSettings.applicationName || 'Services',
+      type: 'event',
+      treatErrorsAsExceptions: true,
+    }),
+  );
 }
 
-const logger = new (winston.Logger)(loggerConfig);
+const logger = new winston.Logger(loggerConfig);
 
 process.on('unhandledRejection', (reason, p) => {
   logger.error('Unhandled Rejection at:', p, 'reason:', reason);

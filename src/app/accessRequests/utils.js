@@ -11,7 +11,7 @@ const getAndMapOrgRequest = async (req) => {
     const usersEmail = user ? user.claims.email : '';
     const approverName = approver ? `${approver.given_name} ${approver.family_name}` : '';
     const approverEmail = approver ? approver.email : '';
-    mappedRequest = Object.assign({usersName, usersEmail, approverName, approverEmail}, request);
+    mappedRequest = Object.assign({ usersName, usersEmail, approverName, approverEmail }, request);
   }
   return mappedRequest;
 };
