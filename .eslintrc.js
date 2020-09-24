@@ -8,7 +8,6 @@
     plugins: ['prettier'],
     rules: {
         'prettier/prettier': 'error',
-        "typescript/no-var-requires": "off"
     },
   }
 };
