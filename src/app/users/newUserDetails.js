@@ -1,6 +1,9 @@
 'use strict';
 const Account = require('./../../infrastructure/account');
-const { getOrganisationAndServiceForUser, getOrganisationAndServiceForInvitation } = require('./../../infrastructure/organisations');
+const {
+  getOrganisationAndServiceForUser,
+  getOrganisationAndServiceForInvitation,
+} = require('./../../infrastructure/organisations');
 const { emailPolicy } = require('login.dfe.validation');
 
 const get = (req, res) => {
@@ -55,7 +58,7 @@ const validate = async (req) => {
 
     if (existingUser) {
       const userOrganisations = await getOrganisationAndServiceForUser(existingUser.claims.sub, req.id);
-      const isUserInOrg = userOrganisations.find(x => x.organisation.id === req.params.orgId);
+      const isUserInOrg = userOrganisations.find((x) => x.organisation.id === req.params.orgId);
       if (isUserInOrg) {
         model.validationMessages.email = `A DfE Sign-in user already exists with that email address for ${isUserInOrg.organisation.name}`;
       } else {
@@ -67,7 +70,7 @@ const validate = async (req) => {
       }
     } else if (existingInvitation) {
       const invitationOrganisations = await getOrganisationAndServiceForInvitation(existingInvitation.id);
-      const isInvitationInOrg = invitationOrganisations.find(x => x.organisation.id === req.params.orgId);
+      const isInvitationInOrg = invitationOrganisations.find((x) => x.organisation.id === req.params.orgId);
       if (isInvitationInOrg) {
         model.validationMessages.email = `A DfE Sign-in user already exists with that email address for ${isInvitationInOrg.organisation.name}`;
       } else {
@@ -75,7 +78,7 @@ const validate = async (req) => {
         model.firstName = existingInvitation.firstName;
         model.lastName = existingInvitation.lastName;
         model.email = existingInvitation.email;
-        model.uid = `inv-${existingInvitation.id}`
+        model.uid = `inv-${existingInvitation.id}`;
       }
     }
   }
@@ -100,13 +103,13 @@ const post = async (req, res) => {
 
   if (model.isDSIUser) {
     req.session.user.uid = model.uid;
-    return req.query.review ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user?review=true`) : res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`)
+    return req.query.review
+      ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user?review=true`)
+      : res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`);
   } else {
-    return req.query.review ? res.redirect('confirm-new-user') : res.redirect('associate-services')
+    return req.query.review ? res.redirect('confirm-new-user') : res.redirect('associate-services');
   }
-
 };
-
 
 module.exports = {
   get,

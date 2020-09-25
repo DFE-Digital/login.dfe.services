@@ -1,7 +1,6 @@
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 
 describe('when posting the existing user view', () => {
-
   let req;
   let res;
 
@@ -25,29 +24,32 @@ describe('when posting the existing user view', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     res = mockResponse();
-
 
     postConfirmExistingUser = require('./../../../../src/app/users/confirmExistingUser').post;
   });
@@ -56,7 +58,9 @@ describe('when posting the existing user view', () => {
     await postConfirmExistingUser(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/associate-services`);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      `/approvals/${req.params.orgId}/users/${req.session.user.uid}/associate-services`,
+    );
   });
 
   it('then it should redirect to confirm details', async () => {
@@ -64,6 +68,8 @@ describe('when posting the existing user view', () => {
     await postConfirmExistingUser(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`,
+    );
   });
 });

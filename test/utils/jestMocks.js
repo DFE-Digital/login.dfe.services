@@ -4,7 +4,7 @@ const mockConfig = () => {
   return {
     hostingEnvironment: {
       env: 'test-run',
-      serviceId:'28388aeb-431b-49bc-9480-8db1b0bdd6e1'
+      serviceId: '28388aeb-431b-49bc-9480-8db1b0bdd6e1',
     },
     loggerSettings: {},
     organisations: {
@@ -26,26 +26,26 @@ const mockConfig = () => {
       connectionString: 'test',
     },
     organisationRequests: {
-      requestLimit: 3
+      requestLimit: 3,
     },
     toggles: {
       useApproverJourney: true,
-      useRequestOrganisation: true
+      useRequestOrganisation: true,
     },
     database: {
-      host: "host",
-      username: "user",
-      password: "password",
-      dialect: "mssql",
-      name: "db",
+      host: 'host',
+      username: 'user',
+      password: 'password',
+      dialect: 'mssql',
+      name: 'db',
       encrypt: true,
-      schema: "dbo",
+      schema: 'dbo',
       pool: {
         max: 100,
         min: 0,
         acquire: 30000,
-        idle: 10000
-      }
+        idle: 10000,
+      },
     },
   };
 };
@@ -60,17 +60,20 @@ const mockLogger = () => {
 };
 
 const mockRequest = (customRequest = {}) => {
-  return Object.assign({
-    params: {
-      uuid: '123-abc',
+  return Object.assign(
+    {
+      params: {
+        uuid: '123-abc',
+      },
+      id: 'correlationId',
+      session: {},
+      body: {},
+      query: {},
+      csrfToken: jest.fn().mockReturnValue('token'),
+      isAuthenticated: jest.fn().mockReturnValue(true),
     },
-    id: 'correlationId',
-    session: {},
-    body: {},
-    query: {},
-    csrfToken: jest.fn().mockReturnValue('token'),
-    isAuthenticated: jest.fn().mockReturnValue(true),
-  }, customRequest);
+    customRequest,
+  );
 };
 const mockResponse = () => {
   return {
@@ -81,10 +84,9 @@ const mockResponse = () => {
       this.render.mockReset().mockReturnValue(this);
       this.redirect.mockReset().mockReturnValue(this);
       this.flash.mockReset().mockReturnValue(this);
-    }
+    },
   };
 };
-
 
 module.exports = {
   mockRequest,

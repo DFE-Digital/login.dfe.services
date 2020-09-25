@@ -28,7 +28,7 @@ class StaticAccount extends Account {
     return new StaticAccount(user);
   }
   static async getById(id) {
-    const account = accounts.find(item => item.sub.toLowerCase() === id.toLowerCase());
+    const account = accounts.find((item) => item.sub.toLowerCase() === id.toLowerCase());
     return Promise.resolve(account ? new StaticAccount(account) : null);
   }
 

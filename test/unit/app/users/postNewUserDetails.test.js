@@ -13,11 +13,13 @@ jest.mock('./../../../../src/infrastructure/account', () => ({
   getInvitationByEmail: jest.fn(),
 }));
 
-const { getOrganisationAndServiceForUser, getOrganisationAndServiceForInvitation} = require('./../../../../src/infrastructure/organisations');
+const {
+  getOrganisationAndServiceForUser,
+  getOrganisationAndServiceForInvitation,
+} = require('./../../../../src/infrastructure/organisations');
 const Account = require('./../../../../src/infrastructure/account');
 
 describe('when entering a new users details', () => {
-
   let req;
   let res;
 
@@ -33,16 +35,18 @@ describe('when entering a new users details', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
-        organisation: {
-          id: 'organisationId',
-          name: 'organisationName',
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
         },
-        role: {
-          id: 0,
-          name: 'category name'
-        }
-      }],
+      ],
     };
     req.body = {
       firstName: 'John',
@@ -164,14 +168,16 @@ describe('when entering a new users details', () => {
     Account.getById.mockReturnValue({
       claims: {
         sub: 'user1',
-      }
+      },
     });
-    getOrganisationAndServiceForUser.mockReturnValue([{
-      organisation: {
-        id: 'org1',
-        name: 'organisation1'
-      }
-    }]);
+    getOrganisationAndServiceForUser.mockReturnValue([
+      {
+        organisation: {
+          id: 'org1',
+          name: 'organisation1',
+        },
+      },
+    ]);
 
     await postNewUserDetails(req, res);
 
@@ -196,14 +202,15 @@ describe('when entering a new users details', () => {
   it('then it should render view if email already associated to a invitation in this org', async () => {
     Account.getInvitationByEmail.mockReturnValue({
       id: 'inv1',
-
     });
-    getOrganisationAndServiceForInvitation.mockReturnValue([{
-      organisation: {
-        id: 'org1',
-        name: 'organisation1'
-      }
-    }]);
+    getOrganisationAndServiceForInvitation.mockReturnValue([
+      {
+        organisation: {
+          id: 'org1',
+          name: 'organisation1',
+        },
+      },
+    ]);
 
     await postNewUserDetails(req, res);
 
@@ -229,58 +236,67 @@ describe('when entering a new users details', () => {
     Account.getById.mockReturnValue({
       claims: {
         sub: 'user1',
-      }
+      },
     });
-    getOrganisationAndServiceForUser.mockReturnValue([{
-      organisation: {
-        id: 'org2',
-        name: 'organisation2'
-      }
-    }]);
+    getOrganisationAndServiceForUser.mockReturnValue([
+      {
+        organisation: {
+          id: 'org2',
+          name: 'organisation2',
+        },
+      },
+    ]);
 
     await postNewUserDetails(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`,
+    );
   });
 
   it('then it should redirect to confirm user if inv not in org', async () => {
     Account.getInvitationByEmail.mockReturnValue({
       id: 'inv1',
-
     });
-    getOrganisationAndServiceForInvitation.mockReturnValue([{
-      organisation: {
-        id: 'org2',
-        name: 'organisation2'
-      }
-    }]);
+    getOrganisationAndServiceForInvitation.mockReturnValue([
+      {
+        organisation: {
+          id: 'org2',
+          name: 'organisation2',
+        },
+      },
+    ]);
 
     await postNewUserDetails(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`,
+    );
   });
 
   it('then it should redirect to confirm user if user not in org and include review in query string', async () => {
-
     req.query.review = 'true';
     Account.getById.mockReturnValue({
       claims: {
         sub: 'user1',
-      }
+      },
     });
-    getOrganisationAndServiceForUser.mockReturnValue([{
-      organisation: {
-        id: 'org2',
-        name: 'organisation2'
-      }
-    }]);
+    getOrganisationAndServiceForUser.mockReturnValue([
+      {
+        organisation: {
+          id: 'org2',
+          name: 'organisation2',
+        },
+      },
+    ]);
 
     await postNewUserDetails(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user?review=true`);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user?review=true`,
+    );
   });
-
 });

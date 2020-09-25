@@ -3,7 +3,6 @@ const { validateConfigAgainstSchema, schemas, patterns } = require('login.dfe.co
 const config = require('./index');
 const logger = require('./../logger');
 
-
 const identifyingPartySchema = new SimpleSchema({
   url: patterns.url,
   clientId: String,
@@ -17,7 +16,7 @@ const togglesSchema = new SimpleSchema({
 });
 
 const notificationsSchema = new SimpleSchema({
-  connectionString: patterns.redis
+  connectionString: patterns.redis,
 });
 
 const organisationRequestsSchema = new SimpleSchema({

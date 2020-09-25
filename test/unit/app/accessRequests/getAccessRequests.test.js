@@ -20,13 +20,20 @@ jest.mock('./../../../../src/infrastructure/logger', () => ({
   audit: jest.fn(),
 }));
 
-
 const Account = require('./../../../../src/infrastructure/account');
 
 describe('when displaying the users for approval', () => {
   let usersForApproval = [
-    { org_id: '0a0410ba-f896-4c2b-aa08-6337a0d3db2e', org_name: 'Academisation and free schools self service', user_id: 'user1'  },
-    { org_id: '0a0410ba-f896-4c2b-aa08-6337a0d3db2e', org_name: 'Academisation and free schools self service', user_id: 'user9'  },
+    {
+      org_id: '0a0410ba-f896-4c2b-aa08-6337a0d3db2e',
+      org_name: 'Academisation and free schools self service',
+      user_id: 'user1',
+    },
+    {
+      org_id: '0a0410ba-f896-4c2b-aa08-6337a0d3db2e',
+      org_name: 'Academisation and free schools self service',
+      user_id: 'user9',
+    },
   ];
 
   let req;
@@ -47,11 +54,13 @@ describe('when displaying the users for approval', () => {
     const orgApi = require('./../../../../src/infrastructure/organisations');
     orgApi.getOrganisationUsersForApproval = getOrganisationUsersForApproval;
 
-    Account.getUsersById.mockReset().mockReturnValue([
-      {claims:{ sub: 'user1', given_name: 'User', family_name:'One', email: 'user.one@unit.tests' }},
-      {claims:{ sub: 'user6', given_name: 'User', family_name:'Six', email: 'user.six@unit.tests' }},
-      {claims:{ sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests' }},
-    ]);
+    Account.getUsersById
+      .mockReset()
+      .mockReturnValue([
+        { claims: { sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests' } },
+        { claims: { sub: 'user6', given_name: 'User', family_name: 'Six', email: 'user.six@unit.tests' } },
+        { claims: { sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests' } },
+      ]);
 
     getAccessRequests = require('./../../../../src/app/accessRequests/accessRequests').get;
   });

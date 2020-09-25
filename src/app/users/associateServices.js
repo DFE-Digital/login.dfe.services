@@ -5,41 +5,55 @@ const { getAllServicesForUserInOrg } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 
-
 const policyEngine = new PolicyEngine(config);
 
 const getAllAvailableServices = async (req) => {
   const allServices = await getAllServices(req.id);
-  let externalServices = allServices.services.filter(x => x.isExternalService === true && !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideApprover === 'true'));
+  let externalServices = allServices.services.filter(
+    (x) =>
+      x.isExternalService === true &&
+      !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideApprover === 'true'),
+  );
   if (req.params.uid) {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
-    externalServices = externalServices.filter(ex => !allUserServicesInOrg.find(as => as.id === ex.id));
+    externalServices = externalServices.filter((ex) => !allUserServicesInOrg.find((as) => as.id === ex.id));
   }
   const servicesNotAvailableThroughPolicies = [];
-  const userOrganisations = (req.params.uid && !req.params.uid.startsWith('inv-')) ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id) : undefined;
-  const userAccessToSpecifiedOrganisation = userOrganisations ? userOrganisations.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase()) : undefined;
+  const userOrganisations =
+    req.params.uid && !req.params.uid.startsWith('inv-')
+      ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
+      : undefined;
+  const userAccessToSpecifiedOrganisation = userOrganisations
+    ? userOrganisations.find((x) => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())
+    : undefined;
   for (let i = 0; i < externalServices.length; i++) {
-    const policyResult = await policyEngine.getPolicyApplicationResultsForUser(userAccessToSpecifiedOrganisation ? req.params.uid : undefined, req.params.orgId, externalServices[i].id, req.id);
+    const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
+      userAccessToSpecifiedOrganisation ? req.params.uid : undefined,
+      req.params.orgId,
+      externalServices[i].id,
+      req.id,
+    );
     if (!policyResult.serviceAvailableToUser) {
       servicesNotAvailableThroughPolicies.push(externalServices[i].id);
     }
   }
-  return externalServices.filter(x => !servicesNotAvailableThroughPolicies.find(y => x.id === y));
+  return externalServices.filter((x) => !servicesNotAvailableThroughPolicies.find((y) => x.id === y));
 };
 
 const get = async (req, res) => {
-
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`)
+    return res.redirect(`/approvals/${req.params.orgId}/users`);
   }
-  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
+  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
 
   let backRedirect;
   if (req.session.user.isInvite) {
-    req.params.uid ? backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user` : backRedirect = 'new-user';
+    req.params.uid
+      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
+      : (backRedirect = 'new-user');
   } else {
-    backRedirect = 'services'
+    backRedirect = 'services';
   }
   const model = {
     csrfToken: req.csrfToken(),
@@ -58,13 +72,15 @@ const get = async (req, res) => {
 };
 
 const validate = async (req) => {
-  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === req.params.orgId);
+  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
   let backRedirect;
   if (req.session.user.isInvite) {
-    req.params.uid ? backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user` : backRedirect = 'new-user';
+    req.params.uid
+      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
+      : (backRedirect = 'new-user');
   } else {
-    backRedirect = 'services'
+    backRedirect = 'services';
   }
 
   let selectedServices = [];
@@ -87,7 +103,11 @@ const validate = async (req) => {
   if (!req.session.user.isInvite && model.selectedServices.length < 1) {
     model.validationMessages.services = 'At least one service must be selected';
   }
-  if (model.selectedServices && model.selectedServices.filter(sid => !externalServices.find(s => s.id.toLowerCase() === sid.toLowerCase())).length > 0) {
+  if (
+    model.selectedServices &&
+    model.selectedServices.filter((sid) => !externalServices.find((s) => s.id.toLowerCase() === sid.toLowerCase()))
+      .length > 0
+  ) {
     model.validationMessages.services = 'A service was selected that is no longer available';
   }
   return model;
@@ -95,7 +115,7 @@ const validate = async (req) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`)
+    return res.redirect(`/approvals/${req.params.orgId}/users`);
   }
 
   const model = await validate(req);
@@ -105,7 +125,9 @@ const post = async (req, res) => {
   }
 
   req.session.user.services = model.selectedServices.map((serviceId) => {
-    const existingServiceSelections = req.session.user.services ? req.session.user.services.find(x => x.serviceId === serviceId) : undefined;
+    const existingServiceSelections = req.session.user.services
+      ? req.session.user.services.find((x) => x.serviceId === serviceId)
+      : undefined;
     return {
       serviceId,
       roles: existingServiceSelections ? existingServiceSelections.roles : [],
@@ -113,14 +135,18 @@ const post = async (req, res) => {
   });
 
   if (req.session.user.isInvite && model.selectedServices.length === 0) {
-    return res.redirect( req.params.uid ? `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`: `/approvals/${req.params.orgId}/users/confirm-new-user`);
+    return res.redirect(
+      req.params.uid
+        ? `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`
+        : `/approvals/${req.params.orgId}/users/confirm-new-user`,
+    );
   }
 
   const service = req.session.user.services[0].serviceId;
-  return res.redirect(`associate-services/${service}`)
+  return res.redirect(`associate-services/${service}`);
 };
 
 module.exports = {
   get,
-  post
+  post,
 };

@@ -13,7 +13,6 @@ jest.mock('./../../../../src/infrastructure/access', () => ({
 
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
-
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const Account = require('./../../../../src/infrastructure/account');
 const { getServicesForUser } = require('./../../../../src/infrastructure/access');
@@ -21,16 +20,12 @@ const { getApplication } = require('./../../../../src/infrastructure/application
 const getServices = require('./../../../../src/app/home/getServices');
 
 const res = mockResponse();
-const userAccess = [
-  { serviceId: 'service1' }
-];
+const userAccess = [{ serviceId: 'service1' }];
 const application = {
   name: 'Service One',
   relyingParty: {
     service_home: 'http://service.one/login',
-    redirect_uris: [
-      'http://service.one/login/cb'
-    ],
+    redirect_uris: ['http://service.one/login/cb'],
   },
 };
 
@@ -56,7 +51,7 @@ describe('when displaying the users services', () => {
     Account.getById.mockReset().mockReturnValue({
       claims: {
         sub: 'user1',
-      }
+      },
     });
   });
 
@@ -104,9 +99,7 @@ describe('when displaying the users services', () => {
       name: 'Service One',
       relyingParty: {
         service_home: 'http://service.one/login',
-        redirect_uris: [
-          'http://service.one/login/cb'
-        ],
+        redirect_uris: ['http://service.one/login/cb'],
       },
     });
 
@@ -119,9 +112,7 @@ describe('when displaying the users services', () => {
     getApplication.mockReset().mockReturnValue({
       name: 'Service One',
       relyingParty: {
-        redirect_uris: [
-          'http://service.one/login/cb'
-        ],
+        redirect_uris: ['http://service.one/login/cb'],
       },
     });
 
@@ -129,7 +120,6 @@ describe('when displaying the users services', () => {
 
     expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe('http://service.one/login/cb');
   });
-
 
   it('then it should set serviceUrl to # if no service_home or redirects available', async () => {
     getApplication.mockReset().mockReturnValue({

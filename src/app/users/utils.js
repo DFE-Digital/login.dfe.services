@@ -1,15 +1,19 @@
 'use strict';
 const { getById } = require('./../../infrastructure/search');
 const { mapUserStatus } = require('./../../infrastructure/utils');
-const { getServicesForUser, getServicesForInvitation, getSingleUserService, getSingleInvitationService } = require('./../../infrastructure/access');
+const {
+  getServicesForUser,
+  getServicesForInvitation,
+  getSingleUserService,
+  getSingleInvitationService,
+} = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
 const sortBy = require('lodash/sortBy');
-
 
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
   const user = await getById(uid, req.id);
-  const organisationDetails = user.organisations.find(x => x.id === req.params.orgId);
+  const organisationDetails = user.organisations.find((x) => x.id === req.params.orgId);
   return {
     id: uid,
     firstName: user.firstName,
@@ -23,12 +27,14 @@ const getUserDetails = async (req) => {
 };
 
 const getAllServicesForUserInOrg = async (userId, organisationId, correlationId) => {
-  const allUserServices = userId.startsWith('inv-') ? await getServicesForInvitation(userId.substr(4), correlationId) : await getServicesForUser(userId, correlationId);
+  const allUserServices = userId.startsWith('inv-')
+    ? await getServicesForInvitation(userId.substr(4), correlationId)
+    : await getServicesForUser(userId, correlationId);
   if (!allUserServices) {
     return [];
   }
 
-  const userServicesForOrg = allUserServices.filter(x => x.organisationId === organisationId);
+  const userServicesForOrg = allUserServices.filter((x) => x.organisationId === organisationId);
   const services = userServicesForOrg.map((service) => ({
     id: service.serviceId,
     dateActivated: service.accessGrantedOn,
@@ -45,7 +51,9 @@ const getAllServicesForUserInOrg = async (userId, organisationId, correlationId)
 };
 
 const getSingleServiceForUser = async (userId, organisationId, serviceId, correlationId) => {
-  const userService = userId.startsWith('inv-') ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId) : await getSingleUserService(userId, serviceId, organisationId, correlationId);
+  const userService = userId.startsWith('inv-')
+    ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId)
+    : await getSingleUserService(userId, serviceId, organisationId, correlationId);
   const application = await getApplication(userService.serviceId);
   return {
     id: userService.serviceId,
@@ -75,7 +83,6 @@ const waitForIndexToUpdate = async (uid, updatedCheck) => {
     }
   }
 };
-
 
 module.exports = {
   getUserDetails,

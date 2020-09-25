@@ -35,7 +35,12 @@ jest.mock('./../../../../src/app/users/utils');
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 
 const { addInvitationService, addUserService } = require('./../../../../src/infrastructure/access');
-const { putUserInOrganisation, putInvitationInOrganisation, getOrganisationById, getPendingRequestsAssociatedWithUser } = require('./../../../../src/infrastructure/organisations');
+const {
+  putUserInOrganisation,
+  putInvitationInOrganisation,
+  getOrganisationById,
+  getPendingRequestsAssociatedWithUser,
+} = require('./../../../../src/infrastructure/organisations');
 const { getById, updateIndex, createIndex } = require('./../../../../src/infrastructure/search');
 const Account = require('./../../../../src/infrastructure/account');
 const logger = require('./../../../../src/infrastructure/logger');
@@ -44,7 +49,6 @@ jest.mock('login.dfe.notifications.client');
 const notificationClient = require('login.dfe.notifications.client');
 
 describe('when inviting a new user', () => {
-
   let req;
   let res;
 
@@ -53,12 +57,12 @@ describe('when inviting a new user', () => {
   const expectedEmailAddress = 'test@test.com';
   const expectedFirstName = 'test';
   const expectedLastName = 'name';
-  
+
   beforeEach(() => {
     req = mockRequest();
     req.params = {
       orgId: 'org1',
-      uid: 'user1'
+      uid: 'user1',
     };
     req.session = {
       user: {
@@ -69,7 +73,7 @@ describe('when inviting a new user', () => {
           {
             serviceId: 'service1',
             roles: [],
-          }
+          },
         ],
       },
     };
@@ -77,39 +81,45 @@ describe('when inviting a new user', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
-          id: 'organisationId',
+          id: 'org1',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'org1',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     getPendingRequestsAssociatedWithUser.mockReset();
-    getPendingRequestsAssociatedWithUser.mockReturnValue([{
-      id: 'requestId',
-      org_id: 'organisationId',
-      org_name: 'organisationName',
-      user_id: 'user2',
-      status: {
-        id: 0,
-        name: 'pending',
+    getPendingRequestsAssociatedWithUser.mockReturnValue([
+      {
+        id: 'requestId',
+        org_id: 'organisationId',
+        org_name: 'organisationName',
+        user_id: 'user2',
+        status: {
+          id: 0,
+          name: 'pending',
+        },
+        created_date: '2019-08-12',
       },
-      created_date: '2019-08-12',
-    }]);
+    ]);
     res = mockResponse();
 
     Account.createInvite.mockReset();
@@ -124,8 +134,8 @@ describe('when inviting a new user', () => {
       id: 'org2',
       name: 'organisation two',
       category: {
-        'id': '001',
-        'name': 'Establishment'
+        id: '001',
+        name: 'Establishment',
       },
       urn: '12345',
       uid: null,
@@ -133,7 +143,7 @@ describe('when inviting a new user', () => {
       establishmentNumber: '9876',
       status: {
         id: 1,
-        name: 'Open'
+        name: 'Open',
       },
       closedOn: null,
       address: null,
@@ -141,7 +151,7 @@ describe('when inviting a new user', () => {
       localAuthority: {
         id: 'la1',
         name: 'local authority 1',
-        code: '456'
+        code: '456',
       },
       statutoryLowAge: null,
       statutoryHighAge: null,
@@ -157,17 +167,17 @@ describe('when inviting a new user', () => {
           name: 'organisationId',
           categoryId: '004',
           statusId: 1,
-          roleId: 0
+          roleId: 0,
         },
       ],
-      services: []
+      services: [],
     });
     postConfirmNewUser = require('./../../../../src/app/users/confirmNewUser').post;
     sendUserAddedToOrganisationStub = jest.fn();
     sendServiceAddedStub = jest.fn();
     notificationClient.mockReset().mockImplementation(() => ({
       sendUserAddedToOrganisation: sendUserAddedToOrganisationStub,
-      sendServiceAdded: sendServiceAddedStub
+      sendServiceAdded: sendServiceAddedStub,
     }));
   });
 
@@ -252,27 +262,25 @@ describe('when inviting a new user', () => {
 
     expect(updateIndex.mock.calls).toHaveLength(1);
     expect(updateIndex.mock.calls[0][0]).toBe('user1');
-    expect(updateIndex.mock.calls[0][1]).toEqual(
-      [
-        {
-          categoryId: '004',
-          id: 'org1',
-          name: 'organisationId',
-          roleId: 0,
-          statusId: 1
-        },
-        {
-          categoryId: '001',
-          id: 'org2',
-          name: 'organisation two',
-          urn: '12345',
-          establishmentNumber: '9876',
-          laNumber: '456',
-          roleId: 0,
-          statusId: 1
-        }
-      ]
-    );
+    expect(updateIndex.mock.calls[0][1]).toEqual([
+      {
+        categoryId: '004',
+        id: 'org1',
+        name: 'organisationId',
+        roleId: 0,
+        statusId: 1,
+      },
+      {
+        categoryId: '001',
+        id: 'org2',
+        name: 'organisation two',
+        urn: '12345',
+        establishmentNumber: '9876',
+        laNumber: '456',
+        roleId: 0,
+        statusId: 1,
+      },
+    ]);
   });
 
   it('then it should should audit an invited user', async () => {
@@ -281,7 +289,9 @@ describe('when inviting a new user', () => {
     await postConfirmNewUser(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('user.one@unit.test (id: user1) invited test@test.com to organisationName (id: org1) (id: inv-invite1)');
+    expect(logger.audit.mock.calls[0][0]).toBe(
+      'user.one@unit.test (id: user1) invited test@test.com to organisationName (id: org1) (id: inv-invite1)',
+    );
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
       type: 'approver',
       subType: 'user-invited',
@@ -302,7 +312,6 @@ describe('when inviting a new user', () => {
     expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users`);
   });
 
-
   it('then a flash message is displayed for a user being added to an org', async () => {
     req.session.user.isInvite = true;
     await postConfirmNewUser(req, res);
@@ -319,26 +328,29 @@ describe('when inviting a new user', () => {
 
     expect(res.flash.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`Invitation email sent to test@test.com`)
+    expect(res.flash.mock.calls[0][1]).toBe(`Invitation email sent to test@test.com`);
   });
-
 
   it('then it should should audit adding services to an existing user', async () => {
     req.params.uid = 'user1';
     await postConfirmNewUser(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('user.one@unit.test (id: user1) added services for organisation organisationName (id: org1) for user test@test.com (id: user1)');
+    expect(logger.audit.mock.calls[0][0]).toBe(
+      'user.one@unit.test (id: user1) added services for organisation organisationName (id: org1) for user test@test.com (id: user1)',
+    );
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
       type: 'approver',
       subType: 'user-services-added',
       userId: req.user.sub,
       userEmail: req.user.email,
       editedUser: req.params.uid,
-      editedFields: [{
-        name: 'add_services',
-        newValue: req.session.user.services,
-      }],
+      editedFields: [
+        {
+          name: 'add_services',
+          newValue: req.session.user.services,
+        },
+      ],
     });
   });
 
@@ -374,7 +386,6 @@ describe('when inviting a new user', () => {
     expect(sendUserAddedToOrganisationStub.mock.calls[0][1]).toBe(expectedFirstName);
     expect(sendUserAddedToOrganisationStub.mock.calls[0][2]).toBe(expectedLastName);
     expect(sendUserAddedToOrganisationStub.mock.calls[0][3]).toBe(expectedOrgName);
-  
   });
 
   it('then it should send an email notification to user when service added', async () => {
@@ -389,6 +400,5 @@ describe('when inviting a new user', () => {
     expect(sendServiceAddedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
     expect(sendServiceAddedStub.mock.calls[0][1]).toBe(expectedFirstName);
     expect(sendServiceAddedStub.mock.calls[0][2]).toBe(expectedLastName);
-  
   });
 });

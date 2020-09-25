@@ -2,12 +2,12 @@
 const { emailPolicy } = require('login.dfe.validation');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
-const { updateIndex } = require ('./../../infrastructure/search');
+const { updateIndex } = require('./../../infrastructure/search');
 const { waitForIndexToUpdate } = require('./utils');
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`)
+    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
   }
   return res.render('users/views/confirmResendInvitation', {
     backLink: true,
@@ -73,17 +73,19 @@ const post = async (req, res) => {
     await waitForIndexToUpdate(req.params.uid, (updated) => updated.email === req.session.user.email);
   }
 
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.email} (id: ${req.session.user.uid})`, {
-    type: 'approver',
-    subType: 'resent-invitation',
-    userId: req.user.sub,
-    userEmail: req.user.email,
-    invitedUserEmail: req.session.user.email,
-    invitedUser: req.session.user.uid,
-  });
+  logger.audit(
+    `${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.email} (id: ${req.session.user.uid})`,
+    {
+      type: 'approver',
+      subType: 'resent-invitation',
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      invitedUserEmail: req.session.user.email,
+      invitedUser: req.session.user.uid,
+    },
+  );
   res.flash('info', `Invitation email sent to ${req.session.user.email}`);
   return res.redirect('services');
-
 };
 
 module.exports = {

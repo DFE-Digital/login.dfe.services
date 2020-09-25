@@ -15,7 +15,6 @@ const policyEngine = {
 };
 
 describe('when displaying the associate roles view', () => {
-
   let req;
   let res;
 
@@ -37,34 +36,38 @@ describe('when displaying the associate roles view', () => {
           {
             serviceId: 'service1',
             roles: [],
-          }
-        ]
+          },
+        ],
       },
     };
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     res = mockResponse();
 
     policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({

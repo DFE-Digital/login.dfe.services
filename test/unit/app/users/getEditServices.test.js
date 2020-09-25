@@ -15,9 +15,7 @@ const application = {
   name: 'Service One',
   relyingParty: {
     service_home: 'http://service.one/login',
-    redirect_uris: [
-      'http://service.one/login/cb'
-    ],
+    redirect_uris: ['http://service.one/login/cb'],
   },
 };
 const policyEngine = {
@@ -25,7 +23,6 @@ const policyEngine = {
 };
 
 describe('when displaying the edit service view', () => {
-
   let req;
   let res;
 
@@ -48,27 +45,31 @@ describe('when displaying the edit service view', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     getApplication.mockReset().mockReturnValue(application);
     res = mockResponse();
 
@@ -130,5 +131,4 @@ describe('when displaying the edit service view', () => {
       },
     });
   });
-
 });

@@ -1,6 +1,9 @@
 'use strict';
 
-const { getOrganisationAndServiceForUser, getPendingRequestsAssociatedWithUser } = require('./../../infrastructure/organisations');
+const {
+  getOrganisationAndServiceForUser,
+  getPendingRequestsAssociatedWithUser,
+} = require('./../../infrastructure/organisations');
 const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
@@ -35,9 +38,11 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
   const allApprovers = await getApproversDetails(organisations, correlationId);
 
   return organisations.map((organisation) => {
-    const approvers = organisation.approvers.map((approverId) => {
-      return allApprovers.find(x => x.id.toLowerCase() === approverId.toLowerCase());
-    }).filter(x => x);
+    const approvers = organisation.approvers
+      .map((approverId) => {
+        return allApprovers.find((x) => x.id.toLowerCase() === approverId.toLowerCase());
+      })
+      .filter((x) => x);
     return {
       id: organisation.organisation.id,
       name: organisation.organisation.name,
@@ -48,7 +53,7 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
       role: mapRole(organisation.role),
       approvers,
     };
-  })
+  });
 };
 
 const getAndMapPendingRequests = async (account, correlationId) => {
@@ -62,15 +67,21 @@ const getAndMapPendingRequests = async (account, correlationId) => {
     status: org.org_status,
     requestDate: org.created_date,
     requestStatus: org.status.id,
-  }))
+  }));
 };
 
-const disableRequestOrgLink = async (orgRequests, organisations)=>{
-  if(config.toggles.useRequestOrganisation && organisations && organisations.length <= 0 && orgRequests && orgRequests.length > 0) {
-     return true;
+const disableRequestOrgLink = async (orgRequests, organisations) => {
+  if (
+    config.toggles.useRequestOrganisation &&
+    organisations &&
+    organisations.length <= 0 &&
+    orgRequests &&
+    orgRequests.length > 0
+  ) {
+    return true;
   }
   return false;
-}
+};
 
 const organisations = async (req, res) => {
   const account = Account.fromContext(req.user);
@@ -79,7 +90,7 @@ const organisations = async (req, res) => {
   const allOrgs = organisations.concat(organisationRequests);
   const sortedOrgs = sortBy(allOrgs, 'name');
   const approverRequests = req.organisationRequests || [];
-  const disableReqOrgLink = await disableRequestOrgLink(organisationRequests, organisations );
+  const disableReqOrgLink = await disableRequestOrgLink(organisationRequests, organisations);
 
   return res.render('organisations/views/organisations', {
     title: 'Organisations',

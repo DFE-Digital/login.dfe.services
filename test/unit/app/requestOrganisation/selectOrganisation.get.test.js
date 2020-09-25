@@ -37,5 +37,4 @@ describe('when showing the search for organisation page', () => {
       csrfToken: 'token',
     });
   });
-
 });

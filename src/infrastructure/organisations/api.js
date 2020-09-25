@@ -5,16 +5,16 @@ const rp = require('login.dfe.request-promise-retry');
 const callApi = async (method, path, correlationId, body) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
 
-  const hasSeperator = (config.organisations.service.url.endsWith('/') && !path.startsWith('/'))
-    || (!config.organisations.service.url.endsWith('/') && path.startsWith('/'));
+  const hasSeperator =
+    (config.organisations.service.url.endsWith('/') && !path.startsWith('/')) ||
+    (!config.organisations.service.url.endsWith('/') && path.startsWith('/'));
   const basePathSeperator = hasSeperator ? '' : '/';
   const opts = {
     method,
     uri: `${config.organisations.service.url}${basePathSeperator}${path}`,
     headers: {
       authorization: `bearer ${token}`,
-      'x-correlation-id':
-        correlationId,
+      'x-correlation-id': correlationId,
     },
     json: true,
   };
@@ -67,7 +67,14 @@ const getOrganisationAndServiceForUserV2 = async (userId, correlationId) => {
   return callApi('GET', `/organisations/v2/associated-with-user/${userId}`, correlationId);
 };
 
-const searchOrganisations = async (criteria, pageNumber, filterCategories, filterStates, correlationId, filterOutOrgNames) => {
+const searchOrganisations = async (
+  criteria,
+  pageNumber,
+  filterCategories,
+  filterStates,
+  correlationId,
+  filterOutOrgNames,
+) => {
   let uri = `/organisations?search=${criteria}&page=${pageNumber}`;
   if (filterCategories && filterCategories.length > 0) {
     uri += `&filtercategory=${filterCategories.join('&filtercategory=')}`;
@@ -101,16 +108,16 @@ const getRequestById = async (requestId, correlationId) => {
 const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {
   const body = {};
   if (status) {
-    body.status = status
+    body.status = status;
   }
   if (actionedBy) {
-    body.actioned_by = actionedBy
+    body.actioned_by = actionedBy;
   }
   if (actionedReason) {
-    body.actioned_reason = actionedReason
+    body.actioned_reason = actionedReason;
   }
   if (actionedAt) {
-    body.actioned_at = actionedAt
+    body.actioned_at = actionedAt;
   }
   return callApi('PATCH', `/organisations/requests/${requestId}`, correlationId, body);
 };
@@ -129,7 +136,7 @@ const getLatestRequestAssociatedWithUser = async (userId, correlationId) => {
 
 const getCategories = async () => {
   return callApi('GET', '/organisations/categories');
-}
+};
 
 module.exports = {
   getOrganisationAndServiceForUser,
@@ -152,5 +159,5 @@ module.exports = {
   getPendingRequestsAssociatedWithUser,
   getApproversForOrganisation,
   getLatestRequestAssociatedWithUser,
-  getCategories
+  getCategories,
 };

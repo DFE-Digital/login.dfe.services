@@ -7,8 +7,7 @@ const servicePostLogoutRedirectUris = require('./servicePostLogoutRedirects');
 
 const db = makeConnection();
 
-const defineStatic = (model) => {
-};
+const defineStatic = (model) => {};
 const buildDataModel = (model, connection, entityModels) => {
   const dbSchema = config.database.schema || 'services';
 
@@ -19,15 +18,14 @@ const buildDataModel = (model, connection, entityModels) => {
   defineStatic(model);
 
   // Extend
-  entityModels.filter(m => m.extend !== undefined).forEach((entityModel) => {
-    entityModel.extend(model);
-  });
+  entityModels
+    .filter((m) => m.extend !== undefined)
+    .forEach((entityModel) => {
+      entityModel.extend(model);
+    });
 };
 const dataModel = {};
-buildDataModel(dataModel, db, [
-  servicePostLogoutRedirectUris
-]);
+buildDataModel(dataModel, db, [servicePostLogoutRedirectUris]);
 dataModel.connection = db;
-
 
 module.exports = dataModel;

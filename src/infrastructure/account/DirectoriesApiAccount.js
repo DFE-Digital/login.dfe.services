@@ -3,7 +3,6 @@ const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
-
 const callDirectoriesApi = async (resource, body, method = 'POST') => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
   try {
@@ -87,7 +86,7 @@ class DirectoriesApiAccount extends Account {
       }
       throw new Error(response.errorMessage);
     }
-    return response.result.map(a => new DirectoriesApiAccount(a));
+    return response.result.map((a) => new DirectoriesApiAccount(a));
   }
 
   static async getUsersByIdV2(ids) {
@@ -100,7 +99,7 @@ class DirectoriesApiAccount extends Account {
       }
       throw new Error(response.errorMessage);
     }
-    return response.result.map(a => new DirectoriesApiAccount(a));
+    return response.result.map((a) => new DirectoriesApiAccount(a));
   }
 
   static async createInvite(firstName, lastName, email, clientId, redirectUri, approverEmail, orgName) {
@@ -125,9 +124,13 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async updateInvite(id, email) {
-    const response = await callDirectoriesApi(`invitations/${id}`, {
-      email,
-    }, 'PATCH');
+    const response = await callDirectoriesApi(
+      `invitations/${id}`,
+      {
+        email,
+      },
+      'PATCH',
+    );
     if (!response.success) {
       if (response.statusCode === 404) {
         return null;

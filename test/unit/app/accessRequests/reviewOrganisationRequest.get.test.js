@@ -17,7 +17,7 @@ describe('when reviewing an organisation request', () => {
         sub: 'user1',
       },
       params: {
-        orgId: 'org1'
+        orgId: 'org1',
       },
     });
     getAndMapOrgRequest.mockReset().mockReturnValue({
@@ -34,8 +34,8 @@ describe('when reviewing an organisation request', () => {
       reason: '',
       status: {
         id: 0,
-        name: 'Pending'
-      }
+        name: 'Pending',
+      },
     });
     res.mockResetAll();
   });
@@ -80,9 +80,9 @@ describe('when reviewing an organisation request', () => {
         reason: '',
         status: {
           id: 0,
-          name: 'Pending'
-        }
-      }
+          name: 'Pending',
+        },
+      },
     });
   });
 });

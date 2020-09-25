@@ -13,7 +13,6 @@ const { getAllServices } = require('./../../../../src/infrastructure/application
 const getServices = require('./../../../../src/app/users/getServices');
 
 describe('when displaying the users services', () => {
-
   let req;
   let res;
 
@@ -26,27 +25,31 @@ describe('when displaying the users services', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     res = mockResponse();
 
     getUserDetails.mockReset();
@@ -54,29 +57,30 @@ describe('when displaying the users services', () => {
       id: 'user1',
     });
 
-
     getAllServicesForUserInOrg.mockReset();
-    getAllServicesForUserInOrg.mockReturnValue([{
-      id: 'service1',
-      dateActivated: '10/10/2018',
-      name: 'service name',
-      status: 'active',
-    }]);
-
-    getAllServices.mockReset();
-    getAllServices.mockReturnValue({
-      services: [{
+    getAllServicesForUserInOrg.mockReturnValue([
+      {
         id: 'service1',
         dateActivated: '10/10/2018',
         name: 'service name',
         status: 'active',
-        isExternalService: true,
-        relyingParty: {
-          params: {
+      },
+    ]);
 
-          }
-        }
-      }]
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: 'service1',
+          dateActivated: '10/10/2018',
+          name: 'service name',
+          status: 'active',
+          isExternalService: true,
+          relyingParty: {
+            params: {},
+          },
+        },
+      ],
     });
   });
 
@@ -99,7 +103,6 @@ describe('when displaying the users services', () => {
     expect(getAllServicesForUserInOrg.mock.calls[0][2]).toBe('correlationId');
   });
 
-
   it('then it should return the services view', async () => {
     await getServices(req, res);
 
@@ -114,7 +117,4 @@ describe('when displaying the users services', () => {
       csrfToken: 'token',
     });
   });
-
-
-
 });

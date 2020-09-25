@@ -3,7 +3,6 @@ const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
 describe('when displaying the multiple organisation requests selection', () => {
-
   let req;
   let res;
 
@@ -14,27 +13,31 @@ describe('when displaying the multiple organisation requests selection', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
-          id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          id: 10000,
+          name: 'category name',
+        },
       },
-      role: {
-        id: 10000,
-        name: 'category name'
-      }
-    }];
+    ];
     req.organisationRequests = [
       {
         id: 'requestId',
@@ -44,8 +47,8 @@ describe('when displaying the multiple organisation requests selection', () => {
         status: {
           id: 0,
           name: 'pending',
-        }
-      }
+        },
+      },
     ];
     res = mockResponse();
 
@@ -71,18 +74,20 @@ describe('when displaying the multiple organisation requests selection', () => {
     await getMultipleOrgSelection(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      organisations: [{
-        naturalIdentifiers: [],
-        organisation: {
-          id: 'organisationId',
-          name: 'organisationName'
+      organisations: [
+        {
+          naturalIdentifiers: [],
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          requestCount: 1,
+          role: {
+            id: 10000,
+            name: 'category name',
+          },
         },
-        requestCount: 1,
-        role: {
-          id: 10000,
-          name: 'category name'
-        }
-      }]
+      ],
     });
   });
 
@@ -91,18 +96,19 @@ describe('when displaying the multiple organisation requests selection', () => {
     await getMultipleOrgSelection(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      organisations: [{
-        naturalIdentifiers: [],
-        organisation: {
-          id: 'organisationId',
-          name: 'organisationName'
+      organisations: [
+        {
+          naturalIdentifiers: [],
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 10000,
+            name: 'category name',
+          },
         },
-        role: {
-          id: 10000,
-          name: 'category name'
-        }
-      }]
+      ],
     });
   });
-
 });
