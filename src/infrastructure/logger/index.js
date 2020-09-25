@@ -2,14 +2,14 @@
 
 const winston = require('winston');
 const config = require('./../config');
-const WinstonSequelizeTransport = require('login.dfe.audit.winston-sequelize-transport');
+const AuditTransporter = require('login.dfe.audit.transporter');
 const appInsights = require('applicationinsights');
 const AppInsightsTransport = require('login.dfe.winston-appinsights');
 
 const logLevel =
   config && config.loggerSettings && config.loggerSettings.logLevel ? config.loggerSettings.logLevel : 'info';
 
-const loggerConfig = {
+const customLevels = {
   levels: {
     audit: 0,
     error: 1,
@@ -25,23 +25,35 @@ const loggerConfig = {
     error: 'red',
     audit: 'magenta',
   },
+};
+
+const loggerConfig = {
+  levels: customLevels.levels,
   transports: [],
 };
 
 loggerConfig.transports.push(new winston.transports.Console({ level: logLevel, colorize: true }));
+if (config && config.loggerSettings && config.loggerSettings.redis && config.loggerSettings.redis.enabled) {
+  loggerConfig.transports.push(
+    new winston.transports.Redis({
+      level: 'audit',
+      length: 4294967295,
+      host: config.loggerSettings.redis.host,
+      port: config.loggerSettings.redis.port,
+      auth: config.loggerSettings.redis.auth,
+    }),
+  );
+}
 
-const sequelizeTransport = WinstonSequelizeTransport(config);
+const opts = { application: config.loggerSettings.applicationName, level: 'audit' };
+const auditTransport = AuditTransporter(opts);
 
-if (sequelizeTransport) {
-  loggerConfig.transports.push(sequelizeTransport);
+if (auditTransport) {
+  loggerConfig.transports.push(auditTransport);
 }
 
 if (config.hostingEnvironment.applicationInsights) {
-  appInsights
-    .setup(config.hostingEnvironment.applicationInsights)
-    .setAutoCollectConsole(false, false)
-    .setSendLiveMetrics(config.loggerSettings.aiSendLiveMetrics || false)
-    .start();
+  appInsights.setup(config.hostingEnvironment.applicationInsights).setAutoCollectConsole(false, false).start();
   loggerConfig.transports.push(
     new AppInsightsTransport({
       client: appInsights.defaultClient,
@@ -52,20 +64,10 @@ if (config.hostingEnvironment.applicationInsights) {
   );
 }
 
-const logger = new winston.Logger(loggerConfig);
+const logger = winston.createLogger(loggerConfig);
 
 process.on('unhandledRejection', (reason, p) => {
   logger.error('Unhandled Rejection at:', p, 'reason:', reason);
-});
-process.on('uncaughtException', (err) => {
-  try {
-    logger.error(err.message);
-  } catch (e) {
-    console.error(`Failed to log fatal error to logger (${e.message})`);
-    console.error(err.message);
-  }
-
-  process.exit(-99);
 });
 
 module.exports = logger;

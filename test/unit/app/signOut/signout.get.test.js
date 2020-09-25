@@ -1,4 +1,5 @@
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/infrastructure/organisations');
 
 jest.mock('./../../../../src/app/services/servicePostLogoutStore', () => ({
