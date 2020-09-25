@@ -1,6 +1,7 @@
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 
 describe('when displaying the resend invitation view', () => {
   let req;

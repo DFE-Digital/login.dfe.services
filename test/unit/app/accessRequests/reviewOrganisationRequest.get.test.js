@@ -1,5 +1,5 @@
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-
+jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/app/accessRequests/utils');
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
