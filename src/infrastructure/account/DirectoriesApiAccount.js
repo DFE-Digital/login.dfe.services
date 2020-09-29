@@ -82,6 +82,7 @@ class DirectoriesApiAccount extends Account {
   static async getUsersById(ids) {
     const idList = ids.split(',');
     let users = await directories.getUsers(idList);
+    
     return users.map((a) => new DirectoriesApiAccount(a));
   }
 
