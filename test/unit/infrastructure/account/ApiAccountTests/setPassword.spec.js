@@ -1,16 +1,25 @@
+const { mockAdapterConfig } = require('../../../../utils/jestMocks');
+
 jest.mock('login.dfe.request-promise-retry');
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../../../src/infrastructure/config', () => {
-  return {
-    directories: {
-      service: {
-        url: 'http://unit.test.local',
-      },
-    },
-    hostingEnvironment: {},
-  };
+  return mockAdapterConfig();
 });
 const rp = require('login.dfe.request-promise-retry');
+jest.mock('login.dfe.dao', () => {
+  return {
+    directories: {
+      getUsers: async (ids) => {
+        return [
+          {
+            email: 'kevin.lewis@hq.local',
+            sub: 'F47D8673-8861-4A95-8286-000403EED219',
+          }
+        ];
+      }
+    }
+  };
+});
 
 describe('When setting a users password', () => {
   const user = { sub: 'user1', email: 'user.one@unit.test' };

@@ -1,16 +1,25 @@
+const { mockAdapterConfig } = require('../../../../utils/jestMocks');
+
 jest.mock('login.dfe.request-promise-retry');
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../../../src/infrastructure/config', () => {
-  return {
-    directories: {
-      service: {
-        url: 'http://unit.test.local',
-      },
-    },
-    hostingEnvironment: {},
-  };
+  return mockAdapterConfig();
 });
 const rp = require('login.dfe.request-promise-retry');
+jest.mock('login.dfe.dao', () => {
+  return {
+    directories: {
+      getUsers: async (ids) => {
+        return [
+          {
+            email: 'kevin.lewis@hq.local',
+            sub: 'F47D8673-8861-4A95-8286-000403EED219',
+          }
+        ];
+      }
+    }
+  };
+});
 
 describe('When getting a collection of users', () => {
   const user = { sub: 'user1', email: 'user.one@unit.test' };
@@ -35,19 +44,15 @@ describe('When getting a collection of users', () => {
     Account = require('./../../../../../src/infrastructure/account/DirectoriesApiAccount');
   });
 
-  it('then it should get users in the directories api', async () => {
-    await Account.getUsersById(userIds);
-
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0].method).toBe('GET');
-    expect(rp.mock.calls[0][0].uri).toBe('http://unit.test.local/users/by-ids?id=user1,user2');
+  it.only('then it should get users in the directories api', async () => {
+    let result = await Account.getUsersById(userIds);
+    expect(result).toBeDefined();
+    expect(result).toHaveLength(1);
   });
 
-  it('then it should authorize api using jwt strategy', async () => {
-    await Account.getUsersById(userIds);
-
-    expect(getBearerToken.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0].headers.authorization).toBe('bearer token');
+  it('then it should get correct user', async () => {
+    let result = await Account.getUsersById(userIds);
+    expect(result[0].sub).toBe('F47D8673-8861-4A95-8286-000403EED219');
   });
 
   it('then it should return a list of users', async () => {

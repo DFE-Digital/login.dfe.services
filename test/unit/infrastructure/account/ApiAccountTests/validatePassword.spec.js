@@ -1,14 +1,9 @@
+const { mockAdapterConfig } = require('../../../../utils/jestMocks');
+
 jest.mock('login.dfe.request-promise-retry');
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../../../src/infrastructure/config', () => {
-  return {
-    directories: {
-      service: {
-        url: 'http://unit.test.local',
-      },
-    },
-    hostingEnvironment: {},
-  };
+  return mockAdapterConfig();
 });
 const rp = require('login.dfe.request-promise-retry');
 
