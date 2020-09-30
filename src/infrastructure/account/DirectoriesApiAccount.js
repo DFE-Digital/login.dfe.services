@@ -2,6 +2,7 @@ const Account = require('./Account');
 const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
+const { directories } = require('login.dfe.dao');
 
 const callDirectoriesApi = async (resource, body, method = 'POST') => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
@@ -79,14 +80,21 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async getUsersById(ids) {
-    const response = await callDirectoriesApi(`users/by-ids?id=${ids.toString()}`, null, 'GET');
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
+    let idList = []
+
+    if (Array.isArray(ids)) {
+      idList = ids;
+    } else {
+      idList = ids.split(',');
     }
-    return response.result.map((a) => new DirectoriesApiAccount(a));
+
+    try {
+      let users = await directories.getUsers(idList);
+      return users.map((a) => new DirectoriesApiAccount(a));
+    }
+    catch (ex) {
+      throw ex;
+    }
   }
 
   static async getUsersByIdV2(ids) {
