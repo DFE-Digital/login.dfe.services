@@ -26,6 +26,21 @@ const organisationRequestsSchema = new SimpleSchema({
   },
 });
 
+const adapterSchema = new SimpleSchema({
+  type: {
+    type: String,
+    allowedValues: ['file', 'redis', 'mongo', 'azuread', 'sequelize'],
+  },
+  directories: {
+    type: schemas.sequelizeConnection,
+    optional: true,
+  },
+  organisation: {
+    type: schemas.sequelizeConnection,
+    optional: true,
+  },
+});
+
 const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
   hostingEnvironment: schemas.hostingEnvironment,
@@ -42,6 +57,7 @@ const schema = new SimpleSchema({
     type: organisationRequestsSchema,
     optional: true,
   },
+  adapter: adapterSchema,
 });
 
 module.exports.validate = () => {
