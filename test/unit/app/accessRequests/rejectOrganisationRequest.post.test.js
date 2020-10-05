@@ -185,8 +185,8 @@ describe('when rejecting an organisation request', () => {
     await post(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('email@email.com (id: user1) rejected organisation request for org1)');
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0].message).toBe('email@email.com (id: user1) rejected organisation request for org1)');
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
       subType: 'rejected-org',
       userId: 'user1',
