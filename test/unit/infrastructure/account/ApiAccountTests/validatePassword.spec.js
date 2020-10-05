@@ -11,7 +11,7 @@ jest.mock('login.dfe.dao', () => {
       getUsers: async (ids) => {
         return [
           {
-            email: 'kevin.lewis@hq.local',
+            email: 'test1@test.com',
             sub: 'F47D8673-8861-4A95-8286-000403EED219',
           }
         ];
