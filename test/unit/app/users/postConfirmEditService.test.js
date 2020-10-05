@@ -137,10 +137,10 @@ describe('when editing a service for a user', () => {
     await postConfirmEditService(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe(
+    expect(logger.audit.mock.calls[0][0].message).toBe(
       'user.one@unit.test (id: user1) updated service service name for organisation organisationName (id: org1) for user test@test.com (id: user1)',
     );
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
       subType: 'user-service-updated',
       userId: 'user1',

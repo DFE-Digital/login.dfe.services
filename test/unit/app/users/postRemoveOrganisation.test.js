@@ -147,10 +147,10 @@ describe('when removing organisation access', () => {
     await postRemoveOrganisationAccess(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe(
+    expect(logger.audit.mock.calls[0][0].message).toBe(
       'user.one@unit.test (id: user1) removed organisation organisationName (id: org1) for user test@test.com (id: user1)',
     );
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
       subType: 'user-org-deleted',
       userId: 'user1',

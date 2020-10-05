@@ -209,10 +209,10 @@ describe('when resending an invitation', () => {
     await postResendInvitation(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe(
+    expect(logger.audit.mock.calls[0][0].message).toBe(
       'user.one@unit.test (id: user1) resent invitation email to johndoe@gmail.com (id: userid)',
     );
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
       subType: 'resent-invitation',
       userId: 'user1',
