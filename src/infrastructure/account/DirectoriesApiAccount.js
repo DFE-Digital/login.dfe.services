@@ -33,6 +33,72 @@ const callDirectoriesApi = async (resource, body, method = 'POST') => {
   }
 };
 
+const mapInvitationEntity = () => {
+
+  const overrides = entity.overrideSubject || entity.overrideBody ? {
+    subject: entity.overrideSubject,
+    body: entity.overrideBody,
+  } : undefined;
+
+  let callbacks;
+  
+  const origin = entity.originClientId || entity.originRedirectUri ? {
+    clientId: entity.originClientId,
+    redirectUri: entity.originRedirectUri,
+  } : undefined;
+
+  let device;
+  let oldCredentials;
+
+  if (entity.callbacks && entity.callbacks.length > 0) {
+    callbacks = entity.callbacks.map((cbEntity) => ({
+      sourceId: cbEntity.sourceId,
+      callback: cbEntity.callbackUrl,
+      clientId: cbEntity.clientId,
+    }));
+  }
+
+  if (entity.devices && entity.devices.length > 0) {
+    device = {
+      type: entity.devices[0].deviceType,
+      serialNumber: entity.devices[0].serialNumber,
+    };
+  }
+
+  if (entity.previousUsername || entity.previousPassword || entity.previousSalt) {
+    oldCredentials = {
+      username: entity.previousUsername,
+      password: entity.previousPassword,
+      salt: entity.previousSalt,
+      source: 'EAS',
+    };
+  }
+
+  return {
+    firstName: entity.firstName,
+    lastName: entity.lastName,
+    email: entity.email,
+    origin,
+    selfStarted: entity.selfStarted,
+    callbacks,
+    overrides,
+    device,
+    oldCredentials,
+    code: entity.code,
+    id: entity.id,
+    deactivated: entity.deactivated,
+    reason: entity.reason,
+    isCompleted: entity.completed,
+    userId: entity.uid,
+    createdAt: entity.createdAt,
+    updatedAt: entity.updatedAt,
+    isMigrated: entity.isMigrated,
+    approverEmail: entity.approverEmail,
+    orgName: entity.orgName,
+    isApprover: entity.isApprover,
+  };
+}
+
 class DirectoriesApiAccount extends Account {
   static fromContext(user) {
     return new DirectoriesApiAccount(user);
@@ -50,6 +116,15 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async getInvitationByEmail(email) {
+
+    try {
+      let entity = await directories.findInvitationForEmail(email, true);
+      return mapInvitationEntity(entity);
+    }
+    catch (ex) {
+      throw ex;
+    }
+
     const response = await callDirectoriesApi(`invitations/by-email/${email}`, null, 'GET');
     if (!response.success) {
       if (response.statusCode === 404) {
