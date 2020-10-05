@@ -4,6 +4,7 @@ const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 const { updateIndex } = require('./../../infrastructure/search');
 const { waitForIndexToUpdate } = require('./utils');
+const config = require('./../../infrastructure/config');
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -74,7 +75,6 @@ const post = async (req, res) => {
   }
 
   logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.email} (id: ${req.session.user.uid})`,
     {
       type: 'approver',
       subType: 'resent-invitation',
@@ -82,6 +82,9 @@ const post = async (req, res) => {
       userEmail: req.user.email,
       invitedUserEmail: req.session.user.email,
       invitedUser: req.session.user.uid,
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message:  `${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.email} (id: ${req.session.user.uid})`,
     },
   );
   res.flash('info', `Invitation email sent to ${req.session.user.email}`);

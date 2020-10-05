@@ -71,12 +71,15 @@ const post = async (req, res) => {
   await notificationClient.sendUserOrganisationRequest(request);
   req.session.organisationId = undefined;
 
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) requested organisation (id: ${req.body.organisationId})`, {
+  logger.audit( {
     type: 'organisation',
     subType: 'access-request',
     userId: req.user.sub,
     userEmail: req.user.email,
-    organisationId: req.body.organisationId,
+    organisationid: req.body.organisationId,
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
+    message: `${req.user.email} (id: ${req.user.sub}) requested organisation (id: ${req.body.organisationId})`,
   });
   if ((await getApproversForOrganisation(req.body.organisationId, req.id)).length > 0) {
     res.flash('info', `Your request has been sent to approvers at ${req.body.organisationName}`);

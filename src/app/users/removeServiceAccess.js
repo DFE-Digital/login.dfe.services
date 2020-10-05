@@ -67,7 +67,6 @@ const post = async (req, res) => {
   await waitForIndexToUpdate(uid, (updated) => updated.services.length === updatedServiceDetails.length);
 
   logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
     {
       type: 'approver',
       subType: 'user-service-deleted',
@@ -81,6 +80,9 @@ const post = async (req, res) => {
           newValue: undefined,
         },
       ],
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
     },
   );
   res.flash('info', `${service.name} successfully removed`);

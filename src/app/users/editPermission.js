@@ -63,7 +63,6 @@ const post = async (req, res) => {
   );
 
   logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for org ${organisationDetails.organisation.name} (id: ${organisationId}) for user ${user.email} (id: ${uid})`,
     {
       type: 'approver',
       subType: 'user-org-permission-edited',
@@ -76,6 +75,9 @@ const post = async (req, res) => {
           newValue: permissionName,
         },
       ],
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for org ${organisationDetails.organisation.name} (id: ${organisationId}) for user ${user.email} (id: ${uid})`,
     },
   );
   res.flash('info', role === 10000 ? `${user.email} now has approver access` : `${user.email} now has end user access`);

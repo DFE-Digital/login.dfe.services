@@ -59,13 +59,16 @@ const post = async (req, res) => {
   );
 
   //audit organisation rejected
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`, {
+  logger.audit({
     type: 'approver',
     subType: 'rejected-org',
     userId: req.user.sub,
     editedUser: model.request.user_id,
     reason: model.reason,
     currentPage: 'users',
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
+    message: `${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`,
   });
 
   res.flash('info', `Request rejected - an email has been sent to ${model.request.usersEmail}.`);

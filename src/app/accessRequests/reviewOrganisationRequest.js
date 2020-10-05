@@ -109,7 +109,7 @@ const post = async (req, res) => {
   );
 
   //audit organisation approved
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`, {
+  logger.audit({
     type: 'approver',
     subType: 'approved-org',
     userId: req.user.sub,
@@ -121,6 +121,9 @@ const post = async (req, res) => {
         newValue: model.request.org_id,
       },
     ],
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
+    message: `${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`,
   });
 
   res.flash(

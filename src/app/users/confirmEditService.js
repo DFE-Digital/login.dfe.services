@@ -77,7 +77,6 @@ const post = async (req, res) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
   logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) updated service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
     {
       type: 'approver',
       subType: 'user-service-updated',
@@ -90,6 +89,9 @@ const post = async (req, res) => {
           newValue: selectedRoles.selectedRoleIds,
         },
       ],
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `${req.user.email} (id: ${req.user.sub}) updated service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
     },
   );
 
