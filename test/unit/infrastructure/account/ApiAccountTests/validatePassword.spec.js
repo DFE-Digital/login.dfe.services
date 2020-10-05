@@ -5,6 +5,20 @@ jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../../../src/infrastructure/config', () => {
   return mockAdapterConfig();
 });
+jest.mock('login.dfe.dao', () => {
+  return {
+    directories: {
+      getUsers: async (ids) => {
+        return [
+          {
+            email: 'kevin.lewis@hq.local',
+            sub: 'F47D8673-8861-4A95-8286-000403EED219',
+          }
+        ];
+      }
+    }
+  };
+});
 const rp = require('login.dfe.request-promise-retry');
 
 describe('When validating a users password', () => {
