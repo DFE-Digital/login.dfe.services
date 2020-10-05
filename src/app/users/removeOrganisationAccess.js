@@ -73,25 +73,23 @@ const post = async (req, res) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
 
-  logger.audit(
-    {
-      type: 'approver',
-      subType: 'user-org-deleted',
-      userId: req.user.sub,
-      userEmail: req.user.email,
-      editedUser: uid,
-      editedFields: [
-        {
-          name: 'new_organisation',
-          oldValue: organisationId,
-          newValue: undefined,
-        },
-      ],
-      message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
-      application: config.loggerSettings.applicationName,
-      env: config.hostingEnvironment.env,
-    }
-  );
+  logger.audit({
+    type: 'approver',
+    subType: 'user-org-deleted',
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    editedUser: uid,
+    editedFields: [
+      {
+        name: 'new_organisation',
+        oldValue: organisationId,
+        newValue: undefined,
+      },
+    ],
+    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
+  });
   res.flash('info', `${req.session.user.email} removed from organisation`);
   return res.redirect(`/approvals/${organisationId}/users`);
 };

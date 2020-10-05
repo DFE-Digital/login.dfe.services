@@ -71,7 +71,7 @@ const post = async (req, res) => {
   await notificationClient.sendUserOrganisationRequest(request);
   req.session.organisationId = undefined;
 
-  logger.audit( {
+  logger.audit({
     type: 'organisation',
     subType: 'access-request',
     userId: req.user.sub,

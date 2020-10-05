@@ -11,7 +11,7 @@ const servicePostLogoutStore = require('./../services/servicePostLogoutStore');
 
 const signUserOut = async (req, res) => {
   if (req.user && req.user.id_token) {
-    logger.audit( {
+    logger.audit({
       type: 'Sign-out',
       userId: req.user.sub,
       email: req.user.email,

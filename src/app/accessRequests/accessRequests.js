@@ -51,23 +51,21 @@ const post = async (req, res) => {
 
   await putUserInOrganisation(userId, orgId, status, role, reason, req.id);
 
-  logger.audit(
-    {
-      type: 'organisation',
-      subType: 'access-request',
-      success: true,
-      editedUser: userId,
-      userId: req.user.sub,
-      userEmail: req.user.email,
-      role: role,
-      reason,
-      orgId,
-      status: req.body.approve_reject,
-      application: config.loggerSettings.applicationName,
-      env: config.hostingEnvironment.env,
-      message: `User ${req.user.email} (id: ${req.user.sub}) has set set user id ${userId} to status "${req.body.approve_reject}"`,
-    },
-  );
+  logger.audit({
+    type: 'organisation',
+    subType: 'access-request',
+    success: true,
+    editedUser: userId,
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    role: role,
+    reason,
+    orgId,
+    status: req.body.approve_reject,
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
+    message: `User ${req.user.email} (id: ${req.user.sub}) has set set user id ${userId} to status "${req.body.approve_reject}"`,
+  });
 
   res.redirect('access-requests');
 };
