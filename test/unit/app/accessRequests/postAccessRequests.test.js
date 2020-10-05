@@ -13,8 +13,8 @@ jest.mock('./../../../../src/infrastructure/config', () => {
       applicationName: 'test',
     },
     hostingEnvironment: {
-      env:'test'
-    }
+      env: 'test',
+    },
   };
 });
 
