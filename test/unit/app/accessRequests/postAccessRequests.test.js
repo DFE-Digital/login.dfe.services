@@ -9,6 +9,12 @@ jest.mock('./../../../../src/infrastructure/config', () => {
     organisations: {
       type: 'static',
     },
+    loggerSettings: {
+      applicationName: 'test',
+    },
+    hostingEnvironment: {
+      env: 'test',
+    },
   };
 });
 

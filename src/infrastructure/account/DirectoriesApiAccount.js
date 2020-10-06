@@ -150,7 +150,7 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async getUsersById(ids) {
-    let idList = []
+    let idList = [];
 
     if (Array.isArray(ids)) {
       idList = ids;
@@ -161,8 +161,7 @@ class DirectoriesApiAccount extends Account {
     try {
       let users = await directories.getUsers(idList);
       return users.map((a) => new DirectoriesApiAccount(a));
-    }
-    catch (ex) {
+    } catch (ex) {
       throw ex;
     }
   }

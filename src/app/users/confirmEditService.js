@@ -76,22 +76,22 @@ const post = async (req, res) => {
 
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
-  logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) updated service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
-    {
-      type: 'approver',
-      subType: 'user-service-updated',
-      userId: req.user.sub,
-      userEmail: req.user.email,
-      editedUser: uid,
-      editedFields: [
-        {
-          name: 'update_service',
-          newValue: selectedRoles.selectedRoleIds,
-        },
-      ],
-    },
-  );
+  logger.audit({
+    type: 'approver',
+    subType: 'user-service-updated',
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    editedUser: uid,
+    editedFields: [
+      {
+        name: 'update_service',
+        newValue: selectedRoles.selectedRoleIds,
+      },
+    ],
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
+    message: `${req.user.email} (id: ${req.user.sub}) updated service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
+  });
 
   res.flash('info', `${service.name} updated successfully`);
   return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);

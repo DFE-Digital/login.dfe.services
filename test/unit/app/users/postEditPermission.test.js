@@ -142,10 +142,10 @@ describe('when editing organisation permission level', () => {
     await postEditPermission(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe(
+    expect(logger.audit.mock.calls[0][0].message).toBe(
       'user.one@unit.test (id: user1) edited permission level to approver for org organisationName (id: org1) for user email@email.com (id: user1)',
     );
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
       subType: 'user-org-permission-edited',
       userId: 'user1',

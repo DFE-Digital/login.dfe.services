@@ -289,17 +289,17 @@ describe('when inviting a new user', () => {
     await postConfirmNewUser(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe(
+    expect(logger.audit.mock.calls[0][0].message).toBe(
       'user.one@unit.test (id: user1) invited test@test.com to organisationName (id: org1) (id: inv-invite1)',
     );
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
       subType: 'user-invited',
       userId: req.user.sub,
       userEmail: req.user.email,
       invitedUserEmail: req.session.user.email,
       invitedUser: req.params.uid,
-      organisationId: req.params.orgId,
+      organisationid: req.params.orgId,
     });
   });
 
@@ -336,10 +336,10 @@ describe('when inviting a new user', () => {
     await postConfirmNewUser(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe(
+    expect(logger.audit.mock.calls[0][0].message).toBe(
       'user.one@unit.test (id: user1) added services for organisation organisationName (id: org1) for user test@test.com (id: user1)',
     );
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
       subType: 'user-services-added',
       userId: req.user.sub,

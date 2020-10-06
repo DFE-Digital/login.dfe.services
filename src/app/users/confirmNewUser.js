@@ -174,18 +174,18 @@ const post = async (req, res) => {
       await waitForIndexToUpdate(uid);
     }
     //audit invitation
-    logger.audit(
-      `${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: ${uid})`,
-      {
-        type: 'approver',
-        subType: 'user-invited',
-        userId: req.user.sub,
-        userEmail: req.user.email,
-        invitedUserEmail: req.session.user.email,
-        invitedUser: uid,
-        organisationId: organisationId,
-      },
-    );
+    logger.audit({
+      type: 'approver',
+      subType: 'user-invited',
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      invitedUserEmail: req.session.user.email,
+      invitedUser: uid,
+      organisationid: organisationId,
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: ${uid})`,
+    });
 
     res.flash(
       'info',
@@ -206,22 +206,22 @@ const post = async (req, res) => {
       await waitForIndexToUpdate(uid, (updated) => updated.services.length === currentUserServices.length);
     }
     // audit add services to existing user
-    logger.audit(
-      `${req.user.email} (id: ${req.user.sub}) added services for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
-      {
-        type: 'approver',
-        subType: 'user-services-added',
-        userId: req.user.sub,
-        userEmail: req.user.email,
-        editedUser: uid,
-        editedFields: [
-          {
-            name: 'add_services',
-            newValue: req.session.user.services,
-          },
-        ],
-      },
-    );
+    logger.audit({
+      type: 'approver',
+      subType: 'user-services-added',
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      editedUser: uid,
+      editedFields: [
+        {
+          name: 'add_services',
+          newValue: req.session.user.services,
+        },
+      ],
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `${req.user.email} (id: ${req.user.sub}) added services for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
+    });
 
     res.flash('info', `Services successfully added`);
     res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`);

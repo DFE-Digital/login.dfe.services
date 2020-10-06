@@ -14,10 +14,10 @@ jest.mock('login.dfe.dao', () => {
           {
             email: 'kevin.lewis@hq.local',
             sub: 'F47D8673-8861-4A95-8286-000403EED219',
-          }
+          },
         ];
-      }
-    }
+      },
+    },
   };
 });
 
