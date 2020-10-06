@@ -35,6 +35,10 @@ const callDirectoriesApi = async (resource, body, method = 'POST') => {
 
 const mapInvitationEntity = (entity) => {
 
+  if (!entity) {
+    return entity;
+  }
+
   const overrides = entity.overrideSubject || entity.overrideBody ? {
     subject: entity.overrideSubject,
     body: entity.overrideBody,
