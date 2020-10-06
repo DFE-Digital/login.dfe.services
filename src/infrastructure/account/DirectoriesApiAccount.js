@@ -2,7 +2,7 @@ const Account = require('./Account');
 const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { directories } = require('login.dfe.dao');
+const { directories, invitation } = require('login.dfe.dao');
 
 const callDirectoriesApi = async (resource, body, method = 'POST') => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
@@ -33,7 +33,7 @@ const callDirectoriesApi = async (resource, body, method = 'POST') => {
   }
 };
 
-const mapInvitationEntity = () => {
+const mapInvitationEntity = (entity) => {
 
   const overrides = entity.overrideSubject || entity.overrideBody ? {
     subject: entity.overrideSubject,
@@ -116,23 +116,14 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async getInvitationByEmail(email) {
-
     try {
-      let entity = await directories.findInvitationForEmail(email, true);
-      return mapInvitationEntity(entity);
+      let entity = await invitation.findInvitationForEmail(email, true);
+      let mappedEntity = mapInvitationEntity(entity);
+      return mappedEntity;
     }
     catch (ex) {
       throw ex;
     }
-
-    const response = await callDirectoriesApi(`invitations/by-email/${email}`, null, 'GET');
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
-    }
-    return response.result;
   }
 
   async validatePassword(password) {
