@@ -87,7 +87,7 @@ const init = async () => {
   );
   app.use(flash());
 
-  let assetsUrl = config.hostingEnvironment.assetsUrl || 'https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/';
+  let assetsUrl = config.assets.url;
   assetsUrl = assetsUrl.endsWith('/') ? assetsUrl.substr(0, assetsUrl.length - 1) : assetsUrl;
   Object.assign(app.locals, {
     moment,
@@ -105,6 +105,9 @@ const init = async () => {
     gaTrackingId: config.hostingEnvironment.gaTrackingId,
     useApproverJourney: config.toggles.useApproverJourney,
     useRequestOrg: config.toggles.useRequestOrganisation,
+    assets: {
+      version: config.assets.version
+    },
   });
 
   passport.use('oidc', await getPassportStrategy());
