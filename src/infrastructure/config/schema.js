@@ -58,7 +58,7 @@ const schema = new SimpleSchema({
     optional: true,
   },
   adapter: adapterSchema,
-  assets: schemas.assets
+  assets: schemas.assets,
 });
 
 module.exports.validate = () => {
