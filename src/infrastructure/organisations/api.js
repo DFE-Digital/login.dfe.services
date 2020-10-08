@@ -1,6 +1,7 @@
 const config = require('./../config');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const rp = require('login.dfe.request-promise-retry');
+const directoryApi = require('../account/DirectoriesApiAccount.js');
 
 const callApi = async (method, path, correlationId, body) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
@@ -56,7 +57,7 @@ const putInvitationInOrganisation = async (invitationId, orgId, role, correlatio
 };
 
 const getOrganisationAndServiceForInvitation = async (invitationId, correlationId) => {
-  return callApi('GET', `/invitations/v2/${invitationId}`, correlationId);
+  return directoryApi.getInvitationById(invitationId);
 };
 
 const getOrganisationById = async (orgId, correlationId) => {

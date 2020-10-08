@@ -45,7 +45,7 @@ const mapInvitationEntity = (entity) => {
   } : undefined;
 
   let callbacks;
-  
+
   const origin = entity.originClientId || entity.originRedirectUri ? {
     clientId: entity.originClientId,
     redirectUri: entity.originRedirectUri,
@@ -122,6 +122,17 @@ class DirectoriesApiAccount extends Account {
   static async getInvitationByEmail(email) {
     try {
       let entity = await invitation.findInvitationForEmail(email, true);
+      let mappedEntity = mapInvitationEntity(entity);
+      return mappedEntity;
+    }
+    catch (ex) {
+      throw ex;
+    }
+  }
+
+  static async getInvitationById(id) {
+    try {
+      let entity = await invitation.getInvitationById(id);
       let mappedEntity = mapInvitationEntity(entity);
       return mappedEntity;
     }
