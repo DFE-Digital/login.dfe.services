@@ -106,7 +106,7 @@ const init = async () => {
     useApproverJourney: config.toggles.useApproverJourney,
     useRequestOrg: config.toggles.useRequestOrganisation,
     assets: {
-      version: config.assets.version
+      version: config.assets.version,
     },
   });
 
