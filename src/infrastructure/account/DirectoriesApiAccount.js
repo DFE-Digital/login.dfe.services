@@ -34,22 +34,27 @@ const callDirectoriesApi = async (resource, body, method = 'POST') => {
 };
 
 const mapInvitationEntity = (entity) => {
-
   if (!entity) {
     return entity;
   }
 
-  const overrides = entity.overrideSubject || entity.overrideBody ? {
-    subject: entity.overrideSubject,
-    body: entity.overrideBody,
-  } : undefined;
+  const overrides =
+    entity.overrideSubject || entity.overrideBody
+      ? {
+          subject: entity.overrideSubject,
+          body: entity.overrideBody,
+        }
+      : undefined;
 
   let callbacks;
-  
-  const origin = entity.originClientId || entity.originRedirectUri ? {
-    clientId: entity.originClientId,
-    redirectUri: entity.originRedirectUri,
-  } : undefined;
+
+  const origin =
+    entity.originClientId || entity.originRedirectUri
+      ? {
+          clientId: entity.originClientId,
+          redirectUri: entity.originRedirectUri,
+        }
+      : undefined;
 
   let device;
   let oldCredentials;
@@ -101,7 +106,7 @@ const mapInvitationEntity = (entity) => {
     orgName: entity.orgName,
     isApprover: entity.isApprover,
   };
-}
+};
 
 class DirectoriesApiAccount extends Account {
   static fromContext(user) {
@@ -124,8 +129,7 @@ class DirectoriesApiAccount extends Account {
       let entity = await invitation.findInvitationForEmail(email, true);
       let mappedEntity = mapInvitationEntity(entity);
       return mappedEntity;
-    }
-    catch (ex) {
+    } catch (ex) {
       throw ex;
     }
   }
