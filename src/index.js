@@ -129,6 +129,7 @@ const init = async () => {
     {
       help: config.hostingEnvironment.helpUrl,
       assets: assetsUrl,
+      assetsVersion: config.assets.version
     },
     config.hostingEnvironment.env === 'dev',
   );
@@ -152,8 +153,7 @@ const init = async () => {
 
     server.listen(config.hostingEnvironment.port, () => {
       logger.info(
-        `Dev server listening on https://${config.hostingEnvironment.host}:${
-          config.hostingEnvironment.port
+        `Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port
         } with config:\n${JSON.stringify(config)}`,
       );
     });
