@@ -10,7 +10,7 @@ jest.mock('./../../../../src/infrastructure/config', () => {
 
 jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
-  getUsersByIdV2: jest.fn(),
+  getUsersById: jest.fn(),
 }));
 
 jest.mock('./../../../../src/infrastructure/organisations', () => ({
@@ -64,7 +64,7 @@ describe('when displaying the requests for an organisation', () => {
       },
     ]);
 
-    Account.getUsersByIdV2
+    Account.getUsersById
       .mockReset()
       .mockReturnValue([
         { claims: { sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests' } },
@@ -86,8 +86,8 @@ describe('when displaying the requests for an organisation', () => {
   it('then it should include the user requests with the user details', async () => {
     await getOrganisationRequests(req, res);
 
-    expect(Account.getUsersByIdV2.mock.calls).toHaveLength(1);
-    expect(Account.getUsersByIdV2.mock.calls[0][0]).toEqual(['user1']);
+    expect(Account.getUsersById.mock.calls).toHaveLength(1);
+    expect(Account.getUsersById.mock.calls[0][0]).toEqual(['user1']);
   });
 
   it('then it should return the organisation requests view', async () => {

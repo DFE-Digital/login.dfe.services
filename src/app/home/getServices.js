@@ -73,7 +73,7 @@ const getApproversDetails = async (organisations) => {
   if (distinctApproverIds.length === 0) {
     return [];
   }
-  return Account.getUsersByIdV2(distinctApproverIds);
+  return Account.getUsersById(distinctApproverIds);
 };
 
 // This function should execute only if there are no services available for the user.

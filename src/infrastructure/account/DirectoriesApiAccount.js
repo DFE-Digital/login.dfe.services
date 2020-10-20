@@ -170,19 +170,6 @@ class DirectoriesApiAccount extends Account {
     }
   }
 
-  static async getUsersByIdV2(ids) {
-    const response = await callDirectoriesApi(`users/by-ids`, {
-      ids: ids.toString(),
-    });
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
-    }
-    return response.result.map((a) => new DirectoriesApiAccount(a));
-  }
-
   static async createInvite(firstName, lastName, email, clientId, redirectUri, approverEmail, orgName) {
     const response = await callDirectoriesApi(`invitations`, {
       firstName,
