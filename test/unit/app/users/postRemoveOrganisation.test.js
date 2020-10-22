@@ -28,11 +28,13 @@ const notificationClient = require('login.dfe.notifications.client');
 
 const logger = require('./../../../../src/infrastructure/logger');
 const { getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
-const { deleteInvitationOrganisation, deleteUserOrganisation } = require('./../../../../src/infrastructure/organisations');
+const {
+  deleteInvitationOrganisation,
+  deleteUserOrganisation,
+} = require('./../../../../src/infrastructure/organisations');
 const { getById, updateIndex } = require('./../../../../src/infrastructure/search');
 
 describe('when removing organisation access', () => {
-
   let req;
   let res;
 
@@ -58,27 +60,31 @@ describe('when removing organisation access', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: organisationName,
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
-          id: 'organisationId',
+          id: 'org1',
           name: organisationName,
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'org1',
-        name: organisationName,
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     req.body = {
       selectedOrganisation: 'organisationId',
     };
@@ -94,13 +100,13 @@ describe('when removing organisation access', () => {
     getById.mockReturnValue({
       organisations: [
         {
-          id: "org1",
-          name: "organisationName",
-          categoryId: "004",
+          id: 'org1',
+          name: 'organisationName',
+          categoryId: '004',
           statusId: 1,
-          roleId: 0
+          roleId: 0,
         },
-      ]
+      ],
     });
 
     res = mockResponse();
@@ -122,7 +128,6 @@ describe('when removing organisation access', () => {
   });
 
   it('then it should delete org for user', async () => {
-
     await postRemoveOrganisationAccess(req, res);
 
     expect(deleteUserOrganisation.mock.calls).toHaveLength(1);
@@ -135,17 +140,17 @@ describe('when removing organisation access', () => {
 
     expect(updateIndex.mock.calls).toHaveLength(1);
     expect(updateIndex.mock.calls[0][0]).toBe('user1');
-    expect(updateIndex.mock.calls[0][1]).toEqual(
-      []
-    );
+    expect(updateIndex.mock.calls[0][1]).toEqual([]);
   });
 
   it('then it should should audit user being removed from org', async () => {
     await postRemoveOrganisationAccess(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('user.one@unit.test (id: user1) removed organisation organisationName (id: org1) for user test@test.com (id: user1)');
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0].message).toBe(
+      'user.one@unit.test (id: user1) removed organisation organisationName (id: org1) for user test@test.com (id: user1)',
+    );
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
       subType: 'user-org-deleted',
       userId: 'user1',
@@ -156,7 +161,7 @@ describe('when removing organisation access', () => {
           name: 'new_organisation',
           oldValue: 'org1',
           newValue: undefined,
-        }
+        },
       ],
     });
   });
@@ -185,6 +190,5 @@ describe('when removing organisation access', () => {
     expect(sendUserRemovedFromOrganisationStub.mock.calls[0][1]).toBe(expectedFirstName);
     expect(sendUserRemovedFromOrganisationStub.mock.calls[0][2]).toBe(expectedLastName);
     expect(sendUserRemovedFromOrganisationStub.mock.calls[0][3]).toBe(organisationName);
-  
   });
 });

@@ -1,7 +1,13 @@
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 
-const { getOrganisationById, createUserOrganisationRequest, getRequestsForOrganisation, getPendingRequestsAssociatedWithUser, getApproversForOrganisation } = require('./../../infrastructure/organisations');
+const {
+  getOrganisationById,
+  createUserOrganisationRequest,
+  getRequestsForOrganisation,
+  getPendingRequestsAssociatedWithUser,
+  getApproversForOrganisation,
+} = require('./../../infrastructure/organisations');
 
 const NotificationClient = require('login.dfe.notifications.client');
 
@@ -38,13 +44,13 @@ const validate = async (req) => {
     model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
   }
   if ((await getRequestsForOrganisation(req.session.organisationId, req.id)).length > requestLimit) {
-    model.validationMessages.limitOrg = 'Organisation has reached the limit for requests'
+    model.validationMessages.limitOrg = 'Organisation has reached the limit for requests';
   }
   if ((await getPendingRequestsAssociatedWithUser(req.user.sub, req.id)).length > requestLimit) {
-    model.validationMessages.limitUser = 'You have reached your limit for requests'
+    model.validationMessages.limitUser = 'You have reached your limit for requests';
   }
   if (model.validationMessages.limitOrg || model.validationMessages.limitUser) {
-    model.validationMessages.limit = 'A current request needs to be actioned before new requests can be made'
+    model.validationMessages.limit = 'A current request needs to be actioned before new requests can be made';
   }
   return model;
 };
@@ -65,19 +71,25 @@ const post = async (req, res) => {
   await notificationClient.sendUserOrganisationRequest(request);
   req.session.organisationId = undefined;
 
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) requested organisation (id: ${req.body.organisationId})`, {
+  logger.audit({
     type: 'organisation',
     subType: 'access-request',
     userId: req.user.sub,
     userEmail: req.user.email,
-    organisationId: req.body.organisationId,
+    organisationid: req.body.organisationId,
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
+    message: `${req.user.email} (id: ${req.user.sub}) requested organisation (id: ${req.body.organisationId})`,
   });
   if ((await getApproversForOrganisation(req.body.organisationId, req.id)).length > 0) {
     res.flash('info', `Your request has been sent to approvers at ${req.body.organisationName}`);
-  }else {
-    res.flash('info', `There are no approvers at ${req.body.organisationName} so your request has been forwarded to the DfE Sign-in Helpdesk.`);
+  } else {
+    res.flash(
+      'info',
+      `There are no approvers at ${req.body.organisationName} so your request has been forwarded to the DfE Sign-in Helpdesk.`,
+    );
   }
-  return res.redirect('/organisations')
+  return res.redirect('/organisations');
 };
 
 module.exports = {

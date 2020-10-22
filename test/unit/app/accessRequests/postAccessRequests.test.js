@@ -9,6 +9,12 @@ jest.mock('./../../../../src/infrastructure/config', () => {
     organisations: {
       type: 'static',
     },
+    loggerSettings: {
+      applicationName: 'test',
+    },
+    hostingEnvironment: {
+      env: 'test',
+    },
   };
 });
 
@@ -18,14 +24,13 @@ jest.mock('./../../../../src/infrastructure/account', () => ({
 }));
 
 jest.mock('./../../../../src/infrastructure/organisations', () => ({
-  putUserInOrganisation : jest.fn(),
+  putUserInOrganisation: jest.fn(),
 }));
 
 const Account = require('./../../../../src/infrastructure/account');
 const logger = require('./../../../../src/infrastructure/logger');
 
 describe('when approving users', () => {
-
   let req;
   let res;
 
@@ -39,21 +44,23 @@ describe('when approving users', () => {
       email: 'user.one@unit.test',
     };
     req.body = {
-      user_Id:'user-123',
+      user_Id: 'user-123',
       org_id: 'org-123',
       approve_reject: 'Approve',
       role: 'Approver',
-      message: ''
+      message: '',
     };
     res = mockResponse();
 
     putUserInOrganisation.mockReset().mockReturnValue();
 
-    Account.getUsersById.mockReset().mockReturnValue([
-      {claims:{ sub: 'user1', given_name: 'User', family_name:'One', email: 'user.one@unit.tests' }},
-      {claims:{ sub: 'user6', given_name: 'User', family_name:'Six', email: 'user.six@unit.tests' }},
-      {claims:{ sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests' }},
-    ]);
+    Account.getUsersById
+      .mockReset()
+      .mockReturnValue([
+        { claims: { sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests' } },
+        { claims: { sub: 'user6', given_name: 'User', family_name: 'Six', email: 'user.six@unit.tests' } },
+        { claims: { sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests' } },
+      ]);
 
     postAccessRequests = require('./../../../../src/app/accessRequests/accessRequests').post;
   });
@@ -102,12 +109,10 @@ describe('when approving users', () => {
     expect(logger.audit.mock.calls).toHaveLength(1);
   });
 
-
   it('then it should redirect to the accessRequest', async () => {
     await postAccessRequests(req, res);
 
     expect(res.redirect.mock.calls.length).toBe(1);
     expect(res.redirect.mock.calls[0][0]).toBe('access-requests');
   });
-
 });

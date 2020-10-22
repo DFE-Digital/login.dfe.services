@@ -22,7 +22,6 @@ const makeConnection = () => {
   assert(config.database.host, 'Database property host must be supplied');
   assert(config.database.dialect, 'Database property dialect must be supplied, this must be postgres or mssql');
 
-
   const databaseName = config.database.name || 'postgres';
   const encryptDb = config.database.encrypt || true;
   const dbOpts = {

@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const { isLoggedIn, isApprover} = require('../../infrastructure/utils');
+const { isLoggedIn, isApprover } = require('../../infrastructure/utils');
 const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
@@ -17,7 +17,7 @@ const { get: getNewUserDetails, post: postNewUserDetails } = require('./newUserD
 const { get: getConfirmExistingUser, post: postConfirmExistingUser } = require('./confirmExistingUser');
 const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
 const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');
-const { get: getConfirmNewUser, post: postConfirmNewUser} = require ('./confirmNewUser');
+const { get: getConfirmNewUser, post: postConfirmNewUser } = require('./confirmNewUser');
 const { get: getResendInvitation, post: postResendInvitation } = require('./resendInvitation');
 
 const router = express.Router({ mergeParams: true });
@@ -27,19 +27,20 @@ const users = (csrf) => {
 
   router.use(isLoggedIn);
 
-  router.get('/users', asyncWrapper((req, res) => {
-    req.userOrganisations = req.userOrganisations.filter(x => x.role.id === 10000);
-    if (req.userOrganisations.length === 0) {
-      return res.status(401).render('errors/views/notAuthorised');
-    }
-    if (req.userOrganisations.length === 1) {
-      return res.redirect(`${req.userOrganisations[0].organisation.id}/users`);
-    } else {
-      return res.redirect(`/approvals/select-organisation`);
-    }
-  }));
-
-
+  router.get(
+    '/users',
+    asyncWrapper((req, res) => {
+      req.userOrganisations = req.userOrganisations.filter((x) => x.role.id === 10000);
+      if (req.userOrganisations.length === 0) {
+        return res.status(401).render('errors/views/notAuthorised');
+      }
+      if (req.userOrganisations.length === 1) {
+        return res.redirect(`${req.userOrganisations[0].organisation.id}/users`);
+      } else {
+        return res.redirect(`/approvals/select-organisation`);
+      }
+    }),
+  );
 
   router.get('/:orgId/users', csrf, isApprover, asyncWrapper(getUsersList));
   router.post('/:orgId/users', csrf, isApprover, asyncWrapper(postUserList));
@@ -65,16 +66,28 @@ const users = (csrf) => {
   router.get('/:orgId/users/:uid/confirm-details', csrf, isApprover, asyncWrapper(getConfirmNewUser));
   router.post('/:orgId/users/:uid/confirm-details', csrf, isApprover, asyncWrapper(postConfirmNewUser));
 
-  router.get('/:orgId/users/:uid', asyncWrapper((req, res) => {
-    res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
-  }));
+  router.get(
+    '/:orgId/users/:uid',
+    asyncWrapper((req, res) => {
+      res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
+    }),
+  );
   router.get('/:orgId/users/:uid/services', csrf, isApprover, asyncWrapper(getServices));
-
 
   router.get('/:orgId/users/:uid/services/:sid', csrf, isApprover, asyncWrapper(getEditService));
   router.post('/:orgId/users/:uid/services/:sid', csrf, isApprover, asyncWrapper(postEditService));
-  router.get('/:orgId/users/:uid/services/:sid/confirm-edit-service', csrf, isApprover, asyncWrapper(getConfirmEditService));
-  router.post('/:orgId/users/:uid/services/:sid/confirm-edit-service', csrf, isApprover, asyncWrapper(postConfirmEditService));
+  router.get(
+    '/:orgId/users/:uid/services/:sid/confirm-edit-service',
+    csrf,
+    isApprover,
+    asyncWrapper(getConfirmEditService),
+  );
+  router.post(
+    '/:orgId/users/:uid/services/:sid/confirm-edit-service',
+    csrf,
+    isApprover,
+    asyncWrapper(postConfirmEditService),
+  );
   router.get('/:orgId/users/:uid/services/:sid/remove-service', csrf, isApprover, asyncWrapper(getRemoveService));
   router.post('/:orgId/users/:uid/services/:sid/remove-service', csrf, isApprover, asyncWrapper(postRemoveService));
 
@@ -89,8 +102,6 @@ const users = (csrf) => {
   router.get('/select-organisation', csrf, asyncWrapper(getSelectOrganisation));
   router.post('/select-organisation', csrf, asyncWrapper(postSelectOrganisation));
 
-
   return router;
-
 };
 module.exports = users;

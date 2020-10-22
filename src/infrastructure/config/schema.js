@@ -3,7 +3,6 @@ const { validateConfigAgainstSchema, schemas, patterns } = require('login.dfe.co
 const config = require('./index');
 const logger = require('./../logger');
 
-
 const identifyingPartySchema = new SimpleSchema({
   url: patterns.url,
   clientId: String,
@@ -17,12 +16,27 @@ const togglesSchema = new SimpleSchema({
 });
 
 const notificationsSchema = new SimpleSchema({
-  connectionString: patterns.redis
+  connectionString: patterns.redis,
 });
 
 const organisationRequestsSchema = new SimpleSchema({
   requestLimit: {
     type: SimpleSchema.Integer,
+    optional: true,
+  },
+});
+
+const adapterSchema = new SimpleSchema({
+  type: {
+    type: String,
+    allowedValues: ['file', 'redis', 'mongo', 'azuread', 'sequelize'],
+  },
+  directories: {
+    type: schemas.sequelizeConnection,
+    optional: true,
+  },
+  organisation: {
+    type: schemas.sequelizeConnection,
     optional: true,
   },
 });
@@ -43,6 +57,8 @@ const schema = new SimpleSchema({
     type: organisationRequestsSchema,
     optional: true,
   },
+  adapter: adapterSchema,
+  assets: schemas.assets,
 });
 
 module.exports.validate = () => {

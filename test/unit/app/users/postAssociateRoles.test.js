@@ -10,7 +10,6 @@ const policyEngine = {
 };
 
 describe('when selecting the roles for a service', () => {
-
   let req;
   let res;
   let postAssociateRoles;
@@ -23,10 +22,7 @@ describe('when selecting the roles for a service', () => {
       sid: 'service1',
     };
     req.body = {
-      roles: [
-        'role1',
-      ]
-
+      roles: ['role1'],
     };
     req.session = {
       user: {
@@ -37,34 +33,38 @@ describe('when selecting the roles for a service', () => {
           {
             serviceId: 'service1',
             roles: [],
-          }
-        ]
+          },
+        ],
       },
     };
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     res = mockResponse();
 
     policyEngine.validate.mockReset().mockReturnValue([]);
@@ -88,7 +88,9 @@ describe('when selecting the roles for a service', () => {
     await postAssociateRoles(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`,
+    );
   });
 
   it('then it should redirect to the next service if one exists', async () => {
@@ -100,7 +102,7 @@ describe('when selecting the roles for a service', () => {
       {
         serviceId: 'service2',
         roles: [],
-      }
+      },
     ];
     await postAssociateRoles(req, res);
 

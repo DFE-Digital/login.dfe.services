@@ -15,7 +15,7 @@ const NotificationClient = require('login.dfe.notifications.client');
 const sendAccessRequest = jest.fn();
 NotificationClient.mockImplementation(() => {
   return {
-    sendAccessRequest
+    sendAccessRequest,
   };
 });
 
@@ -37,13 +37,13 @@ describe('when rejecting an organisation request', () => {
     req = mockRequest({
       user: {
         sub: 'user1',
-        email: 'email@email.com'
+        email: 'email@email.com',
       },
       params: {
-        orgId: 'org1'
+        orgId: 'org1',
       },
       body: {
-        reason: 'reason for rejection'
+        reason: 'reason for rejection',
       },
     });
     updateRequestById.mockReset();
@@ -68,8 +68,8 @@ describe('when rejecting an organisation request', () => {
       reason: '',
       status: {
         id: 0,
-        name: 'Pending'
-      }
+        name: 'Pending',
+      },
     });
 
     res.mockResetAll();
@@ -92,8 +92,8 @@ describe('when rejecting an organisation request', () => {
       reason: '',
       status: {
         id: 1,
-        name: 'approved'
-      }
+        name: 'approved',
+      },
     });
 
     await post(req, res);
@@ -116,7 +116,7 @@ describe('when rejecting an organisation request', () => {
         reason: '',
         status: {
           id: 1,
-          name: 'approved'
+          name: 'approved',
         },
         user_id: 'userId',
         usersEmail: 'john.doe@email.com',
@@ -127,8 +127,8 @@ describe('when rejecting an organisation request', () => {
       reason: 'reason for rejection',
       title: 'Reason for rejection - DfE Sign-in',
       validationMessages: {
-        reason: 'Request already actioned by jane.doe@email.com'
-      }
+        reason: 'Request already actioned by jane.doe@email.com',
+      },
     });
   });
 
@@ -155,17 +155,17 @@ describe('when rejecting an organisation request', () => {
         reason: '',
         status: {
           id: 0,
-          name: 'Pending'
+          name: 'Pending',
         },
         user_id: 'userId',
         usersEmail: 'john.doe@email.com',
-        usersName: 'John Doe'
+        usersName: 'John Doe',
       },
       reason: req.body.reason,
       title: 'Reason for rejection - DfE Sign-in',
       validationMessages: {
-        reason: 'Reason cannot be longer than 1000 characters'
-      }
+        reason: 'Reason cannot be longer than 1000 characters',
+      },
     });
   });
 
@@ -185,13 +185,15 @@ describe('when rejecting an organisation request', () => {
     await post(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('email@email.com (id: user1) rejected organisation request for org1)');
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0].message).toBe(
+      'email@email.com (id: user1) rejected organisation request for org1)',
+    );
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
       subType: 'rejected-org',
       userId: 'user1',
       editedUser: 'userId',
-      reason: 'reason for rejection'
+      reason: 'reason for rejection',
     });
   });
 

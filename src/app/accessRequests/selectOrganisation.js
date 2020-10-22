@@ -1,6 +1,6 @@
 const getNaturalIdentifiers = async (req) => {
-  req.userOrganisations = req.userOrganisations.filter(x => x.role.id === 10000);
-  for (let i= 0; i < req.userOrganisations.length; i++) {
+  req.userOrganisations = req.userOrganisations.filter((x) => x.role.id === 10000);
+  for (let i = 0; i < req.userOrganisations.length; i++) {
     const org = req.userOrganisations[i];
     if (org.organisation) {
       org.naturalIdentifiers = [];
@@ -8,13 +8,13 @@ const getNaturalIdentifiers = async (req) => {
       const uid = org.organisation.uid;
       const ukprn = org.organisation.ukprn;
       if (urn) {
-        org.naturalIdentifiers.push(`URN: ${urn}`)
+        org.naturalIdentifiers.push(`URN: ${urn}`);
       }
       if (uid) {
-        org.naturalIdentifiers.push(`UID: ${uid}`)
+        org.naturalIdentifiers.push(`UID: ${uid}`);
       }
       if (ukprn) {
-        org.naturalIdentifiers.push(`UKPRN: ${ukprn}`)
+        org.naturalIdentifiers.push(`UKPRN: ${ukprn}`);
       }
     }
   }
@@ -24,10 +24,12 @@ const mapOrganisationsWithRequest = async (req) => {
   let orgsWithRequests;
   await getNaturalIdentifiers(req);
   if (req.organisationRequests.length > 0) {
-    orgsWithRequests = req.userOrganisations.filter(x => req.organisationRequests.find(y => y.org_id === x.organisation.id));
+    orgsWithRequests = req.userOrganisations.filter((x) =>
+      req.organisationRequests.find((y) => y.org_id === x.organisation.id),
+    );
     for (let i = 0; i < orgsWithRequests.length; i++) {
       const org = orgsWithRequests[i];
-      org.requestCount = req.organisationRequests.reduce((a, c) => c.org_id === org.organisation.id ? ++a : a, 0);
+      org.requestCount = req.organisationRequests.reduce((a, c) => (c.org_id === org.organisation.id ? ++a : a), 0);
     }
   } else {
     orgsWithRequests = req.userOrganisations;
@@ -63,7 +65,7 @@ const post = async (req, res) => {
       currentPage: 'users',
     });
   }
-  return res.redirect(`/access-requests/${selectedOrg}/requests`)
+  return res.redirect(`/access-requests/${selectedOrg}/requests`);
 };
 
 module.exports = {

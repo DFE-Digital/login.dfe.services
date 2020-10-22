@@ -3,7 +3,12 @@ jest.mock('./../../../../src/infrastructure/organisations');
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { post } = require('./../../../../src/app/requestOrganisation/selectOrganisation');
-const { searchOrganisations, getRequestsForOrganisation, getOrganisationAndServiceForUserV2, getCategories } = require('./../../../../src/infrastructure/organisations');
+const {
+  searchOrganisations,
+  getRequestsForOrganisation,
+  getOrganisationAndServiceForUserV2,
+  getCategories,
+} = require('./../../../../src/infrastructure/organisations');
 
 const res = mockResponse();
 
@@ -23,37 +28,41 @@ describe('when showing the searching for a organisation', () => {
     });
 
     searchOrganisations.mockReset().mockReturnValue({
-      organisations: [
-        { id: 'org1' },
-      ],
+      organisations: [{ id: 'org1' }],
       totalNumberOfPages: 2,
       totalNumberOfRecords: 49,
       page: 1,
     });
 
-    getCategories.mockReset().mockReturnValue([{
-      id:'001',
-      name: 'some category name'
-    }]);
+    getCategories.mockReset().mockReturnValue([
+      {
+        id: '001',
+        name: 'some category name',
+      },
+    ]);
 
     getRequestsForOrganisation.mockReset();
-    getRequestsForOrganisation.mockReturnValue([{
-      id: 'requestId',
-      org_id: 'organisationId',
-      org_name: 'organisationName',
-      user_id: 'user2',
-      status: {
-        id: 0,
-        name: 'pending',
+    getRequestsForOrganisation.mockReturnValue([
+      {
+        id: 'requestId',
+        org_id: 'organisationId',
+        org_name: 'organisationName',
+        user_id: 'user2',
+        status: {
+          id: 0,
+          name: 'pending',
+        },
+        created_date: '2019-08-12',
       },
-      created_date: '2019-08-12',
-    }]);
+    ]);
     getOrganisationAndServiceForUserV2.mockReset();
-    getOrganisationAndServiceForUserV2.mockReturnValue([{
-     organisation: {
-       id: 'organisationId',
-     }
-    }]);
+    getOrganisationAndServiceForUserV2.mockReturnValue([
+      {
+        organisation: {
+          id: 'organisationId',
+        },
+      },
+    ]);
 
     res.mockResetAll();
   });
@@ -65,7 +74,7 @@ describe('when showing the searching for a organisation', () => {
     expect(searchOrganisations.mock.calls[0][0]).toBe('organisation one');
     expect(searchOrganisations.mock.calls[0][1]).toBe(1);
     expect(searchOrganisations.mock.calls[0][2]).toMatchObject(['001']);
-    expect(searchOrganisations.mock.calls[0][3]).toMatchObject([1,3,4]);
+    expect(searchOrganisations.mock.calls[0][3]).toMatchObject([1, 3, 4]);
     expect(searchOrganisations.mock.calls[0][4]).toBe('correlationId');
   });
 
@@ -77,9 +86,11 @@ describe('when showing the searching for a organisation', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
       criteria: 'organisation one',
-      organisations: [{
-        id: 'org1',
-      }],
+      organisations: [
+        {
+          id: 'org1',
+        },
+      ],
       page: 1,
       totalNumberOfPages: 2,
       totalNumberOfRecords: 49,
@@ -118,30 +129,34 @@ describe('when showing the searching for a organisation', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
       criteria: 'organisation one',
-      organisations: [{
-        id: 'org1',
-      }],
+      organisations: [
+        {
+          id: 'org1',
+        },
+      ],
       page: 1,
       totalNumberOfPages: 2,
       totalNumberOfRecords: 49,
-      validationMessages: {selectedOrganisation: 'You are already linked to this organisation'}
+      validationMessages: { selectedOrganisation: 'You are already linked to this organisation' },
     });
   });
 
   it('then it should render with error if outstanding request for org', async () => {
     req.body.selectedOrganisation = 'org1';
 
-    getRequestsForOrganisation.mockReturnValue([{
-      id: 'requestId',
-      org_id: 'organisationId',
-      org_name: 'organisationName',
-      user_id: 'user1',
-      status: {
-        id: 0,
-        name: 'pending',
+    getRequestsForOrganisation.mockReturnValue([
+      {
+        id: 'requestId',
+        org_id: 'organisationId',
+        org_name: 'organisationName',
+        user_id: 'user1',
+        status: {
+          id: 0,
+          name: 'pending',
+        },
+        created_date: '2019-08-12',
       },
-      created_date: '2019-08-12',
-    }]);
+    ]);
 
     await post(req, res);
 
@@ -150,13 +165,15 @@ describe('when showing the searching for a organisation', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
       criteria: 'organisation one',
-      organisations: [{
-        id: 'org1',
-      }],
+      organisations: [
+        {
+          id: 'org1',
+        },
+      ],
       page: 1,
       totalNumberOfPages: 2,
       totalNumberOfRecords: 49,
-      validationMessages: {selectedOrganisation: 'You have already requested this organisation'}
+      validationMessages: { selectedOrganisation: 'You have already requested this organisation' },
     });
   });
 });

@@ -3,7 +3,6 @@ const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
 describe('when selecting an organisation to manage requests', () => {
-
   let req;
   let res;
 
@@ -14,27 +13,31 @@ describe('when selecting an organisation to manage requests', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     req.organisationRequests = [
       {
         id: 'requestId',
@@ -44,8 +47,8 @@ describe('when selecting an organisation to manage requests', () => {
         status: {
           id: 0,
           name: 'pending',
-        }
-      }
+        },
+      },
     ];
     req.body = {
       selectedOrganisation: 'organisationId',
@@ -69,7 +72,7 @@ describe('when selecting an organisation to manage requests', () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: 'token',
       backLink: true,
-      "currentPage": "users",
+      currentPage: 'users',
       selectedOrganisation: undefined,
       organisations: req.userOrganisations,
       title: 'Select Organisation - DfE Sign-in',
@@ -78,5 +81,4 @@ describe('when selecting an organisation to manage requests', () => {
       },
     });
   });
-
 });

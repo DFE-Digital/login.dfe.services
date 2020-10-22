@@ -17,7 +17,7 @@ const get = async (req, res) => {
     reason: '',
     validationMessages: {},
     currentPage: 'users',
-  })
+  });
 };
 
 const validate = async (req) => {
@@ -33,7 +33,7 @@ const validate = async (req) => {
   if (model.reason.length > 1000) {
     model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
   } else if (model.request.approverEmail) {
-    model.validationMessages.reason = `Request already actioned by ${model.request.approverEmail}`
+    model.validationMessages.reason = `Request already actioned by ${model.request.approverEmail}`;
   }
   return model;
 };
@@ -50,22 +50,29 @@ const post = async (req, res) => {
   await updateRequestById(model.request.id, -1, req.user.sub, model.reason, actionedDate, req.id);
 
   //send rejected email
-  await notificationClient.sendAccessRequest(model.request.usersEmail, model.request.usersName, model.request.org_name, false, model.reason);
+  await notificationClient.sendAccessRequest(
+    model.request.usersEmail,
+    model.request.usersName,
+    model.request.org_name,
+    false,
+    model.reason,
+  );
 
   //audit organisation rejected
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`, {
+  logger.audit({
     type: 'approver',
     subType: 'rejected-org',
     userId: req.user.sub,
     editedUser: model.request.user_id,
     reason: model.reason,
     currentPage: 'users',
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
+    message: `${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`,
   });
 
   res.flash('info', `Request rejected - an email has been sent to ${model.request.usersEmail}.`);
   return res.redirect(`/access-requests/${req.params.orgId}/requests`);
-
-
 };
 
 module.exports = {

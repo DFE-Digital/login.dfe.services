@@ -7,14 +7,20 @@ jest.mock('login.dfe.notifications.client');
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { post } = require('./../../../../src/app/requestOrganisation/review');
 const res = mockResponse();
-const { createUserOrganisationRequest, getOrganisationById, getRequestsForOrganisation, getPendingRequestsAssociatedWithUser, getApproversForOrganisation } = require('./../../../../src/infrastructure/organisations');
+const {
+  createUserOrganisationRequest,
+  getOrganisationById,
+  getRequestsForOrganisation,
+  getPendingRequestsAssociatedWithUser,
+  getApproversForOrganisation,
+} = require('./../../../../src/infrastructure/organisations');
 const logger = require('./../../../../src/infrastructure/logger');
 
 const NotificationClient = require('login.dfe.notifications.client');
 const sendUserOrganisationRequest = jest.fn();
 NotificationClient.mockImplementation(() => {
   return {
-    sendUserOrganisationRequest
+    sendUserOrganisationRequest,
   };
 });
 const createString = (length) => {
@@ -33,10 +39,10 @@ describe('when reviewing an organisation request', () => {
     req = mockRequest({
       user: {
         sub: 'user1',
-        email: 'email@email.com'
+        email: 'email@email.com',
       },
       session: {
-        organisationId: 'org1'
+        organisationId: 'org1',
       },
       body: {
         organisationId: 'org1',
@@ -56,35 +62,39 @@ describe('when reviewing an organisation request', () => {
       id: 'org1',
       name: 'organisation two',
       category: {
-        'id': '001',
-        'name': 'Establishment'
+        id: '001',
+        name: 'Establishment',
       },
     });
     getRequestsForOrganisation.mockReset();
-    getRequestsForOrganisation.mockReturnValue([{
-      id: 'requestId',
-      org_id: 'organisationId',
-      org_name: 'organisationName',
-      user_id: 'user2',
-      status: {
-        id: 0,
-        name: 'pending',
+    getRequestsForOrganisation.mockReturnValue([
+      {
+        id: 'requestId',
+        org_id: 'organisationId',
+        org_name: 'organisationName',
+        user_id: 'user2',
+        status: {
+          id: 0,
+          name: 'pending',
+        },
+        created_date: '2019-08-12',
       },
-      created_date: '2019-08-12',
-    }]);
+    ]);
     getPendingRequestsAssociatedWithUser.mockReset();
-    getApproversForOrganisation.mockReturnValue(["111","222"]);
-    getPendingRequestsAssociatedWithUser.mockReturnValue([{
-      id: 'requestId',
-      org_id: 'organisationId',
-      org_name: 'organisationName',
-      user_id: 'user2',
-      status: {
-        id: 0,
-        name: 'pending',
+    getApproversForOrganisation.mockReturnValue(['111', '222']);
+    getPendingRequestsAssociatedWithUser.mockReturnValue([
+      {
+        id: 'requestId',
+        org_id: 'organisationId',
+        org_name: 'organisationName',
+        user_id: 'user2',
+        status: {
+          id: 0,
+          name: 'pending',
+        },
+        created_date: '2019-08-12',
       },
-      created_date: '2019-08-12',
-    }]);
+    ]);
     res.mockResetAll();
   });
 
@@ -103,15 +113,15 @@ describe('when reviewing an organisation request', () => {
         id: 'org1',
         name: 'organisation two',
         category: {
-          'id': '001',
-          'name': 'Establishment'
+          id: '001',
+          name: 'Establishment',
         },
       },
-        reason: req.body.reason,
-        title: 'Confirm Request - DfE Sign-in',
-        validationMessages: {
-          'reason': 'Reason cannot be longer than 1000 characters'
-        }
+      reason: req.body.reason,
+      title: 'Confirm Request - DfE Sign-in',
+      validationMessages: {
+        reason: 'Reason cannot be longer than 1000 characters',
+      },
     });
   });
 
@@ -119,15 +129,15 @@ describe('when reviewing an organisation request', () => {
     getRequestsForOrganisation.mockReset();
     getRequestsForOrganisation.mockReturnValue([
       {
-      id: 'requestId',
-      org_id: 'organisationId',
-      org_name: 'organisationName',
-      user_id: 'user2',
-      status: {
-        id: 0,
-        name: 'pending',
-      },
-      created_date: '2019-08-12',
+        id: 'requestId',
+        org_id: 'organisationId',
+        org_name: 'organisationName',
+        user_id: 'user2',
+        status: {
+          id: 0,
+          name: 'pending',
+        },
+        created_date: '2019-08-12',
       },
       {
         id: 'request2',
@@ -162,7 +172,7 @@ describe('when reviewing an organisation request', () => {
         },
         created_date: '2019-08-12',
       },
-      ]);
+    ]);
     await post(req, res);
     expect(sendUserOrganisationRequest.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
@@ -174,16 +184,16 @@ describe('when reviewing an organisation request', () => {
         id: 'org1',
         name: 'organisation two',
         category: {
-          'id': '001',
-          'name': 'Establishment'
+          id: '001',
+          name: 'Establishment',
         },
       },
       reason: req.body.reason,
       title: 'Confirm Request - DfE Sign-in',
       validationMessages: {
         limitOrg: 'Organisation has reached the limit for requests',
-        limit: 'A current request needs to be actioned before new requests can be made'
-      }
+        limit: 'A current request needs to be actioned before new requests can be made',
+      },
     });
   });
 
@@ -201,13 +211,13 @@ describe('when reviewing an organisation request', () => {
     await post(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('email@email.com (id: user1) requested organisation (id: org1)');
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0].message).toBe('email@email.com (id: user1) requested organisation (id: org1)');
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'organisation',
       subType: 'access-request',
-      organisationId: 'org1',
+      organisationid: 'org1',
       userEmail: 'email@email.com',
-      userId: 'user1'
+      userId: 'user1',
     });
   });
 
@@ -217,5 +227,4 @@ describe('when reviewing an organisation request', () => {
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe(`/organisations`);
   });
-
 });

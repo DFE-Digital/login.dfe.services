@@ -10,17 +10,18 @@ jest.mock('./../../../../src/infrastructure/access', () => {
   };
 });
 
-
 jest.mock('./../../../../src/app/users/utils');
 jest.mock('login.dfe.notifications.client');
 const notificationClient = require('login.dfe.notifications.client');
 const logger = require('./../../../../src/infrastructure/logger');
 const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
-const { updateUserService, updateInvitationService, listRolesOfService } = require('./../../../../src/infrastructure/access');
-
+const {
+  updateUserService,
+  updateInvitationService,
+  listRolesOfService,
+} = require('./../../../../src/infrastructure/access');
 
 describe('when editing a service for a user', () => {
-
   let req;
   let res;
 
@@ -34,7 +35,7 @@ describe('when editing a service for a user', () => {
     req.params = {
       uid: 'user1',
       orgId: 'org1',
-      sid: 'service1'
+      sid: 'service1',
     };
 
     req.session = {
@@ -44,37 +45,38 @@ describe('when editing a service for a user', () => {
         lastName: 'name',
       },
       service: {
-        roles : [
-          'role1',
-          'role2'
-        ],
+        roles: ['role1', 'role2'],
       },
     };
 
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
-          id: 'organisationId',
+          id: 'org1',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'org1',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     req.body = {
       selectedOrganisation: 'organisationId',
     };
@@ -88,14 +90,16 @@ describe('when editing a service for a user', () => {
     });
 
     listRolesOfService.mockReset();
-    listRolesOfService.mockReturnValue([{
-      code: 'role_code',
-      id: 'role_id',
-      name: 'role_name',
-      status: {
-        id: 'status_id'
+    listRolesOfService.mockReturnValue([
+      {
+        code: 'role_code',
+        id: 'role_id',
+        name: 'role_name',
+        status: {
+          id: 'status_id',
+        },
       },
-    }]);
+    ]);
 
     res = mockResponse();
     postConfirmEditService = require('./../../../../src/app/users/confirmEditService').post;
@@ -114,19 +118,18 @@ describe('when editing a service for a user', () => {
     expect(updateInvitationService.mock.calls[0][0]).toBe('invite1');
     expect(updateInvitationService.mock.calls[0][1]).toBe('service1');
     expect(updateInvitationService.mock.calls[0][2]).toBe('org1');
-    expect(updateInvitationService.mock.calls[0][3]).toEqual(["role1", "role2"]);
+    expect(updateInvitationService.mock.calls[0][3]).toEqual(['role1', 'role2']);
     expect(updateInvitationService.mock.calls[0][4]).toBe('correlationId');
   });
 
   it('then it should edit service for user if request for user', async () => {
-
     await postConfirmEditService(req, res);
 
     expect(updateUserService.mock.calls).toHaveLength(1);
     expect(updateUserService.mock.calls[0][0]).toBe('user1');
     expect(updateUserService.mock.calls[0][1]).toBe('service1');
     expect(updateUserService.mock.calls[0][2]).toBe('org1');
-    expect(updateUserService.mock.calls[0][3]).toEqual(["role1", "role2"]);
+    expect(updateUserService.mock.calls[0][3]).toEqual(['role1', 'role2']);
     expect(updateUserService.mock.calls[0][4]).toBe('correlationId');
   });
 
@@ -134,8 +137,10 @@ describe('when editing a service for a user', () => {
     await postConfirmEditService(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('user.one@unit.test (id: user1) updated service service name for organisation organisationName (id: org1) for user test@test.com (id: user1)');
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0].message).toBe(
+      'user.one@unit.test (id: user1) updated service service name for organisation organisationName (id: org1) for user test@test.com (id: user1)',
+    );
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
       subType: 'user-service-updated',
       userId: 'user1',
@@ -144,8 +149,8 @@ describe('when editing a service for a user', () => {
       editedFields: [
         {
           name: 'update_service',
-          newValue: ['role1','role2'],
-        }
+          newValue: ['role1', 'role2'],
+        },
       ],
     });
   });
@@ -166,7 +171,6 @@ describe('when editing a service for a user', () => {
   });
 
   it('then it should send an email notification to user when service added', async () => {
-    
     await postConfirmEditService(req, res);
 
     expect(sendServiceAddedStub.mock.calls).toHaveLength(1);
@@ -174,7 +178,5 @@ describe('when editing a service for a user', () => {
     expect(sendServiceAddedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
     expect(sendServiceAddedStub.mock.calls[0][1]).toBe(expectedFirstName);
     expect(sendServiceAddedStub.mock.calls[0][2]).toBe(expectedLastName);
-  
   });
-
 });

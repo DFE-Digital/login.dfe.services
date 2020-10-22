@@ -2,7 +2,7 @@ const Account = require('./Account');
 const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-
+const { directories, invitation } = require('login.dfe.dao');
 
 const callDirectoriesApi = async (resource, body, method = 'POST') => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
@@ -33,6 +33,81 @@ const callDirectoriesApi = async (resource, body, method = 'POST') => {
   }
 };
 
+const mapInvitationEntity = (entity) => {
+  if (!entity) {
+    return entity;
+  }
+
+  const overrides =
+    entity.overrideSubject || entity.overrideBody
+      ? {
+          subject: entity.overrideSubject,
+          body: entity.overrideBody,
+        }
+      : undefined;
+
+  let callbacks;
+
+  const origin =
+    entity.originClientId || entity.originRedirectUri
+      ? {
+          clientId: entity.originClientId,
+          redirectUri: entity.originRedirectUri,
+        }
+      : undefined;
+
+  let device;
+  let oldCredentials;
+
+  if (entity.callbacks && entity.callbacks.length > 0) {
+    callbacks = entity.callbacks.map((cbEntity) => ({
+      sourceId: cbEntity.sourceId,
+      callback: cbEntity.callbackUrl,
+      clientId: cbEntity.clientId,
+    }));
+  }
+
+  if (entity.devices && entity.devices.length > 0) {
+    device = {
+      type: entity.devices[0].deviceType,
+      serialNumber: entity.devices[0].serialNumber,
+    };
+  }
+
+  if (entity.previousUsername || entity.previousPassword || entity.previousSalt) {
+    oldCredentials = {
+      username: entity.previousUsername,
+      password: entity.previousPassword,
+      salt: entity.previousSalt,
+      source: 'EAS',
+    };
+  }
+
+  return {
+    firstName: entity.firstName,
+    lastName: entity.lastName,
+    email: entity.email,
+    origin,
+    selfStarted: entity.selfStarted,
+    callbacks,
+    overrides,
+    device,
+    oldCredentials,
+    code: entity.code,
+    id: entity.id,
+    deactivated: entity.deactivated,
+    reason: entity.reason,
+    isCompleted: entity.completed,
+    userId: entity.uid,
+    createdAt: entity.createdAt,
+    updatedAt: entity.updatedAt,
+    isMigrated: entity.isMigrated,
+    approverEmail: entity.approverEmail,
+    orgName: entity.orgName,
+    isApprover: entity.isApprover,
+  };
+};
+
 class DirectoriesApiAccount extends Account {
   static fromContext(user) {
     return new DirectoriesApiAccount(user);
@@ -50,14 +125,13 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async getInvitationByEmail(email) {
-    const response = await callDirectoriesApi(`invitations/by-email/${email}`, null, 'GET');
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
+    try {
+      let entity = await invitation.findInvitationForEmail(email, true);
+      let mappedEntity = mapInvitationEntity(entity);
+      return mappedEntity;
+    } catch (ex) {
+      throw ex;
     }
-    return response.result;
   }
 
   async validatePassword(password) {
@@ -80,14 +154,20 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async getUsersById(ids) {
-    const response = await callDirectoriesApi(`users/by-ids?id=${ids.toString()}`, null, 'GET');
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
+    let idList = [];
+
+    if (Array.isArray(ids)) {
+      idList = ids;
+    } else {
+      idList = ids.split(',');
     }
-    return response.result.map(a => new DirectoriesApiAccount(a));
+
+    try {
+      let users = await directories.getUsers(idList);
+      return users.map((a) => new DirectoriesApiAccount(a));
+    } catch (ex) {
+      throw ex;
+    }
   }
 
   static async getUsersByIdV2(ids) {
@@ -100,7 +180,7 @@ class DirectoriesApiAccount extends Account {
       }
       throw new Error(response.errorMessage);
     }
-    return response.result.map(a => new DirectoriesApiAccount(a));
+    return response.result.map((a) => new DirectoriesApiAccount(a));
   }
 
   static async createInvite(firstName, lastName, email, clientId, redirectUri, approverEmail, orgName) {
@@ -125,9 +205,13 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async updateInvite(id, email) {
-    const response = await callDirectoriesApi(`invitations/${id}`, {
-      email,
-    }, 'PATCH');
+    const response = await callDirectoriesApi(
+      `invitations/${id}`,
+      {
+        email,
+      },
+      'PATCH',
+    );
     if (!response.success) {
       if (response.statusCode === 404) {
         return null;

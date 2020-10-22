@@ -1,4 +1,5 @@
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/infrastructure/organisations');
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
@@ -15,15 +16,15 @@ describe('when showing the review request org page', () => {
         sub: 'user1',
       },
       session: {
-        organisationId: 'org1'
+        organisationId: 'org1',
       },
     });
     getOrganisationById.mockReset().mockReturnValue({
       id: 'org1',
       name: 'organisation two',
       category: {
-        'id': '001',
-        'name': 'Establishment'
+        id: '001',
+        name: 'Establishment',
       },
     });
     res.mockResetAll();
@@ -36,7 +37,6 @@ describe('when showing the review request org page', () => {
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe('search');
-
   });
 
   it('then it should display the select organisation review page', async () => {
@@ -70,12 +70,10 @@ describe('when showing the review request org page', () => {
         id: 'org1',
         name: 'organisation two',
         category: {
-          'id': '001',
-          'name': 'Establishment'
-        }
-      }
+          id: '001',
+          name: 'Establishment',
+        },
+      },
     });
   });
-
-
 });

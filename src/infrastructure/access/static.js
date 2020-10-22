@@ -1,8 +1,8 @@
-const getServicesForUser = async(id, correlationId) => {
+const getServicesForUser = async (id, correlationId) => {
   return Promise.resolve([]);
 };
 
-const getServicesForInvitation = async(iid, correlationId) => {
+const getServicesForInvitation = async (iid, correlationId) => {
   return Promise.resolve([]);
 };
 
@@ -18,11 +18,11 @@ const listRolesOfService = async (sid, correlationId) => {
   return Promise.resolve([]);
 };
 
-const removeServiceFromUser = async(uid, sid, oid, correlationId) => {
+const removeServiceFromUser = async (uid, sid, oid, correlationId) => {
   return Promise.resolve();
 };
 
-const removeServiceFromInvitation = async(iid, sid, oid, correlationId) => {
+const removeServiceFromInvitation = async (iid, sid, oid, correlationId) => {
   return Promise.resolve();
 };
 

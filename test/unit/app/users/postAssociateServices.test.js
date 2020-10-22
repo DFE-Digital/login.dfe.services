@@ -18,7 +18,6 @@ const policyEngine = {
 };
 
 describe('when adding services to a user', () => {
-
   let req;
   let res;
 
@@ -41,52 +40,58 @@ describe('when adding services to a user', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     res = mockResponse();
 
     getAllServices.mockReset();
     getAllServices.mockReturnValue({
-      services: [{
-        id: 'service1',
+      services: [
+        {
+          id: 'service1',
+          dateActivated: '10/10/2018',
+          name: 'service name',
+          status: 'active',
+          isExternalService: true,
+          relyingParty: {
+            params: {},
+          },
+        },
+      ],
+    });
+    getAllServicesForUserInOrg.mockReset();
+    getAllServicesForUserInOrg.mockReturnValue([
+      {
+        id: 'service2',
         dateActivated: '10/10/2018',
         name: 'service name',
         status: 'active',
         isExternalService: true,
-        relyingParty: {
-          params: {
-
-          }
-        }
-      }]
-    });
-    getAllServicesForUserInOrg.mockReset();
-    getAllServicesForUserInOrg.mockReturnValue([{
-      id: 'service2',
-      dateActivated: '10/10/2018',
-      name: 'service name',
-      status: 'active',
-      isExternalService: true,
-    }]);
+      },
+    ]);
 
     policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
       policiesAppliedForUser: [],
@@ -110,8 +115,8 @@ describe('when adding services to a user', () => {
       name: 'test name',
       backLink: 'services',
       currentPage: 'users',
-      organisationDetails:  undefined,
-      selectedServices:  [],
+      organisationDetails: undefined,
+      selectedServices: [],
       services: [
         {
           id: 'service1',
@@ -120,11 +125,9 @@ describe('when adding services to a user', () => {
           status: 'active',
           isExternalService: true,
           relyingParty: {
-            params: {
-
-            }
-          }
-        }
+            params: {},
+          },
+        },
       ],
       user: {
         email: 'test@test.com',
@@ -138,9 +141,7 @@ describe('when adding services to a user', () => {
   });
 
   it('then it should render view if a selected service is no longer available', async () => {
-    req.body.service = [
-      'service1',
-    ];
+    req.body.service = ['service1'];
     policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
       policiesAppliedForUser: [],
       rolesAvailableToUser: [],
@@ -159,13 +160,10 @@ describe('when adding services to a user', () => {
   });
 
   it('then it should redirect to associate roles', async () => {
-    req.body.service = [
-      'service1',
-    ];
+    req.body.service = ['service1'];
     await postAssociateServices(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe(`associate-services/${req.session.user.services[0].serviceId}`);
   });
-
 });

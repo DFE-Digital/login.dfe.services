@@ -7,7 +7,6 @@ jest.mock('./../../../../src/app/users/utils');
 const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
 
 describe('when displaying the remove service access view', () => {
-
   let req;
   let res;
 
@@ -30,27 +29,31 @@ describe('when displaying the remove service access view', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
           id: 'organisationId',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     res = mockResponse();
 
     getSingleServiceForUser.mockReset();

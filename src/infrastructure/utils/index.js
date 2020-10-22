@@ -1,7 +1,7 @@
 'use strict';
 
 const config = require('./../config');
-const {getServicesForUser} = require('../../infrastructure/access');
+const { getServicesForUser } = require('../../infrastructure/access');
 const { getOrganisationAndServiceForUserV2, getAllRequestsForApprover } = require('./../organisations');
 const APPROVER = 10000;
 
@@ -16,8 +16,8 @@ const isLoggedIn = (req, res, next) => {
 
 const isApprover = (req, res, next) => {
   if (req.userOrganisations) {
-    const userApproverOrgs = req.userOrganisations.filter(x => x.role.id === 10000);
-    if (userApproverOrgs.find(x => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())) {
+    const userApproverOrgs = req.userOrganisations.filter((x) => x.role.id === 10000);
+    if (userApproverOrgs.find((x) => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())) {
       return next();
     }
   }
@@ -34,9 +34,9 @@ const isApprover = (req, res, next) => {
   next();
 };*/
 
-const getUserEmail = user => user.email || '';
+const getUserEmail = (user) => user.email || '';
 
-const getUserDisplayName = user => `${user.given_name || ''} ${user.family_name || ''}`.trim();
+const getUserDisplayName = (user) => `${user.given_name || ''} ${user.family_name || ''}`.trim();
 
 const setUserContext = async (req, res, next) => {
   if (req.user) {
@@ -46,7 +46,7 @@ const setUserContext = async (req, res, next) => {
     req.userOrganisations = organisations;
     try {
       if (req.userOrganisations) {
-        res.locals.isApprover = req.userOrganisations.filter(x => x.role.id === 10000).length > 0
+        res.locals.isApprover = req.userOrganisations.filter((x) => x.role.id === 10000).length > 0;
       }
       if (res.locals.isApprover) {
         const approverOrgRequests = await getAllRequestsForApprover(req.user.sub, req.id);
@@ -59,11 +59,9 @@ const setUserContext = async (req, res, next) => {
   next();
 };
 
-const asyncMiddleware = fn =>
-  (req, res, next) => {
-    Promise.resolve(fn(req, res, next))
-      .catch(next);
-  };
+const asyncMiddleware = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
 
 const setConfigContext = (req, res, next) => {
   res.locals.profilesUrl = config.hostingEnvironment.profileUrl;
@@ -83,7 +81,6 @@ const mapUserStatus = (status, changedOn = null) => {
   }
   return { id: 1, description: 'Active', changedOn };
 };
-
 
 module.exports = {
   isLoggedIn,

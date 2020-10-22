@@ -17,7 +17,6 @@ jest.mock('./../../../../src/infrastructure/organisations', () => ({
   getRequestsForOrganisation: jest.fn(),
 }));
 
-
 const Account = require('./../../../../src/infrastructure/account');
 const { getRequestsForOrganisation } = require('./../../../../src/infrastructure/organisations');
 
@@ -37,37 +36,43 @@ describe('when displaying the requests for an organisation', () => {
       orgId: 'organisationId',
     };
     res = mockResponse();
-    req.userOrganisations = [{
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
+    req.userOrganisations = [
+      {
+        organisation: {
+          id: 'organisationId',
+          name: 'organisationName',
+        },
+        role: {
+          id: 10000,
+          name: 'category name',
+        },
       },
-      role: {
-        id: 10000,
-        name: 'category name'
-      }
-    }];
+    ];
 
     getRequestsForOrganisation.mockReset();
-    getRequestsForOrganisation.mockReturnValue([{
-      id: 'requestId',
-      org_id: 'organisationId',
-      org_name: 'organisationName',
-      user_id: 'user1',
-      status: {
-        id: 0,
-        name: 'pending',
+    getRequestsForOrganisation.mockReturnValue([
+      {
+        id: 'requestId',
+        org_id: 'organisationId',
+        org_name: 'organisationName',
+        user_id: 'user1',
+        status: {
+          id: 0,
+          name: 'pending',
+        },
+        created_date: '2019-08-12',
       },
-      created_date: '2019-08-12',
-    }]);
-
-    Account.getUsersByIdV2.mockReset().mockReturnValue([
-      {claims: {sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests'}},
-      {claims: {sub: 'user6', given_name: 'User', family_name: 'Six', email: 'user.six@unit.tests'}},
-      {claims: {sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests'}},
     ]);
 
-    getOrganisationRequests = require('./../../../../src/app/accessRequests/getOrganisationRequests')
+    Account.getUsersByIdV2
+      .mockReset()
+      .mockReturnValue([
+        { claims: { sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests' } },
+        { claims: { sub: 'user6', given_name: 'User', family_name: 'Six', email: 'user.six@unit.tests' } },
+        { claims: { sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests' } },
+      ]);
+
+    getOrganisationRequests = require('./../../../../src/app/accessRequests/getOrganisationRequests');
   });
 
   it('then it should get requests for organisation', async () => {
@@ -99,7 +104,7 @@ describe('when displaying the requests for an organisation', () => {
       organisation: {
         id: 'organisationId',
         name: 'organisationName',
-      }
+      },
     });
   });
 
@@ -107,17 +112,19 @@ describe('when displaying the requests for an organisation', () => {
     await getOrganisationRequests(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      requests: [{
-        id: 'requestId',
-        org_id: 'organisationId',
-        org_name: 'organisationName',
-        status: {
-          id: 0,
-          name: 'pending',
+      requests: [
+        {
+          id: 'requestId',
+          org_id: 'organisationId',
+          org_name: 'organisationName',
+          status: {
+            id: 0,
+            name: 'pending',
+          },
+          user_id: 'user1',
+          created_date: '2019-08-12',
         },
-        user_id: 'user1',
-        created_date: '2019-08-12'
-      }]
+      ],
     });
   });
 });

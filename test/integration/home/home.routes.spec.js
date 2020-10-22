@@ -16,7 +16,7 @@ describe.skip('Integration tests for', () => {
       app.locals.title = 'Test Title';
       app.locals.urls = {
         interactions: '',
-        help: ''
+        help: '',
       };
     });
     describe('as an authenticated user', () => {

@@ -1,4 +1,8 @@
-const { putUserInOrganisation, updateRequestById, getOrganisationById } = require('./../../infrastructure/organisations');
+const {
+  putUserInOrganisation,
+  updateRequestById,
+  getOrganisationById,
+} = require('./../../infrastructure/organisations');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const { getById, updateIndex } = require('./../../infrastructure/search');
@@ -26,7 +30,7 @@ const get = async (req, res) => {
     selectedResponse: null,
     validationMessages: {},
     currentPage: 'users',
-  })
+  });
 };
 
 const validate = async (req) => {
@@ -43,7 +47,7 @@ const validate = async (req) => {
   if (model.selectedResponse === undefined || model.selectedResponse === null) {
     model.validationMessages.selectedResponse = 'Approve or Reject must be selected';
   } else if (model.request.approverEmail) {
-    model.validationMessages.selectedResponse = `Request already actioned by ${model.request.approverEmail}`
+    model.validationMessages.selectedResponse = `Request already actioned by ${model.request.approverEmail}`;
   }
   return model;
 };
@@ -57,7 +61,7 @@ const post = async (req, res) => {
   }
 
   if (model.selectedResponse === 'reject') {
-    return res.redirect(`${model.request.id}/rejected`)
+    return res.redirect(`${model.request.id}/rejected`);
   }
   const actionedDate = Date.now();
   await putUserInOrganisation(model.request.user_id, model.request.org_id, 0, null, req.id);
@@ -67,9 +71,13 @@ const post = async (req, res) => {
   const getAllUserDetails = await getById(model.request.user_id, req.id);
   const organisation = await getOrganisationById(model.request.org_id, req.id);
   if (!getAllUserDetails) {
-    logger.error(`Failed to find user ${model.request.user_id} when confirming change of organisations`, {correlationId: req.id});
+    logger.error(`Failed to find user ${model.request.user_id} when confirming change of organisations`, {
+      correlationId: req.id,
+    });
   } else if (!organisation) {
-    logger.error(`Failed to find organisation ${model.request.org_id} when confirming change of organisations`, {correlationId: req.id})
+    logger.error(`Failed to find organisation ${model.request.org_id} when confirming change of organisations`, {
+      correlationId: req.id,
+    });
   } else {
     const currentOrganisationDetails = getAllUserDetails.organisations;
     const newOrgDetails = {
@@ -85,30 +93,44 @@ const post = async (req, res) => {
     };
     currentOrganisationDetails.push(newOrgDetails);
     await updateIndex(model.request.user_id, currentOrganisationDetails, null, req.id);
-    await waitForIndexToUpdate(model.request.user_id, (updated) => updated.organisations.length === currentOrganisationDetails.length);
+    await waitForIndexToUpdate(
+      model.request.user_id,
+      (updated) => updated.organisations.length === currentOrganisationDetails.length,
+    );
   }
 
   //send approved email
-  await notificationClient.sendAccessRequest(model.request.usersEmail, model.request.usersName, organisation.name, true, null);
+  await notificationClient.sendAccessRequest(
+    model.request.usersEmail,
+    model.request.usersName,
+    organisation.name,
+    true,
+    null,
+  );
 
   //audit organisation approved
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`, {
+  logger.audit({
     type: 'approver',
     subType: 'approved-org',
     userId: req.user.sub,
     editedUser: model.request.user_id,
-    editedFields: [{
-      name: 'new_organisation',
-      oldValue: undefined,
-      newValue: model.request.org_id,
-    }],
+    editedFields: [
+      {
+        name: 'new_organisation',
+        oldValue: undefined,
+        newValue: model.request.org_id,
+      },
+    ],
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
+    message: `${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`,
   });
 
-  res.flash('info', `Request approved - an email has been sent to ${model.request.usersEmail}. You can now add services for this user.`);
+  res.flash(
+    'info',
+    `Request approved - an email has been sent to ${model.request.usersEmail}. You can now add services for this user.`,
+  );
   return res.redirect(`/approvals/${model.request.org_id}/users/${model.request.user_id}/services`);
-
-
-
 };
 
 module.exports = {

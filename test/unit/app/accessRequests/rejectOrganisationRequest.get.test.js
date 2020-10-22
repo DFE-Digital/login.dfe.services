@@ -1,5 +1,5 @@
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-
+jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { get } = require('./../../../../src/app/accessRequests/rejectOrganisationRequest');
@@ -15,7 +15,7 @@ describe('when rejecting an organisation request', () => {
         sub: 'user1',
       },
       params: {
-        orgId: 'org1'
+        orgId: 'org1',
       },
     });
     res.mockResetAll();
@@ -40,7 +40,7 @@ describe('when rejecting an organisation request', () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      backLink: true
+      backLink: true,
     });
   });
 
@@ -48,7 +48,7 @@ describe('when rejecting an organisation request', () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      cancelLink: '/access-requests/org1/requests'
+      cancelLink: '/access-requests/org1/requests',
     });
   });
 });

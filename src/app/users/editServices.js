@@ -9,8 +9,13 @@ const policyEngine = new PolicyEngine(config);
 const getViewModel = async (req) => {
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
-  const organisationDetails = req.userOrganisations.find(x => x.organisation.id === organisationId);
-  const policyResult = await policyEngine.getPolicyApplicationResultsForUser(req.params.uid.startsWith('inv-') ? undefined : req.params.uid, req.params.orgId, req.params.sid, req.id);
+  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
+  const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
+    req.params.uid.startsWith('inv-') ? undefined : req.params.uid,
+    req.params.orgId,
+    req.params.sid,
+    req.id,
+  );
   const serviceRoles = policyResult.rolesAvailableToUser;
   const application = await getApplication(req.params.sid, req.id);
   return {
@@ -31,22 +36,24 @@ const getViewModel = async (req) => {
     },
     serviceRoles,
     userService,
-    roleMessage: application.relyingParty && application.relyingParty.params && application.relyingParty.params.serviceRoleMessage ? application.relyingParty.params.serviceRoleMessage : undefined,
+    roleMessage:
+      application.relyingParty && application.relyingParty.params && application.relyingParty.params.serviceRoleMessage
+        ? application.relyingParty.params.serviceRoleMessage
+        : undefined,
   };
 };
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`)
+    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
   }
   const model = await getViewModel(req);
 
   model.service.roles = model.userService.roles;
-  saveRoleInSession(req,model.service.roles);
+  saveRoleInSession(req, model.service.roles);
 
   return res.render('users/views/editServices', model);
 };
-
 
 const post = async (req, res) => {
   let selectedRoles = req.body.role ? req.body.role : [];
@@ -54,38 +61,43 @@ const post = async (req, res) => {
     selectedRoles = [req.body.role];
   }
 
-  if(haveRolesBeenUpdated(req, selectedRoles)){
+  if (haveRolesBeenUpdated(req, selectedRoles)) {
     return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
   }
 
-  const policyValidationResult = await policyEngine.validate( req.params.uid.startsWith('inv-') ? undefined : req.params.uid, req.params.orgId, req.params.sid, selectedRoles, req.id);
+  const policyValidationResult = await policyEngine.validate(
+    req.params.uid.startsWith('inv-') ? undefined : req.params.uid,
+    req.params.orgId,
+    req.params.sid,
+    selectedRoles,
+    req.id,
+  );
 
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
     let roles = {};
-    model.service.roles = selectedRoles.map(x => roles[x] = {id: x});
-    model.validationMessages.roles = policyValidationResult.map(x => x.message);
+    model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
+    model.validationMessages.roles = policyValidationResult.map((x) => x.message);
     return res.render('users/views/editServices', model);
   }
 
-  saveRoleInSession(req,selectedRoles);
+  saveRoleInSession(req, selectedRoles);
 
-  return res.redirect(`${req.params.sid}/confirm-edit-service`)
+  return res.redirect(`${req.params.sid}/confirm-edit-service`);
 };
 
 const saveRoleInSession = (req, selectedRoles) => {
   req.session.service = {
-    roles: selectedRoles
+    roles: selectedRoles,
   };
 };
 
-const haveRolesBeenUpdated= (req, selectedRoles) => {
-  if(req.session.service 
-    && req.session.service.roles){
-      return _.isEqual(req.session.service.roles.map( item => item.id).sort(),selectedRoles.sort());
+const haveRolesBeenUpdated = (req, selectedRoles) => {
+  if (req.session.service && req.session.service.roles) {
+    return _.isEqual(req.session.service.roles.map((item) => item.id).sort(), selectedRoles.sort());
   }
   return true;
-}
+};
 
 module.exports = {
   get,

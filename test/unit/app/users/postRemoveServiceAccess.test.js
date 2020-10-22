@@ -24,7 +24,6 @@ const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../
 const { getById } = require('./../../../../src/infrastructure/search');
 
 describe('when removing service access', () => {
-
   let req;
   let res;
 
@@ -35,7 +34,7 @@ describe('when removing service access', () => {
     req.params = {
       uid: 'user1',
       orgId: 'org1',
-      sid: 'service1'
+      sid: 'service1',
     };
     req.session = {
       user: {
@@ -47,27 +46,31 @@ describe('when removing service access', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
+        },
+      ],
+    };
+    req.userOrganisations = [
+      {
         organisation: {
-          id: 'organisationId',
+          id: 'org1',
           name: 'organisationName',
         },
         role: {
           id: 0,
-          name: 'category name'
-        }
-      }],
-    };
-    req.userOrganisations = [{
-      organisation: {
-        id: 'org1',
-        name: 'organisationName',
+          name: 'category name',
+        },
       },
-      role: {
-        id: 0,
-        name: 'category name'
-      }
-    }];
+    ];
     req.body = {
       selectedOrganisation: 'organisationId',
     };
@@ -75,7 +78,7 @@ describe('when removing service access', () => {
     getUserDetails.mockReset();
     getUserDetails.mockReturnValue({
       id: 'user1',
-      email: 'email@email.com'
+      email: 'email@email.com',
     });
 
     getSingleServiceForUser.mockReset();
@@ -90,21 +93,19 @@ describe('when removing service access', () => {
     getById.mockReturnValue({
       organisations: [
         {
-          id: "org1",
-          name: "organisationName",
-          categoryId: "004",
+          id: 'org1',
+          name: 'organisationName',
+          categoryId: '004',
           statusId: 1,
-          roleId: 0
+          roleId: 0,
         },
       ],
-      services: []
+      services: [],
     });
-
 
     res = mockResponse();
     postRemoveServiceAccess = require('./../../../../src/app/users/removeServiceAccess').post;
   });
-
 
   it('then it should delete service for invitation if request for invitation', async () => {
     req.params.uid = 'inv-invite1';
@@ -119,7 +120,6 @@ describe('when removing service access', () => {
   });
 
   it('then it should delete org for user if request for user', async () => {
-
     await postRemoveServiceAccess(req, res);
 
     expect(removeServiceFromUser.mock.calls).toHaveLength(1);
@@ -133,19 +133,21 @@ describe('when removing service access', () => {
     await postRemoveServiceAccess(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('user.one@unit.test (id: user1) removed service service name for organisation organisationName (id: org1) for user test@test.com (id: user1)');
-    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+    expect(logger.audit.mock.calls[0][0].message).toBe(
+      'user.one@unit.test (id: user1) removed service service name for organisation organisationName (id: org1) for user test@test.com (id: user1)',
+    );
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
       subType: 'user-service-deleted',
       userId: 'user1',
       userEmail: 'user.one@unit.test',
-      editedUser: "user1",
+      editedUser: 'user1',
       editedFields: [
         {
           name: 'remove_service',
           oldValue: 'service1',
           newValue: undefined,
-        }
+        },
       ],
     });
   });

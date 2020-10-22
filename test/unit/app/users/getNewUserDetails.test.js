@@ -11,7 +11,6 @@ jest.mock('./../../../../src/infrastructure/organisations', () => {
 });
 
 describe('when displaying the user details view', () => {
-
   let req;
   let res;
 
@@ -34,19 +33,20 @@ describe('when displaying the user details view', () => {
     req.user = {
       sub: 'user1',
       email: 'user.one@unit.test',
-      organisations: [{
-        organisation: {
-          id: 'organisationId',
-          name: 'organisationName',
+      organisations: [
+        {
+          organisation: {
+            id: 'organisationId',
+            name: 'organisationName',
+          },
+          role: {
+            id: 0,
+            name: 'category name',
+          },
         },
-        role: {
-          id: 0,
-          name: 'category name'
-        }
-      }],
+      ],
     };
     res = mockResponse();
-
 
     getNewUserDetails = require('./../../../../src/app/users/newUserDetails').get;
   });
@@ -97,5 +97,4 @@ describe('when displaying the user details view', () => {
       organisationId: 'org1',
     });
   });
-
 });
