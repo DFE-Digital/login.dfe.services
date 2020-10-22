@@ -41,9 +41,9 @@ const mapInvitationEntity = (entity) => {
   const overrides =
     entity.overrideSubject || entity.overrideBody
       ? {
-          subject: entity.overrideSubject,
-          body: entity.overrideBody,
-        }
+        subject: entity.overrideSubject,
+        body: entity.overrideBody,
+      }
       : undefined;
 
   let callbacks;
@@ -51,9 +51,9 @@ const mapInvitationEntity = (entity) => {
   const origin =
     entity.originClientId || entity.originRedirectUri
       ? {
-          clientId: entity.originClientId,
-          redirectUri: entity.originRedirectUri,
-        }
+        clientId: entity.originClientId,
+        redirectUri: entity.originRedirectUri,
+      }
       : undefined;
 
   let device;
@@ -114,14 +114,8 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async getById(id) {
-    const response = await callDirectoriesApi(`users/${id}`, null, 'GET');
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
-    }
-    return new DirectoriesApiAccount(response.result);
+    let user = await directories.getUser(id);
+    return new DirectoriesApiAccount(user);
   }
 
   static async getInvitationByEmail(email) {
