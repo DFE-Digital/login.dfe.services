@@ -186,20 +186,12 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async updateInvite(id, email) {
-    const response = await callDirectoriesApi(
-      `invitations/${id}`,
-      {
-        email,
-      },
-      'PATCH',
-    );
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
+    try {
+      await invitation.patchInvitation({ id: id, email: email});
+      return true;
+    } catch (ex) {
+      throw ex;
     }
-    return true;
   }
 
   static async resendInvitation(id) {
