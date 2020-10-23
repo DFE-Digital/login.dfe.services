@@ -187,7 +187,7 @@ class DirectoriesApiAccount extends Account {
 
   static async updateInvite(id, email) {
     try {
-      await invitation.patchInvitation({ id: id, email: email});
+      await invitation.patchInvitation({ id: id, email: email });
       return true;
     } catch (ex) {
       throw ex;
