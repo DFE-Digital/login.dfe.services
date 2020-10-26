@@ -118,6 +118,11 @@ class DirectoriesApiAccount extends Account {
     return new DirectoriesApiAccount(user);
   }
 
+  static async getByEmail(email) {
+    let user = await directories.getUserByEmail(email);
+    return new DirectoriesApiAccount(user);
+  }
+
   static async getInvitationByEmail(email) {
     try {
       let entity = await invitation.findInvitationForEmail(email, true);
