@@ -200,15 +200,12 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async resendInvitation(id) {
-    const response = await callDirectoriesApi(`invitations/${id}/resend`);
-
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
+    try {
+      await invitation.resendInvitation(id);
+      return true;
+    } catch (ex) {
+      throw ex;
     }
-    return true;
   }
 
   static async getInvitationById(id) {
