@@ -10,7 +10,6 @@ const organisations = require('./app/organisations');
 const users = require('./app/users');
 const requestOrganisation = require('./app/requestOrganisation');
 const { getOrganisationAndServiceForUser } = require('./infrastructure/organisations');
-const applicationCache = require('./services/application-cache');
 
 const routes = (app, csrf) => {
   // auth callbacks
@@ -64,10 +63,6 @@ const routes = (app, csrf) => {
     app.use('/request-organisation', requestOrganisation(csrf));
     app.use('/access-requests', accessRequests(csrf));
   }
-  app.get('/flush-application/:id', (req, res) => {
-    applicationCache.deleteCacheItem(req.params.id);
-    res.status(200).send('Cache item deleted').end();
-  });
   app.get('*', (req, res) => {
     res.status(404).render('errors/views/notFound');
   });

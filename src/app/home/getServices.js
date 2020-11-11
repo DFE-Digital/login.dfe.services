@@ -2,8 +2,6 @@
 const { getServicesForUser } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
 const Account = require('./../../infrastructure/account');
-const applicationCache = require('../../services/application-cache');
-
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const uniqBy = require('lodash/uniqBy');
@@ -19,23 +17,16 @@ const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
   const isMigrated = user && user.claims ? user.claims.isMigrated : false;
   const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
-  let
-    services = serviceAccess.map((sa) => ({
-      id: sa.serviceId,
-      name: '',
-      serviceUrl: '',
-      roles: sa.roles,
-    }));
+  const services = serviceAccess.map((sa) => ({
+    id: sa.serviceId,
+    name: '',
+    serviceUrl: '',
+    roles: sa.roles,
+  }));
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
     if (service && !service.isRole) {
-      let application = applicationCache.getApplication(service.id);
-
-      if (!application) {
-        application = await getApplication(service.id);
-        applicationCache.setApplication(service.id, application);
-      }
-
+      const application = await getApplication(service.id);
       if (
         application.relyingParty &&
         application.relyingParty.params &&
@@ -63,7 +54,6 @@ const getAndMapServices = async (account, correlationId) => {
       }
     }
   }
-
   // temporary disabled myesf service for users who were invited
   if (isMigrated) {
     services.push({
