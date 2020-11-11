@@ -2,14 +2,14 @@ class ApplicationCache {
     constructor() {
         this._cache = {};
 
-        setInterval(() => {
-            Object.entries(this._cache).forEach(([id, application]) => {
-                let now = Date.now();
-                if (now > application.expires) {
-                    delete this._cache[id]
-                }
-            });
-        }, 1000 * 60 * 30);     // check the cache every 30mins
+        // setInterval(() => {
+        //     Object.entries(this._cache).forEach(([id, application]) => {
+        //         let now = Date.now();
+        //         if (now > application.expires) {
+        //             delete this._cache[id]
+        //         }
+        //     });
+        // }, 1000 * 60 * 30);     // check the cache every 30mins
     }
 
     getApplication(id) {
