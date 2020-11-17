@@ -27,7 +27,7 @@ variables:
 - group: platform-global
 
 stages:
-- template: /Application/node/stages/signin-master-standalone-stage.yml@devopsTemplates
+- template: /Application/node/stages/signin-master-gateway-stage.yml@devopsTemplates
   parameters:
     applicationName: services
     resourceGroupSuffix: svc
