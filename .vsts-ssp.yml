@@ -30,6 +30,6 @@ stages:
 - template: /Application/node/stages/signin-master-gateway-stage.yml@devopsTemplates
   parameters:
     applicationName: services
-    resourceGroupSuffix: svc
+    resourceGroupSuffix: svc-failover
     armTemplateName: template-failover.json
     hostNameComponent: svc
