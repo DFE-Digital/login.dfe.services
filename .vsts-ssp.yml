@@ -14,11 +14,14 @@ resources:
 
 trigger:
   branches:
-    exclude:
+    include:
     - master
     - develop
-    - release/*
-    - feature/*
+
+pr:
+  branches:
+    exclude:
+    - develop
 
 variables:
 - group: platform-global
@@ -28,3 +31,5 @@ stages:
   parameters:
     applicationName: services
     resourceGroupSuffix: svc
+    armTemplateName: template-failover.json
+    hostNameComponent: svc
