@@ -53,10 +53,10 @@ const validate = async (req) => {
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
     model.validationMessages.email = 'Please enter a valid email address';
   } else {
-    const existingUser = await Account.getByEmail(model.email);
+    const existingUser = await Account.getById(model.email, req.id);
     const existingInvitation = await Account.getInvitationByEmail(model.email);
 
-    if (existingUser && existingUser.claims) {
+    if (existingUser) {
       const userOrganisations = await getOrganisationAndServiceForUser(existingUser.claims.sub, req.id);
       const isUserInOrg = userOrganisations.find((x) => x.organisation.id === req.params.orgId);
       if (isUserInOrg) {
