@@ -123,13 +123,29 @@ const init = async () => {
   //app.use(asyncMiddleware(setApproverContext));
   app.use(setConfigContext);
 
+  let routeCount = {};
+
+  app.use((req, res, next) => {
+    if (!routeCount[req.originalUrl]) {
+      routeCount[req.originalUrl] = 0;
+    }
+
+    routeCount[req.originalUrl]++;
+
+    next();
+  });
+
+  app.get('/debug/route-count', (req, res) => {
+    res.json(routeCount).status(200).end();
+  });
+
   registerRoutes(app, csrf);
 
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer(
     {
       help: config.hostingEnvironment.helpUrl,
       assets: assetsUrl,
-      assetsVersion: config.assets.version
+      assetsVersion: config.assets.version,
     },
     config.hostingEnvironment.env === 'dev',
   );
@@ -153,7 +169,8 @@ const init = async () => {
 
     server.listen(config.hostingEnvironment.port, () => {
       logger.info(
-        `Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port
+        `Dev server listening on https://${config.hostingEnvironment.host}:${
+          config.hostingEnvironment.port
         } with config:\n${JSON.stringify(config)}`,
       );
     });
