@@ -116,6 +116,7 @@ const init = async () => {
   //app.use(asyncMiddleware(setApproverContext));
   app.use(setConfigContext);
 
+  let routeCount = {};
 
   app.use((req, res, next) => {
     let key = req.originalUrl.split('?')[0];

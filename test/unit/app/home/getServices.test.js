@@ -22,14 +22,14 @@ const getServices = require('./../../../../src/app/home/getServices');
 
 const res = mockResponse();
 const userAccess = [
-  { serviceId: 'service1' }
+  { serviceId: 'service1' },
 ];
 const application = {
   name: 'Service One',
   relyingParty: {
     service_home: 'http://service.one/login',
     redirect_uris: [
-      'http://service.one/login/cb'
+      'http://service.one/login/cb',
     ],
   },
 };
@@ -56,7 +56,7 @@ describe('when displaying the users services', () => {
     Account.getById.mockReset().mockReturnValue({
       claims: {
         sub: 'user1',
-      }
+      },
     });
   });
 
@@ -104,13 +104,9 @@ describe('when displaying the users services', () => {
       name: 'Service One',
       relyingParty: {
         service_home: 'http://service.one/login',
-<<<<<<< HEAD
         redirect_uris: [
-          'http://service.one/login/cb'
+          'http://service.one/login/cb',
         ],
-=======
-        redirect_uris: ['http://service.one/login'],
->>>>>>> f89b206... Revert "Revert "fixed tests""
       },
     });
 
@@ -124,7 +120,7 @@ describe('when displaying the users services', () => {
       name: 'Service One',
       relyingParty: {
         redirect_uris: [
-          'http://service.one/login/cb'
+          'http://service.one/login/cb',
         ],
       },
     });
