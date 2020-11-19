@@ -126,11 +126,12 @@ const init = async () => {
   let routeCount = {};
 
   app.use((req, res, next) => {
-    if (!routeCount[req.originalUrl]) {
-      routeCount[req.originalUrl] = 0;
+    let key = req.originalUrl.split('?')[0];
+    if (!routeCount[key]) {
+      routeCount[key] = 0;
     }
 
-    routeCount[req.originalUrl]++;
+    routeCount[key]++;
 
     next();
   });

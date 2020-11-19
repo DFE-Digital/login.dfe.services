@@ -14,6 +14,7 @@ const getPassportStrategy = async () => {
     client_id: config.identifyingParty.clientId,
     client_secret: config.identifyingParty.clientSecret,
   });
+  console.log('signout url: ', client.issuer.end_session_endpoint);
   if (config.identifyingParty.clockTolerance && config.identifyingParty.clockTolerance > 0) {
     client.CLOCK_TOLERANCE = config.identifyingParty.clockTolerance;
   }
