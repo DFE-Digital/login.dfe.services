@@ -117,6 +117,21 @@ const init = async () => {
   app.use(setConfigContext);
 
 
+  app.use((req, res, next) => {
+    let key = req.originalUrl.split('?')[0];
+    if (!routeCount[key]) {
+      routeCount[key] = 0;
+    }
+
+    routeCount[key]++;
+
+    next();
+  });
+
+  app.get('/debug/route-count', (req, res) => {
+    res.json(routeCount).status(200).end();
+  });
+
   registerRoutes(app, csrf);
 
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer({
