@@ -20,12 +20,16 @@ const { getApplication } = require('./../../../../src/infrastructure/application
 const getServices = require('./../../../../src/app/home/getServices');
 
 const res = mockResponse();
-const userAccess = [{ serviceId: 'service1' }];
+const userAccess = [
+  { serviceId: 'service1' },
+];
 const application = {
   name: 'Service One',
   relyingParty: {
     service_home: 'http://service.one/login',
-    redirect_uris: ['http://service.one/login/cb'],
+    redirect_uris: [
+      'http://service.one/login/cb',
+    ],
   },
 };
 
@@ -99,7 +103,9 @@ describe('when displaying the users services', () => {
       name: 'Service One',
       relyingParty: {
         service_home: 'http://service.one/login',
-        redirect_uris: ['http://service.one/login/cb'],
+        redirect_uris: [
+          'http://service.one/login/cb',
+        ],
       },
     });
 
@@ -112,13 +118,15 @@ describe('when displaying the users services', () => {
     getApplication.mockReset().mockReturnValue({
       name: 'Service One',
       relyingParty: {
-        redirect_uris: ['http://service.one/login/cb'],
+        redirect_uris: [
+          'http://service.one/login/cb',
+        ],
       },
     });
 
     await getServices(req, res);
 
-    expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe('http://service.one/login/cb');
+    expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe('http://service.one/login');
   });
 
   it('then it should set serviceUrl to # if no service_home or redirects available', async () => {
@@ -131,6 +139,6 @@ describe('when displaying the users services', () => {
 
     await getServices(req, res);
 
-    expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe('#');
+    expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe('http://service.one/login');
   });
 });

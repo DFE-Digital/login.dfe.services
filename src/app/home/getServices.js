@@ -1,7 +1,5 @@
 'use strict';
-const { getServicesForUser } = require('./../../infrastructure/access');
-const { getApplication } = require('./../../infrastructure/applications');
-const Account = require('./../../infrastructure/account');
+
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const uniqBy = require('lodash/uniqBy');
@@ -13,16 +11,20 @@ const {
 } = require('./../../infrastructure/organisations');
 const config = require('./../../infrastructure/config');
 
+const { getOrganisationAndServiceForUser, getPendingRequestsAssociatedWithUser, getLatestRequestAssociatedWithUser } = require('../../infrastructure/organisations');
+const config = require('../../infrastructure/config');
+
 const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
   const isMigrated = user && user.claims ? user.claims.isMigrated : false;
   const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
-  const services = serviceAccess.map((sa) => ({
-    id: sa.serviceId,
-    name: '',
-    serviceUrl: '',
-    roles: sa.roles,
-  }));
+  const
+    services = serviceAccess.map((sa) => ({
+      id: sa.serviceId,
+      name: '',
+      serviceUrl: '',
+      roles: sa.roles,
+    }));
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
     if (service && !service.isRole) {
@@ -54,6 +56,7 @@ const getAndMapServices = async (account, correlationId) => {
       }
     }
   }
+
   // temporary disabled myesf service for users who were invited
   if (isMigrated) {
     services.push({
