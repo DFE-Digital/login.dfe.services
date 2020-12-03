@@ -103,9 +103,7 @@ describe('when displaying the users services', () => {
       name: 'Service One',
       relyingParty: {
         service_home: 'http://service.one/login',
-        redirect_uris: [
-          'http://service.one/login/cb',
-        ],
+        redirect_uris: ['http://service.one/login'],
       },
     });
 

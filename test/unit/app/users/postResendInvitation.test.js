@@ -4,6 +4,7 @@ jest.mock('./../../../../src/infrastructure/config', () => require('./../../../u
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 
 jest.mock('./../../../../src/infrastructure/account', () => ({
+  getByEmail: jest.fn(),
   getById: jest.fn(),
   getInvitationByEmail: jest.fn(),
   resendInvitation: jest.fn(),
@@ -63,6 +64,7 @@ describe('when resending an invitation', () => {
     };
     res = mockResponse();
 
+    Account.getByEmail.mockReset().mockReturnValue(null);
     Account.getById.mockReset().mockReturnValue(null);
     Account.getInvitationByEmail.mockReset().mockReturnValue(null);
 
@@ -126,6 +128,11 @@ describe('when resending an invitation', () => {
 
   it('then it should render view if email already associated to a user', async () => {
     Account.getById.mockReturnValue({
+      claims: {
+        sub: 'user1',
+      },
+    });
+    Account.getByEmail.mockReturnValue({
       claims: {
         sub: 'user1',
       },
