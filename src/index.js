@@ -70,6 +70,28 @@ const init = async () => {
     }),
   );
   app.set('view engine', 'ejs');
+
+  app.use(function (req, res, next) {
+
+    logger.audit({
+      type: 'ip',
+      subType: 'x-forwarded-for',
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `IP x-forwarded for ${req.headers['x-forwarded-for']}"`,
+    });
+
+    logger.audit({
+      type: 'ip',
+      subType: 'remoteAddress',
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `Remote Client Address is ${req.connection.remoteAddress}"`,
+    });
+
+    next();
+  });
+
   app.set('views', path.resolve(__dirname, 'app'));
   app.use(expressLayouts);
   app.set('layout', 'layouts/layout');
@@ -152,8 +174,7 @@ const init = async () => {
 
     server.listen(config.hostingEnvironment.port, () => {
       logger.info(
-        `Dev server listening on https://${config.hostingEnvironment.host}:${
-          config.hostingEnvironment.port
+        `Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port
         } with config:\n${JSON.stringify(config)}`,
       );
     });
