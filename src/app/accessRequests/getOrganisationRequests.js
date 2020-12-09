@@ -10,7 +10,7 @@ const getUserDetails = async (usersForApproval) => {
     return [];
   }
   const distinctUserIds = uniq(allUserId);
-  return await Account.getUsersById(distinctUserIds)
+  return await Account.getUsersByIdV2(distinctUserIds);
 };
 
 const getOrganisationRequests = async (req, res) => {
