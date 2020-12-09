@@ -9,6 +9,7 @@ jest.mock('./../../../../src/infrastructure/organisations', () => {
   };
 });
 jest.mock('./../../../../src/infrastructure/account', () => ({
+  getByEmail: jest.fn(),
   getById: jest.fn(),
   getInvitationByEmail: jest.fn(),
 }));
@@ -55,6 +56,7 @@ describe('when entering a new users details', () => {
     };
     res = mockResponse();
 
+    Account.getByEmail.mockReset().mockReturnValue(null);
     Account.getById.mockReset().mockReturnValue(null);
     Account.getInvitationByEmail.mockReset().mockReturnValue(null);
     getOrganisationAndServiceForInvitation.mockReset().mockReturnValue(null);
@@ -170,6 +172,11 @@ describe('when entering a new users details', () => {
         sub: 'user1',
       },
     });
+    Account.getByEmail.mockReturnValue({
+      claims: {
+        sub: 'user1',
+      },
+    });
     getOrganisationAndServiceForUser.mockReturnValue([
       {
         organisation: {
@@ -238,6 +245,11 @@ describe('when entering a new users details', () => {
         sub: 'user1',
       },
     });
+    Account.getByEmail.mockReturnValue({
+      claims: {
+        sub: 'user1',
+      },
+    });
     getOrganisationAndServiceForUser.mockReturnValue([
       {
         organisation: {
@@ -279,6 +291,11 @@ describe('when entering a new users details', () => {
   it('then it should redirect to confirm user if user not in org and include review in query string', async () => {
     req.query.review = 'true';
     Account.getById.mockReturnValue({
+      claims: {
+        sub: 'user1',
+      },
+    });
+    Account.getByEmail.mockReturnValue({
       claims: {
         sub: 'user1',
       },
