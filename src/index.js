@@ -123,18 +123,6 @@ const init = async () => {
   //app.use(asyncMiddleware(setApproverContext));
   app.use(setConfigContext);
 
-  let routeCount = {};
-
-  app.use((req, res, next) => {
-    let key = req.originalUrl.split('?')[0];
-    if (!routeCount[key]) {
-      routeCount[key] = 0;
-    }
-
-    routeCount[key]++;
-
-    next();
-  });
 
   app.use(function (req, res, next) {
     let userId = null;
@@ -200,10 +188,6 @@ const init = async () => {
     next();
   });
 
-  app.get('/debug/route-count', (req, res) => {
-    res.json(routeCount).status(200).end();
-  });
-
   registerRoutes(app, csrf);
 
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer(
@@ -234,7 +218,8 @@ const init = async () => {
 
     server.listen(config.hostingEnvironment.port, () => {
       logger.info(
-        `Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port
+        `Dev server listening on https://${config.hostingEnvironment.host}:${
+          config.hostingEnvironment.port
         } with config:\n${JSON.stringify(config)}`,
       );
     });
