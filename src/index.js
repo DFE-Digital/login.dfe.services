@@ -89,10 +89,46 @@ const init = async () => {
 
     logger.audit({
       type: 'ip',
+      subType: 'end-point',
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `Requested End Point is ${req.originalUrl}"`,
+      userId: userId,
+    });
+
+    logger.audit({
+      type: 'ip',
+      subType: 'host',
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `Host is ${req.headers['host']}"`,
+      userId: userId,
+    });
+
+    logger.audit({
+      type: 'ip',
+      subType: 'referer',
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `referer is ${req.headers['referer']}"`,
+      userId: userId,
+    });
+
+    logger.audit({
+      type: 'ip',
+      subType: 'user-agent',
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `user-agent is ${req.headers['user-agent']}"`,
+      userId: userId,
+    });
+
+    logger.audit({
+      type: 'ip',
       subType: 'remoteAddress',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `Remote Client Address is ${req.connection.remoteAddress}"`,
+      message: `Remote Address is ${req.connection.remoteAddress}"`,
       userId: userId,
     });
 
