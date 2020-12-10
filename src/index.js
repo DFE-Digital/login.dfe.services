@@ -70,6 +70,35 @@ const init = async () => {
     }),
   );
   app.set('view engine', 'ejs');
+
+  app.use(function (req, res, next) {
+    let userId = '';
+
+    if (req.user && req.user.sub) {
+      userId = req.user.sub;
+    }
+
+    logger.audit({
+      type: 'ip',
+      subType: 'x-forwarded-for',
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `IP x-forwarded for ${req.headers['x-forwarded-for']}"`,
+      userId: userId,
+    });
+
+    logger.audit({
+      type: 'ip',
+      subType: 'remoteAddress',
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `Remote Client Address is ${req.connection.remoteAddress}"`,
+      userId: userId,
+    });
+
+    next();
+  });
+
   app.set('views', path.resolve(__dirname, 'app'));
   app.use(expressLayouts);
   app.set('layout', 'layouts/layout');
