@@ -70,6 +70,35 @@ const init = async () => {
     }),
   );
   app.set('view engine', 'ejs');
+
+  app.use(function (req, res, next) {
+    let userId = '';
+
+    if (req.user && req.user.sub) {
+      userId = req.user.sub;
+    }
+
+    logger.audit({
+      type: 'ip',
+      subType: 'x-forwarded-for',
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `IP x-forwarded for ${req.headers['x-forwarded-for']}"`,
+      userId: userId,
+    });
+
+    logger.audit({
+      type: 'ip',
+      subType: 'remoteAddress',
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `Remote Client Address is ${req.connection.remoteAddress}"`,
+      userId: userId,
+    });
+
+    next();
+  });
+
   app.set('views', path.resolve(__dirname, 'app'));
   app.use(expressLayouts);
   app.set('layout', 'layouts/layout');
@@ -123,87 +152,6 @@ const init = async () => {
   //app.use(asyncMiddleware(setApproverContext));
   app.use(setConfigContext);
 
-  let routeCount = {};
-
-  app.use((req, res, next) => {
-    let key = req.originalUrl.split('?')[0];
-    if (!routeCount[key]) {
-      routeCount[key] = 0;
-    }
-
-    routeCount[key]++;
-
-    next();
-  });
-
-  app.use(function (req, res, next) {
-    let userId = null;
-
-    if (req.user && req.user.sub) {
-      userId = req.user.sub;
-    }
-
-    logger.audit({
-      type: 'technical-audit',
-      subType: 'x-forwarded-for',
-      application: config.loggerSettings.applicationName,
-      env: config.hostingEnvironment.env,
-      message: `IP x-forwarded for ${req.headers['x-forwarded-for']}`,
-      userId: userId,
-    });
-
-    logger.audit({
-      type: 'technical-audit',
-      subType: 'end-point',
-      application: config.loggerSettings.applicationName,
-      env: config.hostingEnvironment.env,
-      message: `Requested End Point is ${req.originalUrl}`,
-      userId: userId,
-    });
-
-    logger.audit({
-      type: 'technical-audit',
-      subType: 'host',
-      application: config.loggerSettings.applicationName,
-      env: config.hostingEnvironment.env,
-      message: `Host is ${req.headers['host']}`,
-      userId: userId,
-    });
-
-    logger.audit({
-      type: 'technical-audit',
-      subType: 'referer',
-      application: config.loggerSettings.applicationName,
-      env: config.hostingEnvironment.env,
-      message: `referer is ${req.headers['referer']}`,
-      userId: userId,
-    });
-
-    logger.audit({
-      type: 'technical-audit',
-      subType: 'user-agent',
-      application: config.loggerSettings.applicationName,
-      env: config.hostingEnvironment.env,
-      message: `user-agent is ${req.headers['user-agent']}`,
-      userId: userId,
-    });
-
-    logger.audit({
-      type: 'technical-audit',
-      subType: 'remoteAddress',
-      application: config.loggerSettings.applicationName,
-      env: config.hostingEnvironment.env,
-      message: `Remote Address is ${req.connection.remoteAddress}`,
-      userId: userId,
-    });
-
-    next();
-  });
-
-  app.get('/debug/route-count', (req, res) => {
-    res.json(routeCount).status(200).end();
-  });
-
   registerRoutes(app, csrf);
 
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer(
@@ -234,7 +182,8 @@ const init = async () => {
 
     server.listen(config.hostingEnvironment.port, () => {
       logger.info(
-        `Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port
+        `Dev server listening on https://${config.hostingEnvironment.host}:${
+          config.hostingEnvironment.port
         } with config:\n${JSON.stringify(config)}`,
       );
     });
