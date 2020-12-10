@@ -72,7 +72,7 @@ const init = async () => {
   app.set('view engine', 'ejs');
 
   app.use(function (req, res, next) {
-    let userId = '';
+    let userId = null;
 
     if (req.user && req.user.sub) {
       userId = req.user.sub;
