@@ -46,10 +46,10 @@ const validate = async (req) => {
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
     model.validationMessages.email = 'Please enter a valid email address';
   } else {
-    const existingUser = await Account.getById(model.email, req.id);
+    const existingUser = await Account.getByEmail(model.email);
     const existingInvitation = await Account.getInvitationByEmail(model.email);
 
-    if (existingUser || existingInvitation) {
+    if ((existingUser && existingUser.claims) || existingInvitation) {
       model.validationMessages.email = `A DfE Sign-in user already exists with that email address`;
     }
   }
