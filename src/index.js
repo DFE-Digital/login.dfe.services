@@ -83,7 +83,7 @@ const init = async () => {
       subType: 'x-forwarded-for',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `IP x-forwarded for ${req.headers['x-forwarded-for']}"`,
+      message: `IP x-forwarded for ${req.headers['x-forwarded-for']}`,
       userId: userId,
     });
 
@@ -92,7 +92,7 @@ const init = async () => {
       subType: 'end-point',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `Requested End Point is ${req.originalUrl}"`,
+      message: `Requested End Point is ${req.originalUrl}`,
       userId: userId,
     });
 
@@ -101,7 +101,7 @@ const init = async () => {
       subType: 'host',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `Host is ${req.headers['host']}"`,
+      message: `Host is ${req.headers['host']}`,
       userId: userId,
     });
 
@@ -110,7 +110,7 @@ const init = async () => {
       subType: 'referer',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `referer is ${req.headers['referer']}"`,
+      message: `referer is ${req.headers['referer']}`,
       userId: userId,
     });
 
@@ -119,7 +119,7 @@ const init = async () => {
       subType: 'user-agent',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `user-agent is ${req.headers['user-agent']}"`,
+      message: `user-agent is ${req.headers['user-agent']}`,
       userId: userId,
     });
 
@@ -128,7 +128,7 @@ const init = async () => {
       subType: 'remoteAddress',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `Remote Address is ${req.connection.remoteAddress}"`,
+      message: `Remote Address is ${req.connection.remoteAddress}`,
       userId: userId,
     });
 
