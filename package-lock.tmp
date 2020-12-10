@@ -5979,9 +5979,9 @@
       }
     },
     "login.dfe.dao": {
-      "version": "1.0.22",
-      "resolved": "https://sfa-gov-uk.pkgs.visualstudio.com/aa44e142-c0ac-4ace-a6b2-0d9a3f35d516/_packaging/DfESignin/npm/registry/login.dfe.dao/-/login.dfe.dao-1.0.22.tgz",
-      "integrity": "sha1-5ZnsJVgPCp3Lr8yxsirmIza+kps=",
+      "version": "1.0.34",
+      "resolved": "https://sfa-gov-uk.pkgs.visualstudio.com/aa44e142-c0ac-4ace-a6b2-0d9a3f35d516/_packaging/DfESignin/npm/registry/login.dfe.dao/-/login.dfe.dao-1.0.34.tgz",
+      "integrity": "sha1-Z0Ik9SuM1iA2gW7RzxyBiQx90yg=",
       "requires": {
         "eslint": "^6.8.0",
         "express": "^4.17.1",
@@ -7667,7 +7667,7 @@
       "dependencies": {
         "find-up": {
           "version": "2.1.0",
-          "resolved": "https://dfe-ssp.pkgs.visualstudio.com/_packaging/Signin-Default/npm/registry/find-up/-/find-up-2.1.0.tgz",
+          "resolved": "https://registry.npmjs.org/find-up/-/find-up-2.1.0.tgz",
           "integrity": "sha1-RdG35QbHF93UgndaK3eSCjwMV6c=",
           "dev": true,
           "requires": {
@@ -9382,9 +9382,9 @@
       }
     },
     "supertest": {
-      "version": "5.0.0",
-      "resolved": "https://sfa-gov-uk.pkgs.visualstudio.com/aa44e142-c0ac-4ace-a6b2-0d9a3f35d516/_packaging/DfESignin/npm/registry/supertest/-/supertest-5.0.0.tgz",
-      "integrity": "sha1-dxrt/rCpVGbMXRANXREohzb9Jdo=",
+      "version": "6.0.1",
+      "resolved": "https://sfa-gov-uk.pkgs.visualstudio.com/aa44e142-c0ac-4ace-a6b2-0d9a3f35d516/_packaging/DfESignin/npm/registry/supertest/-/supertest-6.0.1.tgz",
+      "integrity": "sha1-9rVDcN6FxF1lVxksjX32BMosnhg=",
       "dev": true,
       "requires": {
         "methods": "1.1.2",
