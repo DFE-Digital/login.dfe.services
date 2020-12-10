@@ -79,7 +79,7 @@ const init = async () => {
     }
 
     logger.audit({
-      type: 'ip',
+      type: 'technical-audit',
       subType: 'x-forwarded-for',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
@@ -88,7 +88,7 @@ const init = async () => {
     });
 
     logger.audit({
-      type: 'ip',
+      type: 'technical-audit',
       subType: 'end-point',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
@@ -97,7 +97,7 @@ const init = async () => {
     });
 
     logger.audit({
-      type: 'ip',
+      type: 'technical-audit',
       subType: 'host',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
@@ -106,7 +106,7 @@ const init = async () => {
     });
 
     logger.audit({
-      type: 'ip',
+      type: 'technical-audit',
       subType: 'referer',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
@@ -115,7 +115,7 @@ const init = async () => {
     });
 
     logger.audit({
-      type: 'ip',
+      type: 'technical-audit',
       subType: 'user-agent',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
@@ -124,7 +124,7 @@ const init = async () => {
     });
 
     logger.audit({
-      type: 'ip',
+      type: 'technical-audit',
       subType: 'remoteAddress',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
