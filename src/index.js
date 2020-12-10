@@ -73,12 +73,19 @@ const init = async () => {
 
   app.use(function (req, res, next) {
 
+    let userId = '';
+
+    if (req.user && req.user.sub) {
+      userId = req.user.sub;
+    }
+
     logger.audit({
       type: 'ip',
       subType: 'x-forwarded-for',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
       message: `IP x-forwarded for ${req.headers['x-forwarded-for']}"`,
+      userId: userId
     });
 
     logger.audit({
@@ -87,6 +94,7 @@ const init = async () => {
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
       message: `Remote Client Address is ${req.connection.remoteAddress}"`,
+      userId: userId
     });
 
     next();
