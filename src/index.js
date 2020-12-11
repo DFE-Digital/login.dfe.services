@@ -71,6 +71,57 @@ const init = async () => {
   );
   app.set('view engine', 'ejs');
 
+  app.set('views', path.resolve(__dirname, 'app'));
+  app.use(expressLayouts);
+  app.set('layout', 'layouts/layout');
+  app.use(
+    session({
+      resave: true,
+      saveUninitialized: true,
+      secret: config.hostingEnvironment.sessionSecret,
+      cookie: {
+        httpOnly: true,
+        secure: true,
+        expires: expiryDate,
+      },
+    }),
+  );
+  app.use(flash());
+
+  let assetsUrl = config.assets.url;
+  assetsUrl = assetsUrl.endsWith('/') ? assetsUrl.substr(0, assetsUrl.length - 1) : assetsUrl;
+  Object.assign(app.locals, {
+    moment,
+    urls: {
+      help: config.hostingEnvironment.helpUrl,
+      profile: config.hostingEnvironment.profileUrl,
+      interactions: config.hostingEnvironment.interactionsUrl,
+      assets: assetsUrl,
+      survey: config.hostingEnvironment.surveyUrl,
+    },
+    app: {
+      title: 'DfE Sign-in',
+      environmentBannerMessage: config.hostingEnvironment.environmentBannerMessage,
+    },
+    gaTrackingId: config.hostingEnvironment.gaTrackingId,
+    useApproverJourney: config.toggles.useApproverJourney,
+    useRequestOrg: config.toggles.useRequestOrganisation,
+    assets: {
+      version: config.assets.version,
+    },
+  });
+
+  passport.use('oidc', await getPassportStrategy());
+  passport.serializeUser((user, done) => {
+    done(null, user);
+  });
+  passport.deserializeUser((user, done) => {
+    done(null, user);
+  });
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.use(setUserContext);
+  
   app.use(function (req, res, next) {
     let userId = null;
 
@@ -134,57 +185,7 @@ const init = async () => {
 
     next();
   });
-
-  app.set('views', path.resolve(__dirname, 'app'));
-  app.use(expressLayouts);
-  app.set('layout', 'layouts/layout');
-  app.use(
-    session({
-      resave: true,
-      saveUninitialized: true,
-      secret: config.hostingEnvironment.sessionSecret,
-      cookie: {
-        httpOnly: true,
-        secure: true,
-        expires: expiryDate,
-      },
-    }),
-  );
-  app.use(flash());
-
-  let assetsUrl = config.assets.url;
-  assetsUrl = assetsUrl.endsWith('/') ? assetsUrl.substr(0, assetsUrl.length - 1) : assetsUrl;
-  Object.assign(app.locals, {
-    moment,
-    urls: {
-      help: config.hostingEnvironment.helpUrl,
-      profile: config.hostingEnvironment.profileUrl,
-      interactions: config.hostingEnvironment.interactionsUrl,
-      assets: assetsUrl,
-      survey: config.hostingEnvironment.surveyUrl,
-    },
-    app: {
-      title: 'DfE Sign-in',
-      environmentBannerMessage: config.hostingEnvironment.environmentBannerMessage,
-    },
-    gaTrackingId: config.hostingEnvironment.gaTrackingId,
-    useApproverJourney: config.toggles.useApproverJourney,
-    useRequestOrg: config.toggles.useRequestOrganisation,
-    assets: {
-      version: config.assets.version,
-    },
-  });
-
-  passport.use('oidc', await getPassportStrategy());
-  passport.serializeUser((user, done) => {
-    done(null, user);
-  });
-  passport.deserializeUser((user, done) => {
-    done(null, user);
-  });
-  app.use(passport.initialize());
-  app.use(passport.session());
-  app.use(setUserContext);
+  
   //app.use(asyncMiddleware(setApproverContext));
   app.use(setConfigContext);
 
