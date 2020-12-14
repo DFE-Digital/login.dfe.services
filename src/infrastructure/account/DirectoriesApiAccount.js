@@ -169,16 +169,14 @@ class DirectoriesApiAccount extends Account {
     }
   }
 
-  static async createInvite(firstName, lastName, email, clientId, redirectUri, approverEmail, orgName) {
+  static async createInvite(firstName, lastName, email, originClientId, originRedirectUri, approverEmail, orgName) {
     try {
       const response = await invitation.postInvitation({
         firstName,
         lastName,
         email,
-        origin: {
-          clientId,
-          redirectUri,
-        },
+        originClientId,
+        originRedirectUri,
         approverEmail,
         orgName,
       });
