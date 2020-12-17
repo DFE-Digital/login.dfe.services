@@ -114,7 +114,9 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
         taskListStatus.approverForOrg = organisation.organisation.id;
       }
       approvers = organisation.approvers.map((approver) => {
-        return allApprovers.filter((x) => x.claims.sub.toLowerCase() === approver.user_id.toLowerCase()).map((m)=>m.claims);
+        return allApprovers
+          .filter((x) => x.claims.sub.toLowerCase() === approver.user_id.toLowerCase())
+          .map((m) => m.claims);
       });
       if (approvers && approvers.length > 0) {
         ++taskListStatus.multiOrgDetails.approvers;

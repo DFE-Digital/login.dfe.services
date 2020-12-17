@@ -3,7 +3,6 @@ const jwtStrategy = require('login.dfe.jwt-strategies');
 const rp = require('login.dfe.request-promise-retry');
 const { organisation } = require('login.dfe.dao');
 
-
 const callApi = async (method, path, correlationId, body) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
 
