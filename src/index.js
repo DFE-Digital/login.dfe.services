@@ -125,7 +125,7 @@ const init = async () => {
   app.use(setConfigContext);
 
   app.use(function (req, res, next) {
-    if (req.originalUrl.indexOf('healthcheck') === -1) {
+    if (req.originalUrl && req.originalUrl.indexOf('healthcheck') === -1) {
       let userId = null;
 
       if (req.user && req.user.sub) {
@@ -141,14 +141,16 @@ const init = async () => {
         userId: userId,
       });
 
-      logger.audit({
-        type: 'technical-audit',
-        subType: 'end-point',
-        application: config.loggerSettings.applicationName,
-        env: config.hostingEnvironment.env,
-        message: `Requested End Point is ${req.originalUrl}`,
-        userId: userId,
-      });
+      if (req.originalUrl) {
+        logger.audit({
+          type: 'technical-audit',
+          subType: 'end-point',
+          application: config.loggerSettings.applicationName,
+          env: config.hostingEnvironment.env,
+          message: `Requested End Point is ${req.originalUrl}`,
+          userId: userId,
+        });
+      }
 
       logger.audit({
         type: 'technical-audit',
