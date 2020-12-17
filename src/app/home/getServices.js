@@ -22,7 +22,7 @@ const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
   const isMigrated = user && user.claims ? user.claims.isMigrated : false;
   const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
-  const services = serviceAccess.map((sa) => ({
+  let services = serviceAccess.map((sa) => ({
     id: sa.serviceId,
     name: '',
     serviceUrl: '',
@@ -85,7 +85,7 @@ const getApproversDetails = async (organisations) => {
   if (distinctApproverIds.length === 0) {
     return [];
   }
-  return Account.getUsersByIdV2(distinctApproverIds);
+  return Account.getUsersById(distinctApproverIds);
 };
 
 // This function should execute only if there are no services available for the user.

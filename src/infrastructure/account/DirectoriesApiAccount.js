@@ -114,14 +114,13 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async getById(id) {
-    const response = await callDirectoriesApi(`users/${id}`, null, 'GET');
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
-    }
-    return new DirectoriesApiAccount(response.result);
+    let user = await directories.getUser(id);
+    return new DirectoriesApiAccount(user);
+  }
+
+  static async getByEmail(email) {
+    let user = await directories.getUserByEmail(email);
+    return new DirectoriesApiAccount(user);
   }
 
   static async getInvitationByEmail(email) {
@@ -170,77 +169,49 @@ class DirectoriesApiAccount extends Account {
     }
   }
 
-  static async getUsersByIdV2(ids) {
-    const response = await callDirectoriesApi(`users/by-ids`, {
-      ids: ids.toString(),
-    });
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
+  static async createInvite(firstName, lastName, email, originClientId, originRedirectUri, approverEmail, orgName) {
+    try {
+      const response = await invitation.postInvitation({
+        firstName,
+        lastName,
+        email,
+        originClientId,
+        originRedirectUri,
+        approverEmail,
+        orgName,
+      });
+      return response ? response.id : null;
+    } catch (ex) {
+      throw ex;
     }
-    return response.result.map((a) => new DirectoriesApiAccount(a));
-  }
-
-  static async createInvite(firstName, lastName, email, clientId, redirectUri, approverEmail, orgName) {
-    const response = await callDirectoriesApi(`invitations`, {
-      firstName,
-      lastName,
-      email,
-      origin: {
-        clientId,
-        redirectUri,
-      },
-      approverEmail,
-      orgName,
-    });
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
-    }
-    return response.result.id;
   }
 
   static async updateInvite(id, email) {
-    const response = await callDirectoriesApi(
-      `invitations/${id}`,
-      {
-        email,
-      },
-      'PATCH',
-    );
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
+    try {
+      await invitation.patchInvitation({ id: id, email: email });
+      return true;
+    } catch (ex) {
+      throw ex;
     }
-    return true;
   }
 
   static async resendInvitation(id) {
-    const response = await callDirectoriesApi(`invitations/${id}/resend`);
-
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
+    try {
+      await invitation.resendInvitation(id);
+      return true;
+    } catch (ex) {
+      throw ex;
     }
-    return true;
   }
+
   static async getInvitationById(id) {
-    const response = await callDirectoriesApi(`invitations/${id}`, null, 'GET');
-    if (!response.success) {
-      if (response.statusCode === 404) {
-        return null;
-      }
-      throw new Error(response.errorMessage);
+    try {
+      let entity = await invitation.getInvitationById(id);
+      let mappedEntity = mapInvitationEntity(entity);
+      return mappedEntity;
+    } catch (ex) {
+      throw ex;
     }
-    return response.result;
   }
 }
 
