@@ -78,7 +78,8 @@ const getAndMapServices = async (account, correlationId) => {
 
 const getApproversDetails = async (organisations) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
-  const distinctApproverIds = uniq(allApproverIds);
+  const approverIds = allApproverIds.map((approver) => approver.user_id);
+  const distinctApproverIds = uniq(approverIds);
   if (distinctApproverIds.length === 0) {
     return [];
   }
@@ -112,8 +113,10 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
       if (organisation.role.id === 10000) {
         taskListStatus.approverForOrg = organisation.organisation.id;
       }
-      approvers = organisation.approvers.map((approverId) => {
-        return allApprovers.find((x) => x.id.toLowerCase() === approverId.toLowerCase());
+      approvers = organisation.approvers.map((approver) => {
+        return allApprovers
+          .filter((x) => x.claims.sub.toLowerCase() === approver.user_id.toLowerCase())
+          .map((m) => m.claims);
       });
       if (approvers && approvers.length > 0) {
         ++taskListStatus.multiOrgDetails.approvers;
