@@ -38,7 +38,11 @@ const putUserInOrganisation = async (userId, orgId, status, role, reason, correl
 };
 
 const getAllUsersForOrganisation = async (orgId, correlationId) => {
-  return callApi('GET', `/organisations/${orgId}/users`, correlationId);
+  try {
+    return await organisation.getUsersAssociatedWithOrganisation(orgId);
+  } catch (ex) {
+    throw ex;
+  }
 };
 
 const getServiceById = async (serviceId, correlationId) => {
