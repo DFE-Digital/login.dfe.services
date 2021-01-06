@@ -209,8 +209,8 @@
                                 "value": "4"
                             }
                         ]
-                    },
-                    "healthCheckPath": "/healthCheck"
+                    }
+                    
                    
                      
                 }
