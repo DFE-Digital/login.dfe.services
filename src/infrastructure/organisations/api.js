@@ -50,7 +50,7 @@ const getServiceById = async (serviceId, correlationId) => {
 };
 
 const deleteUserOrganisation = async (userId, organisationId, correlationId) => {
-  return callApi('DELETE', `organisations/${organisationId}/users/${userId}`, correlationId);
+  return await organisation.deleteUserOrganisation(organisationId, userId);
 };
 const deleteInvitationOrganisation = async (invitationId, organisationId, correlationId) => {
   return callApi('DELETE', `organisations/${organisationId}/invitations/${invitationId}`, correlationId);

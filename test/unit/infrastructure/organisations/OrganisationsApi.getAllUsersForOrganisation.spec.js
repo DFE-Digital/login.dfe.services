@@ -149,8 +149,11 @@ jest.mock('login.dfe.dao', () => {
           {
             id: '05A8B9E2-3550-4655-875D-01B017EC2555',
             status: 'status',
-          }
+          },
         ];
+      },
+      deleteUserOrganisation: async (orgId, userId) => {
+        return true;
       },
     },
   };
