@@ -148,6 +148,7 @@
         },
         {
             "apiVersion": "2017-05-10",
+            
             "name": "[parameters('appServiceName')]",
             "type": "Microsoft.Resources/deployments",
             "properties": {
@@ -189,10 +190,33 @@
                             "QUEUE_CONNECTION_STRING": "[parameters('auditServiceBusConnectionString')]",
                             "TOPIC_NAME": "[parameters('auditServiceBusTopicName')]",
                             "SUBSCRIPTION_NAME": "[parameters('auditServiceBusSubscriptionName')]"
+                            
                         }
-                    }
+                    },
+                    "appServiceAppSettings": {
+                        "value": [
+                            {
+                                "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                                "value": "[parameters('nodeVersion')]"
+                            },
+                            {
+                                "name": "settings",
+                                "value": "[parameters('appServiceConfigPath')]"
+                            },
+                            {
+                                "name": "WEBSITE_HEALTHCHECK_MAXPINGFAILURES",
+                                "slotSetting": false,
+                                "value": "4"
+                            }
+                        ]
+                    },
+                    "healthCheckPath": "/healthCheck"
+                   
+                     
                 }
+                
             },
+           
             "dependsOn": [
                 "[parameters('appServicePlanName')]"
             ]
