@@ -144,6 +144,9 @@ jest.mock('login.dfe.dao', () => {
           },
         ];
       },
+      deleteUserOrganisation: async (orgId, userId) => {
+        return true;
+      },
     },
   };
 });
