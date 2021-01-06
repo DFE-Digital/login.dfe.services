@@ -13,7 +13,7 @@
             "metadata": {
                 "description": "The sku of the App Service"
             }
-        },        
+        },
         "appServicePlanSku": {
             "type": "object",
             "metadata": {
@@ -70,6 +70,24 @@
             "type": "string",
             "metadata": {
                 "description": "The name of the Resource Group that contains the Key Vault"
+            }
+        },
+        "auditServiceBusConnectionString": {
+            "type": "string",
+            "metadata": {
+                "description": "ASB Connection String"
+            }
+        },
+        "auditServiceBusTopicName": {
+            "type": "string",
+            "metadata": {
+                "description": "ASB Topic Name"
+            }
+        },
+        "auditServiceBusSubscriptionName": {
+            "type": "string",
+            "metadata": {
+                "description": "ASB Subscription Name"
             }
         }
     },
@@ -135,7 +153,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/DFE-Digital/login.dfe.infrastructure/master/Shared/app-service.json",
+                    "uri": "https://raw.githubusercontent.com/DFE-Digital/login.dfe.infrastructure/master/Shared/app-service-azure-config.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -166,24 +184,13 @@
                     "certificateThumbprint": {
                         "value": "[reference(concat(parameters('appServiceName'), '-certificate')).outputs.certificateThumbprint.value]"
                     },
-                    "appServiceAppSettings": {
-                        "value": [
-                            {
-                                "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                                "value": "[parameters('nodeVersion')]"
-                            },
-                            {
-                                "name": "settings",
-                                "value": "[parameters('appServiceConfigPath')]"
-                            },
-                            {
-                                "name": "WEBSITE_HEALTHCHECK_MAXPINGFAILURES",
-                                "slotSetting": false,
-                                "value": "4"
-                            }
-                        ]
-                    },
-                    "healthCheckPath": "/healthCheck"
+                    "additionalAppSettings": {
+                        "value": {
+                            "QUEUE_CONNECTION_STRING": "[parameters('auditServiceBusConnectionString')]",
+                            "TOPIC_NAME": "[parameters('auditServiceBusTopicName')]",
+                            "SUBSCRIPTION_NAME": "[parameters('auditServiceBusSubscriptionName')]"
+                        }
+                    }
                 }
             },
             "dependsOn": [
