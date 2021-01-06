@@ -144,8 +144,13 @@ jest.mock('login.dfe.dao', () => {
           },
         ];
       },
-      deleteUserOrganisation: async (orgId, userId) => {
-        return true;
+      getUsersAssociatedWithOrganisation: async (orgId) => {
+        return [
+          {
+            id: '05A8B9E2-3550-4655-875D-01B017EC2555',
+            status: 'status',
+          }
+        ];
       },
     },
   };
@@ -179,30 +184,12 @@ describe('when getting all users in an organisation', () => {
     apiCall = require('./../../../../src/infrastructure/organisations/api');
   });
 
-  it('then it should query organisations api', async () => {
-    await apiCall.getAllUsersForOrganisation('user1');
-
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0].uri).toBe('http://orgs.api.test/organisations/user1/users');
-  });
-
-  it('then it should include the bearer token for authorization', async () => {
-    await apiCall.getAllUsersForOrganisation('user1');
-
-    expect(rp.mock.calls[0][0].headers).not.toBeNull();
-    expect(rp.mock.calls[0][0].headers.authorization).toBe('bearer token');
-  });
-
-  it('then it should map api result to array of user-organisations', async () => {
-    const actual = await apiCall.getAllUsersForOrganisation('user1');
+  it('then it should map dao result to array of user-organisations', async () => {
+    const actual = await apiCall.getAllUsersForOrganisation('orgId');
 
     expect(actual).not.toBeNull();
     expect(actual).toBeInstanceOf(Array);
     expect(actual).toHaveLength(1);
-    expect(actual[0].user_id).toBe('05A8B9E2-3550-4655-875D-01B017EC2555');
-    expect(actual[0].role.id).toBe(0);
-    expect(actual[0].role.name).toBe('End user');
-    expect(actual[0].status).toBe(0);
-    expect(actual[0].numberOfPages).toBe(1);
+    expect(actual[0].id).toBe('05A8B9E2-3550-4655-875D-01B017EC2555');
   });
 });
