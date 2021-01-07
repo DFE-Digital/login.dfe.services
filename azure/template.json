@@ -188,9 +188,14 @@
                         "value": {
                             "QUEUE_CONNECTION_STRING": "[parameters('auditServiceBusConnectionString')]",
                             "TOPIC_NAME": "[parameters('auditServiceBusTopicName')]",
-                            "SUBSCRIPTION_NAME": "[parameters('auditServiceBusSubscriptionName')]"
+                            "SUBSCRIPTION_NAME": "[parameters('auditServiceBusSubscriptionName')]",
+                            "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4"
                         }
+                    },
+                     "healthCheckPath": {
+                        "value": "/healthCheck"
                     }
+
                 }
             },
             "dependsOn": [
