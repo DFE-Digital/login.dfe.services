@@ -144,11 +144,10 @@ class DirectoriesApiAccount extends Account {
 
   async setPassword(password) {
     const uid = this.claims.sub;
-    const response = await callDirectoriesApi(`users/${uid}/changepassword`, {
-      password,
-    });
-    if (!response.success) {
-      throw new Error(response.errorMessage);
+    try {
+      return await directories.changePassword(uid, password);
+    } catch (ex) {
+      throw ex;
     }
   }
 
