@@ -12,7 +12,8 @@ const config = require('./../../infrastructure/config');
 
 const getApproversDetails = async (organisations) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
-  const distinctApproverIds = uniq(allApproverIds);
+  const approverIds = allApproverIds.map((approver) => approver.user_id);
+  const distinctApproverIds = uniq(approverIds);
   if (distinctApproverIds.length === 0) {
     return [];
   }
@@ -40,7 +41,7 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
   return organisations.map((organisation) => {
     const approvers = organisation.approvers
       .map((approverId) => {
-        return allApprovers.find((x) => x.id.toLowerCase() === approverId.toLowerCase());
+        return allApprovers.find((x) => x.claims.sub.toLowerCase() === approverId.user_id.toLowerCase());
       })
       .filter((x) => x);
     return {

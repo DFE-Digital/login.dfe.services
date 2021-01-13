@@ -1,6 +1,7 @@
 const config = require('./../config');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const rp = require('login.dfe.request-promise-retry');
+const { organisation } = require('login.dfe.dao');
 
 const callApi = async (method, path, correlationId, body) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
@@ -25,7 +26,7 @@ const callApi = async (method, path, correlationId, body) => {
 };
 
 const getOrganisationAndServiceForUser = async (userId, correlationId) => {
-  return callApi('GET', `/organisations/associated-with-user/${userId}`, correlationId);
+  return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
 const getOrganisationUsersForApproval = async (userId, correlationId) => {
@@ -37,7 +38,11 @@ const putUserInOrganisation = async (userId, orgId, status, role, reason, correl
 };
 
 const getAllUsersForOrganisation = async (orgId, correlationId) => {
-  return callApi('GET', `/organisations/${orgId}/users`, correlationId);
+  try {
+    return await organisation.getUsersAssociatedWithOrganisation(orgId);
+  } catch (ex) {
+    throw ex;
+  }
 };
 
 const getServiceById = async (serviceId, correlationId) => {
@@ -45,7 +50,7 @@ const getServiceById = async (serviceId, correlationId) => {
 };
 
 const deleteUserOrganisation = async (userId, organisationId, correlationId) => {
-  return callApi('DELETE', `organisations/${organisationId}/users/${userId}`, correlationId);
+  return await organisation.deleteUserOrganisation(organisationId, userId);
 };
 const deleteInvitationOrganisation = async (invitationId, organisationId, correlationId) => {
   return callApi('DELETE', `organisations/${organisationId}/invitations/${invitationId}`, correlationId);
