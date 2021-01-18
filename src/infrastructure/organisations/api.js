@@ -57,7 +57,7 @@ const deleteInvitationOrganisation = async (invitationId, organisationId, correl
 };
 
 const putInvitationInOrganisation = async (invitationId, orgId, role, correlationId) => {
-  return callApi('PUT', `/organisations/${orgId}/invitations/${invitationId}`, correlationId, { roleId: role });
+  return invitation.putInvitationOrganisation(invitationId, orgId, null, role, null);
 };
 
 const getOrganisationAndServiceForInvitation = async (invitationId, correlationId) => {
