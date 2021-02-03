@@ -124,10 +124,6 @@ const init = async () => {
   //app.use(asyncMiddleware(setApproverContext));
   app.use(setConfigContext);
 
-  app.use(function (req, res, next) {
-    next();
-  });
-
   //app.use(asyncMiddleware(setApproverContext));
   app.use(setConfigContext);
 
