@@ -61,7 +61,7 @@ const putInvitationInOrganisation = async (invitationId, orgId, role, correlatio
 };
 
 const getOrganisationAndServiceForInvitation = async (invitationId, correlationId) => {
-  return callApi('GET', `/invitations/v2/${invitationId}`, correlationId);
+  return await invitation.getInvitationResponseById(invitationId);
 };
 
 const getOrganisationById = async (orgId, correlationId) => {
