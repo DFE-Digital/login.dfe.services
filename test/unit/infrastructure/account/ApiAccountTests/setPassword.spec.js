@@ -17,12 +17,12 @@ jest.mock('login.dfe.dao', () => {
           },
         ];
       },
-      changePassword: async(uid, password) => {
+      changePassword: async (uid, password) => {
         return {
           email: 'kevin.lewis@hq.local',
           sub: 'F47D8673-8861-4A95-8286-000403EED219',
-        }
-      }
+        };
+      },
     },
   };
 });

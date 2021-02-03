@@ -57,7 +57,7 @@ const deleteInvitationOrganisation = async (invitationId, organisationId, correl
 };
 
 const putInvitationInOrganisation = async (invitationId, orgId, role, correlationId) => {
-  return callApi('PUT', `/organisations/${orgId}/invitations/${invitationId}`, correlationId, { roleId: role });
+  return invitation.putInvitationOrganisation(invitationId, orgId, null, role, null);
 };
 
 const getOrganisationAndServiceForInvitation = async (invitationId, correlationId) => {
@@ -65,11 +65,11 @@ const getOrganisationAndServiceForInvitation = async (invitationId, correlationI
 };
 
 const getOrganisationById = async (orgId, correlationId) => {
-  return callApi('GET', `organisations/v2/${orgId}`, correlationId);
+  return await organisation.getOrganisation(orgId);
 };
 
 const getOrganisationAndServiceForUserV2 = async (userId, correlationId) => {
-  return callApi('GET', `/organisations/v2/associated-with-user/${userId}`, correlationId);
+  return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
 const searchOrganisations = async (
