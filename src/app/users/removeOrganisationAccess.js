@@ -79,13 +79,16 @@ const post = async (req, res) => {
     userId: req.user.sub,
     userEmail: req.user.email,
     editedUser: uid,
-    editedFields: [
-      {
-        name: 'new_organisation',
-        oldValue: organisationId,
-        newValue: undefined,
-      },
-    ],
+    meta: {
+      editedFields: [
+        {
+          name: 'new_organisation',
+          oldValue: organisationId,
+          newValue: undefined,
+        },
+      ],
+      editedUser: uid,
+    },
     message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,

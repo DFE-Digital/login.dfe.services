@@ -150,13 +150,15 @@ describe('when editing organisation permission level', () => {
       subType: 'user-org-permission-edited',
       userId: 'user1',
       userEmail: 'user.one@unit.test',
-      editedUser: 'user1',
-      editedFields: [
-        {
-          name: 'edited_permission',
-          newValue: 'approver',
-        },
-      ],
+      meta: {
+        editedUser: 'user1',
+        editedFields: [
+          {
+            name: 'edited_permission',
+            newValue: 'approver',
+          },
+        ],
+      },
     });
   });
 

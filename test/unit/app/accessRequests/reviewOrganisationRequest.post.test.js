@@ -249,14 +249,16 @@ describe('when reviewing an organisation request', () => {
       type: 'approver',
       subType: 'approved-org',
       userId: 'user1',
-      editedUser: 'userId',
-      editedFields: [
-        {
-          name: 'new_organisation',
-          newValue: 'org1',
-          oldValue: undefined,
-        },
-      ],
+      meta: {
+        editedUser: 'userId',
+        editedFields: [
+          {
+            name: 'new_organisation',
+            newValue: 'org1',
+            oldValue: undefined,
+          },
+        ],
+      },
     });
   });
 
