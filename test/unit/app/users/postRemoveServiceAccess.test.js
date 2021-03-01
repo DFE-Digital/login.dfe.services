@@ -141,14 +141,16 @@ describe('when removing service access', () => {
       subType: 'user-service-deleted',
       userId: 'user1',
       userEmail: 'user.one@unit.test',
-      editedUser: 'user1',
-      editedFields: [
-        {
-          name: 'remove_service',
-          oldValue: 'service1',
-          newValue: undefined,
-        },
-      ],
+      meta: {
+        editedUser: 'user1',
+        editedFields: [
+          {
+            name: 'remove_service',
+            oldValue: 'service1',
+            newValue: undefined,
+          },
+        ],
+      },
     });
   });
 

@@ -145,13 +145,15 @@ describe('when editing a service for a user', () => {
       subType: 'user-service-updated',
       userId: 'user1',
       userEmail: 'user.one@unit.test',
-      editedUser: 'user1',
-      editedFields: [
-        {
-          name: 'update_service',
-          newValue: ['role1', 'role2'],
-        },
-      ],
+      meta: {
+        editedUser: 'user1',
+        editedFields: [
+          {
+            name: 'update_service',
+            newValue: ['role1', 'role2'],
+          },
+        ],
+      },
     });
   });
 
