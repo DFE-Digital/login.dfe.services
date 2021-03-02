@@ -38,8 +38,9 @@ const fetchConfig = () => {
       }
     }
   }
-
-  throw new Error('Missing configuration');
+  const settings = require('login.dfe.config')['login.dfe.services'];
+  process.env.settings = JSON.stringify('settings');
+  return settings;
 };
 
 module.exports = fetchConfig();
