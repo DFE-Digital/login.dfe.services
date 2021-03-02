@@ -344,13 +344,15 @@ describe('when inviting a new user', () => {
       subType: 'user-services-added',
       userId: req.user.sub,
       userEmail: req.user.email,
-      editedUser: req.params.uid,
-      editedFields: [
-        {
-          name: 'add_services',
-          newValue: req.session.user.services,
-        },
-      ],
+      meta: {
+        editedUser: req.params.uid,
+        editedFields: [
+          {
+            name: 'add_services',
+            newValue: req.session.user.services,
+          },
+        ],
+      },
     });
   });
 

@@ -155,14 +155,16 @@ describe('when removing organisation access', () => {
       subType: 'user-org-deleted',
       userId: 'user1',
       userEmail: 'user.one@unit.test',
-      editedUser: 'user1',
-      editedFields: [
-        {
-          name: 'new_organisation',
-          oldValue: 'org1',
-          newValue: undefined,
-        },
-      ],
+      meta: {
+        editedUser: 'user1',
+        editedFields: [
+          {
+            name: 'new_organisation',
+            oldValue: 'org1',
+            newValue: undefined,
+          },
+        ],
+      },
     });
   });
 
