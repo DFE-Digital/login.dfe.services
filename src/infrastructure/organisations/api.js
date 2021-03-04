@@ -1,4 +1,5 @@
 const config = require('./../config');
+const _ = require('lodash/fp');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const rp = require('login.dfe.request-promise-retry');
 const { organisation, invitation } = require('login.dfe.dao');
@@ -106,7 +107,9 @@ const getRequestsForOrganisation = async (organisationId, correlationId) => {
   return callApi('GET', `/organisations/${organisationId}/requests`, correlationId);
 };
 
-const getRequestById = organisation.getUserOrganisationRequest.bind(organisation);
+const getRequestById = async (...args) => {
+  return await organisation.getUserOrganisationRequest(...args);
+};
 
 const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {
   const body = {};
