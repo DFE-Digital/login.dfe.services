@@ -39,7 +39,7 @@ const fetchConfig = () => {
     }
   }
   const settings = require('login.dfe.config')['login.dfe.services'];
-  process.env.settings = JSON.stringify('settings');
+  process.env.settings = JSON.stringify(settings);
   return settings;
 };
 
