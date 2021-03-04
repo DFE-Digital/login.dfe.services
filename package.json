@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "settings='./config/login.dfe.services.dev.json' node src/index.js",
-    "test": "./node_modules/.bin/jest",
+    "test": "jest --runInBand --coverage",
     "lint": "eslint . --ext .js"
   },
   "engines": {
