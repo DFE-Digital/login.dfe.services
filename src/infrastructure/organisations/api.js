@@ -72,6 +72,8 @@ const getOrganisationAndServiceForUserV2 = async (userId, correlationId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
+const getUserOrganisationRequest = organisation.getUserOrganisationRequest.bind(organisation);
+
 const searchOrganisations = async (
   criteria,
   pageNumber,
@@ -165,4 +167,5 @@ module.exports = {
   getApproversForOrganisation,
   getLatestRequestAssociatedWithUser,
   getCategories,
+  getUserOrganisationRequest,
 };
