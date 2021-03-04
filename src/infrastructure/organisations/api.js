@@ -1,5 +1,4 @@
 const config = require('./../config');
-const _ = require('lodash/fp');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const rp = require('login.dfe.request-promise-retry');
 const { organisation, invitation } = require('login.dfe.dao');
