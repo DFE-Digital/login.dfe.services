@@ -72,8 +72,6 @@ const getOrganisationAndServiceForUserV2 = async (userId, correlationId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
-const getUserOrganisationRequest = organisation.getUserOrganisationRequest.bind(organisation);
-
 const searchOrganisations = async (
   criteria,
   pageNumber,
@@ -108,9 +106,7 @@ const getRequestsForOrganisation = async (organisationId, correlationId) => {
   return callApi('GET', `/organisations/${organisationId}/requests`, correlationId);
 };
 
-const getRequestById = async (requestId, correlationId) => {
-  return callApi('GET', `/organisations/requests/${requestId}`, correlationId);
-};
+const getRequestById = organisation.getUserOrganisationRequest.bind(organisation);
 
 const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {
   const body = {};
@@ -167,5 +163,4 @@ module.exports = {
   getApproversForOrganisation,
   getLatestRequestAssociatedWithUser,
   getCategories,
-  getUserOrganisationRequest,
 };
