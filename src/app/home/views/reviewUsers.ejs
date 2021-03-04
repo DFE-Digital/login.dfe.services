@@ -1,60 +1,11 @@
 <% if (locals.isApprover) { %>
     <div id="review-users-banner" class="notification notification-information" tabindex="-1" style="display:none">
-        <p><b>We recommend reviewing your users and their permissions.</b> <a href="/approvals/users" onclick='setReviewUserBannerLastSeen()'>Review users</a></p>
+        <p><b>We recommend reviewing your users and their permissions.</b> <a href="/approvals/users" onclick='setReviewUsersBannerLastSeen()'>Review users</a></p>
     </div>
 
     <script>
-        function getDsiCookie(name) {
-            if (!window.Cookies) {
-                return;
-            }
-
-            return window.Cookies.get(name);
-        }
-
-        function setDsiCookie(name, value) {
-            if (!window.Cookies) {
-                return;
-            }
-
-            return window.Cookies.set(
-                name,
-                value,
-                {
-                    expires: 365, // days
-                    secure: true,
-                    domain: 'localhost' // TODO .education.gov.uk
-                }
-            );
-        }
-
-        function checkReviewUsersBanner() {
-            // Check user's consent for the cookie
-            if (!!getDsiCookie('cookies_preferences_set')) {
-                var lastSeen = getDsiCookie('user_banner_last_seen');
-                if (!!lastSeen) {
-                    var numberOfDays = (new Date().getTime() - lastSeen) / (1000 * 3600 * 24);
-                    if (numberOfDays > 90) {
-                        // if the period is longer than 90 days show the banner
-                        showReviewUsersBanner();
-                    }
-                } else {
-                    // if there is no value then show the banner
-                    showReviewUsersBanner();
-                }
-            }
-        }
-
-        function showReviewUsersBanner(){
-            $('#review-users-banner').show();
-        }
-
-        function setReviewUserBannerLastSeen(){
-            setDsiCookie('user_banner_last_seen', new Date().getTime());
-        }
-
         $(function() {
-            checkReviewUsersBanner();
+            loadReviewUsersBanner();
         });
     </script>
 <% } %>
