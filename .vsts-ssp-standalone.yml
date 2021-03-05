@@ -26,5 +26,5 @@ variables:
 stages:
 - template: /Application/node/stages/signin-master-standalone-stage.yml@devopsTemplates
   parameters:
-    applicationName: services
+    applicationName: svc
     resourceGroupSuffix: svc
