@@ -1,6 +1,6 @@
 {
   "name": "login.dfe.services",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "scripts": {
     "dev": "settings='./config/login.dfe.services.dev.json' node src/index.js",
