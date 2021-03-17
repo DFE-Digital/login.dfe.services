@@ -113,14 +113,16 @@ const post = async (req, res) => {
     type: 'approver',
     subType: 'approved-org',
     userId: req.user.sub,
-    editedUser: model.request.user_id,
-    editedFields: [
-      {
-        name: 'new_organisation',
-        oldValue: undefined,
-        newValue: model.request.org_id,
-      },
-    ],
+    meta: {
+      editedFields: [
+        {
+          name: 'new_organisation',
+          oldValue: undefined,
+          newValue: model.request.org_id,
+        },
+      ],
+      editedUser: model.request.user_id,
+    },
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`,

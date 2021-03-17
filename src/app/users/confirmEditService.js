@@ -81,13 +81,15 @@ const post = async (req, res) => {
     subType: 'user-service-updated',
     userId: req.user.sub,
     userEmail: req.user.email,
-    editedUser: uid,
-    editedFields: [
-      {
-        name: 'update_service',
-        newValue: selectedRoles.selectedRoleIds,
-      },
-    ],
+    meta: {
+      editedFields: [
+        {
+          name: 'update_service',
+          newValue: selectedRoles.selectedRoleIds,
+        },
+      ],
+      editedUser: uid,
+    },
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) updated service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,

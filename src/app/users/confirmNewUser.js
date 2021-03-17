@@ -211,16 +211,18 @@ const post = async (req, res) => {
       subType: 'user-services-added',
       userId: req.user.sub,
       userEmail: req.user.email,
-      editedUser: uid,
-      editedFields: [
-        {
-          name: 'add_services',
-          newValue: req.session.user.services,
-        },
-      ],
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
       message: `${req.user.email} (id: ${req.user.sub}) added services for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
+      meta: {
+        editedFields: [
+          {
+            name: 'add_services',
+            newValue: req.session.user.services,
+          },
+        ],
+        editedUser: uid,
+      },
     });
 
     res.flash('info', `Services successfully added`);

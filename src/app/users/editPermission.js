@@ -67,16 +67,18 @@ const post = async (req, res) => {
     subType: 'user-org-permission-edited',
     userId: req.user.sub,
     userEmail: req.user.email,
-    editedUser: uid,
-    editedFields: [
-      {
-        name: 'edited_permission',
-        newValue: permissionName,
-      },
-    ],
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for org ${organisationDetails.organisation.name} (id: ${organisationId}) for user ${user.email} (id: ${uid})`,
+    meta: {
+      editedFields: [
+        {
+          name: 'edited_permission',
+          newValue: permissionName,
+        },
+      ],
+      editedUser: uid,
+    },
   });
   res.flash('info', role === 10000 ? `${user.email} now has approver access` : `${user.email} now has end user access`);
   return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);

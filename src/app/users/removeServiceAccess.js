@@ -71,14 +71,16 @@ const post = async (req, res) => {
     subType: 'user-service-deleted',
     userId: req.user.sub,
     userEmail: req.user.email,
-    editedUser: uid,
-    editedFields: [
-      {
-        name: 'remove_service',
-        oldValue: serviceId,
-        newValue: undefined,
-      },
-    ],
+    meta: {
+      editedFields: [
+        {
+          name: 'remove_service',
+          oldValue: serviceId,
+          newValue: undefined,
+        },
+      ],
+      editedUser: uid,
+    },
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
