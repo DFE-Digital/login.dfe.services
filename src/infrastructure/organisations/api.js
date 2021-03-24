@@ -106,8 +106,9 @@ const getRequestsForOrganisation = async (organisationId, correlationId) => {
   return callApi('GET', `/organisations/${organisationId}/requests`, correlationId);
 };
 
-const getRequestById = async (requestId, correlationId) => {
-  return callApi('GET', `/organisations/requests/${requestId}`, correlationId);
+const getRequestById = async (...args) => {
+  const { dataValues, ...request } = await organisation.getUserOrganisationRequest(...args);
+  return { ...dataValues, ...request, org_id: dataValues.organisation_id, org_name: dataValues.Organisation.name };
 };
 
 const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {

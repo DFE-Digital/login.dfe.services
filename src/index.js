@@ -121,10 +121,6 @@ const init = async () => {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(setUserContext);
-  //app.use(asyncMiddleware(setApproverContext));
-  app.use(setConfigContext);
-
-  //app.use(asyncMiddleware(setApproverContext));
   app.use(setConfigContext);
 
   registerRoutes(app, csrf);
