@@ -142,10 +142,13 @@ const updateRequestById = async (requestId, status, actionedBy, actionedReason, 
       ? `Must specify at least one property. Patchable properties ${patchableProperties}`
       : _getAllNotPatchableErrors(keys);
   }
+
   const validationErrorMessage = _validateUserOrganisationRequest(req);
+
   if (!isEmpty(validationErrorMessage)) {
     throw new Error(validationErrorMessage);
   }
+
   const rowsUpdated = await updateUserOrganisationRequest(requestId, body);
   if (rowsUpdated === 0) throw new Error('ENOTFOUND');
 };
