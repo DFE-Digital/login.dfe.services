@@ -1,6 +1,7 @@
 const config = require('./../config');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const rp = require('login.dfe.request-promise-retry');
+const { compose, join, map, filter, isEmpty } = require('lodash/fp');
 const { organisation, invitation } = require('login.dfe.dao');
 
 const callApi = async (method, path, correlationId, body) => {
@@ -64,7 +65,7 @@ const getOrganisationAndServiceForInvitation = async (invitationId, correlationI
   return await invitation.getInvitationResponseById(invitationId);
 };
 
-const getOrganisationById = async (orgId, correlationId) => {
+const getOrganisationById = async (orgId) => {
   return await organisation.getOrganisation(orgId);
 };
 
@@ -111,7 +112,7 @@ const getRequestById = async (...args) => {
   return { ...dataValues, ...request, org_id: dataValues.organisation_id, org_name: dataValues.Organisation.name };
 };
 
-const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {
+const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt) => {
   const body = {};
   if (status) {
     body.status = status;
@@ -125,7 +126,28 @@ const updateRequestById = async (requestId, status, actionedBy, actionedReason, 
   if (actionedAt) {
     body.actioned_at = actionedAt;
   }
-  return callApi('PATCH', `/organisations/requests/${requestId}`, correlationId, body);
+
+  const patchableProperties = ['status', 'actioned_by', 'actioned_reason', 'actioned_at'];
+
+  const _isNotPatchable = (key) => patchableProperties.indexOf(key) === -1;
+
+  const _formatNotPatchableMessage = (key) =>
+    `Unpatchable property ${key}. Allowed properties ${this.patchableProperties}`;
+
+  const _getAllNotPatchableErrors = compose(join(', '), map(_formatNotPatchableMessage), filter(_isNotPatchable));
+
+  function _validateUserOrganisationRequest(changesRequested) {
+    const keys = Object.keys(changesRequested);
+    return isEmpty(keys)
+      ? `Must specify at least one property. Patchable properties ${patchableProperties}`
+      : _getAllNotPatchableErrors(keys);
+  }
+  const validationErrorMessage = _validateUserOrganisationRequest(req);
+  if (!isEmpty(validationErrorMessage)) {
+    throw new Error(validationErrorMessage);
+  }
+  const rowsUpdated = await updateUserOrganisationRequest(requestId, body);
+  if (rowsUpdated === 0) throw new Error('ENOTFOUND');
 };
 
 const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
