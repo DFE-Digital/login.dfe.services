@@ -127,28 +127,6 @@ const updateRequestById = async (requestId, status, actionedBy, actionedReason, 
     body.actioned_at = actionedAt;
   }
 
-  const patchableProperties = ['status', 'actioned_by', 'actioned_reason', 'actioned_at'];
-
-  const _isNotPatchable = (key) => patchableProperties.indexOf(key) === -1;
-
-  const _formatNotPatchableMessage = (key) =>
-    `Unpatchable property ${key}. Allowed properties ${this.patchableProperties}`;
-
-  const _getAllNotPatchableErrors = compose(join(', '), map(_formatNotPatchableMessage), filter(_isNotPatchable));
-
-  function _validateUserOrganisationRequest(changesRequested) {
-    const keys = Object.keys(changesRequested);
-    return isEmpty(keys)
-      ? `Must specify at least one property. Patchable properties ${patchableProperties}`
-      : _getAllNotPatchableErrors(keys);
-  }
-
-  const validationErrorMessage = _validateUserOrganisationRequest(req);
-
-  if (!isEmpty(validationErrorMessage)) {
-    throw new Error(validationErrorMessage);
-  }
-
   const rowsUpdated = await updateUserOrganisationRequest(requestId, body);
   if (rowsUpdated === 0) throw new Error('ENOTFOUND');
 };
