@@ -1,7 +1,6 @@
 const config = require('./../config');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const rp = require('login.dfe.request-promise-retry');
-const { compose, join, map, filter, isEmpty } = require('lodash/fp');
 const { organisation, invitation } = require('login.dfe.dao');
 
 const callApi = async (method, path, correlationId, body) => {
