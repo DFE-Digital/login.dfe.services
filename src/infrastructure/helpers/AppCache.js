@@ -1,5 +1,5 @@
 const NodeCache = require('node-cache');
-const logger = require('./../logger');
+const logger = require('../logger');
 const config = require('../config');
 
 

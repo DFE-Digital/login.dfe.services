@@ -3,6 +3,7 @@ const { getServicesForUser } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
 const Account = require('./../../infrastructure/account');
 const appCache = require('./../../infrastructure/helpers/AppCache');
+const logger = require('./../../infrastructure/logger');
 
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
