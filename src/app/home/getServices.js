@@ -3,7 +3,6 @@ const { getServicesForUser } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
 const Account = require('./../../infrastructure/account');
 const appCache = require('./../../infrastructure/helpers/AppCache');
-const logger = require('./../../infrastructure/logger');
 
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
@@ -33,10 +32,7 @@ const getAndMapServices = async (account, correlationId) => {
 
       if (!application) {
         application = await getApplication(service.id);
-        const isStored = appCache.save(service.id, application);
-        if (isStored !== true) {
-          logger.warn(`key ${id} not stored in the cache`);
-        }
+        appCache.save(service.id, application);
       }
 
       if (
