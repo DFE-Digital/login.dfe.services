@@ -2,7 +2,7 @@
 const { getServicesForUser } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
 const Account = require('./../../infrastructure/account');
-const applicationCache = require('../../services/application-cache');
+const appCache = require('./../../infrastructure/helpers/AppCache');
 
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
@@ -28,11 +28,14 @@ const getAndMapServices = async (account, correlationId) => {
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
     if (service && !service.isRole) {
-      let application = applicationCache.getApplication(service.id);
+      let application = appCache.retrieve(service.id);
 
       if (!application) {
         application = await getApplication(service.id);
-        applicationCache.setApplication(service.id, application);
+        const isStored = appCache.save(service.id, application);
+        if (isStored !== true) {
+          logger.warn(`key ${id} not stored in the cache`);
+        }
       }
 
       if (
