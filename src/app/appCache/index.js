@@ -7,7 +7,7 @@ const AppCache = require('../../infrastructure/helpers/AppCache');
 const router = express.Router({mergeParams: true});
 const auth = require('../../infrastructure/helpers/auth');
 
-const signout = () => {
+const appCacheRoute = () => {
     logger.info('Mounting appcache route');
 
     router.use(auth({
@@ -32,4 +32,4 @@ const signout = () => {
     return router;
 };
 
-module.exports = signout;
+module.exports = appCacheRoute;
