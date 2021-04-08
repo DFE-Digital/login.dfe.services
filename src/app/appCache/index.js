@@ -5,9 +5,15 @@ const logger = require('../../infrastructure/logger');
 const {asyncWrapper} = require('login.dfe.express-error-handling');
 const AppCache = require('../../infrastructure/helpers/AppCache');
 const router = express.Router({mergeParams: true});
+const auth = require('../../infrastructure/helpers/auth');
 
 const signout = () => {
     logger.info('Mounting appcache route');
+
+    router.use(auth({
+        audience: 'signin.education.gov.uk',
+        clockTolerance: 30,
+    }));
 
     router.get(
         '/flush/:id',
