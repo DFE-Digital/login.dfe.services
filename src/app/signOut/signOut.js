@@ -14,11 +14,13 @@ const signUserOut = async (req, res) => {
     logger.audit({
       type: 'Sign-out',
       userId: req.user.sub,
-      email: req.user.email,
-      client: 'services',
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
       message: 'User logged out',
+      meta: {
+        email: req.user.email,
+        client: 'services',
+      },
     });
     const idToken = req.user.id_token;
     let returnUrl,
