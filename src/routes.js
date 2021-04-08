@@ -9,9 +9,7 @@ const healthCheck = require('login.dfe.healthcheck');
 const organisations = require('./app/organisations');
 const users = require('./app/users');
 const requestOrganisation = require('./app/requestOrganisation');
-const { getOrganisationAndServiceForUser } = require('./infrastructure/organisations');
-const applicationCache = require('./services/application-cache');
-const appCache = require('./infrastructure/helpers/AppCache');
+const appCache = require('./app/appCache');
 
 const routes = (app, csrf) => {
   // auth callbacks
@@ -65,15 +63,7 @@ const routes = (app, csrf) => {
     app.use('/request-organisation', requestOrganisation(csrf));
     app.use('/access-requests', accessRequests(csrf));
   }
-  app.get('/appcache/delete/:id', (req, res) => {
-    appCache.delete(req.params.id);
-    res.status(200).send('Cache item deleted').end();
-  });
-
-  app.get('/appcache/flush', (req, res) => {
-    appCache.flushAll();
-    res.status(200).send('Cache flushed').end();
-  });
+  app.use('/appcache', appCache(csrf));
 
   app.get('*', (req, res) => {
     res.status(404).render('errors/views/notFound');

@@ -14,6 +14,7 @@ const {
   getLatestRequestAssociatedWithUser,
 } = require('./../../infrastructure/organisations');
 const config = require('./../../infrastructure/config');
+const logger = require('./../../infrastructure/logger');
 
 const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
@@ -33,6 +34,9 @@ const getAndMapServices = async (account, correlationId) => {
       if (!application) {
         application = await getApplication(service.id);
         appCache.save(service.id, application);
+        logger.info(`${service.id} adding to app cache`);
+      }else{
+        logger.info(`${service.id} available in the cache`);
       }
 
       if (
