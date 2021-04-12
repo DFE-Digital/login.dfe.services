@@ -11,6 +11,11 @@ jest.mock('./../../../../src/infrastructure/access', () => ({
   getServicesForUser: jest.fn(),
 }));
 
+jest.mock('./../../../../src/infrastructure/logger', () => ({
+  info: jest.fn(),
+}));
+
+
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');

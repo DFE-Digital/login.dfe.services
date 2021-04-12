@@ -2,7 +2,7 @@
 const { getServicesForUser } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
 const Account = require('./../../infrastructure/account');
-const applicationCache = require('../../services/application-cache');
+const appCache = require('./../../infrastructure/helpers/AppCache');
 
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
@@ -14,6 +14,7 @@ const {
   getLatestRequestAssociatedWithUser,
 } = require('./../../infrastructure/organisations');
 const config = require('./../../infrastructure/config');
+const logger = require('./../../infrastructure/logger');
 
 const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
@@ -28,11 +29,14 @@ const getAndMapServices = async (account, correlationId) => {
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
     if (service && !service.isRole) {
-      let application = applicationCache.getApplication(service.id);
+      let application = appCache.retrieve(service.id);
 
       if (!application) {
         application = await getApplication(service.id);
-        applicationCache.setApplication(service.id, application);
+        appCache.save(service.id, application);
+        logger.info(`${service.id} adding to app cache`);
+      }else{
+        logger.info(`${service.id} available in the cache`);
       }
 
       if (
