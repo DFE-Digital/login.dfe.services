@@ -126,7 +126,7 @@ const updateRequestById = async (requestId, status, actionedBy, actionedReason, 
     body.actioned_at = actionedAt;
   }
 
-  const rowsUpdated = await updateUserOrganisationRequest(requestId, body);
+  const rowsUpdated = await organisation.updateUserOrganisationRequest(requestId, body);
   if (rowsUpdated === 0) throw new Error('ENOTFOUND');
 };
 
