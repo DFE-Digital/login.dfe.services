@@ -3,7 +3,9 @@
 const { getAllServices } = require('./../../infrastructure/applications');
 const uniqBy = require('lodash/uniqBy');
 const sortBy = require('lodash/sortBy');
-const config = require('./../../infrastructure/config');
+const config = require('../../infrastructure/config');
+const appCache = require('../../infrastructure/helpers/AppCache');
+const logger = require('../../infrastructure/logger/index');
 
 const getAndMapExternalServices = async (correlationId) => {
   const allServices = (await getAllServices(correlationId)) || [];
@@ -20,7 +22,17 @@ const getAndMapExternalServices = async (correlationId) => {
 };
 
 const home = async (req, res) => {
-  const services = await getAndMapExternalServices(req.id);
+  const allServicesId = 'allServices';
+  let services = appCache.retrieve(allServicesId);
+
+  if (!services) {
+    services = await getAndMapExternalServices(req.id);
+    appCache.save(allServicesId, services);
+    logger.info(`Adding ${allServicesId} to cache`);
+  } else {
+    logger.info(`${allServicesId} available in the cache`);
+  }
+
   const requestOrganisationToggle = config.toggles.useRequestOrganisation
     ? config.toggles.useRequestOrganisation
     : false;

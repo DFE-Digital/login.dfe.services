@@ -35,7 +35,7 @@ const getAndMapServices = async (account, correlationId) => {
         application = await getApplication(service.id);
         appCache.save(service.id, application);
         logger.info(`${service.id} adding to app cache`);
-      }else{
+      } else {
         logger.info(`${service.id} available in the cache`);
       }
 
