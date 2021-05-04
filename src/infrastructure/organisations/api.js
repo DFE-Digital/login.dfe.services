@@ -138,7 +138,8 @@ const updateRequestById = async (requestId, status, actionedBy, actionedReason, 
 };
 
 const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
-  return callApi('GET', `/organisations/requests-for-user/${userId}`, correlationId);
+  const pendingRequests = await organisation.getPendingUserOrganisationRequestsForUser(userId);
+  return pendingRequests;
 };
 
 const getApproversForOrganisation = async (orgId, correlationId) => {
