@@ -1,14 +1,14 @@
 <div class="grid-row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
             Reason for rejection
         </h1>
         <form method="post" id="form-deactivate" class="prevent-form-double-submission">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <fieldset>
-                <legend><p>Please give a reason for this rejection. This will be recorded for audit purposes and shared with the requester.</p></legend>
-                <div class="form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
-                    <label class="form-label" for="reason">Reason for rejection (optional) </label>
+                <legend><p class="govuk-body">Please give a reason for this rejection. This will be recorded for audit purposes and shared with the requester.</p></legend>
+                <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
+                    <label class="govuk-label" for="reason">Reason for rejection (optional) </label>
                     <% if (locals.validationMessages.reason !== undefined) { %>
                         <p class="error-message" id="validation-reason"><%= locals.validationMessages.reason %></p>
                     <% } %>

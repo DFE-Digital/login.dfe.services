@@ -1,19 +1,19 @@
-<div class="row">
-    <div class="col-8">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
         <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader) { %>
             <div class="notice" style="margin-top: 1.25em;">
                 <i class="icon icon-important">
-                    <span class="visually-hidden">Warning</span>
+                    <span class="govuk-visually-hidden">Warning</span>
                 </i>
-                <strong class="bold-small">
+                <strong class="govuk-!-font-size-19 govuk-!-font-weight-bold">
                     <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader %>
                 </strong>
             </div>
         <% } %>
-        <h1 class="heading-xlarge">
+        <h1 class="govuk-heading-xl">
             Select roles
         </h1>
-        <p>Showing service <%= locals.currentService%> of <%=locals.totalNumberOfServices%></p>
+        <p class="govuk-body">Showing service <%= locals.currentService%> of <%=locals.totalNumberOfServices%></p>
         <dl class="app-check-your-answers app-check-your-answers--short">
 
             <div class="app-check-your-answers__contents">
@@ -45,7 +45,7 @@
         </dl>
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <div class="form-group  <%= (locals.validationMessages.roles !== undefined) ? 'form-group-error' : '' %>">
+            <div class="govuk-form-group  <%= (locals.validationMessages.roles !== undefined) ? 'form-group-error' : '' %>">
                 <fieldset>
                     <% if (locals.validationMessages.roles !== undefined) { %>
                     <p class="error-message" id="validation-selected-role"><%=locals.validationMessages.roles%></p>
@@ -72,16 +72,16 @@
                             </div>
                         <% } %>
                     <% } else { %>
-                            <legend><h2 class="heading-small">There are no available roles for <%= locals.serviceDetails.name %>.</h2></legend>
+                            <legend><h2 class="govuk-heading-s">There are no available roles for <%= locals.serviceDetails.name %>.</h2></legend>
                     <% } %>
                 </fieldset>
             </div>
             <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter) { %>
                 <div class="notice" style="margin-bottom: 1.2em;">
                     <i class="icon icon-important">
-                        <span class="visually-hidden">Warning</span>
+                        <span class="govuk-visually-hidden">Warning</span>
                     </i>
-                    <strong class="bold-small">
+                    <strong class="govuk-!-font-size-19 govuk-!-font-weight-bold">
                         <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter %>
                     </strong>
                 </div>

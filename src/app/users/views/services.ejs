@@ -4,7 +4,7 @@
 <article class="organisation-services">
     <section class="organisation">
         <header>
-            <h3 class="heading-small spacer-heading"><%= locals.organisationDetails.organisation.name%></h3>
+            <h3 class="govuk-heading-s spacer-heading"><%= locals.organisationDetails.organisation.name%></h3>
         </header>
     </section>
     <section class="services">
@@ -26,7 +26,7 @@
                             <% if (service.disabled) { %>
                                 <p style="margin: 0"><%=service.name%></p>
                             <% } else { %>
-                            <a href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>"><%=service.name%></a>
+                            <a class="govuk-link-bold" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>"><%=service.name%></a>
                             <% } %>
                         </td>
                         <% if (service.dateActivated) { %>
@@ -45,6 +45,6 @@
 
 <% if (!hasServices) { %>
 <div class="empty-state">
-    <p><%=user.firstName%> <%=user.lastName%> does not have access to any services.</p>
+    <p class="govuk-body"><%=user.firstName%> <%=user.lastName%> does not have access to any services.</p>
 </div>
 <% } %>

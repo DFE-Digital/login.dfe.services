@@ -1,4 +1,4 @@
-<h1 class="heading-xlarge">Access requests</h1>
+<h1 class="govuk-heading-xl">Access requests</h1>
 <nav>
     <ul class="tabs" role="tablist">
         <li class="active">Organisations (<%=locals.usersForApproval.length%>)</li>
@@ -11,17 +11,17 @@
         <input type="hidden" value="<%=locals.usersForApproval[i].user_id%>" name="user_id" />
         <input type="hidden" value="<%=locals.usersForApproval[i].org_id%>" name="org_id" />
         <div class="request">
-            <p><b><%=locals.usersForApproval[i].usersName%></b>
+            <p class="govuk-body"><b><%=locals.usersForApproval[i].usersName%></b>
                 <span class="breakable">(<%=locals.usersForApproval[i].usersEmail%>)</span>
                 has requested access to <b><%=locals.usersForApproval[i].org_name%></b> &ndash;
                 <time datetime="<%=locals.usersForApproval[i].created_date%>"><%=moment(locals.usersForApproval[i].created_date).fromNow()%></time>
             </p>
             <a href="#respond-<%=i%>" data-target="respond-<%=i%>" class="button-respond js-toggle-content">Respond</a>
             <div class="respond js-hidden" id="respond-<%=i%>">
-                <div class="form-group">
+                <div class="govuk-form-group">
                     <fieldset class="inline">
                         <legend>
-                            <h2 class="heading-small">Your response</h2>
+                            <h2 class="govuk-heading-s">Your response</h2>
                         </legend>
                         <div class="multiple-choice" data-target="panel-permissions-<%=i%>">
                             <input id="radio-inline-approve-<%=i%>" type="radio" name="approve_reject" value="Approve">
@@ -34,10 +34,10 @@
                     </fieldset>
                 </div>
                 <div class="pnl js-hidden" id="panel-permissions-<%=i%>">
-                    <div class="form-group">
+                    <div class="govuk-form-group">
                         <fieldset class="inline">
                             <legend>
-                                <h2 class="heading-small">Permissions level</h2>
+                                <h2 class="govuk-heading-s">Permissions level</h2>
                             </legend>
                             <div class="multiple-choice">
                                 <input id="radio-inline-enduser-<%=i%>" type="radio" name="role" value="End user" checked="checked">
@@ -49,19 +49,19 @@
                             </div>
                         </fieldset>
                     </div>
-                    <div class="form-group form-submit">
+                    <div class="govuk-form-group form-submit">
                         <button type="submit" class="button">Save</button>
                     </div>
                 </div>
                 <div class="pnl js-hidden" id="panel-message-<%=i%>">
-                    <div class="form-group">
+                    <div class="govuk-form-group">
                         <label for="message-<%=i%>">
-                            <span class="form-label-bold">Reason for rejecting (optional)</span>
-                            <span class="form-hint">Any text you supply will be emailed to <%=locals.usersForApproval[i].usersName%> and stored in the audit </span>
+                            <span class="govuk-label--s">Reason for rejecting (optional)</span>
+                            <span class="govuk-label__hint">Any text you supply will be emailed to <%=locals.usersForApproval[i].usersName%> and stored in the audit </span>
                         </label>
                         <textarea rows="3" class="form-control" name="message" id="message-<%=i%>"></textarea>
                     </div>
-                    <div class="form-group form-submit">
+                    <div class="govuk-form-group form-submit">
                         <button type="submit" class="button">Save</button>
                     </div>
                 </div>

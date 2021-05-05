@@ -1,9 +1,9 @@
 <div class="grid-row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
             Review request
         </h1>
-        <p class="lede">Review these details before adding <%= locals.request.usersName %>
+        <p class="govuk-body-l">Review these details before adding <%= locals.request.usersName %>
             to <%= locals.request.org_name %>.</p>
 
         <dl class="app-check-your-answers app-check-your-answers--short">
@@ -62,7 +62,7 @@
         </dl>
 
         <form method="post" class="prevent-form-double-submission">
-            <div class="form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'form-group-error' : '' %>">
+            <div class="govuk-form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'form-group-error' : '' %>">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <fieldset class="inline">
                     <% if (locals.validationMessages.selectedResponse !== undefined) { %>
@@ -70,7 +70,7 @@
                        id="validation-selected-organisation"><%= locals.validationMessages.selectedResponse %></p>
                     <% } %>
                     <legend>
-                        <h2 class="heading-small">Your response</h2>
+                        <h2 class="govuk-heading-s">Your response</h2>
                     </legend>
                     <div class="multiple-choice">
                         <input id="approve" type="radio" name="selectedResponse" value="approve">

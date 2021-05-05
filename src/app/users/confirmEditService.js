@@ -9,19 +9,19 @@ const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/ap
 const getSelectedRoles = async (req) => {
   let selectedRoleIds = req.session.service.roles;
   const allRolesOfService = await listRolesOfService(req.params.sid, req.id);
-  let roleDetails;
+  let rotails;
 
   if (selectedRoleIds && !Array.isArray(selectedRoleIds)) {
     selectedRoleIds = [selectedRoleIds];
   }
   if (selectedRoleIds) {
-    roleDetails = allRolesOfService.filter((x) => selectedRoleIds.find((y) => y.toLowerCase() === x.id.toLowerCase()));
+    rotails = allRolesOfService.filter((x) => selectedRoleIds.find((y) => y.toLowerCase() === x.id.toLowerCase()));
   } else {
-    roleDetails = [];
+    rotails = [];
     selectedRoleIds = [];
   }
   return {
-    roleDetails,
+    rotails,
     selectedRoleIds,
   };
 };
@@ -45,7 +45,7 @@ const get = async (req, res) => {
       lastName: req.session.user.lastName,
       email: req.session.user.email,
     },
-    roles: selectedRoles.roleDetails,
+    roles: selectedRoles.rotails,
     service: userService,
   });
 };

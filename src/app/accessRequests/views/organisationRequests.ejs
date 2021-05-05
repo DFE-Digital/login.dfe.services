@@ -1,6 +1,6 @@
 <% if (locals.flash.info) { %>
-    <div class="row">
-        <div class="col-12">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
             <div class="notification notification-success">
                 <%= locals.flash.info %>
             </div>
@@ -9,8 +9,8 @@
 <% } %>
 
 <% if (locals.flash.warn) { %>
-    <div class="row">
-        <div class="col-12">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
             <div class="notification notification-information">
                 <%= locals.flash.warn %>
             </div>
@@ -18,9 +18,9 @@
     </div>
 <% } %>
 
-<div class="row">
-    <div class="col-12">
-        <h1 class="heading-xlarge">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">
             <span class="heading-secondary"><%= locals.organisation.name%> <%= locals.organisation.status ? `(${locals.organisation.status.name})` : '' %></span>
             Requests
         </h1>
@@ -34,7 +34,7 @@
             <% if (locals.requests.length > 0) { %>
                 <% for (let i = 0; i < locals.requests.length; i++) { %>
                 <div class="requestV2 <%= locals.requests[i].status && locals.requests[i].status.id === 2 ? 'overdue' : '' %>">
-                    <p>
+                    <p class="govuk-body">
                         <% if (locals.requests[i].status && locals.requests[i].status.id === 2) { %>
                             <span class="overdue-text">
                                 Overdue request from
@@ -50,7 +50,7 @@
                 <% } %>
             <% } else { %>
                 <div class="empty-state">
-                    <p>You have no outstanding requests for <%= locals.organisation.name %></p>
+                    <p class="govuk-body">You have no outstanding requests for <%= locals.organisation.name %></p>
                 </div>
             <% } %>
         </div>

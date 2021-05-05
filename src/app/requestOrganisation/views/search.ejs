@@ -1,13 +1,13 @@
 <div class="grid-row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
             Request an organisation
         </h1>
-        <p class="lede">Search for your organisation.</p>
+        <p class="govuk-body-l">Search for your organisation.</p>
     </div>
 </div>
 <div class="grid-row">
-    <div class="col-6">
+    <div class="govuk-grid-column-one-half">
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
             <input type="hidden" name="page" value="1" />
@@ -43,7 +43,7 @@
     %>
 
     <div class="grid-row">
-        <div class="col-12">
+        <div class="govuk-grid-column-full">
             <%- include('../../layouts/pagination', paginationModel); %>
 
             <ol class="search-results">
@@ -56,7 +56,7 @@
                     <%const org = organisations[i];%>
                     <li>
                         <article>
-                            <h2 class="heading-medium">
+                            <h2 class="govuk-heading-m">
                                 <form method="post">
                                     <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
                                     <input type="hidden" name="selectedOrganisation" value="<%=org.id%>" />

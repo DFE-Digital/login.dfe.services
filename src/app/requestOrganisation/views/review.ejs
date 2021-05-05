@@ -1,11 +1,11 @@
-<a href="search" class="link-back">Back</a>
+<a class="govuk-link-bold" href="search" class="link-back">Back</a>
 
-<div class="row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
             Confirm request
         </h1>
-        <p class="lede">An email with your request will be sent to approvers at <%=locals.organisation.name%>.</p>
+        <p class="govuk-body-l">An email with your request will be sent to approvers at <%=locals.organisation.name%>.</p>
 
         <dl class="app-check-your-answers app-check-your-answers--short">
             <div class="app-check-your-answers__contents">
@@ -85,8 +85,8 @@
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
             <input type="hidden" value="<%=locals.organisation.id%>" name="organisationId"/>
             <input type="hidden" value="<%=locals.organisation.name%>" name="organisationName"/>
-            <div class="form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
-                <label class="form-label" for="reason">
+            <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
+                <label class="govuk-label" for="reason">
                     Give a reason why you need to be linked to the organisation, or the services you need (Optional)
                 </label>
                 <% if (locals.validationMessages.reason !== undefined) { %>

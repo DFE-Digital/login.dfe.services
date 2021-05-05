@@ -1,21 +1,21 @@
-<div class="row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
             Confirm resend invitation email
         </h1>
 
-        <p>Please confirm the email address before resending an invitation to <%=locals.user.name%>.</p>
+        <p class="govuk-body">Please confirm the email address before resending an invitation to <%=locals.user.name%>.</p>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
         <form method="post" id="form-resend-invitation">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <fieldset>
                 <legend class="vh">Edit <%=locals.user.name%>&apos;s email address</legend>
-                <div class="form-group <%= (locals.validationMessages.email !== undefined) ? 'form-group-error' : '' %>">
-                    <label class="form-label" for="email">Email address </label>
+                <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'form-group-error' : '' %>">
+                    <label class="govuk-label" for="email">Email address </label>
                     <% if (locals.validationMessages.email !== undefined) { %>
                     <p class="error-message" id="validation-email"><%=locals.validationMessages.email %></p>
                     <% } %>

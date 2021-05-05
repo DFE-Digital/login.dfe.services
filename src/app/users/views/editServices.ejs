@@ -1,6 +1,6 @@
-<div class="row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
             Edit service
         </h1>
         <dl class="app-check-your-answers app-check-your-answers--short">
@@ -35,7 +35,7 @@
         <% if (locals.serviceRoles.length > 0) { %>
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <div class="form-group">
+            <div class="govuk-form-group">
                 <fieldset>
                     <legend>
                         <% if (locals.roleMessage) { %>
@@ -65,14 +65,14 @@
             </div>
         </form>
         <%}else {%>
-            <legend><h2 class="heading-small">There are no available roles for <%= locals.service.name %>.</h2></legend>
+            <legend><h2 class="govuk-heading-s">There are no available roles for <%= locals.service.name %>.</h2></legend>
         <%}%>
     </div>
-    <div class="col-4">
+    <div class="govuk-grid-column-one-third">
         <aside>
-            <h2 class="heading-medium">Actions</h2>
+            <h2 class="govuk-heading-m">Actions</h2>
             <ul class="list">
-                <li><a href="<%=locals.service.id%>/remove-service">Remove service</a> </li>
+                <li><a class="govuk-link-bold" href="<%=locals.service.id%>/remove-service">Remove service</a> </li>
             </ul>
         </aside>
     </div>

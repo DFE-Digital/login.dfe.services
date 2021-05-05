@@ -1,17 +1,17 @@
 <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
     <div class="panel panel-border-narrow alert-default" tabindex="0">
         <% if (locals.approverRequests.length === 1) { %>
-            <p>There is <strong class="bold-small"><%= locals.approverRequests.length %> request</strong> you need to
-                action - <a href="/access-requests">view requests</a></p>
+            <p class="govuk-body">There is <strong class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %> request</strong> you need to
+                action - <a class="govuk-link-bold" href="/access-requests">view requests</a></p>
         <% } else { %>
-            <p>There are <strong class="bold-small"><%= locals.approverRequests.length %> requests</strong> you need to
-                action - <a href="/access-requests">view requests</a></p>
+            <p class="govuk-body">There are <strong class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %> requests</strong> you need to
+                action - <a class="govuk-link-bold" href="/access-requests">view requests</a></p>
         <% } %>
     </div>
 <% } %>
 <% if (locals.flash.info) { %>
-<div class="row">
-    <div class="col-12">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
         <div class="notification notification-success">
             <%= locals.flash.info %>
         </div>
@@ -19,35 +19,35 @@
 </div>
 <% } %>
 
-<div class="row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">Organisations</h1>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Organisations</h1>
         <% if (organisations.length === 0) { %>
-            <p>To access services, your DfE Sign-in account must be linked to an organisation.</p>
+            <p class="govuk-body">To access services, your DfE Sign-in account must be linked to an organisation.</p>
         <% } %>
 
     </div>
 
     <% if (locals.useRequestOrg && !disableReqOrgLink) { %>
-        <div class="col-4">
+        <div class="govuk-grid-column-one-third">
             <aside>
-                <h2 class="heading-medium">Actions</h2>
+                <h2 class="govuk-heading-m">Actions</h2>
                 <ul class="list">
-                    <li><a href="/request-organisation/search">Request an organisation</a></li>
+                    <li><a class="govuk-link-bold" href="/request-organisation/search">Request an organisation</a></li>
                 </ul>
             </aside>
         </div>
     <% } %>
 </div>
 
-<div class="row">
-    <div class="col-8">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
         <% if (organisations.length <= 0) { %>
             <div class="empty-state">
                 <% if (locals.useRequestOrg) { %>
-                    <p>You are not linked to any organisations in DfE Sign-in. You can <a href="/request-organisation/search">request an organisation</a> to be linked to your account.</p>
+                    <p class="govuk-body">You are not linked to any organisations in DfE Sign-in. You can <a class="govuk-link-bold" href="/request-organisation/search">request an organisation</a> to be linked to your account.</p>
                 <% } else { %>
-                    <p>You are not linked to any organisations in DfE Sign-in, please contact your approver.</p>
+                    <p class="govuk-body">You are not linked to any organisations in DfE Sign-in, please contact your approver.</p>
                 <% } %>
             </div>
         <% } else { %>
@@ -95,21 +95,21 @@
                         <% } else if (organisation.approvers.length < 5) { %>
                             <ul>
                                 <% for (let a = 0; a < organisation.approvers.length; a++) { %>
-                                <li><a href="mailto:<%=organisation.approvers[a].email%>"><%= organisation.approvers[a].email %></a> </li>
+                                <li><a class="govuk-link-bold" href="mailto:<%=organisation.approvers[a].email%>"><%= organisation.approvers[a].email %></a> </li>
                                 <% } %>
                             </ul>
                         <% } else { %>
                             <article class="organisation-services" style="margin-bottom: 0">
                                 <section class="organisation" style="padding: 0; margin:0;">
                                     <div class="user">
-                                        <a href="" class="info-link" style="float: none;"><%= organisation.approvers.length %> approvers</a>
+                                        <a class="govuk-link-bold" href="" class="info-link" style="float: none;"><%= organisation.approvers.length %> approvers</a>
                                     </div>
                                     <div class="meta js-hidden">
                                         <div class="approvers">
                                             <dl class="inline condensed small-dt">
                                                 <ul>
                                                     <% for (let a = 0; a < organisation.approvers.length; a++) { %>
-                                                    <li><a href="mailto:<%=organisation.approvers[a].email%>"><%= organisation.approvers[a].email %></a> </li>
+                                                    <li><a class="govuk-link-bold" href="mailto:<%=organisation.approvers[a].email%>"><%= organisation.approvers[a].email %></a> </li>
                                                     <% } %>
                                                 </ul>
                                             </dl>

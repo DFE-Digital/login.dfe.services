@@ -1,16 +1,16 @@
 <div class="grid-row">
-    <div class="col-8">
+    <div class="govuk-grid-column-two-thirds">
         <% if (locals.user.isInvite) { %>
-            <h1 class="heading-xlarge">
+            <h1 class="govuk-heading-xl">
                 Review invite details
             </h1>
-            <p>The user will have to confirm their email address and create a password before their account is
+            <p class="govuk-body">The user will have to confirm their email address and create a password before their account is
                 active.</p>
         <% } else { %>
-            <h1 class="heading-xlarge">
+            <h1 class="govuk-heading-xl">
                 Review new services
             </h1>
-            <p>Please review these details before granting access</p>
+            <p class="govuk-body">Please review these details before granting access</p>
         <% } %>
         <dl class="app-check-your-answers app-check-your-answers--short">
             <div class="app-check-your-answers__contents">
@@ -19,7 +19,7 @@
                 </dt>
                 <dd class="app-check-your-answers__change ">
                     <% if (locals.user.isInvite) { %>
-                    <a href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/new-user?review=true">
+                    <a class="govuk-link-bold" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/new-user?review=true">
                         Change
                     </a>
                     <% } %>
@@ -77,7 +77,7 @@
                     Services
                 </dt>
                 <dd class="app-check-your-answers__change ">
-                    <a href="associate-services">
+                    <a class="govuk-link-bold" href="associate-services">
                         Change
                     </a>
                 </dd>
@@ -126,7 +126,7 @@
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Submit</button>
-                <a href="<%= locals.user.uid && locals.user.isInvite ? "./../" : "./" %>"
+                <a class="govuk-link-bold" href="<%= locals.user.uid && locals.user.isInvite ? "./../" : "./" %>"
                    class="button button-secondary">Cancel</a>
             </div>
         </form>

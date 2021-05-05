@@ -79,7 +79,7 @@
     <div class="global-navigation">
         <nav>
             <ul>
-                <% if (!locals.isLoggedIn) { %>
+                <% if (locals.isLoggedIn) { %>
                     <li><a href="/my-services" class="govuk-link-bold <%= locals.currentPage === 'services' ? 'current' : '' %>">Services</a></li>
                     <li><a href="/organisations" class="govuk-link-bold <%= locals.currentPage === 'organisations' ? 'current' : '' %>">Organisations</a></li>
                     <% if (locals.isApprover && locals.useApproverJourney) { %>

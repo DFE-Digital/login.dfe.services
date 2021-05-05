@@ -1,12 +1,12 @@
 <div class="grid-row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
             Confirm <%=locals.user.organisation.roleId === 10000 ? 'remove approver' : 'approver';%> access
         </h1>
-        <p class="lede">Please review these details before <%=locals.user.organisation.roleId === 10000 ? 'removing' : 'granting';%> approver access to <%=locals.organisationDetails.organisation.name%> for <%= locals.user.firstName %> <%= locals.user.lastName %></p>
+        <p class="govuk-body-l">Please review these details before <%=locals.user.organisation.roleId === 10000 ? 'removing' : 'granting';%> approver access to <%=locals.organisationDetails.organisation.name%> for <%= locals.user.firstName %> <%= locals.user.lastName %></p>
         <% if(locals.user.organisation.roleId !== 10000) { %>
-            <p>As an approver, <%= locals.user.firstName %> <%= locals.user.lastName %> will be able to:</p>
-            <ul class="list list-bullet">
+            <p class="govuk-body">As an approver, <%= locals.user.firstName %> <%= locals.user.lastName %> will be able to:</p>
+            <ul class="govuk-list govuk-list--bullet">
                 <li>invite new users to DfE Sign-in</li>
                 <li>approve requests to your organisation</li>
                 <li>add and remove user access to services</li>
