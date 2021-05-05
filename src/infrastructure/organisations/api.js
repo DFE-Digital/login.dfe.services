@@ -34,7 +34,14 @@ const getOrganisationUsersForApproval = async (userId, correlationId) => {
 };
 
 const putUserInOrganisation = async (userId, orgId, status, role, reason, correlationId) => {
-  return callApi('PUT', `/organisations/${orgId}/users/${userId}`, correlationId, { roleId: role, status, reason });
+  const userOrg = {
+    user_id: userId,
+    organisation_id: orgId,
+    role_id: role,
+    status,
+    reason,
+  };
+  return organisation.putUserOrganisation(userOrg);
 };
 
 const getAllUsersForOrganisation = async (orgId, correlationId) => {
