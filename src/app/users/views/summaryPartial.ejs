@@ -24,7 +24,7 @@
         <% if (!locals.user.deactivated) { %>
             <aside>
                 <h2 class="govuk-heading-m">Actions</h2>
-                <ul class="list">
+                <ul class="govuk-list">
                     <li><a class="govuk-link-bold" href="associate-services">Add services</a></li>
                     <li><a class="govuk-link-bold" href="edit-permission"><%=locals.user.organisation.roleId === 10000 ? 'Remove approver access' : 'Make approver';%></a></li>
                     <li><a class="govuk-link-bold" href="remove-organisation">Remove from organisation</a></li>
