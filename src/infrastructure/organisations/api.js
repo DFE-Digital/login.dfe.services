@@ -1,7 +1,7 @@
 const config = require('./../config');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const rp = require('login.dfe.request-promise-retry');
-const { organisation, invitation } = require('login.dfe.dao');
+const { organisation, invitation, services } = require('login.dfe.dao');
 
 const callApi = async (method, path, correlationId, body) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
@@ -50,10 +50,6 @@ const getAllUsersForOrganisation = async (orgId, correlationId) => {
   } catch (ex) {
     throw ex;
   }
-};
-
-const getServiceById = async (serviceId, correlationId) => {
-  return await callApi(`services/${serviceId}`, 'GET', undefined, correlationId);
 };
 
 const deleteUserOrganisation = async (userId, organisationId, correlationId) => {
@@ -158,7 +154,6 @@ module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
   putUserInOrganisation,
-  getServiceById,
   getAllUsersForOrganisation,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
