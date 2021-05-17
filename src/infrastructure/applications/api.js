@@ -1,6 +1,7 @@
 const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
+const { application } = require('login.dfe.dao');
 
 const servicesTogglePath = '/constants/toggleflags/email/services';
 
@@ -25,23 +26,8 @@ const getApplication = async (idOrClientId, correlationId) => {
 };
 
 const getPageOfService = async (pageNumber, pageSize) => {
-  const token = await jwtStrategy(config.applications.service).getBearerToken();
-  try {
-    const client = await rp({
-      method: 'GET',
-      uri: `${config.applications.service.url}/services?page=${pageNumber}&pageSize=${pageSize}`,
-      headers: {
-        authorization: `bearer ${token}`,
-      },
-      json: true,
-    });
-    return client;
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
+  const pageOfServices = await application.service.list(pageNumber, pageSize);
+  return !pageOfServices || pageOfServices.length === 0 ? undefined : pageOfServices;
 };
 
 const getAllServices = async () => {
