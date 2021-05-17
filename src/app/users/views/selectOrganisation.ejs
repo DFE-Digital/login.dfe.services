@@ -1,44 +1,54 @@
-<div class="grid-row">
+<div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">
             Select organisation
         </h1>
         <p class="govuk-body">Select the organisation that you want to manage users for.</p>
+
         <form method="post">
+
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+
             <div class="govuk-form-group <%= (locals.validationMessages.selectedOrganisation !== undefined) ? 'form-group-error' : '' %>">
-                <fieldset>
-                    <% if (locals.validationMessages.selectedOrganisation !== undefined) { %>
-                    <p class="error-message" id="validation-selected-organisation"><%=locals.validationMessages.selectedOrganisation %></p>
-                    <% } %>
-                    <legend class="vh">Select the organisation </legend>
-                    <% for(let i= 0; i < locals.organisations.length; i++) {
-                      const org = locals.organisations[i];
-                    %>
-                    <div class="multiple-choice">
-                        <input id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>">
-                        <label for="<%= org.organisation.id %>">
-                            <span class="govuk-label--s">
+
+                <% if (locals.validationMessages.selectedOrganisation !== undefined) { %>
+                    <span id="validation-selected-organisation" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.selectedOrganisation %>
+                    </span>
+                <% } %>
+
+                <div class="govuk-radios">
+
+                <% for(let i= 0; i < locals.organisations.length; i++) {
+                    const org = locals.organisations[i];
+                %>
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>">
+                        <label class="govuk-label govuk-radios__label" for="<%= org.organisation.id %>">
+                            <span class="govuk-label govuk-label--s">
                                 <%= org.organisation.name %> <%=org.organisation.status ? `(${org.organisation.status.name})` : '' %>
                             </span>
                             <% if (org.naturalIdentifiers) { %>
-                            <span class="govuk-label__hint">
-                                <%= org.naturalIdentifiers.join(', ') %>
-                            </span>
+                                <span class="govuk-hint govuk-label__hint" >
+                                    <%= org.naturalIdentifiers.join(', ') %>
+                                </span>
                             <% } %>
                             <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
-                                <span class="govuk-label__hint">
-                                <%= org.organisation.address %>
-                            </span>
+                                <span class="govuk-hint govuk-label__hint" >
+                                    <%= org.organisation.address %>
+                                </span>
                             <% } %>
                         </label>
                     </div>
-                    <% } %>
-                </fieldset>
+                <% } %>
+
+                </div>
+
             </div>
-            <div class="form-submit">
-                <button class="button">Continue</button>
-            </div>
+
+            <button class="govuk-button">Continue</button>
+
         </form>
+
     </div>
 </div>

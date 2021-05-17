@@ -50,19 +50,19 @@
                         </fieldset>
                     </div>
                     <div class="govuk-form-group form-submit">
-                        <button type="submit" class="button">Save</button>
+                        <button type="submit" class="govuk-button">Save</button>
                     </div>
                 </div>
                 <div class="pnl js-hidden" id="panel-message-<%=i%>">
                     <div class="govuk-form-group">
                         <label for="message-<%=i%>">
-                            <span class="govuk-label--s">Reason for rejecting (optional)</span>
-                            <span class="govuk-label__hint">Any text you supply will be emailed to <%=locals.usersForApproval[i].usersName%> and stored in the audit </span>
+                            <span class="govuk-label govuk-label--s">Reason for rejecting (optional)</span>
+                            <span class="govuk-hint govuk-label__hint" >Any text you supply will be emailed to <%=locals.usersForApproval[i].usersName%> and stored in the audit </span>
                         </label>
                         <textarea rows="3" class="form-control" name="message" id="message-<%=i%>"></textarea>
                     </div>
                     <div class="govuk-form-group form-submit">
-                        <button type="submit" class="button">Save</button>
+                        <button type="submit" class="govuk-button">Save</button>
                     </div>
                 </div>
             </div>

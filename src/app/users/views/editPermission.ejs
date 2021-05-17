@@ -1,4 +1,4 @@
-<div class="grid-row">
+<div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">
             Confirm <%=locals.user.organisation.roleId === 10000 ? 'remove approver' : 'approver';%> access
@@ -42,7 +42,7 @@
             <input type="hidden" name="selectedLevel" value="10000"/>
             <% } %>
             <div class="form-submit submit-buttons">
-                <button type="submit" class="button">Continue</button>
+                <button type="submit" class="govuk-button">Continue</button>
                 <a href="./" class="govuk-button govuk-button--secondary">Cancel</a>
             </div>
         </form>
