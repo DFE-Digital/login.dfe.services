@@ -11,7 +11,7 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">
-            <span class="heading-secondary"><%= locals.organisationDetails.organisation.name%> <%=locals.organisationDetails.organisation.status ? `(${locals.organisationDetails.organisation.status.name})` : '' %></span>
+            <span class="govuk-caption-xl"><%= locals.organisationDetails.organisation.name%> <%=locals.organisationDetails.organisation.status ? `(${locals.organisationDetails.organisation.status.name})` : '' %></span>
             Manage users
         </h1>
         <p class="govuk-body">Select a user from the list below and you'll be able to edit their permissions and services.</p>
@@ -55,18 +55,18 @@ const paginationModel = {
             <% let baseSortUri = `?page=${page}`;%>
             <tr class="sortable">
                 <th scope="col" class="cwp-15">
-                    <a class="govuk-link-bold" href="<%=baseSortUri%>&sort=searchableName&sortdir=<%= locals.sort.searchableName.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=searchableName&sortdir=<%= locals.sort.searchableName.nextDirection %>"
                        class="<% if (locals.sort.searchableName.applied) { %>sorted dir-<%= (locals.sort.searchableName.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">Name</a></th>
                 <th scope="col" class="cwp-35">
-                    <a class="govuk-link-bold" href="<%=baseSortUri%>&sort=searchableEmail&sortdir=<%= locals.sort.searchableEmail.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=searchableEmail&sortdir=<%= locals.sort.searchableEmail.nextDirection %>"
                        class="<% if (locals.sort.searchableEmail.applied) { %>sorted dir-<%= (locals.sort.searchableEmail.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">Email</a></th>
                 <th scope="col" class="cwp-15">
-                    <a class="govuk-link-bold" href="#" class="">Is approver</a></th>
+                    <a href="#" class="">Is approver</a></th>
                 <th scope="col" class="cwp-10">
-                    <a class="govuk-link-bold" href="<%=baseSortUri%>&sort=lastLogin&sortdir=<%= locals.sort.lastLogin.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=lastLogin&sortdir=<%= locals.sort.lastLogin.nextDirection %>"
                        class="<% if (locals.sort.lastLogin.applied) { %>sorted dir-<%= (locals.sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">Last login</a></th>
                 <th scope="col" class="cwp-10">
-                    <a class="govuk-link-bold" href="<%=baseSortUri%>&sort=statusId&sortdir=<%= locals.sort.statusId.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=statusId&sortdir=<%= locals.sort.statusId.nextDirection %>"
                        class="<% if (locals.sort.statusId.applied) { %>sorted dir-<%= (locals.sort.statusId.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">Status</a></th>
             </tr>
             </thead>
@@ -79,7 +79,7 @@ const paginationModel = {
             <% for(let i= 0; i < locals.usersForOrganisation.users.length; i++) {
             const user = locals.usersForOrganisation.users[i]%>
             <tr>
-                <td><a class="govuk-link-bold" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= user.id%>"><%= user.firstName %> <%= user.lastName %></a></td>
+                <td><a class="govuk-link" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= user.id%>"><%= user.firstName %> <%= user.lastName %></a></td>
 
                 <td><span class="breakable"><%=user.email%></span></td>
                 <%
