@@ -1,4 +1,4 @@
-<a class="govuk-link-bold" href="search" class="link-back">Back</a>
+<a href="search" class="govuk-back-link-bold">Back</a>
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -7,98 +7,71 @@
         </h1>
         <p class="govuk-body-l">An email with your request will be sent to approvers at <%=locals.organisation.name%>.</p>
 
-        <dl class="app-check-your-answers app-check-your-answers--short">
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
-                    Request details
-                </dt>
-                <dd class="app-check-your-answers__change ">
-                </dd>
-            </div>
-
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    Organisation
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.organisation.name %>
-                </dd>
-            </div>
-
-            <% if (locals.organisation.address) { %>
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    Address
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.organisation.address %>
-                </dd>
-            </div>
-            <% } %>
-
-            <% if (locals.organisation.category && locals.organisation.category.name) { %>
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    Category
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.organisation.category.name %>
-                </dd>
-            </div>
-            <% } %>
-
-            <% if (locals.organisation.urn) { %>
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    URN
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.organisation.urn %>
-                </dd>
-            </div>
-            <% } %>
-
-            <% if (locals.organisation.uid) { %>
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    UID
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.organisation.uid %>
-                </dd>
-            </div>
-            <% } %>
-
-            <% if (locals.organisation.ukprn) { %>
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    UKPRN
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.organisation.ukprn%>
-                </dd>
-            </div>
-            <% } %>
-        </dl>
+        <table class="govuk-table">
+            <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                    <th scope="col" class="govuk-table__header govuk-!-width-one-third"></th>
+                    <th scope="col" class="govuk-table__header govuk-!-width-two-thirds"></th>
+                </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">Organisation</th>
+                    <td class="govuk-table__cell"><%= locals.organisation.name %></td>
+                </tr>
+                <% if (locals.organisation.address) { %>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">Address</th>
+                        <td class="govuk-table__cell"><%= locals.organisation.address %></td>
+                    </tr>
+                <% } %>
+                <% if (locals.organisation.category && locals.organisation.category.name) { %>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">Category</th>
+                        <td class="govuk-table__cell"><%= locals.organisation.category.name %></td>
+                    </tr>
+                <% } %>
+                <% if (locals.organisation.urn) { %>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">URN</th>
+                        <td class="govuk-table__cell"><%= locals.organisation.urn %></td>
+                    </tr>
+                <% } %>
+                <% if (locals.organisation.uid) { %>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">UID</th>
+                        <td class="govuk-table__cell"><%= locals.organisation.uid %></td>
+                    </tr>
+                <% } %>
+                <% if (locals.organisation.ukprn) { %>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">UKPRN</th>
+                        <td class="govuk-table__cell"><%= locals.organisation.ukprn %></td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
 
         <form method="post" class="prevent-form-double-submission">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
             <input type="hidden" value="<%=locals.organisation.id%>" name="organisationId"/>
             <input type="hidden" value="<%=locals.organisation.name%>" name="organisationName"/>
-            <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
+            
+            <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>">
                 <label class="govuk-label" for="reason">
                     Give a reason why you need to be linked to the organisation, or the services you need (Optional)
                 </label>
                 <% if (locals.validationMessages.reason !== undefined) { %>
-                <p class="error-message" id="validation-message"><%=locals.validationMessages.reason %></p>
+                    <span id="validation-message" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.reason %>
+                    </span>
                 <% } %>
-                <textarea class="form-control" id="reason" name="reason" maxlength="1000" rows = "6" style="width: 100%;"></textarea>
+                <textarea class="govuk-textarea govuk-!-width-full" id="reason" name="reason" maxlength="1000" rows = "6"></textarea>
             </div>
 
-            <div class="wo form-submit submit-buttons">
-                <button type="submit" class="govuk-button">Confirm</button>
-                <a href="/my-services" class="govuk-button govuk-button--secondary">Cancel</a>
-            </div>
+            <button type="submit" class="govuk-button">Confirm</button>
+            <a href="/my-services" class="govuk-button govuk-button--secondary">Cancel</a>
+
         </form>
     </div>
 </div>
