@@ -5,24 +5,31 @@
         </h1>
         <form method="post" id="form-deactivate" class="prevent-form-double-submission">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <fieldset>
-                <legend><p class="govuk-body">Please give a reason for this rejection. This will be recorded for audit purposes and shared with the requester.</p></legend>
-                <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
-                    <label class="govuk-label" for="reason">Reason for rejection (optional) </label>
+
+            <fieldset class="govuk-fieldset">
+
+                <legend class="govuk-fieldset__legend">
+                    <p class="govuk-body">Please give a reason for this rejection. This will be recorded for audit purposes and shared with the requester.</p>
+                </legend>
+
+                <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>">
+                    <label class="govuk-label govuk-label--s" for="reason">Reason for rejection (optional) </label>
                     <% if (locals.validationMessages.reason !== undefined) { %>
-                        <p class="error-message" id="validation-reason"><%= locals.validationMessages.reason %></p>
+                        <span id="validation-reason" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.reason %>
+                        </span>
                     <% } %>
-                    <textarea class="form-control full-width" rows="6" id="reason" name="reason"
+                    <textarea class="govuk-textarea govuk-!-width-full" rows="6" id="reason" name="reason"
                     <% if (locals.validationMessages.reason !== undefined) { %>
-                              aria-invalid="true" aria-describedby="validation-reason"
+                                aria-invalid="true" aria-describedby="validation-reason"
                             <% } %>
-                              value="<%= locals.reason %>"></textarea>
+                                value="<%= locals.reason %>"></textarea>
                 </div>
+
             </fieldset>
-            <div class="form-submit submit-buttons">
-                <button type="submit" class="govuk-button">Confirm</button>
-                <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
-            </div>
+
+            <button type="submit" class="govuk-button">Confirm</button>
+            <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
         </form>
     </div>
 </div>

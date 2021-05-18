@@ -9,40 +9,46 @@
 
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
 
-            <div class="govuk-form-group <%= (locals.validationMessages.selectedOrganisation !== undefined) ? 'form-group-error' : '' %>">
+            <div class="govuk-form-group <%= (locals.validationMessages.selectedOrganisation !== undefined) ? 'govuk-form-group--error' : '' %>">
 
-                <% if (locals.validationMessages.selectedOrganisation !== undefined) { %>
-                    <span id="validation-selected-organisation" class="govuk-error-message">
-                        <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.selectedOrganisation %>
-                    </span>
-                <% } %>
+                <fieldset class="govuk-fieldset">
 
-                <div class="govuk-radios">
+                    <% if (locals.validationMessages.selectedOrganisation !== undefined) { %>
+                        <span id="validation-selected-organisation" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.selectedOrganisation %>
+                        </span>
+                    <% } %>
 
-                <% for(let i= 0; i < locals.organisations.length; i++) {
-                    const org = locals.organisations[i];
-                %>
-                    <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>">
-                        <label class="govuk-label govuk-radios__label" for="<%= org.organisation.id %>">
-                            <span class="govuk-label govuk-label--s">
-                                <%= org.organisation.name %> <%=org.organisation.status ? `(${org.organisation.status.name})` : '' %>
-                            </span>
-                            <% if (org.naturalIdentifiers) { %>
-                                <span class="govuk-hint govuk-label__hint" >
-                                    <%= org.naturalIdentifiers.join(', ') %>
+                    <legend class="govuk-visually-hidden">Select the organisation</legend>
+
+                    <div class="govuk-radios">
+
+                    <% for(let i= 0; i < locals.organisations.length; i++) {
+                        const org = locals.organisations[i];
+                    %>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>">
+                            <label class="govuk-label govuk-radios__label" for="<%= org.organisation.id %>">
+                                <span class="govuk-label govuk-label--s">
+                                    <%= org.organisation.name %> <%=org.organisation.status ? `(${org.organisation.status.name})` : '' %>
                                 </span>
-                            <% } %>
-                            <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
-                                <span class="govuk-hint govuk-label__hint" >
-                                    <%= org.organisation.address %>
-                                </span>
-                            <% } %>
-                        </label>
+                                <% if (org.naturalIdentifiers) { %>
+                                    <span class="govuk-hint govuk-label__hint" >
+                                        <%= org.naturalIdentifiers.join(', ') %>
+                                    </span>
+                                <% } %>
+                                <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
+                                    <span class="govuk-hint govuk-label__hint" >
+                                        <%= org.organisation.address %>
+                                    </span>
+                                <% } %>
+                            </label>
+                        </div>
+                    <% } %>
+
                     </div>
-                <% } %>
 
-                </div>
+                </fieldset>
 
             </div>
 

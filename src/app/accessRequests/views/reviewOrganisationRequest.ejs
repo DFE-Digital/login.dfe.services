@@ -6,86 +6,78 @@
         <p class="govuk-body-l">Review these details before adding <%= locals.request.usersName %>
             to <%= locals.request.org_name %>.</p>
 
-        <dl class="app-check-your-answers app-check-your-answers--short">
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
-                    Request details
-                </dt>
-                <dd class="app-check-your-answers__answer"></dd>
-            </div>
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    Name
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.request.usersName %>
-                </dd>
-            </div>
-
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    Email Address
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.request.usersEmail %>
-                </dd>
-            </div>
-
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    Date
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.moment(locals.request.created_date).format('DD MMM YYYY') %>
-                </dd>
-            </div>
-
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    Organisation
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.request.org_name %>
-                </dd>
-            </div>
-
-            <% if (locals.request.reason) { %>
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    Reason
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.request.reason %>
-                </dd>
-            </div>
-            <% } %>
-        </dl>
+        <table class="govuk-table">
+            <caption class="govuk-table__caption govuk-table__caption--m">Request details</caption>
+            <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                    <th scope="col" class="govuk-table__header govuk-!-width-one-third"></th>
+                    <th scope="col" class="govuk-table__header govuk-!-width-two-thirds"></th>
+                </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">Name</th>
+                    <td class="govuk-table__cell"><%= locals.request.usersName %></td>
+                </tr>
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">Email Address</th>
+                    <td class="govuk-table__cell"><%= locals.request.usersEmail %></td>
+                </tr>
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">Date</th>
+                    <td class="govuk-table__cell"><%= locals.moment(locals.request.created_date).format('DD MMM YYYY') %></td>
+                </tr>
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">Organisation</th>
+                    <td class="govuk-table__cell"><%= locals.request.org_name %></td>
+                </tr>
+                <% if (locals.request.reason) { %>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">Reason</th>
+                        <td class="govuk-table__cell"><%= locals.request.reason %></td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
 
         <form method="post" class="prevent-form-double-submission">
-            <div class="govuk-form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'form-group-error' : '' %>">
+            
+            <div class="govuk-form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'govuk-form-group--error' : '' %>">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <fieldset class="inline">
+                
+                <fieldset class="govuk-fieldset">
+
                     <% if (locals.validationMessages.selectedResponse !== undefined) { %>
-                    <p class="error-message"
-                       id="validation-selected-organisation"><%= locals.validationMessages.selectedResponse %></p>
+                        <span id="validation-selected-organisation" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.selectedResponse %>
+                        </span>
                     <% } %>
-                    <legend>
-                        <h2 class="govuk-heading-s">Your response</h2>
+
+                    <legend class="govuk-fieldset__legend">
+                        <h2 class="govuk-fieldset__legend--m">Your response</h2>
                     </legend>
-                    <div class="multiple-choice">
-                        <input id="approve" type="radio" name="selectedResponse" value="approve">
-                        <label for="approve">Approve</label>
+
+                    <div class="govuk-radios govuk-radios--inline">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="approve" name="selectedResponse" type="radio" value="approve">
+                            <label class="govuk-label govuk-radios__label" for="approve">
+                            Approve
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="reject" name="selectedResponse" type="radio" value="reject">
+                            <label class="govuk-label govuk-radios__label" for="reject">
+                            Reject
+                            </label>
+                        </div>
                     </div>
-                    <div class="multiple-choice" data-target="panel-message-2">
-                        <input id="reject" type="radio" name="selectedResponse" value="reject">
-                        <label for="reject">Reject</label>
-                    </div>
+
                 </fieldset>
             </div>
-            <div class="form-submit submit-buttons">
-                <button type="submit" class="govuk-button">Confirm</button>
-                <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
-            </div>
+
+            <button type="submit" class="govuk-button">Confirm</button>
+            <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+
         </form>
     </div>
 </div>
