@@ -10,7 +10,7 @@ const organisations = require('./app/organisations');
 const users = require('./app/users');
 const requestOrganisation = require('./app/requestOrganisation');
 const appCache = require('./app/appCache');
-const version = require('../package-lock.json').version;
+const version = require('../package.json').version;
 
 const routes = (app, csrf) => {
   // auth callbacks
