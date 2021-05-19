@@ -12,9 +12,9 @@
     <div class="govuk-grid-column-full">
         <form method="post" id="form-resend-invitation">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <fieldset>
-                <legend class="vh">Edit <%=locals.user.name%>&apos;s email address</legend>
-                <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'form-group-error' : '' %>">
+            <fieldset class="govuk-fieldset">
+                <legend class="govuk-visually-hidden">Edit <%=locals.user.name%>&apos;s email address</legend>
+                <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'govuk-form-group--error' : '' %>">
                     <label class="govuk-label" for="email">Email address </label>
                     <% if (locals.validationMessages.email !== undefined) { %>
                     <p class="error-message" id="validation-email"><%=locals.validationMessages.email %></p>
@@ -22,7 +22,7 @@
                     <input class="form-control" id="email" name="email" type="text" <% if (locals.validationMessages.email !== undefined) { %> aria-invalid="true" aria-describedby="validation-email" <% } %> value="<%=email%>">
                 </div>
             </fieldset>
-            <div class="form-submit submit-buttons">
+            <div class="submit-buttons">
                 <button type="submit" class="govuk-button">Submit</button>
                 <a href="services" class="govuk-button govuk-button--secondary">Cancel</a>
             </div>

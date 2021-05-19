@@ -26,12 +26,12 @@
         <% if (locals.services.length > 0) { %>
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <div class="govuk-form-group  <%= (locals.validationMessages.services !== undefined) ? 'form-group-error' : '' %>">
-                <fieldset>
+            <div class="govuk-form-group  <%= (locals.validationMessages.services !== undefined) ? 'govuk-form-group--error' : '' %>">
+                <fieldset class="govuk-fieldset">
                     <% if (locals.validationMessages.services !== undefined) { %>
                     <p class="error-message" id="validation-selected-organisation"><%=locals.validationMessages.services%></p>
                     <% } %>
-                    <legend>
+                    <legend class="govuk-fieldset__legend">
                         <span class="body-text"><%= locals.isInvite ? 'You can continue without selecting any services': 'Select all required services'%></span>
                     </legend>
 
@@ -51,7 +51,7 @@
 
                 </fieldset>
             </div>
-            <div class="form-submit submit-buttons">
+            <div class="submit-buttons">
                 <button type="submit" class="govuk-button">Continue</button>
                 <a href= "<%= locals.user.uid && locals.user.isInvite ? "./../" : "./"%>" class="govuk-button govuk-button--secondary">Cancel</a>
             </div>

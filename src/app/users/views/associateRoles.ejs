@@ -45,13 +45,13 @@
         </dl>
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <div class="govuk-form-group  <%= (locals.validationMessages.roles !== undefined) ? 'form-group-error' : '' %>">
-                <fieldset>
+            <div class="govuk-form-group  <%= (locals.validationMessages.roles !== undefined) ? 'govuk-form-group--error' : '' %>">
+                <fieldset class="govuk-fieldset">
                     <% if (locals.validationMessages.roles !== undefined) { %>
                     <p class="error-message" id="validation-selected-role"><%=locals.validationMessages.roles%></p>
                     <% } %>
                     <% if (locals.serviceRoles.length > 0) { %>
-                        <legend>
+                        <legend class="govuk-fieldset__legend">
                             <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceRoleMessage) { %>
                                 <span class="body-text"><%= locals.serviceDetails.relyingParty.params.serviceRoleMessage %></span>
                             <% } else { %>
@@ -72,7 +72,11 @@
                             </div>
                         <% } %>
                     <% } else { %>
-                            <legend><h2 class="govuk-heading-s">There are no available roles for <%= locals.serviceDetails.name %>.</h2></legend>
+                            <legend class="govuk-fieldset__legend">
+                                <h2 class="govuk-fieldset__legend--s">
+                                    There are no available roles for <%= locals.serviceDetails.name %>.
+                                </h2>
+                            </legend>
                     <% } %>
                 </fieldset>
             </div>
@@ -87,7 +91,7 @@
                 </div>
             <% } %>
 
-            <div class="form-submit submit-buttons">
+            <div class="submit-buttons">
                 <button type="submit" class="govuk-button">Continue</button>
                 <a href="<%= locals.user.uid && locals.user.isInvite ? "./../../" : "./../"%>" class="govuk-button govuk-button--secondary">Cancel</a>
             </div>

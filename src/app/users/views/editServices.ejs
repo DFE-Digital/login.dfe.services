@@ -36,8 +36,8 @@
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <div class="govuk-form-group">
-                <fieldset>
-                    <legend>
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend">
                         <% if (locals.roleMessage) { %>
                             <span class="body-text"><%= locals.roleMessage %></span>
                         <% } else { %>
@@ -59,13 +59,17 @@
                     <% } %>
                 </fieldset>
             </div>
-            <div class="form-submit submit-buttons">
+            <div class="submit-buttons">
                 <button type="submit" class="govuk-button">Save</button>
                 <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
             </div>
         </form>
         <%}else {%>
-            <legend><h2 class="govuk-heading-s">There are no available roles for <%= locals.service.name %>.</h2></legend>
+            <legend class="govuk-fieldset__legend">
+                <h2 class="govuk-fieldset__legend--s">
+                    There are no available roles for <%= locals.service.name %>.
+                </h2>
+            </legend>
         <%}%>
     </div>
     <div class="govuk-grid-column-one-third">

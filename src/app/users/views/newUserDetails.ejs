@@ -10,9 +10,9 @@
     <div class="govuk-grid-column-full">
         <form method="post" id="form-new-user">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <fieldset>
-                <legend class="vh">User details</legend>
-                <div class="govuk-form-group <%= (locals.validationMessages.firstName !== undefined) ? 'form-group-error' : '' %>">
+            <fieldset class="govuk-fieldset">
+                <legend class="govuk-visually-hidden">User details</legend>
+                <div class="govuk-form-group <%= (locals.validationMessages.firstName !== undefined) ? 'govuk-form-group--error' : '' %>">
                     <label class="govuk-label" for="firstName">First name</label>
                     <% if (locals.validationMessages.firstName !== undefined) { %>
                         <p class="error-message" id="validation-firstName"><%= locals.validationMessages.firstName %></p>
@@ -23,7 +23,7 @@
                             <% } %>
                            value="<%=locals.firstName%>">
                 </div>
-                <div class="govuk-form-group <%= (locals.validationMessages.lastName !== undefined) ? 'form-group-error' : '' %>">
+                <div class="govuk-form-group <%= (locals.validationMessages.lastName !== undefined) ? 'govuk-form-group--error' : '' %>">
                     <label class="govuk-label" for="lastName">Last name </label>
                     <% if (locals.validationMessages.lastName !== undefined) { %>
                         <p class="error-message" id="validation-lastName"><%= locals.validationMessages.lastName %></p>
@@ -32,7 +32,7 @@
                            <% if (locals.validationMessages.lastName !== undefined) { %>aria-invalid="true" aria-describedby="validation-lastName"<% } %>
                            value="<%=locals.lastName%>">
                 </div>
-                <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'form-group-error' : '' %>">
+                <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'govuk-form-group--error' : '' %>">
                     <label class="govuk-label" for="email">Email address </label>
                     <% if (locals.validationMessages.email !== undefined) { %>
                         <p class="error-message" id="validation-lastName"><%= locals.validationMessages.email %></p>
@@ -43,7 +43,7 @@
                 </div>
             </fieldset>
 
-            <div class="form-submit submit-buttons">
+            <div class="submit-buttons">
                 <button type="submit" class="govuk-button">Continue</button>
                 <a href="/approvals/<%=locals.organisationId%>/users" class="govuk-button govuk-button--secondary">Cancel</a>
             </div>
