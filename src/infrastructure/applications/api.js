@@ -36,11 +36,10 @@ const getAllServices = async () => {
   let pageNumber = 1;
   let numberOfPages = undefined;
   while (numberOfPages === undefined || pageNumber <= numberOfPages) {
-    const page = await getPageOfService(pageNumber, 50);
+    const { count, rows } = await getPageOfService(pageNumber, 50);
+    services.push(...rows);
 
-    services.push(...page.services);
-
-    numberOfPages = page.numberOfPages;
+    numberOfPages = Math.ceil(count / 50);
     pageNumber += 1;
   }
 
