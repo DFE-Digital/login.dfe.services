@@ -3,8 +3,6 @@ const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { services } = require('login.dfe.dao');
 
-const servicesTogglePath = '/constants/toggleflags/email/services';
-
 const getApplication = async (idOrClientId, correlationId) => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
   try {
@@ -46,35 +44,12 @@ const getAllServices = async () => {
   return { services };
 };
 
-const getEmailToggleFlag = async (params) => {
-  const token = await jwtStrategy(config.applications.service).getBearerToken();
-  try {
-    return await rp({
-      method: 'GET',
-      uri: `${config.applications.service.url}${params}`,
-      headers: {
-        authorization: `bearer ${token}`,
-      },
-      json: true,
-    });
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
-const retrieveToggleFlag = async (path) => {
-  const emailToggleFlag = await getEmailToggleFlag(path);
-  if (emailToggleFlag && emailToggleFlag.length === 1) {
+const isServiceEmailNotificationAllowed = async () => {
+  const statusFlags = await services.getToggleStatuses('email', 'services');
+  if (statusFlags && statusFlags.length === 1) {
     return emailToggleFlag[0].flag;
   }
   return true;
-};
-
-const isServiceEmailNotificationAllowed = async () => {
-  return await retrieveToggleFlag(servicesTogglePath);
 };
 
 module.exports = {
