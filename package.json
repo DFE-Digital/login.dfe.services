@@ -43,7 +43,7 @@
     "login.dfe.config.schema.common": "git+https://github.com/DFE-Digital/login.dfe.config.schema.common.git#v1.9.3",
     "login.dfe.dao": "1.0.64",
     "login.dfe.express-error-handling": "git+https://github.com/DFE-Digital/login.dfe.express-error-handling.git#v1.6",
-    "login.dfe.healthcheck": "git+https://github.com/DFE-Digital/login.dfe.healthcheck.git#v1.8",
+    "login.dfe.healthcheck": "git+https://github.com/DFE-Digital/login.dfe.healthcheck.git#v2.1.0",
     "login.dfe.jwt-strategies": "github:DFE-Digital/login.dfe.jwt-strategies#v3.0",
     "login.dfe.notifications.client": "github:DFE-Digital/login.dfe.notifications.client#v3.9",
     "login.dfe.policy-engine": "git+https://github.com/DFE-Digital/login.dfe.policy-engine.git#v3.0",
