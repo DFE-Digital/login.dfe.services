@@ -6,39 +6,60 @@
         <p class="govuk-body-l">Review these details before adding <%= locals.request.usersName %>
             to <%= locals.request.org_name %>.</p>
 
-        <table class="govuk-table">
-            <caption class="govuk-table__caption govuk-table__caption--m">Request details</caption>
-            <thead class="govuk-table__head">
-                <tr class="govuk-table__row">
-                    <th scope="col" class="govuk-table__header govuk-!-width-one-third"></th>
-                    <th scope="col" class="govuk-table__header govuk-!-width-two-thirds"></th>
-                </tr>
-            </thead>
-            <tbody class="govuk-table__body">
-                <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">Name</th>
-                    <td class="govuk-table__cell"><%= locals.request.usersName %></td>
-                </tr>
-                <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">Email Address</th>
-                    <td class="govuk-table__cell"><%= locals.request.usersEmail %></td>
-                </tr>
-                <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">Date</th>
-                    <td class="govuk-table__cell"><%= locals.moment(locals.request.created_date).format('DD MMM YYYY') %></td>
-                </tr>
-                <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">Organisation</th>
-                    <td class="govuk-table__cell"><%= locals.request.org_name %></td>
-                </tr>
-                <% if (locals.request.reason) { %>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Reason</th>
-                        <td class="govuk-table__cell"><%= locals.request.reason %></td>
-                    </tr>
-                <% } %>
-            </tbody>
-        </table>
+        <h2 class="govuk-heading-m">
+            Request details
+        </h2>
+
+        <dl class="govuk-summary-list">
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Name
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    <%= locals.request.usersName %>
+                </dd>
+            </div>
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Email Address
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    <%= locals.request.usersEmail %>
+                </dd>
+            </div>
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Date
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    <%= locals.moment(locals.request.created_date).format('DD MMM YYYY') %>
+                </dd>
+            </div>
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Organisation
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    <%= locals.request.org_name %>
+                </dd>
+            </div>
+
+            <% if (locals.request.reason) { %>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Reason
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    <%= locals.request.reason %>
+                </dd>
+            </div>
+            <% } %>
+
+        </dl>
 
         <form method="post" class="prevent-form-double-submission">
             
@@ -75,8 +96,10 @@
                 </fieldset>
             </div>
 
-            <button type="submit" class="govuk-button">Confirm</button>
-            <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+            <div class="submit-buttons">
+                <button type="submit" class="govuk-button">Confirm</button>
+                <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+            </div>
 
         </form>
     </div>
