@@ -55,7 +55,7 @@
                                     </p>
                                 <% } %>
                                 <% if(!taskListStatus.hasOrgAssigned) { %>
-                                    <a class="govuk-button pull-right" href="/request-organisation/search" role="button">Next Action</a>
+                                    <a class="govuk-button pull-right govuk-!-margin-0" href="/request-organisation/search" role="button">Next Action</a>
                                 <% } else { %>
                                     <strong class="task-status govuk-tag">Completed</strong>
                                 <% } %>
@@ -99,7 +99,7 @@
                                 <% } else if(taskListStatus.approverForOrg) { %>
                                     <li class="task-list-item">
                                         <a class="govuk-link-bold" href='<%=locals.addServicesRedirect%>'>Add services</a>
-                                        <a class="govuk-button pull-right" href='<%=locals.addServicesRedirect%>' role="button">Next Action</a>
+                                        <a class="govuk-button pull-right govuk-!-margin-0" href='<%=locals.addServicesRedirect%>' role="button">Next Action</a>
                                     </li>
                                 <% } else { %>
                                     <li class="task-list-item">
@@ -116,10 +116,10 @@
 
                                             </br></br>
 
-                                            <article class="organisation-services" style="margin-bottom: 0">
-                                                <section class="organisation" style="padding: 0; margin:0;">
-                                                    <div class="user">
-                                                    <a href="" class="info-link" style="float: none;"><%= approvers.length %> approvers</a>
+                                            <article class="organisation-services govuk-!-margin-bottom-0">
+                                                <section class="organisation">
+                                                    <div>
+                                                        <a href="" class="govuk-link-bold info-link"><%= approvers.length %> approvers</a>
                                                     </div>
                                                     <div class="meta js-hidden">
                                                         <div class="approvers">
@@ -142,25 +142,6 @@
                         </li>
                     </ol>
                 </div>
-
-                <article class="organisation-services">
-                    <section>
-                        <ul class="service-list">
-                            <%
-                            for (let s = 0; s < services.length; s++) {
-                                const service = services[s];
-                            %>
-                                <li>
-                                    <div class="links">
-                                        <div class="service-link">
-                                            <a href="<%=service.serviceUrl%>" class="service-link"><%=service.name%></a>
-                                        </div>
-                                    </div>
-                                </li>
-                            <% } %>
-                        </ul>
-                    </section>
-                </article>
             </div>
 
         <% } else { %>
@@ -190,7 +171,7 @@
                                                 <span class="date">Available: <%=service.date%></span>
                                                 <h3 class="govuk-heading-s"><%=service.name%></h3>
                                             <% } else { %>
-                                                <a href="<%=service.serviceUrl%>" class="service-link"><%=service.name%></a>
+                                                <a href="<%=service.serviceUrl%>" class="govuk-link-bold"><%=service.name%></a>
                                             <% } %>
                                             <% if (service.description) { %>
                                                 <p class="service-descriptionv2"><%= service.description %></p>
