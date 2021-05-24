@@ -20,8 +20,8 @@
             <div class="respond js-hidden" id="respond-<%=i%>">
                 <div class="govuk-form-group">
                     <fieldset class="inline">
-                        <legend class="govuk-fieldset__legend">
-                            <h2 class="govuk-fieldset__legend--s">Your response</h2>
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                            <h2 class="govuk-fieldset__legend__heading">Your response</h2>
                         </legend>
                         <div class="multiple-choice" data-target="panel-permissions-<%=i%>">
                             <input id="radio-inline-approve-<%=i%>" type="radio" name="approve_reject" value="Approve">
@@ -36,8 +36,8 @@
                 <div class="pnl js-hidden" id="panel-permissions-<%=i%>">
                     <div class="govuk-form-group">
                         <fieldset class="inline">
-                            <legend class="govuk-fieldset__legend">
-                                <h2 class="govuk-fieldset__legend--s">Permissions level</h2>
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                <h2 class="govuk-fieldset__legend__heading">Permissions level</h2>
                             </legend>
                             <div class="multiple-choice">
                                 <input id="radio-inline-enduser-<%=i%>" type="radio" name="role" value="End user" checked="checked">
