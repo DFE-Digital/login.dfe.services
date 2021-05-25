@@ -6,7 +6,6 @@
         </h1>
 
         <dl class="govuk-summary-list">
-
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">
                     User
@@ -65,7 +64,9 @@
                     <button type="submit" class="govuk-button">Continue</button>
                     <a href="<%= locals.user.uid && locals.user.isInvite ? "./../" : "./"%>" class="govuk-button govuk-button--secondary">Cancel</a>
                 </div>
+
             </form>
+
         <% } else { %>
             <p class="govuk-body"> All services available for <%= locals.name%> have been selected, there are no further services available.</p>
         <% } %>
