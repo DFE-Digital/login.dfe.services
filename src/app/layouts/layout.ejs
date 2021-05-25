@@ -99,9 +99,13 @@
 
     <main id="content" class="govuk-width-container govuk-!-margin-bottom-9">
 
-        <% if (locals.backLink === true) { %>
-            <span class="js-back-link"></span>
-        <% } %>
+        <% if (locals.backLink !== undefined) { %>
+            <% if (locals.backLink === true) { %>
+                <span class="js-back-link"></span>
+            <% } else { %>
+                <a href="<%=locals.backLink%>" class="govuk-back-link-bold">Back</a>
+             <% } %>
+         <% } %>
 
         <% if (locals.validationMessages !== undefined) { %>
             <% const validationKeys = Object.keys(locals.validationMessages)  %>
