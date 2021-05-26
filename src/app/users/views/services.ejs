@@ -10,35 +10,35 @@
     <section class="services">
         <% if (locals.services.length > 0) { %>
             <% hasServices = true %>
-        <table class="data no-borders">
-            <thead>
-            <tr>
-                <th scope="col" class="cwp-30">Service</th>
-                <th scope="col" class="cwp-25">Access granted on</th>
-                <th scope="col" class="cwp-15">Service status</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% for (let i = 0; i < locals.services.length; i++) { %>
+            <table class="custom-table data no-borders">
+                <thead>
+                <tr>
+                    <th scope="col" class="cwp-30">Service</th>
+                    <th scope="col" class="cwp-25">Access granted on</th>
+                    <th scope="col" class="cwp-15">Service status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% for (let i = 0; i < locals.services.length; i++) { %>
                     <% const service = locals.services[i]; %>
                     <tr class="<%= service.disabled ? 'pending' : '' %>">
                         <td>
                             <% if (service.disabled) { %>
-                                <p style="margin: 0"><%=service.name%></p>
+                                <p class="govuk-!-margin-0"><%=service.name%></p>
                             <% } else { %>
                             <a class="govuk-link-bold" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>"><%=service.name%></a>
                             <% } %>
                         </td>
                         <% if (service.dateActivated) { %>
-                        <td><%=locals.moment(service.dateActivated).format('DD MMM YYYY')%></td>
+                            <td><%=locals.moment(service.dateActivated).format('DD MMM YYYY')%></td>
                         <%} else {%>
                             <td>Pending</td>
                         <%}%>
                         <td><%= service.status.description%></td>
                     </tr>
-            <% } %>
-            </tbody>
-        </table>
+                <% } %>
+                </tbody>
+            </table>
             <% } %>
     </section>
 </article>
