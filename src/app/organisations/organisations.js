@@ -37,19 +37,14 @@ const mapRole = (role) => {
 const getAndMapOrganisationsAndServices = async (account, correlationId) => {
   const organisations = await getOrganisationAndServiceForUser(account.id, correlationId);
   const allApprovers = await getApproversDetails(organisations, correlationId);
-  
-  return organisations.map((organisation) => {
-    let approvers = organisation.approvers.map((approver) => {
-      return allApprovers
-        .filter((x) => x.claims.sub.toLowerCase() === approver.user_id.toLowerCase())
-        .map((m) => m.claims);
-    });
 
-    if (approvers && approvers.length > 0) {
-      // flatten approvers array
-      approvers = approvers.reduce((acc, val) => acc.concat(val), []);
-    }
-    
+  return organisations.map((organisation) => {
+    const approvers = organisation.approvers
+      .map((approverId) => {
+        return allApprovers.find((x) => x.claims.sub.toLowerCase() === approverId.user_id.toLowerCase());
+      })
+      .filter((x) => x);
+
     return {
       id: organisation.organisation.id,
       name: organisation.organisation.name,
