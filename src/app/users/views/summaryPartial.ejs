@@ -13,11 +13,11 @@
             <span class="govuk-caption-xl"><%= locals.user.email %></span>
             <%= locals.user.firstName%> <%= locals.user.lastName%>
         </h1>
-        <dl class="inline condensed">
-            <dt class="label">Account Status:</dt>
-            <dd><%=locals.user.status.description%></dd>
-            <dt class="label">Is approver:</dt>
-            <dd><%= ( locals.user && locals.user.organisation && locals.user.organisation.roleId === 10000 ) ? 'Yes' : 'No';%></dd>
+        <dl class="inline">
+            <dt class="govuk-label">Account Status:</dt>
+            <dd class="govuk-label"><%=locals.user.status.description%></dd>
+            <dt class="govuk-label">Is approver:</dt>
+            <dd class="govuk-label"><%= ( locals.user && locals.user.organisation && locals.user.organisation.roleId === 10000 ) ? 'Yes' : 'No';%></dd>
         </dl>
     </div>
     <div class="govuk-grid-column-one-third">
@@ -37,15 +37,23 @@
     </div>
 </div>
 
-<nav>
-    <ul class="tabs" role="tablist">
-
-
+<div class="govuk-tabs govuk-!-margin-top-6" data-module="govuk-tabs">
+    <h2 class="govuk-tabs__title">
+        Contents
+    </h2>
+    <ul class="govuk-tabs__list">
         <% if(locals.area === 'services') { %>
-            <li class="active">Services</li>
+            <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                <a class="govuk-tabs__tab">
+                    Services
+                </a>
+            </li>
         <% } else { %>
-            <li><a class="govuk-link-bold" href="services" role="tab">Services</a></li>
+            <li class="govuk-tabs__list-item">
+                <a class="govuk-tabs__tab" href="services">
+                    Services
+                </a>
+            </li>
         <% } %>
-
     </ul>
-</nav>
+</div>

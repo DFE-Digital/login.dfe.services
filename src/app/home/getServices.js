@@ -119,14 +119,12 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
       if (organisation.role.id === 10000) {
         taskListStatus.approverForOrg = organisation.organisation.id;
       }
-      approvers = organisation.approvers.map((approver) => {
-        return allApprovers
-          .filter((x) => x.claims.sub.toLowerCase() === approver.user_id.toLowerCase())
-          .map((m) => m.claims);
-      });
+      approvers = organisation.approvers
+        .map((approverId) => {
+          return allApprovers.find((x) => x.claims.sub.toLowerCase() === approverId.user_id.toLowerCase());
+        })
+        .filter((x) => x);
       if (approvers && approvers.length > 0) {
-        // flatten approvers array
-        approvers = approvers.reduce((acc, val) => acc.concat(val), []);
         ++taskListStatus.multiOrgDetails.approvers;
       }
     });

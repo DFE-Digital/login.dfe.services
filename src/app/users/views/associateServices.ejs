@@ -1,63 +1,74 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+
         <h1 class="govuk-heading-xl">
             Select services
         </h1>
-        <dl class="app-check-your-answers app-check-your-answers--short">
 
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
                     User
                 </dt>
-                <dd class="app-check-your-answers__answer">
+                <dd class="govuk-summary-list__value">
                     <%= locals.name%>
                 </dd>
             </div>
 
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
                     Organisation
                 </dt>
-                <dd class="app-check-your-answers__answer">
+                <dd class="govuk-summary-list__value">
                     <%=locals.organisationDetails.organisation.name%>
                 </dd>
             </div>
         </dl>
+
         <% if (locals.services.length > 0) { %>
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <div class="govuk-form-group  <%= (locals.validationMessages.services !== undefined) ? 'govuk-form-group--error' : '' %>">
-                <fieldset class="govuk-fieldset">
-                    <% if (locals.validationMessages.services !== undefined) { %>
-                    <p class="error-message" id="validation-selected-organisation"><%=locals.validationMessages.services%></p>
-                    <% } %>
-                    <legend class="govuk-fieldset__legend">
-                        <span class="body-text"><%= locals.isInvite ? 'You can continue without selecting any services': 'Select all required services'%></span>
-                    </legend>
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                
+                <div class="govuk-form-group  <%= (locals.validationMessages.services !== undefined) ? 'govuk-form-group--error' : '' %>">
+                    <fieldset class="govuk-fieldset" id="services">
 
-                    <% for (let i = 0; i < locals.services.length; i++) { %>
-                    <% const service = locals.services[i]; %>
-                    <div class="multiple-choice">
+                        <% if (locals.validationMessages.services !== undefined) { %>
+                            <span id="validation-selected-service" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.services %>
+                            </span>
+                        <% } %>
 
-                        <input id="<%=service.id%>" type="checkbox" name="service" value="<%=service.id%>"
-                                <% if (locals.selectedServices && locals.selectedServices.length > 0) {
-                                    for(let i = 0; i < locals.selectedServices.length; i++) {
-                                      const selectedService = locals.selectedServices[i].serviceId;
-                                %>
-                                <%= service.id === selectedService ? 'checked': ''%><% } }%>>
-                        <label for="<%=service.id%>"><%=service.name%></label>
-                    </div>
-                    <% } %>
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                            <span class="body-text"><%= locals.isInvite ? 'You can continue without selecting any services': 'Select all required services'%></span>
+                        </legend>
 
-                </fieldset>
-            </div>
-            <div class="submit-buttons">
-                <button type="submit" class="govuk-button">Continue</button>
-                <a href= "<%= locals.user.uid && locals.user.isInvite ? "./../" : "./"%>" class="govuk-button govuk-button--secondary">Cancel</a>
-            </div>
-        </form>
+                        <div class="govuk-checkboxes">
+                            <% for (let i = 0; i < locals.services.length; i++) { %>
+                                <% const service = locals.services[i]; %>
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input" id="<%=service.id%>" type="checkbox" name="service" value="<%=service.id%>"
+                                            <% if (locals.selectedServices && locals.selectedServices.length > 0) {
+                                                for(let i = 0; i < locals.selectedServices.length; i++) {
+                                                const selectedService = locals.selectedServices[i].serviceId;
+                                            %>
+                                            <%= service.id === selectedService ? 'checked': ''%><% } }%>>
+                                    <label class="govuk-label govuk-checkboxes__label" for="<%=service.id%>"><%=service.name%></label>
+                                </div>
+                            <% } %>
+                        </div>
+
+                    </fieldset>
+                </div>
+
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Continue</button>
+                    <a href="<%= locals.user.uid && locals.user.isInvite ? "./../" : "./"%>" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+
+            </form>
+
         <% } else { %>
-        <p class="govuk-body"> All services available for <%= locals.name%> have been selected, there are no further services available.</p>
+            <p class="govuk-body"> All services available for <%= locals.name%> have been selected, there are no further services available.</p>
         <% } %>
     </div>
 </div>
