@@ -1,3 +1,10 @@
+const { mockRequest, mockResponse, mockLogger } = require('./../../../utils/jestMocks');
+const Account = require('./../../../../src/infrastructure/account');
+const { getAllServices } = require('./../../../../src/infrastructure/applications');
+const home = require('./../../../../src/app/home/home');
+jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+const res = mockResponse();
+
 jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
   getUsersById: jest.fn(),
@@ -5,13 +12,7 @@ jest.mock('./../../../../src/infrastructure/account', () => ({
 jest.mock('./../../../../src/infrastructure/applications', () => ({
   getAllServices: jest.fn(),
 }));
-
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-const Account = require('./../../../../src/infrastructure/account');
-const { getAllServices } = require('./../../../../src/infrastructure/applications');
-const home = require('./../../../../src/app/home/home');
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-const res = mockResponse();
+jest.mock('./../../../../src/infrastructure/logger', () => mockLogger());
 
 describe('when displaying current organisation and service mapping', () => {
   let req;
