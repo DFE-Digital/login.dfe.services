@@ -10,6 +10,7 @@ const organisations = require('./app/organisations');
 const users = require('./app/users');
 const requestOrganisation = require('./app/requestOrganisation');
 const appCache = require('./app/appCache');
+const version = require('../package.json').version;
 
 const routes = (app, csrf) => {
   // auth callbacks
@@ -52,7 +53,7 @@ const routes = (app, csrf) => {
   });
 
   // app routes
-  app.use('/healthcheck', healthCheck({ config }));
+  app.use('/healthcheck', healthCheck({ config, version }));
   app.use('/', home(csrf));
   app.use('/signout', signOut(csrf));
   app.use('/organisations', organisations(csrf));
