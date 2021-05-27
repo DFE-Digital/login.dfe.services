@@ -36,7 +36,7 @@
         <div class="pane">
             <% if (locals.requests.length > 0) { %>
                 <% for (let i = 0; i < locals.requests.length; i++) { %>
-                <div class="requestV2 <%= locals.requests[i].status && locals.requests[i].status.id === 2 ? 'overdue' : '' %>">
+                <div class="request <%= locals.requests[i].status && locals.requests[i].status.id === 2 ? 'overdue' : '' %>">
                     <p class="govuk-body">
                         <% if (locals.requests[i].status && locals.requests[i].status.id === 2) { %>
                             <span class="overdue-text">
