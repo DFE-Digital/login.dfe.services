@@ -25,11 +25,14 @@
             Requests
         </h1>
 
-        <nav>
-            <ul class="tabs" role="tablist">
-                <li class="active">Organisation requests <span>(<%= locals.requests.length %>)</span></li>
+        <div class="govuk-tabs" data-module="govuk-tabs">
+            <ul class="govuk-tabs__list">
+                <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                    Organisation requests <span>(<%= locals.requests.length %>)</span>
+                </li>
             </ul>
-        </nav>
+        </div>
+
         <div class="pane">
             <% if (locals.requests.length > 0) { %>
                 <% for (let i = 0; i < locals.requests.length; i++) { %>
@@ -45,7 +48,9 @@
                             <b><%= locals.requests[i].usersEmail %></b> -
                         <time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time>
                     </p>
-                    <a href="requests/<%= locals.requests[i].id %>" class="button-respond">Review request</a>
+                    <p class="govuk-body">
+                        <a href="requests/<%= locals.requests[i].id %>" class="button-respond">Review request</a>
+                    </p>
                 </div>
                 <% } %>
             <% } else { %>
