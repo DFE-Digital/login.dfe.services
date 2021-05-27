@@ -28,19 +28,19 @@
 
 <% if (locals.organisations !== undefined) {%>
 <%
-        const paginationModel = {
-            objectName: 'organisations',
-            method: 'post',
-            csrfToken,
-            currentPage: page,
-            numberOfPages: totalNumberOfPages,
-            totalNumberOfResults: totalNumberOfRecords,
-            numberOfResultsOnPage: organisations.length,
-            data: [
-                { key: 'criteria', value: locals.criteria }
-            ]
-        };
-    %>
+    const paginationModel = {
+        objectName: 'organisations',
+        method: 'post',
+        csrfToken,
+        currentPage: page,
+        numberOfPages: totalNumberOfPages,
+        totalNumberOfResults: totalNumberOfRecords,
+        numberOfResultsOnPage: organisations.length,
+        data: [
+            { key: 'criteria', value: locals.criteria }
+        ]
+    };
+%>
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
