@@ -9,17 +9,17 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
         <form method="post">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <input type="hidden" name="page" value="1" />
 
-            <div class="search-field">
-                <fieldset class="search-input">
+            <div class="govuk-form-group search-field">
+                <fieldset class="govuk-fieldset">
                     <label for="criteria" class="vh">Search by name, URN or UKPRN</label>
-                    <input type="text" id="criteria" name="criteria" value="<%=criteria%>" class="form-control"
-                           placeholder="Search by name, URN or UKPRN ">
+                    <input type="text" id="criteria" name="criteria" value="<%=criteria%>" class="govuk-input"
+                        placeholder="Search by name, URN or UKPRN ">
                 </fieldset>
-                <fieldset class="search-submit">
-                    <button type="submit" class="govuk-button">Search</button>
+                <fieldset class="govuk-fieldset search-submit">
+                    <button type="submit" class="search-button">Search</button>
                 </fieldset>
             </div>
         </form>
@@ -27,74 +27,74 @@
 </div>
 
 <% if (locals.organisations !== undefined) {%>
-    <%
-        const paginationModel = {
-            objectName: 'organisations',
-            method: 'post',
-            csrfToken,
-            currentPage: page,
-            numberOfPages: totalNumberOfPages,
-            totalNumberOfResults: totalNumberOfRecords,
-            numberOfResultsOnPage: organisations.length,
-            data: [
-                { key: 'criteria', value: locals.criteria }
-            ]
-        };
-    %>
+<%
+    const paginationModel = {
+        objectName: 'organisations',
+        method: 'post',
+        csrfToken,
+        currentPage: page,
+        numberOfPages: totalNumberOfPages,
+        totalNumberOfResults: totalNumberOfRecords,
+        numberOfResultsOnPage: organisations.length,
+        data: [
+            { key: 'criteria', value: locals.criteria }
+        ]
+    };
+%>
 
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            <%- include('../../layouts/pagination', paginationModel); %>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <%- include('../../layouts/pagination', paginationModel); %>
 
-            <ol class="search-results">
+        <ol class="govuk-list search-results">
 
-                <% if (organisations.length === 0) { %>
-                    <li><span class="empty-state">No organisations found</span></li>
-                <% } %>
+            <% if (organisations.length === 0) { %>
+            <li><span class="empty-state">No organisations found</span></li>
+            <% } %>
 
-                <% for (let i = 0; i < organisations.length; i++) { %>
-                    <%const org = organisations[i];%>
-                    <li>
-                        <article>
-                            <h2 class="govuk-heading-m">
-                                <form method="post">
-                                    <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
-                                    <input type="hidden" name="selectedOrganisation" value="<%=org.id%>" />
-                                    <button class="button-link"><%=org.name%></button>
-                                </form>
-                            </h2>
-                            <dl class="inline">
-                                <% if(org.urn) { %>
-                                <dt>URN</dt>
-                                <dd><%=org.urn%></dd>
-                                <% } %>
+            <% for (let i = 0; i < organisations.length; i++) { %>
+            <%const org = organisations[i];%>
+            <li>
+                <article>
+                    <h2 class="govuk-heading-m">
+                        <form method="post">
+                            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                            <input type="hidden" name="selectedOrganisation" value="<%=org.id%>" />
+                            <button class="button-link"><%=org.name%></button>
+                        </form>
+                    </h2>
+                    <dl class="inline">
+                        <% if(org.urn) { %>
+                        <dt>URN</dt>
+                        <dd><%=org.urn%></dd>
+                        <% } %>
 
-                                <% if(org.uid) { %>
-                                <dt>UID</dt>
-                                <dd><%=org.uid%></dd>
-                                <% } %>
+                        <% if(org.uid) { %>
+                        <dt>UID</dt>
+                        <dd><%=org.uid%></dd>
+                        <% } %>
 
-                                <% if (org.address) { %>
-                                <dt>Address</dt>
-                                <dd><%=org.address%></dd>
-                                <% } %>
+                        <% if (org.address) { %>
+                        <dt>Address</dt>
+                        <dd><%=org.address%></dd>
+                        <% } %>
 
-                                <% if(org.type || org.category) { %>
-                                <dt>Type</dt>
-                                <dd><%=(org.type ? org.type.name : org.category.name)%></dd>
-                                <% } %>
+                        <% if(org.type || org.category) { %>
+                        <dt>Type</dt>
+                        <dd><%=(org.type ? org.type.name : org.category.name)%></dd>
+                        <% } %>
 
-                                <% if (org.status && org.status.name) { %>
-                                <dt>Status</dt>
-                                <dd><%=org.status.name%></dd>
-                                <% } %>
-                            </dl>
-                        </article>
-                    </li>
-                <% } %>
-            </ol>
+                        <% if (org.status && org.status.name) { %>
+                        <dt>Status</dt>
+                        <dd><%=org.status.name%></dd>
+                        <% } %>
+                    </dl>
+                </article>
+            </li>
+            <% } %>
+        </ol>
 
-            <%- include('../../layouts/pagination', paginationModel); %>
-        </div>
+        <%- include('../../layouts/pagination', paginationModel); %>
     </div>
+</div>
 <% } %>
