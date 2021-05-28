@@ -14,10 +14,13 @@
         <% if (enableTaskList && services.length === 0) { %>
 
             <div class="govuk-grid-column-two-thirds">
+
                 <h1 class="govuk-heading-xl">
                     Set up your DfE Sign-in account
                 </h1>
+
                 <p class="govuk-body">Complete the following steps to finish setting up your account.</p>
+
                 <div>
                     <ol class="task-list">
                         <li>
@@ -147,16 +150,21 @@
         <% } else { %>
 
             <div class="govuk-grid-column-two-thirds">
+
                 <%- include reviewUsers.ejs %>
+
                 <h1 class="govuk-heading-xl">
                     Services
                 </h1>
+
                 <p class="govuk-body">A list of services you have access to is displayed below. To access a service, please select the required link.</p>
+                
                 <% if (services.length === 0) { %>
                     <div class="empty-state">
                         <p class="govuk-body">You have no services assigned, please contact your <a class="govuk-link-bold" href="organisations">approver</a>.</p>
                     </div>
                 <% } %>
+
                 <article class="organisation-services">
                     <section>
                         <ul class="service-list">
@@ -183,6 +191,7 @@
                         </ul>
                     </section>
                 </article>
+
             </div>
 
         <% } %>
