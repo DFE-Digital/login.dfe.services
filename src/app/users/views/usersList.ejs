@@ -1,6 +1,6 @@
 <% if (locals.flash.info) { %>
-<div class="row">
-    <div class="col-12">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
         <div class="notification notification-success">
             <%=locals.flash.info%>
         </div>
@@ -8,22 +8,22 @@
 </div>
 <% } %>
 
-<div class="row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
-            <span class="heading-secondary"><%= locals.organisationDetails.organisation.name%> <%=locals.organisationDetails.organisation.status ? `(${locals.organisationDetails.organisation.status.name})` : '' %></span>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
+            <span class="govuk-caption-xl"><%= locals.organisationDetails.organisation.name%> <%=locals.organisationDetails.organisation.status ? `(${locals.organisationDetails.organisation.status.name})` : '' %></span>
             Manage users
         </h1>
-        <p>Select a user from the list below and you'll be able to edit their permissions and services.</p>
-        <p><a href="<%=locals.urls.help%>/contact/approver" target="_blank">Learn more about managing users</a></p>
+        <p class="govuk-body">Select a user from the list below and you'll be able to edit their permissions and services.</p>
+        <p class="govuk-body"><a class="govuk-link-bold" href="<%=locals.urls.help%>/contact/approver" target="_blank">Learn more about managing users</a></p>
     </div>
-        <div class="col-4">
-            <aside>
-                <h2 class="heading-medium">Actions</h2>
-                <ul class="list">
-                    <li><a href="/approvals/<%=locals.organisationDetails.organisation.id%>/users/new-user">Invite user</a></li>
+        <div class="govuk-grid-column-one-third">
+            <aside class="govuk-!-margin-top-9">
+                <h2 class="govuk-heading-m">Actions</h2>
+                <ul class="govuk-list">
+                    <li><a class="govuk-link-bold" href="/approvals/<%=locals.organisationDetails.organisation.id%>/users/new-user">Invite user</a></li>
                     <% if (locals.useRequestOrg) { %>
-                        <li><a href="/access-requests/<%=locals.organisationDetails.organisation.id%>/requests">View requests</a></li>
+                        <li><a class="govuk-link-bold" href="/access-requests/<%=locals.organisationDetails.organisation.id%>/requests">View requests</a></li>
                     <% } %>
                 </ul>
             </aside>
@@ -47,10 +47,10 @@ const paginationModel = {
 }
 %>
 
-<div class="row">
-    <div class="col-12">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
         <%- include('../../layouts/pagination', paginationModel); %>
-        <table class="data">
+        <table class="custom-table data">
             <thead>
             <% let baseSortUri = `?page=${page}`;%>
             <tr class="sortable">
@@ -79,7 +79,7 @@ const paginationModel = {
             <% for(let i= 0; i < locals.usersForOrganisation.users.length; i++) {
             const user = locals.usersForOrganisation.users[i]%>
             <tr>
-                <td><a href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= user.id%>"><%= user.firstName %> <%= user.lastName %></a></td>
+                <td><a class="govuk-link" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= user.id%>"><%= user.firstName %> <%= user.lastName %></a></td>
 
                 <td><span class="breakable"><%=user.email%></span></td>
                 <%

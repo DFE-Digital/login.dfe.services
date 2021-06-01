@@ -1,35 +1,35 @@
-<div class="grid-row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
             This user has a DfE Sign-in account
         </h1>
-        <p class="lede">Please review these details and select continue to invite this user to <%= locals.organisationDetails.organisation.name%>.</p>
+        <p class="govuk-body-l">Please review these details and select continue to invite this user to <%= locals.organisationDetails.organisation.name%>.</p>
 
-        <dl class="app-check-your-answers app-check-your-answers--short">
+        <dl class="govuk-summary-list">
 
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
                     First name
                 </dt>
-                <dd class="app-check-your-answers__answer">
+                <dd class="govuk-summary-list__value">
                     <%=locals.user.firstName%>
                 </dd>
             </div>
 
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
                     Last name
                 </dt>
-                <dd class="app-check-your-answers__answer">
+                <dd class="govuk-summary-list__value">
                     <%=locals.user.lastName%>
                 </dd>
             </div>
 
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
                     Email address
                 </dt>
-                <dd class="app-check-your-answers__answer">
+                <dd class="govuk-summary-list__value">
                     <%=locals.user.email%>
                 </dd>
             </div>
@@ -37,9 +37,9 @@
 
         <form method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <div class="form-submit submit-buttons">
-                <button type="submit" class="button">Continue</button>
-                <a href="../" class="button button-secondary">Cancel</a>
+            <div class="govuk-button-group">
+                <button type="submit" class="govuk-button">Continue</button>
+                <a href="../" class="govuk-button govuk-button--secondary">Cancel</a>
             </div>
         </form>
 

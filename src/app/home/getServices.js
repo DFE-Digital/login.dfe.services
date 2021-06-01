@@ -59,6 +59,8 @@ const getAndMapServices = async (account, correlationId) => {
         service.hideService = true;
       } else {
         service.name = application.name;
+        // TODO use this line below when we work on the ticket to show descriptions in the UI with new styles
+        // service.description = application.description;
         service.serviceUrl =
           (application.relyingParty
             ? application.relyingParty.service_home || application.relyingParty.redirect_uris[0]
@@ -117,11 +119,11 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
       if (organisation.role.id === 10000) {
         taskListStatus.approverForOrg = organisation.organisation.id;
       }
-      approvers = organisation.approvers.map((approver) => {
-        return allApprovers
-          .filter((x) => x.claims.sub.toLowerCase() === approver.user_id.toLowerCase())
-          .map((m) => m.claims);
-      });
+      approvers = organisation.approvers
+        .map((approverId) => {
+          return allApprovers.find((x) => x.claims.sub.toLowerCase() === approverId.user_id.toLowerCase());
+        })
+        .filter((x) => x);
       if (approvers && approvers.length > 0) {
         ++taskListStatus.multiOrgDetails.approvers;
       }
