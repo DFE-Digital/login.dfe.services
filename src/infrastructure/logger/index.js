@@ -68,11 +68,7 @@ if (config.hostingEnvironment.applicationInsights) {
 const logger = winston.createLogger(loggerConfig);
 
 process.on('unhandledRejection', (reason, p) => {
-  try {
-    logger.error(`Unhandled Rejection at: ${p}, reason: ${reason}`);
-  } catch (error) {
-    logger.error(error);
-  }
+  logger.error(`Unhandled Rejection at: ${JSON.stringify(p)}, reason: ${reason}`);
 });
 
 
