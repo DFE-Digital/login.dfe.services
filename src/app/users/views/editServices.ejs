@@ -1,66 +1,67 @@
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
 
-        <h1 class="govuk-heading-xl">
-            Edit service
-        </h1>
+            <h1 class="govuk-heading-xl">
+                Edit service
+            </h1>
 
-        <dl class="govuk-summary-list">
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    User
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    <%= locals.user.firstName %> <%= locals.user.lastName %>
-                </dd>
-            </div>
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        User
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.user.firstName %> <%= locals.user.lastName %>
+                    </dd>
+                </div>
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    Organisation
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    <%=locals.organisationDetails.organisation.name%>
-                </dd>
-            </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Organisation
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.organisationDetails.organisation.name%>
+                    </dd>
+                </div>
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    Service
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    <%= locals.service.name%>
-                </dd>
-            </div>
-        </dl>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.service.name%>
+                    </dd>
+                </div>
+            </dl>
 
-        <% if (locals.serviceRoles.length > 0) { %>
+            <% if (locals.serviceRoles.length > 0) { %>
             <form method="post">
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-                
+
                 <div class="govuk-form-group">
                     <fieldset class="govuk-fieldset" id="roles">
 
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                             <% if (locals.roleMessage) { %>
-                                <span class="body-text"><%= locals.roleMessage %></span>
+                            <span class="body-text"><%= locals.roleMessage %></span>
                             <% } else { %>
-                                <span class="body-text">Select all required roles</span>
+                            <span class="body-text">Select all required roles</span>
                             <% } %>
                         </legend>
 
                         <div class="govuk-checkboxes">
                             <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
-                                <% const role = locals.serviceRoles[i]; %>
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
-                                            <% if (locals.service.roles && locals.service.roles.length > 0) {
+                            <% const role = locals.serviceRoles[i]; %>
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="<%=role.id%>" type="checkbox" name="role"
+                                    value="<%=role.id%>" <% if (locals.service.roles && locals.service.roles.length > 0) {
                                             for (let i = 0; i < locals.service.roles.length; i++) {
                                                 const existingRole = locals.service.roles[i];
-                                            %>
-                                            <%= role.id === existingRole.id ? "checked" : ""%><% } }%>>
-                                    <label class="govuk-label govuk-checkboxes__label" for="<%=role.id%>"><%=role.name%></label>
-                                </div>
+                                            %> <%= role.id === existingRole.id ? "checked" : ""%><% } }%>>
+                                <label class="govuk-label govuk-checkboxes__label"
+                                    for="<%=role.id%>"><%=role.name%></label>
+                            </div>
                             <% } %>
                         </div>
                     </fieldset>
@@ -72,13 +73,13 @@
                 </div>
 
             </form>
-        <%}else {%>
+            <%}else {%>
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                 <h2 class="govuk-fieldset__legend__heading govuk-heading-s">
                     There are no available roles for <%= locals.service.name %>.
                 </h2>
             </legend>
-        <%}%>
+            <%}%>
     </div>
     <div class="govuk-grid-column-one-third">
         <aside class="govuk-!-margin-top-9">
@@ -86,6 +87,7 @@
             <ul class="govuk-list">
                 <li><a class="govuk-link-bold" href="<%=locals.service.id%>/remove-service">Remove service</a> </li>
             </ul>
-        </aside>
+            </aside>
+        </div>
     </div>
 </div>

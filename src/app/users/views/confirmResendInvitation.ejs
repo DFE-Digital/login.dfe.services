@@ -1,42 +1,46 @@
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">
-            Confirm resend invitation email
-        </h1>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                Confirm resend invitation email
+            </h1>
 
-        <p class="govuk-body">Please confirm the email address before resending an invitation to <%=locals.user.name%>.</p>
+            <p class="govuk-body">Please confirm the email address before resending an invitation to
+                <%=locals.user.name%>.</p>
+        </div>
     </div>
-</div>
 
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
 
-        <form method="post" id="form-resend-invitation">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            
-            <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-visually-hidden">Edit <%=locals.user.name%>&apos;s email address</legend>
-                
-                <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'govuk-form-group--error' : '' %>">
-                    <label class="govuk-label" for="email">Email address </label>
-                    <% if (locals.validationMessages.email !== undefined) { %>
+            <form method="post" id="form-resend-invitation">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-visually-hidden">Edit <%=locals.user.name%>&apos;s email
+                        address</legend>
+
+                    <div
+                        class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'govuk-form-group--error' : '' %>">
+                        <label class="govuk-label" for="email">Email address </label>
+                        <% if (locals.validationMessages.email !== undefined) { %>
                         <span id="validation-email" class="govuk-error-message">
                             <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.email %>
                         </span>
-                    <% } %>
-                    <input class="govuk-input govuk-!-width-one-half" id="email" name="email"
-                        type="text" <% if (locals.validationMessages.email !== undefined) { %> aria-invalid="true" aria-describedby="validation-email" <% } %> value="<%=email%>">
+                        <% } %>
+                        <input class="govuk-input govuk-!-width-one-half" id="email" name="email" type="text"
+                            <% if (locals.validationMessages.email !== undefined) { %> aria-invalid="true"
+                            aria-describedby="validation-email" <% } %> value="<%=email%>">
+                    </div>
+
+                </fieldset>
+
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Submit</button>
+                    <a href="services" class="govuk-button govuk-button--secondary">Cancel</a>
                 </div>
+            </form>
 
-            </fieldset>
-
-            <div class="govuk-button-group">
-                <button type="submit" class="govuk-button">Submit</button>
-                <a href="services" class="govuk-button govuk-button--secondary">Cancel</a>
-            </div>
-        </form>
-
+        </div>
     </div>
 </div>
-
-
