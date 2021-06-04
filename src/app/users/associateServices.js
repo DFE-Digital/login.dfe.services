@@ -1,14 +1,15 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServices } = require('./../../infrastructure/applications');
 const { getAllServicesForUserInOrg } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
+const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
 const policyEngine = new PolicyEngine(config);
 
 const getAllAvailableServices = async (req) => {
-  const allServices = await getAllServices(req.id);
+  const allServices = await checkCacheForAllServices(req.id);
+
   let externalServices = allServices.services.filter(
     (x) =>
       x.isExternalService === true &&
