@@ -19,8 +19,158 @@
     <div class="servicesv2">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <% if (!enableTaskList || services.length !== 0) { %>
-                <%- include reviewUsers.ejs %>
+                <% if (enableTaskList && services.length === 0) { %>
+                <div>
+                    <h1 class="govuk-heading-xl">
+                        Set up your DfE Sign-in account
+                    </h1>
+
+                    <p class="govuk-body">Complete the following steps to finish setting up your account.</p>
+
+                    <div>
+                        <ol class="task-list">
+                            <li>
+                                <h2 class="task-list-section">
+                                    <span class="task-list-section-number">1. </span> Verify your account
+                                </h2>
+                                <ul class="task-list-items">
+                                    <li class="task-list-item">
+                                        <p class="govuk-body task-name">
+                                            Verify your email address
+                                        </p>
+                                        <strong class="task-status govuk-tag">Completed</strong>
+                                    </li>
+                                    <li class="task-list-item">
+                                        <p class="govuk-body task-name">
+                                            Set password for account
+                                        </p>
+                                        <strong class="task-status govuk-tag">Completed</strong>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <h2 class="task-list-section">
+                                    <span class="task-list-section-number">2. </span> Connect to an organisation
+                                </h2>
+                                <ul class="task-list-items">
+                                    <li class="task-list-item">
+                                        <% if(!taskListStatus.hasOrgAssigned) { %>
+                                        <a class="govuk-link-bold" href="/request-organisation/search">
+                                            Request access to an organisation
+                                        </a>
+                                        <% } else { %>
+                                        <p class="govuk-body task-name">
+                                            Request access to an organisation
+                                        </p>
+                                        <% } %>
+                                        <% if(!taskListStatus.hasOrgAssigned) { %>
+                                        <a class="govuk-button pull-right govuk-!-margin-0"
+                                            href="/request-organisation/search" role="button">Next Action</a>
+                                        <% } else { %>
+                                        <strong class="task-status govuk-tag">Completed</strong>
+                                        <% } %>
+                                    </li>
+                                    <li class="task-list-item">
+                                        <p class="govuk-body task-name">
+                                            Await approval from organisation
+                                        </p>
+                                        <% if(taskListStatus.hasRequestPending) { %>
+                                        <strong class="task-status govuk-tag govuk-tag--grey">Pending</strong>
+                                        <% } else if( taskListStatus.hasRequestRejected ) { %>
+                                        <strong class="task-status govuk-tag govuk-tag--red">Rejected</strong>
+                                        <% } else if( taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending && !taskListStatus.hasRequestRejected) { %>
+                                        <strong class="task-status govuk-tag">Approved</strong>
+                                        <% } %>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <!--   {% if action === "accepted" %}-->
+                                <h2 class="task-list-section">
+                                    <span class="task-list-section-number">3. </span> Get access to services
+                                </h2>
+                                <ul class="task-list-items">
+                                    <% if (taskListStatus.multiOrgDetails.orgs > 1 && taskListStatus.multiOrgDetails.approvers >= 1 &&
+                                                                                !taskListStatus.approverForOrg) { %>
+                                    <li class="task-list-item">
+                                        <p class="govuk-body task-name">
+                                            Email organisation's approver for access to services
+                                            <br /> <a class="govuk-link-bold" href="/organisations">See my approvers</a>
+                                        </p>
+                                    </li>
+                                    <% } else if (approvers.length === 0 && taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending &&
+                                                                                !taskListStatus.hasRequestRejected) { %>
+                                    <!-- Add what if there are no approvers -->
+                                    <li class="task-list-item">
+                                        <p class="govuk-body task-name">
+                                            We are assigning your organisation's first approver (this may take up to 5
+                                            days)
+                                        </p>
+                                    </li>
+                                    <% } else if(taskListStatus.approverForOrg) { %>
+                                    <li class="task-list-item">
+                                        <a class="govuk-link-bold" href='<%=locals.addServicesRedirect%>'>Add
+                                            services</a>
+                                        <a class="govuk-button pull-right govuk-!-margin-0"
+                                            href='<%=locals.addServicesRedirect%>' role="button">Next Action</a>
+                                    </li>
+                                    <% } else { %>
+                                    <li class="task-list-item">
+                                        <p class="govuk-body task-name">
+                                            Email organisation's approver for access to services
+                                        </p>
+                                        <% if (approvers.length < 5) { %>
+                                        <ul>
+                                            <% for (let a = 0; a < approvers.length; a++) { %>
+                                            <li><a class="govuk-link-bold"
+                                                    href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %></a>
+                                            </li>
+                                            <% } %>
+                                        </ul>
+                                        <% } else { %>
+
+                                        </br></br>
+
+                                        <article class="organisation-services govuk-!-margin-bottom-0">
+                                            <section class="organisation">
+                                                <div>
+                                                    <a href="" class="govuk-link-bold info-link"><%= approvers.length %>
+                                                        approvers</a>
+                                                </div>
+                                                <div class="meta js-hidden">
+                                                    <div class="approvers">
+                                                        <dl class="inline condensed small-dt">
+                                                            <ul>
+                                                                <% for (let a = 0; a < approvers.length; a++) { %>
+                                                                <li><a class="govuk-link-bold"
+                                                                        href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %></a>
+                                                                </li>
+                                                                <% } %>
+                                                            </ul>
+                                                        </dl>
+                                                    </div>
+                                                </div>
+                                            </section>
+                                        </article>
+
+                                        <% }%>
+                                    </li>
+                                    <% } %>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <% } else { %>
+                <div class="govuk-!-margin-top-9">
+                    <%- include reviewUsers.ejs %>
+                </div>
+                <% if (services.length === 0) { %>
+                <div class="empty-state">
+                    <p class="govuk-body">You have no services assigned, please contact your <a class="govuk-link-bold"
+                            href="organisations">approver</a>.</p>
+                </div>
+                <% } %>
                 <% } %>
 
                 <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
@@ -60,159 +210,8 @@
         </div>
 
         <div class="govuk-grid-row">
-            <% if (enableTaskList && services.length === 0) { %>
-
+            <% if (!enableTaskList || services.length !== 0) { %>
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-xl">
-                    Set up your DfE Sign-in account
-                </h1>
-
-                <p class="govuk-body">Complete the following steps to finish setting up your account.</p>
-
-                <div>
-                    <ol class="task-list">
-                        <li>
-                            <h2 class="task-list-section">
-                                <span class="task-list-section-number">1. </span> Verify your account
-                            </h2>
-                            <ul class="task-list-items">
-                                <li class="task-list-item">
-                                    <p class="govuk-body task-name">
-                                        Verify your email address
-                                    </p>
-                                    <strong class="task-status govuk-tag">Completed</strong>
-                                </li>
-                                <li class="task-list-item">
-                                    <p class="govuk-body task-name">
-                                        Set password for account
-                                    </p>
-                                    <strong class="task-status govuk-tag">Completed</strong>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <h2 class="task-list-section">
-                                <span class="task-list-section-number">2. </span> Connect to an organisation
-                            </h2>
-                            <ul class="task-list-items">
-                                <li class="task-list-item">
-                                    <% if(!taskListStatus.hasOrgAssigned) { %>
-                                    <a class="govuk-link-bold" href="/request-organisation/search">
-                                        Request access to an organisation
-                                    </a>
-                                    <% } else { %>
-                                    <p class="govuk-body task-name">
-                                        Request access to an organisation
-                                    </p>
-                                    <% } %>
-                                    <% if(!taskListStatus.hasOrgAssigned) { %>
-                                    <a class="govuk-button pull-right govuk-!-margin-0"
-                                        href="/request-organisation/search" role="button">Next Action</a>
-                                    <% } else { %>
-                                    <strong class="task-status govuk-tag">Completed</strong>
-                                    <% } %>
-                                </li>
-                                <li class="task-list-item">
-                                    <p class="govuk-body task-name">
-                                        Await approval from organisation
-                                    </p>
-                                    <% if(taskListStatus.hasRequestPending) { %>
-                                    <strong class="task-status govuk-tag govuk-tag--grey">Pending</strong>
-                                    <% } else if( taskListStatus.hasRequestRejected ) { %>
-                                    <strong class="task-status govuk-tag govuk-tag--red">Rejected</strong>
-                                    <% } else if( taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending && !taskListStatus.hasRequestRejected) { %>
-                                    <strong class="task-status govuk-tag">Approved</strong>
-                                    <% } %>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <!--   {% if action === "accepted" %}-->
-                            <h2 class="task-list-section">
-                                <span class="task-list-section-number">3. </span> Get access to services
-                            </h2>
-                            <ul class="task-list-items">
-                                <% if (taskListStatus.multiOrgDetails.orgs > 1 && taskListStatus.multiOrgDetails.approvers >= 1 &&
-                                                                !taskListStatus.approverForOrg) { %>
-                                <li class="task-list-item">
-                                    <p class="govuk-body task-name">
-                                        Email organisation's approver for access to services
-                                        <br /> <a class="govuk-link-bold" href="/organisations">See my approvers</a>
-                                    </p>
-                                </li>
-                                <% } else if (approvers.length === 0 && taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending &&
-                                                                !taskListStatus.hasRequestRejected) { %>
-                                <!-- Add what if there are no approvers -->
-                                <li class="task-list-item">
-                                    <p class="govuk-body task-name">
-                                        We are assigning your organisation's first approver (this may take up to 5
-                                        days)
-                                    </p>
-                                </li>
-                                <% } else if(taskListStatus.approverForOrg) { %>
-                                <li class="task-list-item">
-                                    <a class="govuk-link-bold" href='<%=locals.addServicesRedirect%>'>Add
-                                        services</a>
-                                    <a class="govuk-button pull-right govuk-!-margin-0"
-                                        href='<%=locals.addServicesRedirect%>' role="button">Next Action</a>
-                                </li>
-                                <% } else { %>
-                                <li class="task-list-item">
-                                    <p class="govuk-body task-name">
-                                        Email organisation's approver for access to services
-                                    </p>
-                                    <% if (approvers.length < 5) { %>
-                                    <ul>
-                                        <% for (let a = 0; a < approvers.length; a++) { %>
-                                        <li><a class="govuk-link-bold"
-                                                href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %></a>
-                                        </li>
-                                        <% } %>
-                                    </ul>
-                                    <% } else { %>
-
-                                    </br></br>
-
-                                    <article class="organisation-services govuk-!-margin-bottom-0">
-                                        <section class="organisation">
-                                            <div>
-                                                <a href="" class="govuk-link-bold info-link"><%= approvers.length %>
-                                                    approvers</a>
-                                            </div>
-                                            <div class="meta js-hidden">
-                                                <div class="approvers">
-                                                    <dl class="inline condensed small-dt">
-                                                        <ul>
-                                                            <% for (let a = 0; a < approvers.length; a++) { %>
-                                                            <li><a class="govuk-link-bold"
-                                                                    href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %></a>
-                                                            </li>
-                                                            <% } %>
-                                                        </ul>
-                                                    </dl>
-                                                </div>
-                                            </div>
-                                        </section>
-                                    </article>
-
-                                    <% }%>
-                                </li>
-                                <% } %>
-                            </ul>
-                        </li>
-                    </ol>
-                </div>
-            </div>
-
-            <% } else { %>
-            <div class="govuk-grid-column-two-thirds">
-                <% if (services.length === 0) { %>
-                <div class="empty-state">
-                    <p class="govuk-body">You have no services assigned, please contact your <a class="govuk-link-bold"
-                            href="organisations">approver</a>.</p>
-                </div>
-                <% } %>
-
                 <table class="govuk-table">
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
@@ -246,9 +245,7 @@
                     </tbody>
                 </table>
             </div>
-
             <% } %>
-
         </div>
     </div>
 </div>
