@@ -1,100 +1,102 @@
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">
-            Request an organisation
-        </h1>
-        <p class="govuk-body-l">Search for your organisation.</p>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                Request an organisation
+            </h1>
+            <p class="govuk-body-l">Search for your organisation.</p>
+        </div>
     </div>
-</div>
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half">
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <input type="hidden" name="page" value="1" />
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                <input type="hidden" name="page" value="1" />
 
-            <div class="govuk-form-group search-field">
-                <fieldset class="govuk-fieldset">
-                    <label for="criteria" class="vh">Search by name, URN or UKPRN</label>
-                    <input type="text" id="criteria" name="criteria" value="<%=criteria%>" class="govuk-input"
-                        placeholder="Search by name, URN or UKPRN ">
-                </fieldset>
-                <fieldset class="govuk-fieldset search-submit">
-                    <button type="submit" class="search-button">Search</button>
-                </fieldset>
+                <div class="govuk-form-group search-field">
+                    <fieldset class="govuk-fieldset">
+                        <label for="criteria" class="vh">Search by name, URN or UKPRN</label>
+                        <input type="text" id="criteria" name="criteria" value="<%=criteria%>" class="govuk-input"
+                            placeholder="Search by name, URN or UKPRN ">
+                    </fieldset>
+                    <fieldset class="govuk-fieldset search-submit">
+                        <button type="submit" class="search-button">Search</button>
+                    </fieldset>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <% if (locals.organisations !== undefined) {%>
+    <%
+        const paginationModel = {
+            objectName: 'organisations',
+            method: 'post',
+            csrfToken,
+            currentPage: page,
+            numberOfPages: totalNumberOfPages,
+            totalNumberOfResults: totalNumberOfRecords,
+            numberOfResultsOnPage: organisations.length,
+            data: [
+                { key: 'criteria', value: locals.criteria }
+            ]
+        };
+    %>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <%- include('../../layouts/pagination', paginationModel); %>
+
+                <ol class="govuk-list search-results">
+
+                    <% if (organisations.length === 0) { %>
+                    <li><span class="empty-state">No organisations found</span></li>
+                    <% } %>
+
+                    <% for (let i = 0; i < organisations.length; i++) { %>
+                    <%const org = organisations[i];%>
+                    <li>
+                        <article>
+                            <h2 class="govuk-heading-m">
+                                <form method="post">
+                                    <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                                    <input type="hidden" name="selectedOrganisation" value="<%=org.id%>" />
+                                    <button class="button-link"><%=org.name%></button>
+                                </form>
+                            </h2>
+                            <dl class="inline">
+                                <% if(org.urn) { %>
+                                <dt>URN</dt>
+                                <dd><%=org.urn%></dd>
+                                <% } %>
+
+                                <% if(org.uid) { %>
+                                <dt>UID</dt>
+                                <dd><%=org.uid%></dd>
+                                <% } %>
+
+                                <% if (org.address) { %>
+                                <dt>Address</dt>
+                                <dd><%=org.address%></dd>
+                                <% } %>
+
+                                <% if(org.type || org.category) { %>
+                                <dt>Type</dt>
+                                <dd><%=(org.type ? org.type.name : org.category.name)%></dd>
+                                <% } %>
+
+                                <% if (org.status && org.status.name) { %>
+                                <dt>Status</dt>
+                                <dd><%=org.status.name%></dd>
+                                <% } %>
+                            </dl>
+                        </article>
+                    </li>
+                    <% } %>
+                </ol>
+
+                <%- include('../../layouts/pagination', paginationModel); %>
             </div>
-        </form>
-    </div>
+        </div>
+    <% } %>
 </div>
-
-<% if (locals.organisations !== undefined) {%>
-<%
-    const paginationModel = {
-        objectName: 'organisations',
-        method: 'post',
-        csrfToken,
-        currentPage: page,
-        numberOfPages: totalNumberOfPages,
-        totalNumberOfResults: totalNumberOfRecords,
-        numberOfResultsOnPage: organisations.length,
-        data: [
-            { key: 'criteria', value: locals.criteria }
-        ]
-    };
-%>
-
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-        <%- include('../../layouts/pagination', paginationModel); %>
-
-        <ol class="govuk-list search-results">
-
-            <% if (organisations.length === 0) { %>
-            <li><span class="empty-state">No organisations found</span></li>
-            <% } %>
-
-            <% for (let i = 0; i < organisations.length; i++) { %>
-            <%const org = organisations[i];%>
-            <li>
-                <article>
-                    <h2 class="govuk-heading-m">
-                        <form method="post">
-                            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-                            <input type="hidden" name="selectedOrganisation" value="<%=org.id%>" />
-                            <button class="button-link"><%=org.name%></button>
-                        </form>
-                    </h2>
-                    <dl class="inline">
-                        <% if(org.urn) { %>
-                        <dt>URN</dt>
-                        <dd><%=org.urn%></dd>
-                        <% } %>
-
-                        <% if(org.uid) { %>
-                        <dt>UID</dt>
-                        <dd><%=org.uid%></dd>
-                        <% } %>
-
-                        <% if (org.address) { %>
-                        <dt>Address</dt>
-                        <dd><%=org.address%></dd>
-                        <% } %>
-
-                        <% if(org.type || org.category) { %>
-                        <dt>Type</dt>
-                        <dd><%=(org.type ? org.type.name : org.category.name)%></dd>
-                        <% } %>
-
-                        <% if (org.status && org.status.name) { %>
-                        <dt>Status</dt>
-                        <dd><%=org.status.name%></dd>
-                        <% } %>
-                    </dl>
-                </article>
-            </li>
-            <% } %>
-        </ol>
-
-        <%- include('../../layouts/pagination', paginationModel); %>
-    </div>
-</div>
-<% } %>

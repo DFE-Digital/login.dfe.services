@@ -1,63 +1,65 @@
-<% if (locals.flash.info) { %>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            <div class="notification notification-success">
-                <%= locals.flash.info %>
-            </div>
-        </div>
-    </div>
-<% } %>
-
-<% if (locals.flash.warn) { %>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            <div class="notification notification-information">
-                <%= locals.flash.warn %>
-            </div>
-        </div>
-    </div>
-<% } %>
-
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-        <h1 class="govuk-heading-xl">
-            <span class="govuk-caption-xl"><%= locals.organisation.name%> <%= locals.organisation.status ? `(${locals.organisation.status.name})` : '' %></span>
-            Requests
-        </h1>
-
-        <div class="govuk-tabs" data-module="govuk-tabs">
-            <ul class="govuk-tabs__list">
-                <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-                    Organisation requests <span>(<%= locals.requests.length %>)</span>
-                </li>
-            </ul>
-        </div>
-
-        <div class="pane">
-            <% if (locals.requests.length > 0) { %>
-                <% for (let i = 0; i < locals.requests.length; i++) { %>
-                <div class="request <%= locals.requests[i].status && locals.requests[i].status.id === 2 ? 'overdue' : '' %>">
-                    <p class="govuk-body">
-                        <% if (locals.requests[i].status && locals.requests[i].status.id === 2) { %>
-                            <span class="overdue-text">
-                                Overdue request from
-                            </span>
-                        <% } else { %>
-                                Request from
-                        <% }%>
-                            <b><%= locals.requests[i].usersEmail %></b> -
-                        <time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time>
-                    </p>
-                    <p class="govuk-body">
-                        <a href="requests/<%= locals.requests[i].id %>" class="button-respond">Review request</a>
-                    </p>
+<div class="govuk-width-container">
+    <% if (locals.flash.info) { %>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <div class="notification notification-success">
+                    <%= locals.flash.info %>
                 </div>
+            </div>
+        </div>
+    <% } %>
+
+    <% if (locals.flash.warn) { %>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <div class="notification notification-information">
+                    <%= locals.flash.warn %>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-xl">
+                <span class="govuk-caption-xl"><%= locals.organisation.name%> <%= locals.organisation.status ? `(${locals.organisation.status.name})` : '' %></span>
+                Requests
+            </h1>
+
+            <div class="govuk-tabs" data-module="govuk-tabs">
+                <ul class="govuk-tabs__list">
+                    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                        Organisation requests <span>(<%= locals.requests.length %>)</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="pane">
+                <% if (locals.requests.length > 0) { %>
+                    <% for (let i = 0; i < locals.requests.length; i++) { %>
+                    <div class="request <%= locals.requests[i].status && locals.requests[i].status.id === 2 ? 'overdue' : '' %>">
+                        <p class="govuk-body">
+                            <% if (locals.requests[i].status && locals.requests[i].status.id === 2) { %>
+                                <span class="overdue-text">
+                                    Overdue request from
+                                </span>
+                            <% } else { %>
+                                    Request from
+                            <% }%>
+                                <b><%= locals.requests[i].usersEmail %></b> -
+                            <time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time>
+                        </p>
+                        <p class="govuk-body">
+                            <a href="requests/<%= locals.requests[i].id %>" class="button-respond">Review request</a>
+                        </p>
+                    </div>
+                    <% } %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <p class="govuk-body">You have no outstanding requests for <%= locals.organisation.name %></p>
+                    </div>
                 <% } %>
-            <% } else { %>
-                <div class="empty-state">
-                    <p class="govuk-body">You have no outstanding requests for <%= locals.organisation.name %></p>
-                </div>
-            <% } %>
+            </div>
         </div>
     </div>
 </div>

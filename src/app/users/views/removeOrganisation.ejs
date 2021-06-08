@@ -1,50 +1,52 @@
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">
-            Confirm removal from organisation
-        </h1>
-        <p class="govuk-body-l">Please review these details before removing <%= locals.user.firstName %> <%= locals.user.lastName %> from <%=locals.organisationDetails.organisation.name%> and associated services.</p>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                Confirm removal from organisation
+            </h1>
+            <p class="govuk-body-l">Please review these details before removing <%= locals.user.firstName %> <%= locals.user.lastName %> from <%=locals.organisationDetails.organisation.name%> and associated services.</p>
 
-        <dl class="govuk-summary-list">
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    User
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    <%= locals.user.firstName %> <%= locals.user.lastName %>
-                </dd>
-            </div>
-
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    Organisation
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    <%=locals.organisationDetails.organisation.name%>
-                </dd>
-            </div>
-
-            <% if (locals.services.length > 0) { %>
+            <dl class="govuk-summary-list">
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
-                        Services
+                        User
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        <% for (let i = 0; i < locals.services.length; i++) { %>
-                            <% const service = locals.services[i]; %>
-                            <%=service.name%> <br>
-                        <% } %>
+                        <%= locals.user.firstName %> <%= locals.user.lastName %>
                     </dd>
                 </div>
-            <% } %>
-        </dl>
 
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <div class="govuk-button-group">
-                <button type="submit" class="govuk-button">Continue</button>
-                <a href="./" class="govuk-button govuk-button--secondary">Cancel</a>
-            </div>
-        </form>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Organisation
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.organisationDetails.organisation.name%>
+                    </dd>
+                </div>
+
+                <% if (locals.services.length > 0) { %>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Services
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <% for (let i = 0; i < locals.services.length; i++) { %>
+                                <% const service = locals.services[i]; %>
+                                <%=service.name%> <br>
+                            <% } %>
+                        </dd>
+                    </div>
+                <% } %>
+            </dl>
+
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Continue</button>
+                    <a href="./" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
