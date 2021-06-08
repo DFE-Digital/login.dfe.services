@@ -2,11 +2,10 @@
     <div class="govuk-grid-column-two-thirds">
 
         <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader) { %>
-            <div class="notice" style="margin-top: 1.25em;">
-                <i class="icon icon-important">
-                    <span class="govuk-visually-hidden">Warning</span>
-                </i>
-                <strong class="govuk-!-font-size-19 govuk-!-font-weight-bold">
+            <div class="govuk-warning-text">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-warning-text__assistive">Warning</span>
                     <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader %>
                 </strong>
             </div>
@@ -95,11 +94,10 @@
             </div>
 
             <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter) { %>
-                <div class="notice" style="margin-bottom: 1.2em;">
-                    <i class="icon icon-important">
-                        <span class="govuk-visually-hidden">Warning</span>
-                    </i>
-                    <strong class="govuk-!-font-size-19 govuk-!-font-weight-bold">
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-warning-text__assistive">Warning</span>
                         <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter %>
                     </strong>
                 </div>
