@@ -1,50 +1,52 @@
-<%- include('summaryPartial', {area: 'services'}); %>
-<% let hasServices = false %>
+<div class="govuk-width-container">
+    <%- include('summaryPartial', {area: 'services'}); %>
+    <% let hasServices = false %>
 
-<article class="organisation-services">
-    <section class="organisation">
-        <header>
-            <h3 class="govuk-heading-s spacer-heading"><%= locals.organisationDetails.organisation.name%></h3>
-        </header>
-    </section>
-    <section class="services">
-        <% if (locals.services.length > 0) { %>
-            <% hasServices = true %>
-            <table class="custom-table data no-borders">
-                <thead>
-                <tr>
-                    <th scope="col" class="cwp-30">Service</th>
-                    <th scope="col" class="cwp-25">Access granted on</th>
-                    <th scope="col" class="cwp-15">Service status</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% for (let i = 0; i < locals.services.length; i++) { %>
-                    <% const service = locals.services[i]; %>
-                    <tr class="<%= service.disabled ? 'pending' : '' %>">
-                        <td>
-                            <% if (service.disabled) { %>
-                                <p class="govuk-!-margin-0"><%=service.name%></p>
-                            <% } else { %>
-                            <a class="govuk-link-bold" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>"><%=service.name%></a>
-                            <% } %>
-                        </td>
-                        <% if (service.dateActivated) { %>
-                            <td><%=locals.moment(service.dateActivated).format('DD MMM YYYY')%></td>
-                        <%} else {%>
-                            <td>Pending</td>
-                        <%}%>
-                        <td><%= service.status.description%></td>
+    <article class="organisation-services">
+        <section class="organisation">
+            <header>
+                <h3 class="govuk-heading-s spacer-heading"><%= locals.organisationDetails.organisation.name%></h3>
+            </header>
+        </section>
+        <section class="services">
+            <% if (locals.services.length > 0) { %>
+                <% hasServices = true %>
+                <table class="custom-table data no-borders">
+                    <thead>
+                    <tr>
+                        <th scope="col" class="cwp-30">Service</th>
+                        <th scope="col" class="cwp-25">Access granted on</th>
+                        <th scope="col" class="cwp-15">Service status</th>
                     </tr>
+                    </thead>
+                    <tbody>
+                    <% for (let i = 0; i < locals.services.length; i++) { %>
+                        <% const service = locals.services[i]; %>
+                        <tr class="<%= service.disabled ? 'pending' : '' %>">
+                            <td>
+                                <% if (service.disabled) { %>
+                                    <p class="govuk-!-margin-0"><%=service.name%></p>
+                                <% } else { %>
+                                <a class="govuk-link-bold" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>"><%=service.name%></a>
+                                <% } %>
+                            </td>
+                            <% if (service.dateActivated) { %>
+                                <td><%=locals.moment(service.dateActivated).format('DD MMM YYYY')%></td>
+                            <%} else {%>
+                                <td>Pending</td>
+                            <%}%>
+                            <td><%= service.status.description%></td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
                 <% } %>
-                </tbody>
-            </table>
-            <% } %>
-    </section>
-</article>
+        </section>
+    </article>
 
-<% if (!hasServices) { %>
-<div class="empty-state">
-    <p class="govuk-body"><%=user.firstName%> <%=user.lastName%> does not have access to any services.</p>
+    <% if (!hasServices) { %>
+        <div class="empty-state">
+            <p class="govuk-body"><%=user.firstName%> <%=user.lastName%> does not have access to any services.</p>
+        </div>
+    <% } %>
 </div>
-<% } %>

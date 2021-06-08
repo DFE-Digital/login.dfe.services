@@ -1,47 +1,49 @@
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">
-            This user has a DfE Sign-in account
-        </h1>
-        <p class="govuk-body-l">Please review these details and select continue to invite this user to <%= locals.organisationDetails.organisation.name%>.</p>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                This user has a DfE Sign-in account
+            </h1>
+            <p class="govuk-body-l">Please review these details and select continue to invite this user to <%= locals.organisationDetails.organisation.name%>.</p>
 
-        <dl class="govuk-summary-list">
+            <dl class="govuk-summary-list">
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    First name
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    <%=locals.user.firstName%>
-                </dd>
-            </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        First name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.user.firstName%>
+                    </dd>
+                </div>
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    Last name
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    <%=locals.user.lastName%>
-                </dd>
-            </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Last name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.user.lastName%>
+                    </dd>
+                </div>
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    Email address
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    <%=locals.user.email%>
-                </dd>
-            </div>
-        </dl>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Email address
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.user.email%>
+                    </dd>
+                </div>
+            </dl>
 
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <div class="govuk-button-group">
-                <button type="submit" class="govuk-button">Continue</button>
-                <a href="../" class="govuk-button govuk-button--secondary">Cancel</a>
-            </div>
-        </form>
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Continue</button>
+                    <a href="../" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+            </form>
 
+        </div>
     </div>
 </div>
