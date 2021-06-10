@@ -23,14 +23,25 @@ const getNaturalIdentifiers = async (req) => {
 
 const get = async (req, res) => {
   await getNaturalIdentifiers(req);
-  return res.render('users/views/selectOrganisation', {
-    csrfToken: req.csrfToken(),
-    title: 'Select Organisation',
-    organisations: req.userOrganisations,
-    currentPage: 'users',
-    selectedOrganisation: null,
-    validationMessages: {},
-  });
+  if (req.query.manage_users) {
+    return res.render('users/views/selectOrganisation', {
+      csrfToken: req.csrfToken(),
+      title: 'Select Organisation',
+      organisations: req.userOrganisations,
+      currentPage: 'users',
+      selectedOrganisation: null,
+      validationMessages: {},
+    });
+  } else {
+    return res.render('users/views/selectOrganisationRedesigned', {
+      csrfToken: req.csrfToken(),
+      title: 'Select Organisation',
+      organisations: req.userOrganisations,
+      currentPage: 'services',
+      selectedOrganisation: null,
+      validationMessages: {},
+    });
+  }
 };
 
 const validate = (req) => {
@@ -54,7 +65,12 @@ const post = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return res.render('users/views/selectOrganisation', model);
+    if (req.query.manage_users) {
+      return res.render('users/views/selectOrganisation', model);
+    } else {
+      model.currentPage = 'services';
+      return res.render('users/views/selectOrganisationRedesigned', model);
+    }
   }
 
   if (req.query.services === 'add') {
