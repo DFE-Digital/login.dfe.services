@@ -7,6 +7,18 @@ const { checkCacheForAllServices } = require('../../infrastructure/helpers/allSe
 
 const policyEngine = new PolicyEngine(config);
 
+const renderAssociateServicesPage = (req, res, model) => {
+  const isSelfManagement = req.user.sub === req.session.user.uid;
+
+  if (isSelfManagement) {
+    model.currentPage = 'services';
+    res.render('users/views/associateServicesRedesigned', model);
+  } else {
+    model.currentPage = 'users';
+    res.render('users/views/associateServices', model);
+  }
+};
+
 const getAllAvailableServices = async (req) => {
   const allServices = await checkCacheForAllServices(req.id);
 
@@ -56,6 +68,7 @@ const get = async (req, res) => {
   } else {
     backRedirect = 'services';
   }
+
   const model = {
     csrfToken: req.csrfToken(),
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
@@ -69,7 +82,7 @@ const get = async (req, res) => {
     isInvite: req.session.user.isInvite,
   };
 
-  res.render('users/views/associateServices', model);
+  renderAssociateServicesPage(req, res, model);
 };
 
 const validate = async (req) => {
@@ -122,7 +135,7 @@ const post = async (req, res) => {
   const model = await validate(req);
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return res.render('users/views/associateServices', model);
+    renderAssociateServicesPage(req, res, model);
   }
 
   req.session.user.services = model.selectedServices.map((serviceId) => {
