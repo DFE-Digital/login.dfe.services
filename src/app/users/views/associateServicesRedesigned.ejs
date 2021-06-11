@@ -1,30 +1,6 @@
-<div class="govuk-width-container">
+<div class="govuk-width-container govuk-!-margin-top-3">
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-
-            <h1 class="govuk-heading-xl">
-                Select services (NEW DESIGN)
-            </h1>
-
-            <dl class="govuk-summary-list">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        User
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <%= locals.name%>
-                    </dd>
-                </div>
-
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Organisation
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <%=locals.organisationDetails.organisation.name%>
-                    </dd>
-                </div>
-            </dl>
+        <div class="govuk-grid-column-three-quarters">
 
             <% if (locals.services.length > 0) { %>
                 <form method="post">
@@ -39,31 +15,48 @@
                                 </span>
                             <% } %>
 
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                <span class="body-text"><%= locals.isInvite ? 'You can continue without selecting any services': 'Select all required services'%></span>
-                            </legend>
+                            <legend class="govuk-visually-hidden">'Select all required services'%></legend>
 
-                            <div class="govuk-checkboxes">
-                                <% for (let i = 0; i < locals.services.length; i++) { %>
-                                    <% const service = locals.services[i]; %>
-                                    <div class="govuk-checkboxes__item">
-                                        <input class="govuk-checkboxes__input" id="<%=service.id%>" type="checkbox" name="service" value="<%=service.id%>"
-                                                <% if (locals.selectedServices && locals.selectedServices.length > 0) {
-                                                    for(let i = 0; i < locals.selectedServices.length; i++) {
-                                                    const selectedService = locals.selectedServices[i].serviceId;
-                                                %>
-                                                <%= service.id === selectedService ? 'checked': ''%><% } }%>>
-                                        <label class="govuk-label govuk-checkboxes__label" for="<%=service.id%>"><%=service.name%></label>
-                                    </div>
-                                <% } %>
-                            </div>
+                            <table class="govuk-table">
+                                <caption class="govuk-table__caption govuk-table__caption--m">Select a service</caption>
+                                <thead class="govuk-table__head">
+                                    <tr class="govuk-table__row">
+                                    <th scope="col" class="govuk-table__header">Select service</th>
+                                    <th scope="col" class="govuk-table__header">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="govuk-table__body">
+
+                                    <% for (let i = 0; i < locals.services.length; i++) { %>
+                                        <% const service = locals.services[i]; %>
+                                        <tr class="govuk-table__row">
+                                            <td class="govuk-table__cell">
+                                                <div class="govuk-radios__item">
+                                                    <input class="govuk-radios__input" id="<%=service.id%>" name="service" type="radio" value="<%=service.id%>"
+                                                        <% if (locals.selectedServices && locals.selectedServices.length > 0) {
+                                                            for(let i = 0; i < locals.selectedServices.length; i++) {
+                                                                const selectedService = locals.selectedServices[i].serviceId;
+                                                        %>
+                                                        <%= service.id === selectedService ? 'checked': ''%><% } }%>
+                                                    >
+                                                    <label class="govuk-label govuk-radios__label govuk-!-font-weight-bold" for="<%=service.id%>"><%=service.name%></label>
+                                                </div>
+                                            </td>
+                                            <td class="govuk-table__cell govuk-!-font-size-16">
+                                                <label class="govuk-label govuk-radios__label" for="<%=service.id%>"><%=service.description%></label>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+
+                                </tbody>
+                              </table>
 
                         </fieldset>
                     </div>
 
                     <div class="govuk-button-group">
                         <button type="submit" class="govuk-button">Continue</button>
-                        <a href="<%= locals.user.uid && locals.user.isInvite ? "./../" : "./"%>" class="govuk-button govuk-button--secondary">Cancel</a>
+                        <a href="/my-services"%>" class="govuk-button govuk-button--secondary">Cancel</a>
                     </div>
 
                 </form>
