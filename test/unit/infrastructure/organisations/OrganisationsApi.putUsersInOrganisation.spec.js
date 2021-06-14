@@ -18,10 +18,6 @@ jest.mock('./../../../../src/infrastructure/config', () => {
 jest.mock('login.dfe.dao', () => {
   return {
     organisation: {
-      putUserOrganisation: async (uo) =>{
-        return true;
-      },
-
       getOrganisationsForUserIncludingServices: async (ids) => {
         return [
           {
@@ -148,10 +144,12 @@ jest.mock('login.dfe.dao', () => {
           },
         ];
       },
+      putUserOrganisation: jest.fn(async (params) => [{ response: 'ok' }]),
     },
   };
 });
 
+const dao = require('login.dfe.dao');
 const rp = require('login.dfe.request-promise-retry');
 
 describe('when putting a user in organisations for approval', () => {
@@ -165,18 +163,14 @@ describe('when putting a user in organisations for approval', () => {
 
     rp.mockReset();
     rp.mockReturnValue({});
-
     apiCall = require('./../../../../src/infrastructure/organisations/api');
   });
 
   it('then it should PUT details to the organisations api', async () => {
-   const result = await apiCall.putUserInOrganisation('user1', 'org1', 'status1', 'role1', 'rejection-reason', 'correlationId');
-
-    expect(result).toBe(true);
-  });
-
-  it('then it should include the bearer token for authorization', async () => {
-   const result =  await apiCall.putUserInOrganisation('user1');
-    expect(result).not.toBeNull();
+    await apiCall.putUserInOrganisation('user1', 'org1', 'status1', 'role1', 'rejection-reason', 'correlationId');
+    expect(dao.organisation.putUserOrganisation.mock.calls).toHaveLength(1);
+    expect(dao.organisation.putUserOrganisation.mock.calls[0][0].reason).toBe('rejection-reason');
+    expect(dao.organisation.putUserOrganisation.mock.calls[0][0].status).toBe('status1');
+    expect(dao.organisation.putUserOrganisation.mock.calls[0][0].role_id).toBe('role1');
   });
 });

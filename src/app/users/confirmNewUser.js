@@ -32,11 +32,11 @@ const get = async (req, res) => {
     const service = services[i];
     const serviceDetails = allServices.services.find((x) => x.id === service.id);
     const allRolesOfService = await listRolesOfService(service.id, req.id);
-    const roleDetails = allRolesOfService.filter((x) =>
+    const rotails = allRolesOfService.filter((x) =>
       service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
     );
     service.name = serviceDetails.name;
-    service.roles = roleDetails;
+    service.roles = rotails;
   }
   return res.render('users/views/confirmNewUser', {
     backLink: true,
