@@ -33,7 +33,7 @@
                                         <tr class="govuk-table__row">
                                             <td class="govuk-table__cell">
                                                 <div class="govuk-radios__item">
-                                                    <input class="govuk-radios__input" id="<%=service.id%>" name="service" type="radio" value="<%=service.id%>"
+                                                    <input class="govuk-radios__input auto-scroll-on-change" id="<%=service.id%>" name="service" type="radio" value="<%=service.id%>"
                                                         <% if (locals.selectedServices && locals.selectedServices.length > 0) {
                                                             for(let i = 0; i < locals.selectedServices.length; i++) {
                                                                 const selectedService = locals.selectedServices[i].serviceId;
@@ -58,7 +58,7 @@
                         </fieldset>
                     </div>
 
-                    <div id="form-buttons" class="govuk-button-group">
+                    <div class="govuk-button-group auto-scroll-dest">
                         <button type="submit" class="govuk-button">Continue</button>
                         <a href="/my-services"%>" class="govuk-button govuk-button--secondary">Cancel</a>
                     </div>
@@ -71,9 +71,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    $("input[type=radio]").on('change',function(e) {
-        location.href = "#form-buttons";
-    });
-</script>
