@@ -18,6 +18,10 @@ jest.mock('./../../../../src/infrastructure/config', () => {
 jest.mock('login.dfe.dao', () => {
   return {
     organisation: {
+      putUserOrganisation: async (uo) =>{
+        return true;
+      },
+
       getOrganisationsForUserIncludingServices: async (ids) => {
         return [
           {
@@ -166,21 +170,13 @@ describe('when putting a user in organisations for approval', () => {
   });
 
   it('then it should PUT details to the organisations api', async () => {
-    await apiCall.putUserInOrganisation('user1', 'org1', 'status1', 'role1', 'rejection-reason', 'correlationId');
+   const result = await apiCall.putUserInOrganisation('user1', 'org1', 'status1', 'role1', 'rejection-reason', 'correlationId');
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0].uri).toBe('http://orgs.api.test/organisations/org1/users/user1');
-    expect(rp.mock.calls[0][0].method).toBe('PUT');
-    expect(rp.mock.calls[0][0].body.reason).toBe('rejection-reason');
-    expect(rp.mock.calls[0][0].body.status).toBe('status1');
-    expect(rp.mock.calls[0][0].body.roleId).toBe('role1');
-    expect(rp.mock.calls[0][0].headers['x-correlation-id']).toBe('correlationId');
+    expect(result).toBe(true);
   });
 
   it('then it should include the bearer token for authorization', async () => {
-    await apiCall.putUserInOrganisation('user1');
-
-    expect(rp.mock.calls[0][0].headers).not.toBeNull();
-    expect(rp.mock.calls[0][0].headers.authorization).toBe('bearer token');
+   const result =  await apiCall.putUserInOrganisation('user1');
+    expect(result).not.toBeNull();
   });
 });
