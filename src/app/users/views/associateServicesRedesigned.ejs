@@ -21,7 +21,8 @@
                                 <caption class="govuk-table__caption govuk-table__caption--m">Select a service</caption>
                                 <thead class="govuk-table__head">
                                     <tr class="govuk-table__row">
-                                    <th scope="col" class="govuk-table__header">Select service</th>
+                                    <th scope="col" class="govuk-table__header">Select</th>
+                                    <th scope="col" class="govuk-table__header">Service</th>
                                     <th scope="col" class="govuk-table__header">Description</th>
                                     </tr>
                                 </thead>
@@ -39,11 +40,14 @@
                                                         %>
                                                         <%= service.id === selectedService ? 'checked': ''%><% } }%>
                                                     >
-                                                    <label class="govuk-label govuk-radios__label govuk-!-font-weight-bold" for="<%=service.id%>"><%=service.name%></label>
+                                                    <label class="govuk-label govuk-radios__label" for="<%=service.id%>"></label>
                                                 </div>
                                             </td>
+                                            <th scope="row" class="govuk-table__header govuk-table__cell">
+                                                <label class="cursor-pointer" for="<%=service.id%>"><%=service.name%></label>
+                                            </th>
                                             <td class="govuk-table__cell govuk-!-font-size-16">
-                                                <label class="govuk-label govuk-radios__label" for="<%=service.id%>"><%=service.description%></label>
+                                                <label class="cursor-pointer" for="<%=service.id%>"><%=service.description%></label>
                                             </td>
                                         </tr>
                                     <% } %>
@@ -54,7 +58,7 @@
                         </fieldset>
                     </div>
 
-                    <div class="govuk-button-group">
+                    <div id="form-buttons" class="govuk-button-group">
                         <button type="submit" class="govuk-button">Continue</button>
                         <a href="/my-services"%>" class="govuk-button govuk-button--secondary">Cancel</a>
                     </div>
@@ -67,3 +71,9 @@
         </div>
     </div>
 </div>
+
+<script>
+    $("input[type=radio]").on('change',function(e) {
+        location.href = "#form-buttons";
+    });
+</script>
