@@ -34,24 +34,24 @@ const getAllAvailableServices = async (req) => {
     externalServices = externalServices.filter((ex) => !allUserServicesInOrg.find((as) => as.id === ex.id));
   }
   const servicesNotAvailableThroughPolicies = [];
-  // const userOrganisations =
-  //   req.params.uid && !req.params.uid.startsWith('inv-')
-  //     ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
-  //     : undefined;
-  // const userAccessToSpecifiedOrganisation = userOrganisations
-  //   ? userOrganisations.find((x) => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())
-  //   : undefined;
-  // for (let i = 0; i < externalServices.length; i++) {
-  //   const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
-  //     userAccessToSpecifiedOrganisation ? req.params.uid : undefined,
-  //     req.params.orgId,
-  //     externalServices[i].id,
-  //     req.id,
-  //   );
-  //   if (!policyResult.serviceAvailableToUser) {
-  //     servicesNotAvailableThroughPolicies.push(externalServices[i].id);
-  //   }
-  // }
+  const userOrganisations =
+    req.params.uid && !req.params.uid.startsWith('inv-')
+      ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
+      : undefined;
+  const userAccessToSpecifiedOrganisation = userOrganisations
+    ? userOrganisations.find((x) => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())
+    : undefined;
+  for (let i = 0; i < externalServices.length; i++) {
+    const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
+      userAccessToSpecifiedOrganisation ? req.params.uid : undefined,
+      req.params.orgId,
+      externalServices[i].id,
+      req.id,
+    );
+    if (!policyResult.serviceAvailableToUser) {
+      servicesNotAvailableThroughPolicies.push(externalServices[i].id);
+    }
+  }
   return externalServices.filter((x) => !servicesNotAvailableThroughPolicies.find((y) => x.id === y));
 };
 
