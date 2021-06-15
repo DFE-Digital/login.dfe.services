@@ -33,7 +33,9 @@
                                         <tr class="govuk-table__row">
                                             <td class="govuk-table__cell">
                                                 <div class="govuk-radios__item">
-                                                    <input class="govuk-radios__input auto-scroll-on-change" id="<%=service.id%>" name="service" type="radio" value="<%=service.id%>"
+                                                    <!-- Added auto scroll when selecting an option, if we have more than 2 services listed -->
+                                                    <input class="govuk-radios__input <%= locals.services.length > 2 ? 'auto-scroll-on-change' : '' %>"
+                                                        id="<%=service.id%>" name="service" type="radio" value="<%=service.id%>"
                                                         <% if (locals.selectedServices && locals.selectedServices.length > 0) {
                                                             for(let i = 0; i < locals.selectedServices.length; i++) {
                                                                 const selectedService = locals.selectedServices[i].serviceId;
