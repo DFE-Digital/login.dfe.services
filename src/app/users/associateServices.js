@@ -7,10 +7,12 @@ const { checkCacheForAllServices } = require('../../infrastructure/helpers/allSe
 
 const policyEngine = new PolicyEngine(config);
 
-const renderAssociateServicesPage = (req, res, model) => {
-  const isSelfManagement = req.user.sub === req.session.user.uid;
+const isSelfManagement = (req) => {
+  return req.user.sub === req.session.user.uid;
+};
 
-  if (isSelfManagement) {
+const renderAssociateServicesPage = (req, res, model) => {
+  if (isSelfManagement(req)) {
     model.currentPage = 'services';
     res.render('users/views/associateServicesRedesigned', model);
   } else {
@@ -32,24 +34,24 @@ const getAllAvailableServices = async (req) => {
     externalServices = externalServices.filter((ex) => !allUserServicesInOrg.find((as) => as.id === ex.id));
   }
   const servicesNotAvailableThroughPolicies = [];
-  const userOrganisations =
-    req.params.uid && !req.params.uid.startsWith('inv-')
-      ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
-      : undefined;
-  const userAccessToSpecifiedOrganisation = userOrganisations
-    ? userOrganisations.find((x) => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())
-    : undefined;
-  for (let i = 0; i < externalServices.length; i++) {
-    const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
-      userAccessToSpecifiedOrganisation ? req.params.uid : undefined,
-      req.params.orgId,
-      externalServices[i].id,
-      req.id,
-    );
-    if (!policyResult.serviceAvailableToUser) {
-      servicesNotAvailableThroughPolicies.push(externalServices[i].id);
-    }
-  }
+  // const userOrganisations =
+  //   req.params.uid && !req.params.uid.startsWith('inv-')
+  //     ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
+  //     : undefined;
+  // const userAccessToSpecifiedOrganisation = userOrganisations
+  //   ? userOrganisations.find((x) => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())
+  //   : undefined;
+  // for (let i = 0; i < externalServices.length; i++) {
+  //   const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
+  //     userAccessToSpecifiedOrganisation ? req.params.uid : undefined,
+  //     req.params.orgId,
+  //     externalServices[i].id,
+  //     req.id,
+  //   );
+  //   if (!policyResult.serviceAvailableToUser) {
+  //     servicesNotAvailableThroughPolicies.push(externalServices[i].id);
+  //   }
+  // }
   return externalServices.filter((x) => !servicesNotAvailableThroughPolicies.find((y) => x.id === y));
 };
 
@@ -115,7 +117,11 @@ const validate = async (req) => {
     validationMessages: {},
   };
   if (!req.session.user.isInvite && model.selectedServices.length < 1) {
-    model.validationMessages.services = 'At least one service must be selected';
+    if (isSelfManagement(req)) {
+      model.validationMessages.services = 'Please select a service';
+    } else {
+      model.validationMessages.services = 'At least one service must be selected';
+    }
   }
   if (
     model.selectedServices &&
