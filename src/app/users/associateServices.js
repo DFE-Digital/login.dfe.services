@@ -12,13 +12,11 @@ const isSelfManagement = (req) => {
 };
 
 const renderAssociateServicesPage = (req, res, model) => {
-  if (isSelfManagement(req)) {
-    model.currentPage = 'services';
-    res.render('users/views/associateServicesRedesigned', model);
-  } else {
-    model.currentPage = 'users';
-    res.render('users/views/associateServices', model);
-  }
+  const isSelfManage = isSelfManagement(req);
+  res.render(
+    `users/views/${isSelfManage ? "associateServicesRedesigned" : "associateServices" }`,
+    { ...model, currentPage: isSelfManage? "services": "users" }
+  );
 };
 
 const getAllAvailableServices = async (req) => {
