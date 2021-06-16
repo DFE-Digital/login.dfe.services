@@ -56,12 +56,12 @@ describe('when selecting an organisation', () => {
 
     await postMultipleOrgSelection(req, res);
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe(`users/views/selectOrganisation`);
+    expect(res.render.mock.calls[0][0]).toBe(`users/views/selectOrganisationRedesigned`);
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: 'token',
       selectedOrganisation: undefined,
       organisations: req.userOrganisations,
-      currentPage: 'users',
+      currentPage: 'services',
       validationMessages: {
         selectedOrganisation: 'Please select an organisation',
       },

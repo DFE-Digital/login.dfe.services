@@ -47,7 +47,7 @@ describe('when displaying the multiple organisation selection', () => {
     await getMultipleOrgSelection(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/selectOrganisation');
+    expect(res.render.mock.calls[0][0]).toBe('users/views/selectOrganisationRedesigned');
   });
 
   it('then it should include csrf token in model', async () => {
