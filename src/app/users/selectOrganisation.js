@@ -22,10 +22,11 @@ const getNaturalIdentifiers = async (req) => {
 };
 
 const renderSelectOrganisationPage = (req, res, model) => {
-  const isManage = req.query.manage_users == true;
+  const isManage = req.query.manage_users === 'true';
+  const isEdit = req.query.services === 'edit';
   res.render(
-    `users/views/${isManage? "selectOrganisation": "selectOrganisationRedesigned"}`, 
-    { ...model, currentPage: isManage? "users": "services" }
+    `users/views/${isManage || isEdit ? "selectOrganisation": "selectOrganisationRedesigned"}`, 
+    { ...model, currentPage: isManage || isEdit ? "users": "services" }
   );
 };
 
