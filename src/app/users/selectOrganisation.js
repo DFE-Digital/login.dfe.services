@@ -21,7 +21,7 @@ const getNaturalIdentifiers = async (req) => {
   }
 };
 
-const redirectToSelectOrganisationPage = (req, res, model) => {
+const renderSelectOrganisationPage = (req, res, model) => {
   const isManage = req.query.manage_users == true;
   res.render(
     `users/views/${isManage? "selectOrganisation": "selectOrganisationRedesigned"}`, 
@@ -37,12 +37,12 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     title: 'Select Organisation',
     organisations: req.userOrganisations,
-    currentPage: '',
+    currentPage: 'users',
     selectedOrganisation: null,
     validationMessages: {},
   }
 
-  redirectToSelectOrganisationPage(req, res, model)
+  renderSelectOrganisationPage(req, res, model)
 };
 
 const validate = (req) => {
@@ -66,7 +66,7 @@ const post = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    redirectToSelectOrganisationPage(req, res, model)
+    renderSelectOrganisationPage(req, res, model)
   }
 
   if (req.query.services === 'add') {
