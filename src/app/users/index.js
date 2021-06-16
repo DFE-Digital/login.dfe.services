@@ -37,7 +37,7 @@ const users = (csrf) => {
       if (req.userOrganisations.length === 1) {
         return res.redirect(`${req.userOrganisations[0].organisation.id}/users`);
       } else {
-        return res.redirect(`/approvals/select-organisation`);
+        return res.redirect(`/approvals/select-organisation?manage_users=true`);
       }
     }),
   );
