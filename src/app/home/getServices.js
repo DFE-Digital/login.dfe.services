@@ -59,7 +59,6 @@ const getAndMapServices = async (account, correlationId) => {
         service.hideService = true;
       } else {
         service.name = application.name;
-        // TODO use this line below when we work on the ticket to show descriptions in the UI with new styles
         service.description = application.description;
         service.serviceUrl =
           (application.relyingParty

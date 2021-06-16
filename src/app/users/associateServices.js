@@ -7,6 +7,18 @@ const { checkCacheForAllServices } = require('../../infrastructure/helpers/allSe
 
 const policyEngine = new PolicyEngine(config);
 
+const isSelfManagement = (req) => {
+  return req.user.sub === req.session.user.uid;
+};
+
+const renderAssociateServicesPage = (req, res, model) => {
+  const isSelfManage = isSelfManagement(req);
+  res.render(
+    `users/views/${isSelfManage ? "associateServicesRedesigned" : "associateServices" }`,
+    { ...model, currentPage: isSelfManage? "services": "users" }
+  );
+};
+
 const getAllAvailableServices = async (req) => {
   const allServices = await checkCacheForAllServices(req.id);
 
@@ -56,6 +68,7 @@ const get = async (req, res) => {
   } else {
     backRedirect = 'services';
   }
+
   const model = {
     csrfToken: req.csrfToken(),
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
@@ -69,7 +82,7 @@ const get = async (req, res) => {
     isInvite: req.session.user.isInvite,
   };
 
-  res.render('users/views/associateServices', model);
+  renderAssociateServicesPage(req, res, model);
 };
 
 const validate = async (req) => {
@@ -102,7 +115,11 @@ const validate = async (req) => {
     validationMessages: {},
   };
   if (!req.session.user.isInvite && model.selectedServices.length < 1) {
-    model.validationMessages.services = 'At least one service must be selected';
+    if (isSelfManagement(req)) {
+      model.validationMessages.services = 'Please select a service';
+    } else {
+      model.validationMessages.services = 'At least one service must be selected';
+    }
   }
   if (
     model.selectedServices &&
@@ -122,7 +139,7 @@ const post = async (req, res) => {
   const model = await validate(req);
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return res.render('users/views/associateServices', model);
+    renderAssociateServicesPage(req, res, model);
   }
 
   req.session.user.services = model.selectedServices.map((serviceId) => {

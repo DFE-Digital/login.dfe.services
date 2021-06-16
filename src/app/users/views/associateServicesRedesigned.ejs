@@ -1,0 +1,75 @@
+<div class="govuk-width-container govuk-!-margin-top-3">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+
+            <% if (locals.services.length > 0) { %>
+                <form method="post">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                    
+                    <div class="govuk-form-group  <%= (locals.validationMessages.services !== undefined) ? 'govuk-form-group--error' : '' %>">
+                        <fieldset class="govuk-fieldset" id="services">
+
+                            <% if (locals.validationMessages.services !== undefined) { %>
+                                <span id="validation-selected-service" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.services %>
+                                </span>
+                            <% } %>
+
+                            <legend class="govuk-visually-hidden">'Select all required services'%></legend>
+
+                            <table class="govuk-table">
+                                <caption class="govuk-table__caption govuk-table__caption--m">Select a service</caption>
+                                <thead class="govuk-table__head">
+                                    <tr class="govuk-table__row">
+                                    <th scope="col" class="govuk-table__header">Select</th>
+                                    <th scope="col" class="govuk-table__header">Service</th>
+                                    <th scope="col" class="govuk-table__header">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="govuk-table__body">
+
+                                    <% for (let i = 0; i < locals.services.length; i++) { %>
+                                        <% const service = locals.services[i]; %>
+                                        <tr class="govuk-table__row extra-padding">
+                                            <td class="govuk-table__cell">
+                                                <div class="govuk-radios__item">
+                                                    <!-- Added auto scroll when selecting an option, if we have more than 2 services listed -->
+                                                    <input class="govuk-radios__input <%= locals.services.length > 2 ? 'auto-scroll-on-change' : '' %>"
+                                                        id="<%=service.id%>" name="service" type="radio" value="<%=service.id%>"
+                                                        <% if (locals.selectedServices && locals.selectedServices.length > 0) {
+                                                            for(let i = 0; i < locals.selectedServices.length; i++) {
+                                                                const selectedService = locals.selectedServices[i].serviceId;
+                                                        %>
+                                                        <%= service.id === selectedService ? 'checked': ''%><% } }%>
+                                                    >
+                                                    <label class="govuk-label govuk-radios__label" for="<%=service.id%>"></label>
+                                                </div>
+                                            </td>
+                                            <th scope="row" class="govuk-table__header govuk-table__cell">
+                                                <label class="cursor-pointer" for="<%=service.id%>"><%=service.name%></label>
+                                            </th>
+                                            <td class="govuk-table__cell govuk-!-font-size-16">
+                                                <label class="cursor-pointer" for="<%=service.id%>"><%=service.description%></label>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+
+                                </tbody>
+                              </table>
+
+                        </fieldset>
+                    </div>
+
+                    <div class="govuk-button-group auto-scroll-dest">
+                        <button type="submit" class="govuk-button">Continue</button>
+                        <a href="/my-services"%>" class="govuk-button govuk-button--secondary">Cancel</a>
+                    </div>
+
+                </form>
+
+            <% } else { %>
+                <p class="govuk-body"> All services available for <%= locals.name%> have been selected, there are no further services available.</p>
+            <% } %>
+        </div>
+    </div>
+</div>

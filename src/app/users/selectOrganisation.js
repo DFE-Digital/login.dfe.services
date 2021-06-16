@@ -26,8 +26,8 @@ const renderSelectOrganisationPage = (req, res, model) => {
   res.render(
     `users/views/${isManage? "selectOrganisation": "selectOrganisationRedesigned"}`, 
     { ...model, currentPage: isManage? "users": "services" }
-  )
-}
+  );
+};
 
 
 const get = async (req, res) => {
