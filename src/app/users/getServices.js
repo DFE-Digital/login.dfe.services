@@ -1,5 +1,5 @@
 'use strict';
-const { getUserDetails, getAllServicesForUserInOrg } = require('./utils');
+const { getUserDetails, getAllServicesForUserInOrg, isSelfManagement } = require('./utils');
 const { getAllServices } = require('./../../infrastructure/applications');
 const Account = require('./../../infrastructure/account');
 
@@ -52,6 +52,7 @@ const action = async (req, res) => {
     services: displayedServices,
     user,
     isInvitation: req.params.uid.startsWith('inv-'),
+    isSelfManage: isSelfManagement(req),
   });
 };
 
