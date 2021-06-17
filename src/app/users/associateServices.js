@@ -19,20 +19,6 @@ const renderAssociateServicesPage = (req, res, model) => {
   );
 };
 
-const buildBackRedirect = (req) => {
-  let backRedirect;
-  if (isSelfManagement(req)) {
-    backRedirect = true; //send user back to previous page (standard behaviour)
-  } else if (req.session.user.isInvite) {
-    req.params.uid
-      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
-      : (backRedirect = 'new-user');
-  } else {
-    backRedirect = 'services';
-  }
-  return backRedirect;
-};
-
 const getAllAvailableServices = async (req) => {
   const allServices = await checkCacheForAllServices(req.id);
 
@@ -79,7 +65,7 @@ const get = async (req, res) => {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
     validationMessages: {},
-    backLink: buildBackRedirect(req),
+    backLink: true,
     currentPage: 'users',
     organisationDetails,
     services: externalServices,
@@ -103,7 +89,7 @@ const validate = async (req) => {
   const model = {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
-    backLink: buildBackRedirect(req),
+    backLink: true,
     currentPage: 'users',
     organisationDetails,
     services: externalServices,
