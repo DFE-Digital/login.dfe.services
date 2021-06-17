@@ -56,21 +56,12 @@ const get = async (req, res) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
 
-  let backRedirect;
-  if (req.session.user.isInvite) {
-    req.params.uid
-      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
-      : (backRedirect = 'new-user');
-  } else {
-    backRedirect = 'services';
-  }
-
   const model = {
     csrfToken: req.csrfToken(),
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
     validationMessages: {},
-    backLink: backRedirect,
+    backLink: true,
     currentPage: 'users',
     organisationDetails,
     services: externalServices,
@@ -84,14 +75,6 @@ const get = async (req, res) => {
 const validate = async (req) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
-  let backRedirect;
-  if (req.session.user.isInvite) {
-    req.params.uid
-      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
-      : (backRedirect = 'new-user');
-  } else {
-    backRedirect = 'services';
-  }
 
   let selectedServices = [];
   if (req.body.service && req.body.service instanceof Array) {
@@ -102,7 +85,7 @@ const validate = async (req) => {
   const model = {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
-    backLink: backRedirect,
+    backLink: true,
     currentPage: 'users',
     organisationDetails,
     services: externalServices,
