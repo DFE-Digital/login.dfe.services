@@ -1,13 +1,10 @@
 'use strict';
 const config = require('./../../infrastructure/config');
+const { isSelfManagement } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
-
-const isSelfManagement = (req) => {
-  return req.user.sub === req.session.user.uid;
-};
 
 const renderAssociateRolesPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
