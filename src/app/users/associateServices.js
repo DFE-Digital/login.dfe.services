@@ -17,7 +17,6 @@ const renderAssociateServicesPage = (req, res, model) => {
 
 const getAllAvailableServices = async (req) => {
   const allServices = await checkCacheForAllServices(req.id);
-
   let externalServices = allServices.services.filter(
     (x) =>
       x.isExternalService === true &&
