@@ -6,7 +6,6 @@ const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const router = express.Router({ mergeParams: true });
-const { get: getAccessRequests, post: postAccessRequests } = require('./accessRequests');
 const { get: getSelectOrganisation, post: postSelectOrganisation } = require('./selectOrganisation');
 const getOrganisationRequests = require('./getOrganisationRequests');
 const {
@@ -45,9 +44,6 @@ const action = (csrf) => {
   router.post('/:orgId/requests/:rid', csrf, isApprover, asyncWrapper(postReviewOrganisationRequest));
   router.get('/:orgId/requests/:rid/rejected', csrf, isApprover, asyncWrapper(getRejectOrganisationRequest));
   router.post('/:orgId/requests/:rid/rejected', csrf, isApprover, asyncWrapper(postRejectOrganisationRequest));
-
-  //router.get('/',csrf, asyncWrapper(getAccessRequests));
-  // router.post('/',csrf, asyncWrapper(postAccessRequests));
 
   router.get('/select-organisation', csrf, asyncWrapper(getSelectOrganisation));
   router.post('/select-organisation', csrf, asyncWrapper(postSelectOrganisation));

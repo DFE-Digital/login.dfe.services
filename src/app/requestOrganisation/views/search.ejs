@@ -1,32 +1,33 @@
-<div class="grid-row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
-            Request an organisation
-        </h1>
-        <p class="lede">Search for your organisation.</p>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                Request an organisation
+            </h1>
+            <p class="govuk-body-l">Search for your organisation.</p>
+        </div>
     </div>
-</div>
-<div class="grid-row">
-    <div class="col-6">
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
-            <input type="hidden" name="page" value="1" />
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                <input type="hidden" name="page" value="1" />
 
-            <div class="search-field">
-                <fieldset class="search-input">
-                    <label for="criteria" class="vh">Search by name, URN or UKPRN</label>
-                    <input type="text" id="criteria" name="criteria" value="<%=criteria%>" class="form-control"
-                           placeholder="Search by name, URN or UKPRN ">
-                </fieldset>
-                <fieldset class="search-submit">
-                    <button type="submit" class="button">Search</button>
-                </fieldset>
-            </div>
-        </form>
+                <div class="govuk-form-group search-field">
+                    <fieldset class="govuk-fieldset">
+                        <label for="criteria" class="vh">Search by name, URN or UKPRN</label>
+                        <input type="text" id="criteria" name="criteria" value="<%=criteria%>" class="govuk-input"
+                            placeholder="Search by name, URN or UKPRN ">
+                    </fieldset>
+                    <fieldset class="govuk-fieldset search-submit">
+                        <button type="submit" class="search-button">Search</button>
+                    </fieldset>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<% if (locals.organisations !== undefined) {%>
+    <% if (locals.organisations !== undefined) {%>
     <%
         const paginationModel = {
             objectName: 'organisations',
@@ -42,23 +43,23 @@
         };
     %>
 
-    <div class="grid-row">
-        <div class="col-12">
-            <%- include('../../layouts/pagination', paginationModel); %>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <%- include('../../layouts/pagination', paginationModel); %>
 
-            <ol class="search-results">
+                <ol class="govuk-list search-results">
 
-                <% if (organisations.length === 0) { %>
+                    <% if (organisations.length === 0) { %>
                     <li><span class="empty-state">No organisations found</span></li>
-                <% } %>
+                    <% } %>
 
-                <% for (let i = 0; i < organisations.length; i++) { %>
+                    <% for (let i = 0; i < organisations.length; i++) { %>
                     <%const org = organisations[i];%>
                     <li>
                         <article>
-                            <h2 class="heading-medium">
+                            <h2 class="govuk-heading-m">
                                 <form method="post">
-                                    <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+                                    <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
                                     <input type="hidden" name="selectedOrganisation" value="<%=org.id%>" />
                                     <button class="button-link"><%=org.name%></button>
                                 </form>
@@ -91,10 +92,11 @@
                             </dl>
                         </article>
                     </li>
-                <% } %>
-            </ol>
+                    <% } %>
+                </ol>
 
-            <%- include('../../layouts/pagination', paginationModel); %>
+                <%- include('../../layouts/pagination', paginationModel); %>
+            </div>
         </div>
-    </div>
-<% } %>
+    <% } %>
+</div>

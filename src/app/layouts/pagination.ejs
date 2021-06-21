@@ -32,15 +32,15 @@ if (upperWindowBound < pages) {
 }
 %>
 
-<div class="row meta">
-    <div class="col-6">
-        <p>Showing <%= lowerEndRecords %> - <%= upperEndRecords %> of <b><%= locals.totalNumberOfResults %></b> rows
+<div class="govuk-grid-row meta">
+    <div class="govuk-grid-column-one-half">
+        <p class="govuk-body-s">Showing <%= lowerEndRecords %> - <%= upperEndRecords %> of <b><%= locals.totalNumberOfResults %></b> rows
         </p>
     </div>
-    <div class="col-6">
+    <div class="govuk-grid-column-one-half">
         <% if (locals.numberOfPages > 1) { %>
             <div class="pagination">
-                <ul>
+                <ul class="govuk-list">
                     <% for (let i = 0; i < pageBracketLeft.length; i++) { %>
                         <li>
                             <% if (locals.currentPage === pageBracketLeft[i]) { %>
