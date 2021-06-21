@@ -1,8 +1,12 @@
-const { mockRequest, mockResponse, mockLogger } = require('./../../../utils/jestMocks');
+const { mockRequest, mockResponse, mockLogger, mockAdapterConfig } = require('./../../../utils/jestMocks');
 const Account = require('./../../../../src/infrastructure/account');
 const { getAllServices } = require('./../../../../src/infrastructure/applications');
 const home = require('./../../../../src/app/home/home');
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+//jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+
+jest.mock('./../../../../src/infrastructure/config', () => {
+  return mockAdapterConfig();
+});
 const res = mockResponse();
 
 jest.mock('./../../../../src/infrastructure/account', () => ({
@@ -13,7 +17,23 @@ jest.mock('./../../../../src/infrastructure/applications', () => ({
   getAllServices: jest.fn(),
 }));
 jest.mock('./../../../../src/infrastructure/logger', () => mockLogger());
-
+jest.mock('login.dfe.dao', () => {
+  return {
+    services: {
+      list: async (pageNumber, pageSize) => {
+        return {
+          count: 10,
+        rows:[{
+         "id": "Service One",
+         "isExternalService": true,
+         "isMigrated": true,
+         "name": "Service One",
+      }],
+      };
+      },
+    },
+  };
+});
 describe('when displaying current organisation and service mapping', () => {
   let req;
 

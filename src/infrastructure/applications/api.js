@@ -1,7 +1,8 @@
 const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { services } = require('login.dfe.dao');
+
+const servicesTogglePath = '/constants/toggleflags/email/services';
 
 const getApplication = async (idOrClientId, correlationId) => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
@@ -24,8 +25,23 @@ const getApplication = async (idOrClientId, correlationId) => {
 };
 
 const getPageOfService = async (pageNumber, pageSize) => {
-  const pageOfServices = await services.list(pageNumber, pageSize);
-  return !pageOfServices || pageOfServices.length === 0 ? undefined : pageOfServices;
+  const token = await jwtStrategy(config.applications.service).getBearerToken();
+  try {
+    const client = await rp({
+      method: 'GET',
+      uri: `${config.applications.service.url}/services?page=${pageNumber}&pageSize=${pageSize}`,
+      headers: {
+        authorization: `bearer ${token}`,
+      },
+      json: true,
+    });
+    return client;
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return undefined;
+    }
+    throw e;
+  }
 };
 
 const getAllServices = async () => {
@@ -34,22 +50,46 @@ const getAllServices = async () => {
   let pageNumber = 1;
   let numberOfPages = undefined;
   while (numberOfPages === undefined || pageNumber <= numberOfPages) {
-    const { count, rows } = await getPageOfService(pageNumber, 50);
-    services.push(...rows);
+    const page = await getPageOfService(pageNumber, 50);
 
-    numberOfPages = Math.ceil(count / 50);
+    services.push(...page.services);
+
+    numberOfPages = page.numberOfPages;
     pageNumber += 1;
   }
 
   return { services };
 };
 
-const isServiceEmailNotificationAllowed = async () => {
-  const statusFlags = await services.getToggleStatuses('email', 'services');
-  if (statusFlags && statusFlags.length === 1) {
-    return statusFlags[0].flag;
+const getEmailToggleFlag = async (params) => {
+  const token = await jwtStrategy(config.applications.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'GET',
+      uri: `${config.applications.service.url}${params}`,
+      headers: {
+        authorization: `bearer ${token}`,
+      },
+      json: true,
+    });
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return undefined;
+    }
+    throw e;
+  }
+};
+
+const retrieveToggleFlag = async (path) => {
+  const emailToggleFlag = await getEmailToggleFlag(path);
+  if (emailToggleFlag && emailToggleFlag.length === 1) {
+    return emailToggleFlag[0].flag;
   }
   return true;
+};
+
+const isServiceEmailNotificationAllowed = async () => {
+  return await retrieveToggleFlag(servicesTogglePath);
 };
 
 module.exports = {
