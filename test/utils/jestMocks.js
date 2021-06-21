@@ -52,10 +52,27 @@ const mockConfig = () => {
 
 const mockAdapterConfig = () => {
   return {
+    organisations: {
+      type: 'api',
+    },
+    access: {
+      type: 'static',
+    },
+    search: {
+      type: 'static',
+    },
+    applications: {
+      type: 'static',
+    },
     directories: {
+      type: 'static',
       service: {
         url: 'http://unit.test.local',
       },
+    },
+    toggles: {
+      useApproverJourney: true,
+      useRequestOrganisation: true,
     },
     hostingEnvironment: {},
     adapter: {
