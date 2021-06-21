@@ -26,7 +26,11 @@
                 <aside class="govuk-!-margin-top-9">
                     <h2 class="govuk-heading-m">Actions</h2>
                     <ul class="govuk-list">
-                        <li><a class="govuk-link-bold" href="associate-services">Add services</a></li>
+                        <!-- Do not show the add services link if the user is managing its own account -->
+                        <% if (!locals.isSelfManage) { %>
+                            <li><a class="govuk-link-bold" href="associate-services">Add services</a></li>
+                        <% } %>
+                        <li><a class="govuk-link" href=""></a></li>
                         <li><a class="govuk-link-bold" href="edit-permission"><%=locals.user.organisation.roleId === 10000 ? 'Remove approver access' : 'Make approver';%></a></li>
                         <li><a class="govuk-link-bold" href="remove-organisation">Remove from organisation</a></li>
                         <% if (locals.isInvitation) { %>

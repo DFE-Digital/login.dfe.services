@@ -65,6 +65,7 @@ describe('when selecting an organisation', () => {
       validationMessages: {
         selectedOrganisation: 'Please select an organisation',
       },
+      backLink: true,
     });
   });
 });

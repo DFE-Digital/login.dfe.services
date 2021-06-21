@@ -1,15 +1,11 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg } = require('./utils');
+const { getAllServicesForUserInOrg, isSelfManagement } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
 const policyEngine = new PolicyEngine(config);
-
-const isSelfManagement = (req) => {
-  return req.user.sub === req.session.user.uid;
-};
 
 const renderAssociateServicesPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
@@ -21,7 +17,6 @@ const renderAssociateServicesPage = (req, res, model) => {
 
 const getAllAvailableServices = async (req) => {
   const allServices = await checkCacheForAllServices(req.id);
-
   let externalServices = allServices.services.filter(
     (x) =>
       x.isExternalService === true &&
@@ -60,21 +55,12 @@ const get = async (req, res) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
 
-  let backRedirect;
-  if (req.session.user.isInvite) {
-    req.params.uid
-      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
-      : (backRedirect = 'new-user');
-  } else {
-    backRedirect = 'services';
-  }
-
   const model = {
     csrfToken: req.csrfToken(),
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
     validationMessages: {},
-    backLink: backRedirect,
+    backLink: true,
     currentPage: 'users',
     organisationDetails,
     services: externalServices,
@@ -88,14 +74,6 @@ const get = async (req, res) => {
 const validate = async (req) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
-  let backRedirect;
-  if (req.session.user.isInvite) {
-    req.params.uid
-      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
-      : (backRedirect = 'new-user');
-  } else {
-    backRedirect = 'services';
-  }
 
   let selectedServices = [];
   if (req.body.service && req.body.service instanceof Array) {
@@ -106,7 +84,7 @@ const validate = async (req) => {
   const model = {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
-    backLink: backRedirect,
+    backLink: true,
     currentPage: 'users',
     organisationDetails,
     services: externalServices,
@@ -139,7 +117,7 @@ const post = async (req, res) => {
   const model = await validate(req);
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    renderAssociateServicesPage(req, res, model);
+    return renderAssociateServicesPage(req, res, model);
   }
 
   req.session.user.services = model.selectedServices.map((serviceId) => {

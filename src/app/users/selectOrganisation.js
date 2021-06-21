@@ -33,7 +33,7 @@ const renderSelectOrganisationPage = (req, res, model) => {
 
 const get = async (req, res) => {
   await getNaturalIdentifiers(req);
-  
+
   const model = {
     csrfToken: req.csrfToken(),
     title: 'Select Organisation',
@@ -41,7 +41,8 @@ const get = async (req, res) => {
     currentPage: 'users',
     selectedOrganisation: null,
     validationMessages: {},
-  }
+    backLink: true,
+  };
 
   renderSelectOrganisationPage(req, res, model)
 };
@@ -53,6 +54,7 @@ const validate = (req) => {
     currentPage: 'users',
     selectedOrganisation: selectedOrg,
     validationMessages: {},
+    backLink: true,
   };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
@@ -67,7 +69,7 @@ const post = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    renderSelectOrganisationPage(req, res, model)
+    return renderSelectOrganisationPage(req, res, model);
   }
 
   if (req.query.services === 'add') {
