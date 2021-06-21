@@ -117,7 +117,7 @@ const post = async (req, res) => {
   const model = await validate(req);
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    renderAssociateServicesPage(req, res, model);
+    return renderAssociateServicesPage(req, res, model);
   }
 
   req.session.user.services = model.selectedServices.map((serviceId) => {

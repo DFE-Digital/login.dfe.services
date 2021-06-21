@@ -69,7 +69,7 @@ const post = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    renderSelectOrganisationPage(req, res, model)
+    return renderSelectOrganisationPage(req, res, model);
   }
 
   if (req.query.services === 'add') {
