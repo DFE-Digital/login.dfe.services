@@ -84,9 +84,14 @@ const waitForIndexToUpdate = async (uid, updatedCheck) => {
   }
 };
 
+const isSelfManagement = (req) => {
+  return req.user.sub === req.session.user.uid;
+};
+
 module.exports = {
   getUserDetails,
   getAllServicesForUserInOrg,
   getSingleServiceForUser,
   waitForIndexToUpdate,
+  isSelfManagement,
 };

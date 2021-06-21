@@ -1,9 +1,18 @@
 'use strict';
 const config = require('./../../infrastructure/config');
+const { isSelfManagement } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
+
+const renderAssociateRolesPage = (req, res, model) => {
+  const isSelfManage = isSelfManagement(req);
+  res.render(
+    `users/views/${isSelfManage ? "associateRolesRedesigned" : "associateRoles" }`,
+    { ...model, currentPage: isSelfManage? "services": "users" }
+  );
+};
 
 const getViewModel = async (req) => {
   const totalNumberOfServices = req.session.user.services.length;
@@ -52,8 +61,7 @@ const get = async (req, res) => {
   }
 
   const model = await getViewModel(req);
-
-  res.render('users/views/associateRoles', model);
+  renderAssociateRolesPage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -85,7 +93,7 @@ const post = async (req, res) => {
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
-    return res.render('users/views/associateRoles', model);
+    renderAssociateRolesPage(req, res, model);
   }
 
   req.session.user.services[currentService].roles = selectedRoles;
