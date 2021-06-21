@@ -65,10 +65,9 @@
                                     <td class="govuk-table__cell">
                                         <label class="cursor-pointer" for="<%= org.organisation.id %>">
                                             <% if (org.naturalIdentifiers) { %>
-                                                <%= org.naturalIdentifiers.join(', ') %>
-                                            <% } %>
-                                            <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
-                                                <%= org.organisation.address %>
+                                                <% for(let i= 0; i < org.naturalIdentifiers.length; i++)  { %>
+                                                    <div> <%= org.naturalIdentifiers[i]  %></div>
+                                                <% } %>
                                             <% } %>
                                         </label>
                                     </td>
