@@ -56,7 +56,7 @@ const validate = (req) => {
   };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
-    model.validationMessages.selectedOrganisation = 'Please select an organisation';
+    model.validationMessages.selectedOrganisation = 'Select an organisation to continue.';
   }
   return model;
 };
