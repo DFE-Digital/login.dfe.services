@@ -63,7 +63,7 @@ describe('when selecting an organisation', () => {
       organisations: req.userOrganisations,
       currentPage: 'services',
       validationMessages: {
-        selectedOrganisation: 'Please select an organisation',
+        selectedOrganisation: 'Select an organisation to continue.',
       },
       backLink: true,
     });
