@@ -12,22 +12,24 @@
 
                 <div class="govuk-form-group <%= (locals.validationMessages.selectedOrganisation !== undefined) ? 'govuk-form-group--error' : '' %>">
 
-                    <fieldset class="govuk-fieldset">
+                    <fieldset class="govuk-fieldset" id="selectedOrganisation">
 
                         <% if (locals.validationMessages.selectedOrganisation !== undefined) { %>
-                            <span id="validation-selected-organisation" class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span>
-                                <%=locals.validationMessages.selectedOrganisation %>
-                            </span>
+                        <span id="validation-selected-organisation" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>
+                            <%=locals.validationMessages.selectedOrganisation %>
+                        </span>
                         <% } %>
 
                         <legend class="govuk-visually-hidden">Select the organisation</legend>
 
                         <table class="govuk-table govuk-!-margin-top-3">
                             <thead class="govuk-table__head">
-                                <tr class="govuk-table__row extra-padding">
-                                    <th scope="col" class="govuk-table__header">Select</th>
-                                    <th scope="col" class="govuk-table__header">Organisation</th>
+                                <tr class="govuk-table__row extra-padding govuk-grid-row">
+                                    <th scope="col" class="govuk-table__header width-10">Select</th>
+                                    <th scope="col" class="govuk-table__header width-40">Organisation</th>
+                                    <th scope="col" class="govuk-table__header width-20">Status</th>
+                                    <th scope="col" class="govuk-table__header width-30">Reference</th>
                                 </tr>
                             </thead>
                             <tbody class="govuk-table__body">
@@ -35,35 +37,41 @@
                                     for(let i= 0; i < locals.organisations.length; i++) {
                                         const org = locals.organisations[i];
                                 %>
-                                    <tr class="govuk-table__row extra-padding">
-                                        <td class="govuk-table__cell">
-                                            <div class="govuk-radios" >
-                                                <div class="govuk-radios__item">
-                                                    <input class="govuk-radios__input" id="<%= org.organisation.id %>" name="selectedOrganisation" type="radio" value="<%= org.organisation.id %>" >
-                                                    <label class="govuk-label govuk-radios__label cursor-pointer"></label>
-                                                </div>
+                                <tr class="govuk-table__row extra-padding">
+                                    <td class="govuk-table__cell">
+                                        <div class="govuk-radios">
+                                            <div class="govuk-radios__item">
+                                                <input class="govuk-radios__input" id="<%= org.organisation.id %>"
+                                                    name="selectedOrganisation" type="radio"
+                                                    value="<%= org.organisation.id %>">
+                                                <label class="govuk-label govuk-radios__label cursor-pointer"></label>
                                             </div>
-                                        </td>
-                                        <td class="govuk-table__cell">
-                                            <label class="govuk-label govuk-radios__label govuk-!-font-weight-bold govuk-!-padding-left-0" for="<%= org.organisation.id %>">
-                                                <span class="govuk-label govuk-label--s">
-                                                    <%= org.organisation.name %>
-                                                    <%=org.organisation.status ? `(${org.organisation.status.name})` : '' %>
-                                                </span>
-                                                <!--TODO: Move naturalIdentifiers to new column. -->
-                                                <!-- <% if (org.naturalIdentifiers) { %>
-                                                    <span class="govuk-hint govuk-label__hint">
-                                                        <%= org.naturalIdentifiers.join(', ') %>
-                                                    </span>
+                                        </div>
+                                    </td>
+                                    <td class="govuk-table__cell">
+                                        <label
+                                            class="govuk-label govuk-radios__label govuk-!-font-weight-bold govuk-!-padding-left-0"
+                                            for="<%= org.organisation.id %>">
+                                            <span class="govuk-label govuk-label--s">
+                                                <%= org.organisation.name %>
+                                            </span>
+                                        </label>
+                                    </td>
+                                    <td class="govuk-table__cell">
+                                        <label class="cursor-pointer" for="<%= org.organisation.id %>">
+                                            <%=org.organisation.status ? `${org.organisation.status.name}` : '' %>
+                                        </label>
+                                     </td>
+                                    <td class="govuk-table__cell">
+                                        <label class="cursor-pointer" for="<%= org.organisation.id %>">
+                                            <% if (org.naturalIdentifiers) { %>
+                                                <% for(let i= 0; i < org.naturalIdentifiers.length; i++)  { %>
+                                                    <div> <%= org.naturalIdentifiers[i]  %></div>
                                                 <% } %>
-                                                <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
-                                                    <span class="govuk-hint govuk-label__hint">
-                                                        <%= org.organisation.address %>
-                                                    </span>
-                                                <% } %> -->
-                                            </label>
-                                        </td>
-                                    </tr>
+                                            <% } %>
+                                        </label>
+                                    </td>
+                                </tr>
                                 <% } %>
                             </tbody>
                         </table>

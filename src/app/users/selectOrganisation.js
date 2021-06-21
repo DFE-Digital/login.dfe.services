@@ -54,11 +54,11 @@ const validate = (req) => {
     currentPage: 'users',
     selectedOrganisation: selectedOrg,
     validationMessages: {},
-    backLink: true,
+    backLink: '/my-services',
   };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
-    model.validationMessages.selectedOrganisation = 'Please select an organisation';
+    model.validationMessages.selectedOrganisation = 'Select an organisation to continue.';
   }
   return model;
 };
