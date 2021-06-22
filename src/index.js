@@ -78,8 +78,11 @@ const init = async () => {
       saveUninitialized: true,
       secret: config.hostingEnvironment.sessionSecret,
       maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
-      httpOnly: true,
-      secure: true
+      cookie: {
+        httpOnly: true,
+        secure: true,
+        maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
+      },
     }),
   );
 
