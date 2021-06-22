@@ -9,11 +9,19 @@ const {
   updateRequestById,
 } = require('./../../infrastructure/organisations');
 const { getById, updateIndex, createIndex } = require('./../../infrastructure/search');
-const { waitForIndexToUpdate } = require('./utils');
+const { waitForIndexToUpdate, isSelfManagement } = require('./utils');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
+
+const renderConfirmNewUserPage = (req, res, model) => {
+  const isSelfManage = isSelfManagement(req);
+  res.render(
+    `users/views/${isSelfManage ? "confirmNewUserRedesigned" : "confirmNewUser" }`,
+    { ...model, currentPage: isSelfManage? "services": "users" }
+  );
+};
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -38,7 +46,8 @@ const get = async (req, res) => {
     service.name = serviceDetails.name;
     service.roles = rotails;
   }
-  return res.render('users/views/confirmNewUser', {
+
+  const model = {
     backLink: true,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
@@ -51,7 +60,9 @@ const get = async (req, res) => {
     },
     services,
     organisationDetails,
-  });
+  };
+
+  renderConfirmNewUserPage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -225,8 +236,13 @@ const post = async (req, res) => {
       },
     });
 
+    // TODO the message will have to be different if it is self management or user management
     res.flash('info', `Services successfully added`);
-    res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`);
+    if (isSelfManagement(req)) {
+      res.redirect(`/my-services`);
+    } else {
+      res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`);
+    }
   }
 };
 
