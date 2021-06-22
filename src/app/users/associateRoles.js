@@ -14,6 +14,16 @@ const renderAssociateRolesPage = (req, res, model) => {
   );
 };
 
+const buildBackLink = (req) => {
+  let backRedirect;
+  if (req.params.uid) {
+    backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services`;
+  } else {
+    backRedirect = `/approvals/${req.params.orgId}/users/associate-services`;
+  }
+  return backRedirect;
+};
+
 const getViewModel = async (req) => {
   const totalNumberOfServices = req.session.user.services.length;
   const currentService = req.session.user.services.findIndex((x) => x.serviceId === req.params.sid) + 1;
@@ -44,7 +54,7 @@ const getViewModel = async (req) => {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
     validationMessages: {},
-    backLink: true,
+    backLink: buildBackLink(req),
     currentPage: 'users',
     organisationDetails,
     selectedRoles,

@@ -30,32 +30,27 @@ const renderSelectOrganisationPage = (req, res, model) => {
   );
 };
 
-
-const get = async (req, res) => {
-  await getNaturalIdentifiers(req);
-
-  const model = {
+const buildModel = (req) => {
+  return {
     csrfToken: req.csrfToken(),
     title: 'Select Organisation',
     organisations: req.userOrganisations,
     currentPage: 'users',
-    selectedOrganisation: null,
-    validationMessages: {},
-    backLink: true,
-  };
-
-  renderSelectOrganisationPage(req, res, model)
-};
-
-const validate = (req) => {
-  const selectedOrg = req.body.selectedOrganisation;
-  const model = {
-    organisations: req.userOrganisations,
-    currentPage: 'users',
-    selectedOrganisation: selectedOrg,
+    selectedOrganisation: req.body.selectedOrganisation,
     validationMessages: {},
     backLink: '/my-services',
   };
+};
+
+const get = async (req, res) => {
+  await getNaturalIdentifiers(req);
+
+  const model = buildModel(req);
+  renderSelectOrganisationPage(req, res, model);
+};
+
+const validate = (req) => {
+  const model = buildModel(req);
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
     model.validationMessages.selectedOrganisation = 'Select an organisation to continue.';
@@ -68,7 +63,6 @@ const post = async (req, res) => {
   const model = validate(req);
 
   if (Object.keys(model.validationMessages).length > 0) {
-    model.csrfToken = req.csrfToken();
     return renderSelectOrganisationPage(req, res, model);
   }
 
