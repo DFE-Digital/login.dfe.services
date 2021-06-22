@@ -33,8 +33,6 @@ const init = async () => {
     expiryInMinutes = sessionExpiry;
   }
 
-  const expiryDate = new Date(Date.now() + 60 * expiryInMinutes * 1000);
-
   const app = express();
   app.use(
     helmet({
@@ -79,13 +77,21 @@ const init = async () => {
       resave: true,
       saveUninitialized: true,
       secret: config.hostingEnvironment.sessionSecret,
+      maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
       cookie: {
         httpOnly: true,
         secure: true,
-        expires: expiryDate,
+        maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
       },
     }),
   );
+
+  app.use((req, res, next) => {
+    req.session.now = Date.now();
+    next();
+  });
+
+
   app.use(flash());
 
   let assetsUrl = config.assets.url;
