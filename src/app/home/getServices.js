@@ -15,6 +15,7 @@ const {
 } = require('./../../infrastructure/organisations');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
+const { getApproverOrgsFromReq } = require('../users/utils');
 
 const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
@@ -158,7 +159,7 @@ const getServices = async (req, res) => {
 
   let addServicesRedirect;
   let editServicesRedirect;
-  const approverOrgs = req.userOrganisations ? req.userOrganisations.filter((x) => x.role.id === 10000) : null;
+  const approverOrgs = getApproverOrgsFromReq(req);
   if (approverOrgs && approverOrgs.length > 0) {
     req.session.user = {
       uid: req.user.sub,

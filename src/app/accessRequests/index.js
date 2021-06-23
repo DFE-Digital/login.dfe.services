@@ -16,6 +16,7 @@ const {
   get: getRejectOrganisationRequest,
   post: postRejectOrganisationRequest,
 } = require('./rejectOrganisationRequest');
+const { getApproverOrgsFromReq } = require('../users/utils');
 
 const action = (csrf) => {
   logger.info('Mounting accessRequest routes');
@@ -25,7 +26,7 @@ const action = (csrf) => {
   router.get(
     '/',
     asyncWrapper((req, res) => {
-      const approverOrgs = req.userOrganisations.filter((x) => x.role.id === 10000);
+      const approverOrgs = getApproverOrgsFromReq(req);
       const allUserOrganisationRequests = req.organisationRequests;
       const orgs = approverOrgs.filter((x) => allUserOrganisationRequests.find((y) => y.org_id === x.organisation.id));
       if (approverOrgs.length === 0) {
