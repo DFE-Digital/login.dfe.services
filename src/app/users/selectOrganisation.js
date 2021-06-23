@@ -30,27 +30,32 @@ const renderSelectOrganisationPage = (req, res, model) => {
   );
 };
 
-const buildModel = (req) => {
-  return {
-    csrfToken: req.csrfToken(),
-    title: 'Select Organisation',
-    organisations: req.userOrganisations,
-    currentPage: 'users',
-    selectedOrganisation: req.body.selectedOrganisation,
-    validationMessages: {},
-    backLink: '/my-services',
-  };
-};
 
 const get = async (req, res) => {
   await getNaturalIdentifiers(req);
 
-  const model = buildModel(req);
+  const model = {
+    csrfToken: req.csrfToken(),
+    title: 'Select Organisation',
+    organisations: req.userOrganisations,
+    currentPage: 'users',
+    selectedOrganisation: req.session.user.organisation || null,
+    validationMessages: {},
+    backLink: '/my-services',
+  };
+
   renderSelectOrganisationPage(req, res, model);
 };
 
 const validate = (req) => {
-  const model = buildModel(req);
+  const selectedOrg = req.body.selectedOrganisation;
+  const model = {
+    organisations: req.userOrganisations,
+    currentPage: 'users',
+    selectedOrganisation: selectedOrg,
+    validationMessages: {},
+    backLink: '/my-services',
+  };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
     model.validationMessages.selectedOrganisation = 'Select an organisation to continue.';
@@ -63,8 +68,12 @@ const post = async (req, res) => {
   const model = validate(req);
 
   if (Object.keys(model.validationMessages).length > 0) {
+    model.csrfToken = req.csrfToken();
     return renderSelectOrganisationPage(req, res, model);
   }
+
+  // persist selected org in session
+  req.session.user.organisation = model.selectedOrganisation;
 
   if (req.query.services === 'add') {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);

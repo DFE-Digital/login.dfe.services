@@ -43,7 +43,9 @@
                                             <div class="govuk-radios__item">
                                                 <input class="govuk-radios__input" id="<%= org.organisation.id %>"
                                                     name="selectedOrganisation" type="radio"
-                                                    value="<%= org.organisation.id %>">
+                                                    value="<%= org.organisation.id %>"
+                                                    <%= org.organisation.id === selectedOrganisation ? 'checked': ''%>
+                                                    >
                                                 <label class="govuk-label govuk-radios__label cursor-pointer"></label>
                                             </div>
                                         </div>
