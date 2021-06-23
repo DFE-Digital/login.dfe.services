@@ -39,12 +39,12 @@ const get = async (req, res) => {
     title: 'Select Organisation',
     organisations: req.userOrganisations,
     currentPage: 'users',
-    selectedOrganisation: null,
+    selectedOrganisation: req.session.user.organisation || null,
     validationMessages: {},
-    backLink: true,
+    backLink: '/my-services',
   };
 
-  renderSelectOrganisationPage(req, res, model)
+  renderSelectOrganisationPage(req, res, model);
 };
 
 const validate = (req) => {
@@ -54,11 +54,11 @@ const validate = (req) => {
     currentPage: 'users',
     selectedOrganisation: selectedOrg,
     validationMessages: {},
-    backLink: true,
+    backLink: '/my-services',
   };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
-    model.validationMessages.selectedOrganisation = 'Please select an organisation';
+    model.validationMessages.selectedOrganisation = 'Select an organisation to continue.';
   }
   return model;
 };
@@ -71,6 +71,9 @@ const post = async (req, res) => {
     model.csrfToken = req.csrfToken();
     return renderSelectOrganisationPage(req, res, model);
   }
+
+  // persist selected org in session
+  req.session.user.organisation = model.selectedOrganisation;
 
   if (req.query.services === 'add') {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
