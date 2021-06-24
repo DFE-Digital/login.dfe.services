@@ -16,7 +16,7 @@
                 Select a sub-service for: <%= locals.serviceDetails.name %>
             </h1>
 
-            <form method="post">
+            <form method="post" class="prevent-form-double-submission">
 
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
                     
