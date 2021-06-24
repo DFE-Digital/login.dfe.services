@@ -1,5 +1,5 @@
 'use strict';
-const { getAllServices, isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
+const { getAllServices, isServiceEmailNotificationAllowed, getApplication } = require('./../../infrastructure/applications');
 const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
 const {
   putUserInOrganisation,
@@ -236,14 +236,15 @@ const post = async (req, res) => {
       },
     });
 
-    // TODO the message will have to be different if it is self management or user management
-    res.flash('info', `Services successfully added`, );
     if (isSelfManagement(req)) {
+      const sid = req.session.user.services[0].serviceId
+      const serviceDetails = await getApplication(sid, req.id);
       res.flash('title', `Success`);
-      res.flash('heading', `New Service added: ${locals.serviceDetails.name}`);
+      res.flash('heading', `New Service added: ${serviceDetails.name}`);
       res.flash('message', `Select the service from the list below to access its functions and features.`);
       res.redirect(`/my-services`);
     } else {
+      res.flash('info', `Services successfully added`);
       res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`);
     }
   }
