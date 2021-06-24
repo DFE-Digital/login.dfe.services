@@ -237,8 +237,11 @@ const post = async (req, res) => {
     });
 
     // TODO the message will have to be different if it is self management or user management
-    res.flash('info', `Services successfully added`);
+    res.flash('info', `Services successfully added`, );
     if (isSelfManagement(req)) {
+      res.flash('title', `Success`);
+      res.flash('heading', `New Service added: ${locals.serviceDetails.name}`);
+      res.flash('message', `Select the service from the list below to access its functions and features.`);
       res.redirect(`/my-services`);
     } else {
       res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`);
