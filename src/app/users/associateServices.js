@@ -36,17 +36,26 @@ const buildBackLink = (req) => {
 };
 
 const getAllAvailableServices = async (req) => {
+  // console.time('get-available-services');
+
+  // console.time('get-from-cache');
   const allServices = await checkCacheForAllServices(req.id);
   let externalServices = allServices.services.filter(
     (x) =>
       x.isExternalService === true &&
       !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideApprover === 'true'),
   );
+  // console.timeEnd('get-from-cache');
+
+  // console.time('get-services-already-mapped');
   if (req.params.uid) {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
     externalServices = externalServices.filter((ex) => !allUserServicesInOrg.find((as) => as.id === ex.id));
   }
+  // console.timeEnd('get-services-already-mapped');
+
   const servicesNotAvailableThroughPolicies = [];
+  // console.time('get-org-services-dao');
   const userOrganisations =
     req.params.uid && !req.params.uid.startsWith('inv-')
       ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
@@ -54,7 +63,13 @@ const getAllAvailableServices = async (req) => {
   const userAccessToSpecifiedOrganisation = userOrganisations
     ? userOrganisations.find((x) => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())
     : undefined;
+  // console.timeEnd('get-org-services-dao');
+
+  // console.time('check-all-policies');
   for (let i = 0; i < externalServices.length; i++) {
+    // console.time('check-one-policy');
+    console.log('====================');
+    console.log(externalServices[i].name);
     const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
       userAccessToSpecifiedOrganisation ? req.params.uid : undefined,
       req.params.orgId,
@@ -64,7 +79,13 @@ const getAllAvailableServices = async (req) => {
     if (!policyResult.serviceAvailableToUser) {
       servicesNotAvailableThroughPolicies.push(externalServices[i].id);
     }
+    // console.timeEnd('check-one-policy');
+    console.log('===================');
   }
+  // console.timeEnd('check-all-policies');
+
+  // console.timeEnd('get-available-services');
+
   return externalServices.filter((x) => !servicesNotAvailableThroughPolicies.find((y) => x.id === y));
 };
 
