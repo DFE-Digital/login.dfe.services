@@ -1,5 +1,5 @@
 'use strict';
-const { getAllServices, isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
+const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
 const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
 const {
   putUserInOrganisation,
