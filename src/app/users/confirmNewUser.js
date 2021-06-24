@@ -14,6 +14,7 @@ const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
+const { checkCacheForAllServices } = require('./../../infrastructure/helpers/allServicesAppCache');
 
 const renderConfirmNewUserPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
@@ -35,7 +36,7 @@ const get = async (req, res) => {
     roles: service.roles,
   }));
 
-  const allServices = await getAllServices(req.id);
+  const allServices = await checkCacheForAllServices(req.id);
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
     const serviceDetails = allServices.services.find((x) => x.id === service.id);
@@ -236,14 +237,15 @@ const post = async (req, res) => {
       },
     });
 
-    // TODO the message will have to be different if it is self management or user management
-    res.flash('info', `Services successfully added`, );
     if (isSelfManagement(req)) {
+      const allServices = await checkCacheForAllServices();
+      const serviceDetails = allServices.services.find((x) => x.id === req.session.user.services[0].serviceId);
       res.flash('title', `Success`);
-      res.flash('heading', `New Service added: ${locals.serviceDetails.name}`);
+      res.flash('heading', `New Service added: ${serviceDetails.name}`);
       res.flash('message', `Select the service from the list below to access its functions and features.`);
       res.redirect(`/my-services`);
     } else {
+      res.flash('info', 'Services successfully added');
       res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`);
     }
   }
