@@ -48,7 +48,7 @@ const get = async (req, res) => {
   }
 
   const model = {
-    backLink: true,
+    backLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${services[services.length - 1].id}`,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     user: {
