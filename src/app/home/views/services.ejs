@@ -158,9 +158,9 @@
                         </div>
                     </div>
                 <% } else { %>
-                    <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
-                        <div class="govuk-grid-row">
-                            <div class="govuk-grid-column-full">
+                    <div class="govuk-!-margin-top-2 govuk-!-padding-0">
+                        <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
+                            <div class="govuk-width-container">
                                 <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
                                     <div class="govuk-notification-banner__header">
                                         <h2 class="govuk-notification-banner__title" id="notification-title">
@@ -177,17 +177,15 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    <% } %>
-                    <div class="govuk-!-margin-top-9">
+                        <% } %>
                         <%- include reviewUsers.ejs %>
+                        <% if (services.length === 0) { %>
+                            <div class="empty-state">
+                                <p class="govuk-body">You have no services assigned, please contact your <a class="govuk-link-bold"
+                                        href="organisations">approver</a>.</p>
+                            </div>
+                        <% } %>
                     </div>
-                    <% if (services.length === 0) { %>
-                        <div class="empty-state">
-                            <p class="govuk-body">You have no services assigned, please contact your <a class="govuk-link-bold"
-                                    href="organisations">approver</a>.</p>
-                        </div>
-                    <% } %>
                 <% } %>
                 <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
                     <div class="panel panel-border-narrow alert-default" tabindex="0">
@@ -226,7 +224,7 @@
         </div>
         <div class="govuk-grid-row">
             <% if (!enableTaskList || services.length !== 0) { %>
-                <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-grid-column-two-thirds govuk-!-margin-top-9">
                     <table class="govuk-table">
                         <thead class="govuk-table__head">
                             <tr class="govuk-table__row">
