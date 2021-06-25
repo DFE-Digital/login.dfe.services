@@ -1,7 +1,3 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/infrastructure/access', () => {
   return {
     listRolesOfService: jest.fn(),
@@ -9,14 +5,45 @@ jest.mock('./../../../../src/infrastructure/access', () => {
     addUserService: jest.fn(),
   };
 });
-jest.mock('./../../../../src/infrastructure/applications', () => {
+jest.mock('./../../../../src/infrastructure/helpers/allServicesAppCache', () => {
   return {
-    getAllServices: jest.fn(),
+    checkCacheForAllServices: jest.fn(),
+  };
+});
+
+const { mockRequest, mockResponse, mockLogger, mockAdapterConfig } = require('./../../../utils/jestMocks');
+jest.mock('./../../../../src/infrastructure/logger', () => mockLogger());
+jest.mock('./../../../../src/infrastructure/config', () => {
+  return mockAdapterConfig();
+});
+jest.mock('login.dfe.dao', () => {
+  return {
+    services: {
+      list: async (pageNumber, pageSize) => {
+        return {
+          count: 10,
+          rows: [
+            {
+              id: 'service1',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service One',
+            },
+            {
+              id: 'service2',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service two',
+            },
+          ],
+        };
+      },
+    },
   };
 });
 
 const { listRolesOfService } = require('./../../../../src/infrastructure/access');
-const { getAllServices } = require('./../../../../src/infrastructure/applications');
+const { checkCacheForAllServices } = require('./../../../../src/infrastructure/helpers/allServicesAppCache');
 
 describe('when displaying the confirm new user view', () => {
   let req;
@@ -86,15 +113,13 @@ describe('when displaying the confirm new user view', () => {
         },
       },
     ]);
-    getAllServices.mockReset();
-    getAllServices.mockReturnValue({
+
+    checkCacheForAllServices.mockReset();
+    checkCacheForAllServices.mockReturnValue({
       services: [
         {
           id: 'service1',
-          dateActivated: '10/10/2018',
           name: 'service name',
-          status: 'active',
-          isExternalService: true,
         },
       ],
     });
@@ -105,8 +130,7 @@ describe('when displaying the confirm new user view', () => {
   it('then it should get all services', async () => {
     await getConfirmNewUser(req, res);
 
-    expect(getAllServices.mock.calls).toHaveLength(1);
-    expect(getAllServices.mock.calls[0][0]).toBe('correlationId');
+    expect(checkCacheForAllServices.mock.calls).toHaveLength(1);
   });
 
   it('then it should list all roles of service', async () => {

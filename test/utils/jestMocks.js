@@ -75,6 +75,8 @@ const mockAdapterConfig = () => {
       useRequestOrganisation: true,
     },
     hostingEnvironment: {},
+    loggerSettings: {},
+    notifications: {},
     adapter: {
       type: 'sequelize',
       directories: {
