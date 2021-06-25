@@ -111,13 +111,14 @@ const post = async (req, res) => {
     req.id,
   );
 
+  // persist current selection in session
+  req.session.user.services[currentService].roles = selectedRoles;
+
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
     renderAssociateRolesPage(req, res, model);
   }
-
-  req.session.user.services[currentService].roles = selectedRoles;
 
   if (currentService < req.session.user.services.length - 1) {
     const nextService = currentService + 1;

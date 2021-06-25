@@ -135,11 +135,8 @@ const post = async (req, res) => {
   }
 
   const model = await validate(req);
-  if (Object.keys(model.validationMessages).length > 0) {
-    model.csrfToken = req.csrfToken();
-    return renderAssociateServicesPage(req, res, model);
-  }
 
+  // persist current selection in session
   req.session.user.services = model.selectedServices.map((serviceId) => {
     const existingServiceSelections = req.session.user.services
       ? req.session.user.services.find((x) => x.serviceId === serviceId)
@@ -149,6 +146,11 @@ const post = async (req, res) => {
       roles: existingServiceSelections ? existingServiceSelections.roles : [],
     };
   });
+
+  if (Object.keys(model.validationMessages).length > 0) {
+    model.csrfToken = req.csrfToken();
+    return renderAssociateServicesPage(req, res, model);
+  }
 
   if (req.session.user.isInvite && model.selectedServices.length === 0) {
     return res.redirect(

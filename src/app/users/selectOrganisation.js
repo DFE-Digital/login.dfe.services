@@ -69,14 +69,14 @@ const post = async (req, res) => {
   await getNaturalIdentifiers(req);
   const model = validate(req);
 
-  if (Object.keys(model.validationMessages).length > 0) {
-    model.csrfToken = req.csrfToken();
-    return renderSelectOrganisationPage(req, res, model);
-  }
-
   // persist selected org in session
   if (req.session.user) {
     req.session.user.organisation = model.selectedOrganisation;
+  }
+
+  if (Object.keys(model.validationMessages).length > 0) {
+    model.csrfToken = req.csrfToken();
+    return renderSelectOrganisationPage(req, res, model);
   }
 
   if (req.query.services === 'add') {
