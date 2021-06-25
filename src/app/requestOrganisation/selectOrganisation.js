@@ -33,7 +33,7 @@ const retrieveOrganisationCategories = async () => {
       return cat.id;
     })
     .filter((id) => {
-      return id !== '011' && id !== '004';
+      return id !== '011';
     });
 };
 
