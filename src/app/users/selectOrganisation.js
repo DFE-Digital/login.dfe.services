@@ -1,6 +1,8 @@
 'use strict';
+const { getApproverOrgsFromReq } = require('./utils');
+
 const getNaturalIdentifiers = async (req) => {
-  req.userOrganisations = req.userOrganisations.filter((x) => x.role.id === 10000);
+  req.userOrganisations = getApproverOrgsFromReq(req);
   for (let i = 0; i < req.userOrganisations.length; i++) {
     const org = req.userOrganisations[i];
     if (org.organisation) {
@@ -39,7 +41,7 @@ const get = async (req, res) => {
     title: 'Select Organisation',
     organisations: req.userOrganisations,
     currentPage: 'users',
-    selectedOrganisation: req.session.user.organisation || null,
+    selectedOrganisation: req.session.user ? req.session.user.organisation : null,
     validationMessages: {},
     backLink: '/my-services',
   };
@@ -67,13 +69,15 @@ const post = async (req, res) => {
   await getNaturalIdentifiers(req);
   const model = validate(req);
 
+  // persist selected org in session
+  if (req.session.user) {
+    req.session.user.organisation = model.selectedOrganisation;
+  }
+
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
     return renderSelectOrganisationPage(req, res, model);
   }
-
-  // persist selected org in session
-  req.session.user.organisation = model.selectedOrganisation;
 
   if (req.query.services === 'add') {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);

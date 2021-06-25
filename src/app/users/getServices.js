@@ -1,6 +1,6 @@
 'use strict';
 const { getUserDetails, getAllServicesForUserInOrg, isSelfManagement } = require('./utils');
-const { getAllServices } = require('./../../infrastructure/applications');
+const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const Account = require('./../../infrastructure/account');
 
 const action = async (req, res) => {
@@ -15,7 +15,7 @@ const action = async (req, res) => {
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
-  const allServices = await getAllServices();
+  const allServices = await checkCacheForAllServices();
   const externalServices = allServices.services.filter(
     (x) =>
       x.isExternalService === true &&

@@ -41,6 +41,9 @@ describe('when selecting an organisation', () => {
     req.body = {
       selectedOrganisation: 'organisationId',
     };
+    req.session = {
+      user: {},
+    };
     res = mockResponse();
     postMultipleOrgSelection = require('./../../../../src/app/users/selectOrganisation').post;
   });
@@ -65,7 +68,7 @@ describe('when selecting an organisation', () => {
       validationMessages: {
         selectedOrganisation: 'Select an organisation to continue.',
       },
-      backLink: true,
+      backLink: '/my-services',
     });
   });
 });

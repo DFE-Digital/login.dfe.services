@@ -38,6 +38,9 @@ describe('when displaying the multiple organisation selection', () => {
         },
       },
     ];
+    req.session = {
+      user: {},
+    };
     res = mockResponse();
 
     getMultipleOrgSelection = require('./../../../../src/app/users/selectOrganisation').get;

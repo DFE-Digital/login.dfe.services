@@ -88,10 +88,18 @@ const isSelfManagement = (req) => {
   return req.user.sub === req.session.user.uid;
 };
 
+const getApproverOrgsFromReq = (req) => {
+  if (req.userOrganisations) {
+    return req.userOrganisations.filter((x) => x.role.id === 10000);
+  }
+  return [];
+};
+
 module.exports = {
   getUserDetails,
   getAllServicesForUserInOrg,
   getSingleServiceForUser,
   waitForIndexToUpdate,
   isSelfManagement,
+  getApproverOrgsFromReq,
 };

@@ -1,6 +1,6 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg, isSelfManagement } = require('./utils');
+const { getAllServicesForUserInOrg, isSelfManagement, getApproverOrgsFromReq } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
@@ -22,7 +22,13 @@ const buildBackLink = (req) => {
       ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
       : (backRedirect = 'new-user');
   } else if (isSelfManagement(req)) {
-    backRedirect = '/approvals/select-organisation?services=add';
+    // we need to check if user is approver at only one org to then send back to main services page
+    const approverOrgs = getApproverOrgsFromReq(req);
+    if (approverOrgs.length === 1) {
+      backRedirect = '/my-services';
+    } else if (approverOrgs.length > 1) {
+      backRedirect = '/approvals/select-organisation?services=add';
+    }
   } else {
     backRedirect = 'services';
   }
@@ -129,11 +135,8 @@ const post = async (req, res) => {
   }
 
   const model = await validate(req);
-  if (Object.keys(model.validationMessages).length > 0) {
-    model.csrfToken = req.csrfToken();
-    return renderAssociateServicesPage(req, res, model);
-  }
 
+  // persist current selection in session
   req.session.user.services = model.selectedServices.map((serviceId) => {
     const existingServiceSelections = req.session.user.services
       ? req.session.user.services.find((x) => x.serviceId === serviceId)
@@ -143,6 +146,11 @@ const post = async (req, res) => {
       roles: existingServiceSelections ? existingServiceSelections.roles : [],
     };
   });
+
+  if (Object.keys(model.validationMessages).length > 0) {
+    model.csrfToken = req.csrfToken();
+    return renderAssociateServicesPage(req, res, model);
+  }
 
   if (req.session.user.isInvite && model.selectedServices.length === 0) {
     return res.redirect(

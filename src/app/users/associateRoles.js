@@ -14,19 +14,30 @@ const renderAssociateRolesPage = (req, res, model) => {
   );
 };
 
-const buildBackLink = (req) => {
+const buildBackLink = (req, currentServiceIndex) => {
   let backRedirect;
   if (req.params.uid) {
-    backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services`;
+    if (currentServiceIndex > 0) {
+      // go back to previous select role page for previous service as we had multi-select for services
+      backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${req.session.user.services[currentServiceIndex - 1].serviceId}`;
+    } else {
+      backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services`;
+    }
   } else {
-    backRedirect = `/approvals/${req.params.orgId}/users/associate-services`;
+    if (currentServiceIndex > 0) {
+      // go back to previous select role page for previous service as we had multi-select for services
+      backRedirect = `/approvals/${req.params.orgId}/users/associate-services/${req.session.user.services[currentServiceIndex - 1].serviceId}`;
+    } else {
+      backRedirect = `/approvals/${req.params.orgId}/users/associate-services`;
+    }
   }
   return backRedirect;
 };
 
 const getViewModel = async (req) => {
   const totalNumberOfServices = req.session.user.services.length;
-  const currentService = req.session.user.services.findIndex((x) => x.serviceId === req.params.sid) + 1;
+  const currentServiceIndex = req.session.user.services.findIndex((x) => x.serviceId === req.params.sid);
+  const currentService = currentServiceIndex + 1;
   const serviceDetails = await getApplication(req.params.sid, req.id);
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
 
@@ -54,7 +65,7 @@ const getViewModel = async (req) => {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
     validationMessages: {},
-    backLink: buildBackLink(req),
+    backLink: buildBackLink(req, currentServiceIndex),
     currentPage: 'users',
     organisationDetails,
     selectedRoles,
@@ -100,13 +111,14 @@ const post = async (req, res) => {
     req.id,
   );
 
+  // persist current selection in session
+  req.session.user.services[currentService].roles = selectedRoles;
+
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
     renderAssociateRolesPage(req, res, model);
   }
-
-  req.session.user.services[currentService].roles = selectedRoles;
 
   if (currentService < req.session.user.services.length - 1) {
     const nextService = currentService + 1;

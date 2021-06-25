@@ -1,5 +1,5 @@
 'use strict';
-const { getAllServices, isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
+const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
 const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
 const {
   putUserInOrganisation,
@@ -9,11 +9,20 @@ const {
   updateRequestById,
 } = require('./../../infrastructure/organisations');
 const { getById, updateIndex, createIndex } = require('./../../infrastructure/search');
-const { waitForIndexToUpdate } = require('./utils');
+const { waitForIndexToUpdate, isSelfManagement } = require('./utils');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
+const { checkCacheForAllServices } = require('./../../infrastructure/helpers/allServicesAppCache');
+
+const renderConfirmNewUserPage = (req, res, model) => {
+  const isSelfManage = isSelfManagement(req);
+  res.render(
+    `users/views/${isSelfManage ? "confirmNewUserRedesigned" : "confirmNewUser" }`,
+    { ...model, currentPage: isSelfManage? "services": "users" }
+  );
+};
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -27,7 +36,7 @@ const get = async (req, res) => {
     roles: service.roles,
   }));
 
-  const allServices = await getAllServices(req.id);
+  const allServices = await checkCacheForAllServices(req.id);
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
     const serviceDetails = allServices.services.find((x) => x.id === service.id);
@@ -38,8 +47,9 @@ const get = async (req, res) => {
     service.name = serviceDetails.name;
     service.roles = rotails;
   }
-  return res.render('users/views/confirmNewUser', {
-    backLink: true,
+
+  const model = {
+    backLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${services[services.length - 1].id}`,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     user: {
@@ -51,7 +61,9 @@ const get = async (req, res) => {
     },
     services,
     organisationDetails,
-  });
+  };
+
+  renderConfirmNewUserPage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -225,8 +237,17 @@ const post = async (req, res) => {
       },
     });
 
-    res.flash('info', `Services successfully added`);
-    res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`);
+    if (isSelfManagement(req)) {
+      const allServices = await checkCacheForAllServices();
+      const serviceDetails = allServices.services.find((x) => x.id === req.session.user.services[0].serviceId);
+      res.flash('title', `Success`);
+      res.flash('heading', `New Service added: ${serviceDetails.name}`);
+      res.flash('message', `Select the service from the list below to access its functions and features.`);
+      res.redirect(`/my-services`);
+    } else {
+      res.flash('info', 'Services successfully added');
+      res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`);
+    }
   }
 };
 

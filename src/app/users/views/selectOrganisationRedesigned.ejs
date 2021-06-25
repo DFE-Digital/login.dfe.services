@@ -6,7 +6,7 @@
                 Add service for which organisation?
             </h1>
 
-            <form method="post">
+            <form method="post" class="prevent-form-double-submission">
 
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
 
@@ -41,9 +41,8 @@
                                     <td class="govuk-table__cell">
                                         <div class="govuk-radios">
                                             <div class="govuk-radios__item">
-                                                <input class="govuk-radios__input" id="<%= org.organisation.id %>"
-                                                    name="selectedOrganisation" type="radio"
-                                                    value="<%= org.organisation.id %>"
+                                                <input class="govuk-radios__input <%= locals.organisations.length > 2 ? 'auto-scroll-on-change' : '' %>"
+                                                    id="<%= org.organisation.id %>" name="selectedOrganisation" type="radio" value="<%= org.organisation.id %>"
                                                     <%= org.organisation.id === selectedOrganisation ? 'checked': ''%>
                                                     >
                                                 <label class="govuk-label govuk-radios__label cursor-pointer"></label>
@@ -81,7 +80,7 @@
 
                 </div>
 
-                <div class="govuk-button-group">
+                <div class="govuk-button-group auto-scroll-dest">
                     <button type="submit" class="govuk-button">Continue</button>
                     <a href="/my-services" class="govuk-button govuk-button--secondary">Cancel</a>
                 </div>

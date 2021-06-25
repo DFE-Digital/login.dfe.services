@@ -3,7 +3,7 @@
         <div class="govuk-grid-column-three-quarters">
 
             <% if (locals.services.length > 0) { %>
-                <form method="post">
+                <form method="post" class="prevent-form-double-submission">
                     <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
                     
                     <div class="govuk-form-group  <%= (locals.validationMessages.services !== undefined) ? 'govuk-form-group--error' : '' %>">
