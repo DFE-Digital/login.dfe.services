@@ -25,7 +25,7 @@
 <div class="govuk-width-container">
     <div class ="servicesv2">
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
                 <% if (enableTaskList && services.length === 0) { %>
                     <div>
                         <h1 class="govuk-heading-xl">
@@ -158,14 +158,22 @@
                         </div>
                     </div>
                 <% } else { %>
-                    <div class="govuk-!-margin-top-2 govuk-!-padding-0">
+                    <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
                         <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
-                            <div class="govuk-width-container">
+                            <div class="govuk-width-container" id="mainContainerDiv">
                                 <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-                                    <div class="govuk-notification-banner__header">
-                                        <h2 class="govuk-notification-banner__title" id="notification-title">
-                                            <%= locals.flash.title %>
-                                        </h2>
+                                    <div class="govuk-notification-banner__header govuk-grid-row">
+                                        <div class="govuk-grid-column-two-thirds">
+                                            <h2 class="govuk-notification-banner__title" id="notification-title">
+                                                <%= locals.flash.title %>
+                                            </h2>
+                                        </div>
+                                        <div class="govuk-grid-column-one-third">
+                                            <span class="close-button pull-right" id="close" 
+                                                onclick="document.getElementById('mainContainerDiv').removeChild(document.getElementById('notification-wrapper')); return false;">
+                                                x
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="govuk-notification-banner__content" id="notification-content">
                                         <h3 class="govuk-notification-banner__heading">
@@ -224,7 +232,7 @@
         </div>
         <div class="govuk-grid-row">
             <% if (!enableTaskList || services.length !== 0) { %>
-                <div class="govuk-grid-column-two-thirds govuk-!-margin-top-9">
+                <div class="govuk-grid-column-two-thirds">
                     <table class="govuk-table">
                         <thead class="govuk-table__head">
                             <tr class="govuk-table__row">
