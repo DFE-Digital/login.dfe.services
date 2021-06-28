@@ -19,6 +19,7 @@ const { get: getAssociateServices, post: postAssociateServices } = require('./as
 const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');
 const { get: getConfirmNewUser, post: postConfirmNewUser } = require('./confirmNewUser');
 const { get: getResendInvitation, post: postResendInvitation } = require('./resendInvitation');
+const { getApproverOrgsFromReq } = require('./utils');
 
 const router = express.Router({ mergeParams: true });
 
@@ -30,14 +31,14 @@ const users = (csrf) => {
   router.get(
     '/users',
     asyncWrapper((req, res) => {
-      req.userOrganisations = req.userOrganisations.filter((x) => x.role.id === 10000);
+      req.userOrganisations = getApproverOrgsFromReq(req);
       if (req.userOrganisations.length === 0) {
         return res.status(401).render('errors/views/notAuthorised');
       }
       if (req.userOrganisations.length === 1) {
         return res.redirect(`${req.userOrganisations[0].organisation.id}/users`);
       } else {
-        return res.redirect(`/approvals/select-organisation`);
+        return res.redirect(`/approvals/select-organisation?manage_users=true`);
       }
     }),
   );
