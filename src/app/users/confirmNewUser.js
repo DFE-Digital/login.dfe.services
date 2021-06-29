@@ -24,6 +24,16 @@ const renderConfirmNewUserPage = (req, res, model) => {
   );
 };
 
+const buildBackLink = (req, services) => {
+  let backRedirect;
+  if (services.length > 0) {
+    backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${services[services.length - 1].id}`;
+  } else {
+    backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services`;
+  }
+  return backRedirect;
+};
+
 const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect(`/approvals/${req.params.orgId}/users`);
@@ -49,7 +59,7 @@ const get = async (req, res) => {
   }
 
   const model = {
-    backLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${services[services.length - 1].id}`,
+    backLink: buildBackLink(req, services),
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     user: {
@@ -241,7 +251,7 @@ const post = async (req, res) => {
       const allServices = await checkCacheForAllServices();
       const serviceDetails = allServices.services.find((x) => x.id === req.session.user.services[0].serviceId);
       res.flash('title', `Success`);
-      res.flash('heading', `New Service added: ${serviceDetails.name}`);
+      res.flash('heading', `New service added: ${serviceDetails.name}`);
       res.flash('message', `Select the service from the list below to access its functions and features.`);
       res.redirect(`/my-services`);
     } else {
