@@ -25,11 +25,14 @@ const renderConfirmNewUserPage = (req, res, model) => {
 };
 
 const buildBackLink = (req, services) => {
-  let backRedirect;
+  let backRedirect = `/approvals/${req.params.orgId}/users`;
+  if (req.params.uid) {
+    backRedirect += `/${req.params.uid}`;
+  }
+  backRedirect += `/associate-services`;
   if (services.length > 0) {
-    backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${services[services.length - 1].id}`;
-  } else {
-    backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services`;
+    // go back to previous select role page for previous service as we had multi-select for services
+    backRedirect += `/${services[services.length - 1].id}`;
   }
   return backRedirect;
 };
