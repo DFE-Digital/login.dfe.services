@@ -1,18 +1,19 @@
 'use strict';
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { getSingleServiceForUser } = require('./utils');
+const { isSelfManagement, getSingleServiceForUser } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
 const renderEditServicePage = (req, res, model) => {
-  //TODO: For now using currentPage as "users" but need to change to "services"
-  const isSelfManage = true; //isSelfManagement(req);
+  const isSelfManage = isSelfManagement(req);
+  console.log("isSelfManage", isSelfManage)
   res.render(
     `users/views/${isSelfManage ? "editServicesRedesigned" : "editServices" }`,
-    { ...model, 
-      currentPage: "users" //isSelfManage? "services": "users"
+    { 
+      ...model, 
+      currentPage: isSelfManage? "services": "users"
     }
   );
 };
