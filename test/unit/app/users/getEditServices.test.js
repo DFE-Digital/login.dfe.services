@@ -103,7 +103,7 @@ describe('when displaying the edit service view', () => {
     await getEditService(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/editServices');
+    expect(res.render.mock.calls[0][0]).toBe('users/views/editServicesRedesigned');
   });
 
   it('then it should include csrf token', async () => {

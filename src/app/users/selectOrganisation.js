@@ -1,5 +1,5 @@
 'use strict';
-const { getApproverOrgsFromReq } = require('./utils');
+const { getApproverOrgsFromReq, isUserManagement } = require('./utils');
 
 const getNaturalIdentifiers = async (req) => {
   req.userOrganisations = getApproverOrgsFromReq(req);
@@ -24,7 +24,7 @@ const getNaturalIdentifiers = async (req) => {
 };
 
 const renderSelectOrganisationPage = (req, res, model) => {
-  const isManage = req.query.manage_users === 'true';
+  const isManage = isUserManagement(req);
   const isEdit = req.query.services === 'edit';
   res.render(
     `users/views/${isManage || isEdit ? "selectOrganisation": "selectOrganisationRedesigned"}`, 
