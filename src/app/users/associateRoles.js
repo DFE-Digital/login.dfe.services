@@ -15,21 +15,14 @@ const renderAssociateRolesPage = (req, res, model) => {
 };
 
 const buildBackLink = (req, currentServiceIndex) => {
-  let backRedirect;
+  let backRedirect = `/approvals/${req.params.orgId}/users`;
   if (req.params.uid) {
-    if (currentServiceIndex > 0) {
-      // go back to previous select role page for previous service as we had multi-select for services
-      backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${req.session.user.services[currentServiceIndex - 1].serviceId}`;
-    } else {
-      backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services`;
-    }
-  } else {
-    if (currentServiceIndex > 0) {
-      // go back to previous select role page for previous service as we had multi-select for services
-      backRedirect = `/approvals/${req.params.orgId}/users/associate-services/${req.session.user.services[currentServiceIndex - 1].serviceId}`;
-    } else {
-      backRedirect = `/approvals/${req.params.orgId}/users/associate-services`;
-    }
+    backRedirect += `/${req.params.uid}`;
+  }
+  backRedirect += `/associate-services`;
+  if (currentServiceIndex > 0) {
+    // go back to previous select role page for previous service as we had multi-select for services
+    backRedirect += `/${req.session.user.services[currentServiceIndex - 1].serviceId}`;
   }
   return backRedirect;
 };
