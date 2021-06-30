@@ -1,19 +1,18 @@
 'use strict';
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { isSelfManagement, getSingleServiceForUser } = require('./utils');
+const { isUserManagement, getSingleServiceForUser } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
 const renderEditServicePage = (req, res, model) => {
-  const isSelfManage = isSelfManagement(req);
-  console.log("isSelfManage", isSelfManage)
+  const isManage = isUserManagement(req);
   res.render(
-    `users/views/${isSelfManage ? "editServicesRedesigned" : "editServices" }`,
+    `users/views/${isManage ? "editServices" : "editServicesRedesigned"}`,
     { 
       ...model, 
-      currentPage: isSelfManage? "services": "users"
+      currentPage: isManage? "users" : "services"
     }
   );
 };
