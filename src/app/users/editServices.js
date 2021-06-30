@@ -1,10 +1,21 @@
 'use strict';
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { getSingleServiceForUser } = require('./utils');
+const { isUserManagement, getSingleServiceForUser } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
+
+const renderEditServicePage = (req, res, model) => {
+  const isManage = isUserManagement(req);
+  res.render(
+    `users/views/${isManage ? "editServices" : "editServicesRedesigned"}`,
+    { 
+      ...model, 
+      currentPage: isManage? "users" : "services"
+    }
+  );
+};
 
 const getViewModel = async (req) => {
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
@@ -35,6 +46,7 @@ const getViewModel = async (req) => {
       email: req.session.user.email,
     },
     serviceRoles,
+    serviceDetails: application,
     userService,
     roleMessage:
       application.relyingParty && application.relyingParty.params && application.relyingParty.params.serviceRoleMessage
@@ -47,15 +59,19 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
   }
-  const model = await getViewModel(req);
 
+  const model = await getViewModel(req);
   model.service.roles = model.userService.roles;
   saveRoleInSession(req, model.service.roles);
 
-  return res.render('users/views/editServices', model);
+  renderEditServicePage(req, res, model);
 };
 
 const post = async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
+  }
+
   let selectedRoles = req.body.role ? req.body.role : [];
   if (!(selectedRoles instanceof Array)) {
     selectedRoles = [req.body.role];
@@ -78,7 +94,7 @@ const post = async (req, res) => {
     let roles = {};
     model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
-    return res.render('users/views/editServices', model);
+    renderEditServicePage(req, res, model);
   }
 
   saveRoleInSession(req, selectedRoles);

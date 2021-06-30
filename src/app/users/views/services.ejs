@@ -27,7 +27,7 @@
                                 <% if (service.disabled) { %>
                                     <p class="govuk-!-margin-0"><%=service.name%></p>
                                 <% } else { %>
-                                <a class="govuk-link-bold" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>"><%=service.name%></a>
+                                <a class="govuk-link-bold" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>?manage_users=true"><%=service.name%></a>
                                 <% } %>
                             </td>
                             <% if (service.dateActivated) { %>
