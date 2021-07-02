@@ -26,9 +26,11 @@
                         <table class="govuk-table govuk-!-margin-top-3">
                             <thead class="govuk-table__head">
                                 <tr class="govuk-table__row extra-padding">
-                                    <th scope="col" class="govuk-table__header">Select</th>
-                                    <th scope="col" class="govuk-table__header">Service</th>
-                                    <th scope="col" class="govuk-table__header">Organisation</th>
+                                    <th scope="col" class="govuk-table__header width-10">Select</th>
+                                    <th scope="col" class="govuk-table__header width-30">Service</th>
+                                    <th scope="col" class="govuk-table__header width-30">Organisation</th>
+                                    <th scope="col" class="govuk-table__header width-10">Status</th>
+                                    <th scope="col" class="govuk-table__header width-20">Reference</th>
                                 </tr>
                             </thead>
 
@@ -53,6 +55,20 @@
                                         </th>
                                         <td class="govuk-table__cell govuk-!-font-size-16">
                                             <label class="cursor-pointer" for="<%= serviceOrganisation.id %>"><%= serviceOrganisation.Organisation.name %></label>
+                                        </td>
+                                        <td class="govuk-table__cell govuk-!-font-size-16">
+                                            <label class="cursor-pointer" for="<%= serviceOrganisation.id %>">
+                                                <%=serviceOrganisation.Organisation.statusName ? `${serviceOrganisation.Organisation.statusName}` : '' %>
+                                            </label>
+                                         </td>
+                                        <td class="govuk-table__cell govuk-!-font-size-16">
+                                            <label class="cursor-pointer" for="<%= serviceOrganisation.id %>">
+                                                <% if (serviceOrganisation.Organisation.naturalIdentifiers) { %>
+                                                    <% for(let i= 0; i < serviceOrganisation.Organisation.naturalIdentifiers.length; i++)  { %>
+                                                        <div> <%= serviceOrganisation.Organisation.naturalIdentifiers[i]  %></div>
+                                                    <% } %>
+                                                <% } %>
+                                            </label>
                                         </td>
                                     </tr>
                                 <% } %>
