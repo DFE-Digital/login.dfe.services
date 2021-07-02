@@ -99,6 +99,23 @@ const getApproverOrgsFromReq = (req) => {
   return [];
 };
 
+const getOrgNaturalIdentifiers = (org) => {
+  const naturalIdentifiers = [];
+  const urn = org.URN || org.urn;
+  const uid = org.UID || org.uid;
+  const ukprn = org.UKPRN || org.ukprn;
+  if (urn) {
+    naturalIdentifiers.push(`URN: ${urn}`);
+  }
+  if (uid) {
+    naturalIdentifiers.push(`UID: ${uid}`);
+  }
+  if (ukprn) {
+    naturalIdentifiers.push(`UKPRN: ${ukprn}`);
+  }
+  return naturalIdentifiers;
+};
+
 module.exports = {
   getUserDetails,
   getAllServicesForUserInOrg,
@@ -107,4 +124,5 @@ module.exports = {
   isSelfManagement,
   isUserManagement,
   getApproverOrgsFromReq,
+  getOrgNaturalIdentifiers,
 };

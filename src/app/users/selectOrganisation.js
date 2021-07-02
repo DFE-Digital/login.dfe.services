@@ -1,26 +1,11 @@
 'use strict';
-const { getApproverOrgsFromReq, isUserManagement } = require('./utils');
+const { getApproverOrgsFromReq, isUserManagement, getOrgNaturalIdentifiers } = require('./utils');
 
-const getNaturalIdentifiers = async (req) => {
-  req.userOrganisations = getApproverOrgsFromReq(req);
-  for (let i = 0; i < req.userOrganisations.length; i++) {
-    const org = req.userOrganisations[i];
-    if (org.organisation) {
-      org.naturalIdentifiers = [];
-      const urn = org.organisation.urn;
-      const uid = org.organisation.uid;
-      const ukprn = org.organisation.ukprn;
-      if (urn) {
-        org.naturalIdentifiers.push(`URN: ${urn}`);
-      }
-      if (uid) {
-        org.naturalIdentifiers.push(`UID: ${uid}`);
-      }
-      if (ukprn) {
-        org.naturalIdentifiers.push(`UKPRN: ${ukprn}`);
-      }
-    }
-  }
+const buildAdditionalOrgDetails = (userOrgs) => {
+  userOrgs.forEach((userOrg) => {
+    const org = userOrg.organisation;
+    userOrg.naturalIdentifiers = getOrgNaturalIdentifiers(org);
+  });
 };
 
 const renderSelectOrganisationPage = (req, res, model) => {
@@ -34,7 +19,8 @@ const renderSelectOrganisationPage = (req, res, model) => {
 
 
 const get = async (req, res) => {
-  await getNaturalIdentifiers(req);
+  req.userOrganisations = getApproverOrgsFromReq(req);
+  buildAdditionalOrgDetails(req.userOrganisations);
 
   const model = {
     csrfToken: req.csrfToken(),
@@ -66,7 +52,8 @@ const validate = (req) => {
 };
 
 const post = async (req, res) => {
-  await getNaturalIdentifiers(req);
+  req.userOrganisations = getApproverOrgsFromReq(req);
+  buildAdditionalOrgDetails(req.userOrganisations);
   const model = validate(req);
 
   // persist selected org in session
