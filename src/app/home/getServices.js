@@ -159,6 +159,7 @@ const getServices = async (req, res) => {
 
   let addServicesRedirect;
   let editServicesRedirect;
+  let removeServicesRedirect;
   const approverOrgs = getApproverOrgsFromReq(req);
   if (approverOrgs && approverOrgs.length > 0) {
     req.session.user = {
@@ -173,7 +174,8 @@ const getServices = async (req, res) => {
     } else {
       addServicesRedirect = '/approvals/select-organisation?services=add';
     }
-    editServicesRedirect = '/approvals/select-organisation-service';
+    editServicesRedirect = '/approvals/select-organisation-service?action=edit';
+    removeServicesRedirect = '/approvals/select-organisation-service?action=remove';
   }
 
   return res.render('home/views/services', {
@@ -187,6 +189,7 @@ const getServices = async (req, res) => {
     enableTaskList: config.toggles.useRequestOrganisation,
     addServicesRedirect,
     editServicesRedirect,
+    removeServicesRedirect,
   });
 };
 
