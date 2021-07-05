@@ -4,10 +4,33 @@ const logger = require('./../../infrastructure/logger');
 const { getSingleServiceForUser } = require('./utils');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 const { getById, updateIndex } = require('./../../infrastructure/search');
-const { waitForIndexToUpdate } = require('./utils');
+const { waitForIndexToUpdate, isUserManagement } = require('./utils');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
+const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+
+const renderRemoveServicePage = (req, res, model) => {
+  const isManage = isUserManagement(req);
+  res.render(
+    `users/views/${isManage ? "removeService" : "removeServiceRedesigned" }`,
+    { ...model, currentPage: isManage? "users": "services" }
+  );
+};
+
+const buildBackLink = (req) => {
+  if (isUserManagement(req)) {
+    return `/approvals/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}?manage_users=true`;
+  }
+  return '/approvals/select-organisation-service?action=remove';
+};
+
+const buildCancelLink = (req) => {
+  if (isUserManagement(req)) {
+    return `/approvals/${req.params.orgId}/users/${req.params.uid}/services`;
+  }
+  return '/my-services';
+};
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -16,9 +39,9 @@ const get = async (req, res) => {
   const service = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
-  return res.render('users/views/removeService', {
-    backLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}`,
-    cancelLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/services`,
+  const model = {
+    backLink: buildBackLink(req),
+    cancelLink: buildCancelLink(req),
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisationDetails,
@@ -28,7 +51,8 @@ const get = async (req, res) => {
       lastName: req.session.user.lastName,
       email: req.session.user.email,
     },
-  });
+  };
+  return renderRemoveServicePage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -85,8 +109,18 @@ const post = async (req, res) => {
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
   });
-  res.flash('info', `${service.name} successfully removed`);
-  return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
+
+  if (isUserManagement(req)) {
+    res.flash('info', `${service.name} successfully removed`);
+    return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
+  } else {
+    const allServices = await checkCacheForAllServices();
+    const serviceDetails = allServices.services.find((x) => x.id === serviceId);
+    res.flash('title', `Success`);
+    res.flash('heading', `Service removed: ${serviceDetails.name}`);
+    res.flash('message', `This service (and all associated roles) has been removed from your account.`);
+    res.redirect(`/my-services`);
+  }
 };
 
 module.exports = {
