@@ -168,14 +168,12 @@ const getServices = async (req, res) => {
       email: req.user.email,
       services: [],
     };
-    //TODO if it is edit, check if user is only mapped to one service (instead of one org), then send it to next step in edit service flow
     if (approverOrgs.length === 1) {
       addServicesRedirect = `approvals/${approverOrgs[0].organisation.id}/users/${req.user.sub}/associate-services`;
-      editServicesRedirect = `approvals/${approverOrgs[0].organisation.id}/users/${req.user.sub}`;
     } else {
       addServicesRedirect = '/approvals/select-organisation?services=add';
-      editServicesRedirect = '/approvals/select-organisation-service';
     }
+    editServicesRedirect = '/approvals/select-organisation-service';
   }
 
   return res.render('home/views/services', {
