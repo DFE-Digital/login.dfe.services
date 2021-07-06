@@ -21,7 +21,7 @@ const buildPageTitle = (req) => {
 };
 
 const renderSelectServiceWithOrganisationPage = (req, res, model) => {
-  res.render('users/views/selectOrganisationService', model);
+  res.render('users/views/selectServiceWithOrganisation', model);
 };
 
 const buildRedirectURL = (req, serviceOrgDetails) => {
