@@ -62,7 +62,7 @@ describe('when selecting a service (with organisation)', () => {
     await postSelectServiceWithOrg(req, res);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(`users/views/selectServiceWithOrganisation`);
-    expect(res.render.mock.calls[0][1]).toEqual({
+    expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
       selectedServiceOrganisation: undefined,
       serviceOrganisations: mockServiceOrganisations,

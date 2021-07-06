@@ -30,6 +30,9 @@ describe('when displaying the select service with organisation page', () => {
     req.session = {
       user: {},
     };
+    req.query = {
+      action: 'edit',
+    };
     res = mockResponse();
 
     getServiceOrgSelection = require('../../../../src/app/users/selectServiceWithOrganisation').get;
@@ -47,6 +50,29 @@ describe('when displaying the select service with organisation page', () => {
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
+    });
+  });
+
+  it('then it should match expected model for edit action', async () => {
+    await getServiceOrgSelection(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      currentPage: 'services',
+      backLink: '/my-services',
+      action: 'edit',
+      title: 'Edit which service?',
+    });
+  });
+
+  it('then it should match expected model for remove action', async () => {
+    req.query.action = 'remove';
+    await getServiceOrgSelection(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      currentPage: 'services',
+      backLink: '/my-services',
+      action: 'remove',
+      title: 'Remove which service?',
     });
   });
 });
