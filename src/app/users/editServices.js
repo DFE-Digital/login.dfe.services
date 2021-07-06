@@ -1,7 +1,7 @@
 'use strict';
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { isUserManagement, getSingleServiceForUser } = require('./utils');
+const { isUserManagement, getSingleServiceForUser, isSelfManagement } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
@@ -17,6 +17,14 @@ const renderEditServicePage = (req, res, model) => {
   );
 };
 
+const buildBackLink = (req) => {
+  let backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/services`;
+  if (!isUserManagement(req)) {
+    backRedirect = "/approvals/select-organisation-service";
+  }
+  return backRedirect
+}
+
 const getViewModel = async (req) => {
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
@@ -30,7 +38,7 @@ const getViewModel = async (req) => {
   const serviceRoles = policyResult.rolesAvailableToUser;
   const application = await getApplication(req.params.sid, req.id);
   return {
-    backLink: true,
+    backLink: buildBackLink(req),
     cancelLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/services`,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
@@ -98,8 +106,13 @@ const post = async (req, res) => {
   }
 
   saveRoleInSession(req, selectedRoles);
+  
+  let nexturl  = `${req.params.sid}/confirm-edit-service`;
+  if(isUserManagement(req)) {
+    nexturl += '?manage_users=true';
+  }
 
-  return res.redirect(`${req.params.sid}/confirm-edit-service`);
+  return res.redirect(nexturl);
 };
 
 const saveRoleInSession = (req, selectedRoles) => {
