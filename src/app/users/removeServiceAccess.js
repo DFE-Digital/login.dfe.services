@@ -1,10 +1,9 @@
 'use strict';
 
 const logger = require('./../../infrastructure/logger');
-const { getSingleServiceForUser } = require('./utils');
+const { getSingleServiceForUser, waitForIndexToUpdate, isUserManagement } = require('./utils');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 const { getById, updateIndex } = require('./../../infrastructure/search');
-const { waitForIndexToUpdate, isUserManagement } = require('./utils');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
