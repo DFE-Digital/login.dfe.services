@@ -20,7 +20,7 @@ const buildPageTitle = (req) => {
   return 'Edit which service?';
 };
 
-const renderSelectOrganisationServicePage = (req, res, model) => {
+const renderSelectServiceWithOrganisationPage = (req, res, model) => {
   res.render('users/views/selectOrganisationService', model);
 };
 
@@ -47,7 +47,7 @@ const get = async (req, res) => {
     action: req.query.action,
   };
 
-  renderSelectOrganisationServicePage(req, res, model);
+  renderSelectServiceWithOrganisationPage(req, res, model);
 };
 
 const validate = (req) => {
@@ -69,7 +69,7 @@ const validate = (req) => {
 
 const post = async (req, res) => {
   const model = validate(req);
-  const serviceOrganisations = await services.getServicesForUserIncludingOrganisation(req.user.sub);
+  const serviceOrganisations = await services.getUserServicesWithOrganisationOnlyApprover(req.user.sub);
   buildAdditionalOrgDetails(serviceOrganisations);
 
   // persist selected org in session
@@ -80,7 +80,7 @@ const post = async (req, res) => {
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
     model.serviceOrganisations = serviceOrganisations;
-    return renderSelectOrganisationServicePage(req, res, model);
+    return renderSelectServiceWithOrganisationPage(req, res, model);
   }
 
   const serviceOrgDetails = serviceOrganisations.find((serviceOrg) => {
