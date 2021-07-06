@@ -161,15 +161,21 @@ describe('when editing a service for a user', () => {
     await postConfirmEditService(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
+    expect(res.redirect.mock.calls[0][0]).toBe(`/my-services`);
   });
 
   it('then a flash message is shown to the user', async () => {
     await postConfirmEditService(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(1);
-    expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`service name updated successfully`);
+    expect(res.flash.mock.calls).toHaveLength(3);
+    expect(res.flash.mock.calls[0][0]).toBe('title');
+    expect(res.flash.mock.calls[1][0]).toBe('heading');
+    expect(res.flash.mock.calls[2][0]).toBe('message');
+
+    expect(res.flash.mock.calls[0][1]).toBe(`Success`);
+    expect(res.flash.mock.calls[1][1]).toBe(`Service amended: service name`);
+    expect(res.flash.mock.calls[2][1]).toBe(`Select the service from the list below to access its functions and features.`);
+
   });
 
   it('then it should send an email notification to user when service added', async () => {
