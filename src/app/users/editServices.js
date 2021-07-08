@@ -85,7 +85,7 @@ const post = async (req, res) => {
     selectedRoles = [req.body.role];
   }
 
-  if (haveRolesBeenUpdated(req, selectedRoles)) {
+  if (isUserManagement(req) && haveRolesNotBeenUpdated(req, selectedRoles)) {
     return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
   }
 
@@ -121,7 +121,7 @@ const saveRoleInSession = (req, selectedRoles) => {
   };
 };
 
-const haveRolesBeenUpdated = (req, selectedRoles) => {
+const haveRolesNotBeenUpdated = (req, selectedRoles) => {
   if (req.session.service && req.session.service.roles) {
     return _.isEqual(req.session.service.roles.map((item) => item.id).sort(), selectedRoles.sort());
   }
