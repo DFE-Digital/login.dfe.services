@@ -18,7 +18,8 @@ const renderSelectServiceWithOrganisationPage = (req, res, model) => {
 };
 
 const get = async (req, res) => {
-  const serviceOrganisations = await services.getUserServicesWithOrganisationOnlyApprover(req.user.sub);
+  // get visible service orgs for this user: checking isExternalService, hideApprover, user is approver at that org
+  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(req.user.sub);
   buildAdditionalOrgDetails(serviceOrganisations);
 
   const model = {
@@ -51,7 +52,7 @@ const validate = (req) => {
 
 const post = async (req, res) => {
   const model = validate(req);
-  const serviceOrganisations = await services.getUserServicesWithOrganisationOnlyApprover(req.user.sub);
+  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(req.user.sub);
   buildAdditionalOrgDetails(serviceOrganisations);
 
   // persist selected org in session
