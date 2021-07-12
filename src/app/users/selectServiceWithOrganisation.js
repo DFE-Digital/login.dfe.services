@@ -13,8 +13,23 @@ const buildAdditionalOrgDetails = (serviceOrganisations) => {
   });
 };
 
+const buildPageTitle = (req) => {
+  if (req.query.action === 'remove') {
+    return 'Remove which service?';
+  }
+  return 'Edit which service?';
+};
+
 const renderSelectServiceWithOrganisationPage = (req, res, model) => {
   res.render('users/views/selectServiceWithOrganisation', model);
+};
+
+const buildRedirectURL = (req, serviceOrgDetails) => {
+  let redirectURL = `/approvals/${serviceOrgDetails.Organisation.id}/users/${req.user.sub}/services/${serviceOrgDetails.Service.id}`;
+  if (req.query.action === 'remove') {
+    redirectURL += '/remove-service';
+  }
+  return redirectURL;
 };
 
 const get = async (req, res) => {
@@ -24,12 +39,13 @@ const get = async (req, res) => {
 
   const model = {
     csrfToken: req.csrfToken(),
-    title: 'Edit which service?',
+    title: buildPageTitle(req),
     serviceOrganisations,
     currentPage: 'services',
     selectedServiceOrganisation: req.session.user ? req.session.user.serviceOrganisation : null,
     validationMessages: {},
     backLink: '/my-services',
+    action: req.query.action,
   };
 
   renderSelectServiceWithOrganisationPage(req, res, model);
@@ -38,10 +54,12 @@ const get = async (req, res) => {
 const validate = (req) => {
   const selectedServiceOrganisation = req.body.selectedServiceOrganisation;
   const model = {
+    title: buildPageTitle(req),
     currentPage: 'services',
     selectedServiceOrganisation,
     validationMessages: {},
     backLink: '/my-services',
+    action: req.query.action,
   };
 
   if (model.selectedServiceOrganisation === undefined || model.selectedServiceOrganisation === null) {
@@ -70,9 +88,7 @@ const post = async (req, res) => {
     return serviceOrg.id === req.body.selectedServiceOrganisation;
   });
 
-  return res.redirect(
-    `/approvals/${serviceOrgDetails.Organisation.id}/users/${req.user.sub}/services/${serviceOrgDetails.Service.id}`,
-  );
+  return res.redirect(buildRedirectURL(req, serviceOrgDetails));
 };
 
 module.exports = {
