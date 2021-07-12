@@ -20,10 +20,10 @@ const renderEditServicePage = (req, res, model) => {
 const buildBackLink = (req) => {
   let backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/services`;
   if (!isUserManagement(req)) {
-    backRedirect = "/approvals/select-organisation-service";
+    backRedirect = '/approvals/select-organisation-service?action=edit';
   }
-  return backRedirect
-}
+  return backRedirect;
+};
 
 const getViewModel = async (req) => {
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
