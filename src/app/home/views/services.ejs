@@ -1,3 +1,4 @@
+<!-- Show blue banner with header text when it is not the Task List version of the page -->
 <% if (!enableTaskList || services.length !== 0) { %>
     <div id="home-top" class="home-top">
         <div class="govuk-width-container home-top__inner">
@@ -26,6 +27,56 @@
     <div class ="servicesv2">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
+
+                <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
+
+                    <!-- Banner messages after completing an action (add service, edit service...) -->
+                    <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
+                        <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                            <div class="govuk-notification-banner__header govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                                        <%= locals.flash.title %>
+                                    </h2>
+                                </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <span class="close-button pull-right" id="close">x</span>
+                                </div>
+                            </div>
+                            <div class="govuk-notification-banner__content" id="notification-content">
+                                <h3 class="govuk-notification-banner__heading">
+                                    <%= locals.flash.heading %>
+                                </h3>
+                                <p class="govuk-body">
+                                    <%= locals.flash.message %>
+                                </p>
+                            </div>
+                        </div>
+                    <% } %>
+                    <%- include reviewUsers.ejs %>
+                </div>
+
+                <!-- If user is an approver, and there are requests pending, show this banner -->
+                <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
+                    <div class="panel panel-border-narrow alert-default" tabindex="0">
+                        <% if (locals.approverRequests.length === 1) { %>
+                        <p class="govuk-body">There is <strong
+                                class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %>
+                                request</strong>
+                            you need to action - <a class="govuk-link-bold" href="/access-requests">view requests</a>
+                        </p>
+                        <% } else { %>
+                        <p class="govuk-body">There are <strong
+                                class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %>
+                                requests</strong> you need to action - <a class="govuk-link-bold"
+                                href="/access-requests">view
+                                requests</a>
+                        </p>
+                        <% } %>
+                    </div>
+                <% } %>
+
+                <!-- Show Task List version if it is enabled in config and user has no services -->
                 <% if (enableTaskList && services.length === 0) { %>
                     <div>
                         <h1 class="govuk-heading-xl">
@@ -157,61 +208,18 @@
                             </ol>
                         </div>
                     </div>
-                <% } else { %>
-                    <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-                        <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
-                            <div class="govuk-width-container" id="mainContainerDiv">
-                                <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-                                    <div class="govuk-notification-banner__header govuk-grid-row">
-                                        <div class="govuk-grid-column-two-thirds">
-                                            <h2 class="govuk-notification-banner__title" id="notification-title">
-                                                <%= locals.flash.title %>
-                                            </h2>
-                                        </div>
-                                        <div class="govuk-grid-column-one-third">
-                                            <span class="close-button pull-right" id="close">x</span>
-                                        </div>
-                                    </div>
-                                    <div class="govuk-notification-banner__content" id="notification-content">
-                                        <h3 class="govuk-notification-banner__heading">
-                                            <%= locals.flash.heading %>
-                                        </h3>
-                                        <p class="govuk-body">
-                                            <%= locals.flash.message %>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        <% } %>
-                        <%- include reviewUsers.ejs %>
-                        <% if (services.length === 0) { %>
+                    <!-- Show message if Task List version is disabled by config and user has no services -->
+                    <% } else if (services.length === 0)  { %>
+                        <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
                             <div class="empty-state">
                                 <p class="govuk-body">You have no services assigned, please contact your <a class="govuk-link-bold"
                                         href="organisations">approver</a>.</p>
                             </div>
-                        <% } %>
-                    </div>
-                <% } %>
-                <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
-                    <div class="panel panel-border-narrow alert-default" tabindex="0">
-                        <% if (locals.approverRequests.length === 1) { %>
-                        <p class="govuk-body">There is <strong
-                                class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %>
-                                request</strong>
-                            you need to action - <a class="govuk-link-bold" href="/access-requests">view requests</a>
-                        </p>
-                        <% } else { %>
-                        <p class="govuk-body">There are <strong
-                                class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %>
-                                requests</strong> you need to action - <a class="govuk-link-bold"
-                                href="/access-requests">view
-                                requests</a>
-                        </p>
-                        <% } %>
-                    </div>
+                        </div>
                 <% } %>
             </div>
             
+            <!-- Related actions -->
             <div class="govuk-grid-column-one-third pull-right">
                 <aside class="govuk-!-margin-top-9">
                     <h2 class="govuk-heading-m">Related actions</h2>
@@ -220,13 +228,15 @@
                             <li><a class="govuk-link-bold" href="<%=locals.addServicesRedirect%>">Add services to my account</a> </li>
                             <li><a class="govuk-link-bold" href="<%=locals.editServicesRedirect%>">Edit services on my account</a> </li>
                         <% } %>
-                        <li><a class="govuk-link-bold" href="<%=locals.urls.help%>/services">Help with services</a></li>
                         <li><a class="govuk-link-bold" href="organisations">See approvers at an organisation</a></li>
+                        <li><a class="govuk-link-bold" href="<%=locals.urls.help%>/services">Help with services</a></li>
                     </ul>
                 </aside>
             </div>
 
         </div>
+
+        <!-- Show services list if task list version is disabled or user is mapped to at least 1 service -->
         <div class="govuk-grid-row">
             <% if (!enableTaskList || services.length !== 0) { %>
                 <div class="govuk-grid-column-full-width">
