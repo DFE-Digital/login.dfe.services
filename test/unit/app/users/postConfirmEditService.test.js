@@ -14,7 +14,7 @@ jest.mock('./../../../../src/app/users/utils');
 jest.mock('login.dfe.notifications.client');
 const notificationClient = require('login.dfe.notifications.client');
 const logger = require('./../../../../src/infrastructure/logger');
-const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
+const { getSingleServiceForUser, isUserManagement } = require('./../../../../src/app/users/utils');
 const {
   updateUserService,
   updateInvitationService,
@@ -101,6 +101,9 @@ describe('when editing a service for a user', () => {
       },
     ]);
 
+    isUserManagement.mockReset();
+    isUserManagement.mockReturnValue(true);
+
     res = mockResponse();
     postConfirmEditService = require('./../../../../src/app/users/confirmEditService').post;
     sendServiceAddedStub = jest.fn();
@@ -157,21 +160,6 @@ describe('when editing a service for a user', () => {
     });
   });
 
-  it('then it should redirect to user details', async () => {
-    await postConfirmEditService(req, res);
-
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
-  });
-
-  it('then a flash message is shown to the user', async () => {
-    await postConfirmEditService(req, res);
-
-    expect(res.flash.mock.calls).toHaveLength(1);
-    expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`service name updated successfully`);
-  });
-
   it('then it should send an email notification to user when service added', async () => {
     await postConfirmEditService(req, res);
 
@@ -180,5 +168,48 @@ describe('when editing a service for a user', () => {
     expect(sendServiceAddedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
     expect(sendServiceAddedStub.mock.calls[0][1]).toBe(expectedFirstName);
     expect(sendServiceAddedStub.mock.calls[0][2]).toBe(expectedLastName);
+  });
+
+  describe('when we are under manage-users', () => {
+    it('then it should redirect to user details', async () => {
+      await postConfirmEditService(req, res);
+
+      expect(res.redirect.mock.calls).toHaveLength(1);
+      expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
+    });
+
+    it('then a flash message is shown to the user', async () => {
+      await postConfirmEditService(req, res);
+
+      expect(res.flash.mock.calls).toHaveLength(1);
+      expect(res.flash.mock.calls[0][0]).toBe('info');
+      expect(res.flash.mock.calls[0][1]).toBe(`service name updated successfully`);
+    });
+  });
+
+  describe('when we are under services (self-management for approver)', () => {
+    beforeEach(() => {
+      isUserManagement.mockReset();
+      isUserManagement.mockReturnValue(false);
+    });
+
+    it('then it should redirect to services dashboard', async () => {
+      await postConfirmEditService(req, res);
+
+      expect(res.redirect.mock.calls).toHaveLength(1);
+      expect(res.redirect.mock.calls[0][0]).toBe(`/my-services`);
+    });
+
+    it('then a flash message is shown to the user', async () => {
+      await postConfirmEditService(req, res);
+
+      expect(res.flash.mock.calls).toHaveLength(3);
+      expect(res.flash.mock.calls[0][0]).toBe('title');
+      expect(res.flash.mock.calls[0][1]).toBe(`Success`);
+      expect(res.flash.mock.calls[1][0]).toBe('heading');
+      expect(res.flash.mock.calls[1][1]).toBe(`Service amended: service name`);
+      expect(res.flash.mock.calls[2][0]).toBe('message');
+      expect(res.flash.mock.calls[2][1]).toBe('Select the service from the list below to access its functions and features.');
+    });
   });
 });

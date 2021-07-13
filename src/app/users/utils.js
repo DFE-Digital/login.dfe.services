@@ -88,11 +88,32 @@ const isSelfManagement = (req) => {
   return req.user.sub === req.session.user.uid;
 };
 
+const isUserManagement = (req) => {
+  return req.query.manage_users === 'true';
+};
+
 const getApproverOrgsFromReq = (req) => {
   if (req.userOrganisations) {
     return req.userOrganisations.filter((x) => x.role.id === 10000);
   }
   return [];
+};
+
+const getOrgNaturalIdentifiers = (org) => {
+  const naturalIdentifiers = [];
+  const urn = org.URN || org.urn;
+  const uid = org.UID || org.uid;
+  const ukprn = org.UKPRN || org.ukprn;
+  if (urn) {
+    naturalIdentifiers.push(`URN: ${urn}`);
+  }
+  if (uid) {
+    naturalIdentifiers.push(`UID: ${uid}`);
+  }
+  if (ukprn) {
+    naturalIdentifiers.push(`UKPRN: ${ukprn}`);
+  }
+  return naturalIdentifiers;
 };
 
 module.exports = {
@@ -101,5 +122,7 @@ module.exports = {
   getSingleServiceForUser,
   waitForIndexToUpdate,
   isSelfManagement,
+  isUserManagement,
   getApproverOrgsFromReq,
+  getOrgNaturalIdentifiers,
 };

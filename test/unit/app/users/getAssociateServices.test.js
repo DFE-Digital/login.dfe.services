@@ -178,8 +178,6 @@ describe('when displaying the associate service view', () => {
 
   let getAssociateServices;
 
-
-
   beforeEach(() => {
     req = mockRequest();
     req.params = {
@@ -312,10 +310,10 @@ describe('when displaying the associate service view', () => {
           isExternalService: true,
           isMigrated: true,
           name: 'Service One'
-        }
+        },
       ],
       selectedServices: [],
-      isInvite: undefined
+      isInvite: undefined,
     });
   });
 
@@ -337,25 +335,24 @@ describe('when displaying the associate service view', () => {
     });
     await getAssociateServices(req, res);
     expect(res.render.mock.calls[0][1]).toMatchObject({
-          csrfToken: 'token',
-          name: 'test name',
-          user: { email: 'test@test.com', firstName: 'test', lastName: 'name' },
-          validationMessages: {},
-          backLink: 'services',
-          currentPage: 'users',
-          organisationDetails: undefined,
-          services: [
-            {
-              id: 'service1',
-              isExternalService: true,
-              isMigrated: true,
-              name: 'Service One'
-            }
-          ],
-          selectedServices: [],
-          isInvite: undefined
-        }
-    );
+      csrfToken: 'token',
+      name: 'test name',
+      user: { email: 'test@test.com', firstName: 'test', lastName: 'name' },
+      validationMessages: {},
+      backLink: 'services',
+      currentPage: 'users',
+      organisationDetails: undefined,
+      services: [
+        {
+          id: 'service1',
+          isExternalService: true,
+          isMigrated: true,
+          name: 'Service One'
+        },
+      ],
+      selectedServices: [],
+      isInvite: undefined,
+    });
   });
 
   it('then it should display service if external service with params but hideApprover false', async () => {
@@ -390,14 +387,13 @@ describe('when displaying the associate service view', () => {
           id: 'service1',
           isExternalService: true,
           isMigrated: true,
-          name: 'Service One'
-        }
+          name: 'Service One',
+        },
       ],
       selectedServices: [],
-      isInvite: undefined
+      isInvite: undefined,
     });
   });
-
 
   it('then it should include the services', async () => {
     await getAssociateServices(req, res);
@@ -414,15 +410,14 @@ describe('when displaying the associate service view', () => {
           id: 'service1',
           isExternalService: true,
           isMigrated: true,
-          name: 'Service One'
-        }
+          name: 'Service One',
+        },
       ],
       selectedServices: [],
-      isInvite: undefined
+      isInvite: undefined,
     });
   });
   it('then it should exclude services that are not available based on policies', async () => {
-
     getAllServices.mockReturnValue({
       services: [
         {
@@ -468,11 +463,11 @@ describe('when displaying the associate service view', () => {
           id: 'service2',
           isExternalService: true,
           isMigrated: true,
-          name: 'Service two'
-        }
+          name: 'Service two',
+        },
       ],
       selectedServices: [],
-      isInvite: undefined
+      isInvite: undefined,
     });
   });
 });

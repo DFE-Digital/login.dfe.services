@@ -1,10 +1,43 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
+const { mockRequest, mockResponse, mockAdapterConfig } = require('./../../../utils/jestMocks');
+const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
+const { checkCacheForAllServices } = require('./../../../../src/infrastructure/helpers/allServicesAppCache');
 
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/app/users/utils');
 
-const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
+jest.mock('./../../../../src/infrastructure/helpers/allServicesAppCache', () => {
+  return {
+    checkCacheForAllServices: jest.fn(),
+  };
+});
+jest.mock('./../../../../src/infrastructure/config', () => {
+  return mockAdapterConfig();
+});
+jest.mock('login.dfe.dao', () => {
+  return {
+    services: {
+      list: async (pageNumber, pageSize) => {
+        return {
+          count: 10,
+          rows: [
+            {
+              id: 'service1',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service One',
+            },
+            {
+              id: 'service2',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service two',
+            },
+          ],
+        };
+      },
+    },
+  };
+});
 
 describe('when displaying the remove service access view', () => {
   let req;
@@ -81,7 +114,7 @@ describe('when displaying the remove service access view', () => {
     await getRemoveService(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/removeService');
+    expect(res.render.mock.calls[0][0]).toBe('users/views/removeServiceRedesigned');
   });
 
   it('then it should include csrf token', async () => {
