@@ -149,15 +149,17 @@ jest.mock('login.dfe.dao', () => {
       list: async (pageNumber, pageSize) => {
         return {
           count: 10,
-          rows:[{
-            "id": "service1",
-            "isExternalService": true,
-            "isMigrated": true,
-            "name": "Service One",
-          }],
+          rows: [
+            {
+              id: 'service1',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service One',
+            },
+          ],
         };
       },
-    }
+    },
   };
 });
 const policyEngine = {
@@ -258,25 +260,24 @@ describe('when adding services to a user', () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('users/views/associateServices');
     expect(res.render.mock.calls[0][1]).toEqual({
-          name: 'test name',
-          user: { email: 'test@test.com', firstName: 'test', lastName: 'name' },
-          backLink: 'services',
-          currentPage: 'users',
-          organisationDetails: undefined,
-          services: [
-            {
-              id: 'service1',
-              isExternalService: true,
-              isMigrated: true,
-              name: 'Service One'
-            }
-          ],
-          selectedServices: [],
-          isInvite: undefined,
-          validationMessages: { services: 'At least one service must be selected' },
-          csrfToken: 'token'
-        }
-    );
+      name: 'test name',
+      user: { email: 'test@test.com', firstName: 'test', lastName: 'name', services: [] },
+      backLink: 'services',
+      currentPage: 'users',
+      organisationDetails: undefined,
+      services: [
+        {
+          id: 'service1',
+          isExternalService: true,
+          isMigrated: true,
+          name: 'Service One',
+        },
+      ],
+      selectedServices: [],
+      isInvite: undefined,
+      validationMessages: { services: 'At least one service must be selected' },
+      csrfToken: 'token',
+    });
   });
 
   it('then it should render view if a selected service is no longer available', async () => {

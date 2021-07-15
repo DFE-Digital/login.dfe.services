@@ -1,5 +1,8 @@
+'use strict';
+const { getApproverOrgsFromReq } = require('../users/utils');
+
 const getNaturalIdentifiers = async (req) => {
-  req.userOrganisations = req.userOrganisations.filter((x) => x.role.id === 10000);
+  req.userOrganisations = getApproverOrgsFromReq(req);
   for (let i = 0; i < req.userOrganisations.length; i++) {
     const org = req.userOrganisations[i];
     if (org.organisation) {

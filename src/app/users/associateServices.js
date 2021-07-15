@@ -1,11 +1,39 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg } = require('./utils');
+const { getAllServicesForUserInOrg, isSelfManagement, getApproverOrgsFromReq } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
 const policyEngine = new PolicyEngine(config);
+
+const renderAssociateServicesPage = (req, res, model) => {
+  const isSelfManage = isSelfManagement(req);
+  res.render(
+    `users/views/${isSelfManage ? "associateServicesRedesigned" : "associateServices" }`,
+    { ...model, currentPage: isSelfManage? "services": "users" }
+  );
+};
+
+const buildBackLink = (req) => {
+  let backRedirect;
+  if (req.session.user.isInvite) {
+    req.params.uid
+      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
+      : (backRedirect = 'new-user');
+  } else if (isSelfManagement(req)) {
+    // we need to check if user is approver at only one org to then send back to main services page
+    const approverOrgs = getApproverOrgsFromReq(req);
+    if (approverOrgs.length === 1) {
+      backRedirect = '/my-services';
+    } else if (approverOrgs.length > 1) {
+      backRedirect = '/approvals/select-organisation?services=add';
+    }
+  } else {
+    backRedirect = 'services';
+  }
+  return backRedirect;
+};
 
 const getAllAvailableServices = async (req) => {
   const allServices = await checkCacheForAllServices(req.id);
@@ -47,20 +75,12 @@ const get = async (req, res) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
 
-  let backRedirect;
-  if (req.session.user.isInvite) {
-    req.params.uid
-      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
-      : (backRedirect = 'new-user');
-  } else {
-    backRedirect = 'services';
-  }
   const model = {
     csrfToken: req.csrfToken(),
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
     validationMessages: {},
-    backLink: backRedirect,
+    backLink: buildBackLink(req),
     currentPage: 'users',
     organisationDetails,
     services: externalServices,
@@ -68,20 +88,12 @@ const get = async (req, res) => {
     isInvite: req.session.user.isInvite,
   };
 
-  res.render('users/views/associateServices', model);
+  renderAssociateServicesPage(req, res, model);
 };
 
 const validate = async (req) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
-  let backRedirect;
-  if (req.session.user.isInvite) {
-    req.params.uid
-      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
-      : (backRedirect = 'new-user');
-  } else {
-    backRedirect = 'services';
-  }
 
   let selectedServices = [];
   if (req.body.service && req.body.service instanceof Array) {
@@ -92,7 +104,7 @@ const validate = async (req) => {
   const model = {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
-    backLink: backRedirect,
+    backLink: buildBackLink(req),
     currentPage: 'users',
     organisationDetails,
     services: externalServices,
@@ -101,7 +113,11 @@ const validate = async (req) => {
     validationMessages: {},
   };
   if (!req.session.user.isInvite && model.selectedServices.length < 1) {
-    model.validationMessages.services = 'At least one service must be selected';
+    if (isSelfManagement(req)) {
+      model.validationMessages.services = 'Please select a service';
+    } else {
+      model.validationMessages.services = 'At least one service must be selected';
+    }
   }
   if (
     model.selectedServices &&
@@ -119,11 +135,8 @@ const post = async (req, res) => {
   }
 
   const model = await validate(req);
-  if (Object.keys(model.validationMessages).length > 0) {
-    model.csrfToken = req.csrfToken();
-    return res.render('users/views/associateServices', model);
-  }
 
+  // persist current selection in session
   req.session.user.services = model.selectedServices.map((serviceId) => {
     const existingServiceSelections = req.session.user.services
       ? req.session.user.services.find((x) => x.serviceId === serviceId)
@@ -133,6 +146,11 @@ const post = async (req, res) => {
       roles: existingServiceSelections ? existingServiceSelections.roles : [],
     };
   });
+
+  if (Object.keys(model.validationMessages).length > 0) {
+    model.csrfToken = req.csrfToken();
+    return renderAssociateServicesPage(req, res, model);
+  }
 
   if (req.session.user.isInvite && model.selectedServices.length === 0) {
     return res.redirect(

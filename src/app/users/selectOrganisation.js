@@ -1,6 +1,8 @@
 'use strict';
+const { getApproverOrgsFromReq } = require('./utils');
+
 const getNaturalIdentifiers = async (req) => {
-  req.userOrganisations = req.userOrganisations.filter((x) => x.role.id === 10000);
+  req.userOrganisations = getApproverOrgsFromReq(req);
   for (let i = 0; i < req.userOrganisations.length; i++) {
     const org = req.userOrganisations[i];
     if (org.organisation) {
@@ -21,16 +23,30 @@ const getNaturalIdentifiers = async (req) => {
   }
 };
 
+const renderSelectOrganisationPage = (req, res, model) => {
+  const isManage = req.query.manage_users === 'true';
+  const isEdit = req.query.services === 'edit';
+  res.render(
+    `users/views/${isManage || isEdit ? "selectOrganisation": "selectOrganisationRedesigned"}`, 
+    { ...model, currentPage: isManage || isEdit ? "users": "services" }
+  );
+};
+
+
 const get = async (req, res) => {
   await getNaturalIdentifiers(req);
-  return res.render('users/views/selectOrganisation', {
+
+  const model = {
     csrfToken: req.csrfToken(),
     title: 'Select Organisation',
     organisations: req.userOrganisations,
     currentPage: 'users',
-    selectedOrganisation: null,
+    selectedOrganisation: req.session.user ? req.session.user.organisation : null,
     validationMessages: {},
-  });
+    backLink: '/my-services',
+  };
+
+  renderSelectOrganisationPage(req, res, model);
 };
 
 const validate = (req) => {
@@ -40,10 +56,11 @@ const validate = (req) => {
     currentPage: 'users',
     selectedOrganisation: selectedOrg,
     validationMessages: {},
+    backLink: '/my-services',
   };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
-    model.validationMessages.selectedOrganisation = 'Please select an organisation';
+    model.validationMessages.selectedOrganisation = 'Select an organisation to continue.';
   }
   return model;
 };
@@ -52,9 +69,14 @@ const post = async (req, res) => {
   await getNaturalIdentifiers(req);
   const model = validate(req);
 
+  // persist selected org in session
+  if (req.session.user) {
+    req.session.user.organisation = model.selectedOrganisation;
+  }
+
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return res.render('users/views/selectOrganisation', model);
+    return renderSelectOrganisationPage(req, res, model);
   }
 
   if (req.query.services === 'add') {
