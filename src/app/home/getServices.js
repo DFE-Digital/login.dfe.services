@@ -160,15 +160,19 @@ const getServices = async (req, res) => {
   let addServicesRedirect;
   let editServicesRedirect;
   let removeServicesRedirect;
+  let requestServicesRedirect;
+  let isRequestServiceAllowed;
+
   const approverOrgs = getApproverOrgsFromReq(req);
+  req.session.user = {
+    uid: req.user.sub,
+    firstName: req.user.given_name,
+    lastName: req.user.family_name,
+    email: req.user.email,
+    services: [],
+  };
+
   if (approverOrgs && approverOrgs.length > 0) {
-    req.session.user = {
-      uid: req.user.sub,
-      firstName: req.user.given_name,
-      lastName: req.user.family_name,
-      email: req.user.email,
-      services: [],
-    };
     if (approverOrgs.length === 1) {
       addServicesRedirect = `approvals/${approverOrgs[0].organisation.id}/users/${req.user.sub}/associate-services`;
     } else {
@@ -177,6 +181,21 @@ const getServices = async (req, res) => {
     editServicesRedirect = '/approvals/select-organisation-service?action=edit';
     removeServicesRedirect = '/approvals/select-organisation-service?action=remove';
   }
+  else {
+    if(taskListStatusAndApprovers &&
+      taskListStatusAndApprovers.taskListStatus &&
+      taskListStatusAndApprovers.taskListStatus.multiOrgDetails &&
+      taskListStatusAndApprovers.taskListStatus.multiOrgDetails.orgs > 1) {
+        requestServicesRedirect = '/approvals/select-organisation?services=request'
+    }
+    else if(taskListStatusAndApprovers && 
+      taskListStatusAndApprovers.taskListStatus &&
+      taskListStatusAndApprovers.taskListStatus.multiOrgDetails && 
+      taskListStatusAndApprovers.taskListStatus.multiOrgDetails.orgs === 1) {
+        requestServicesRedirect = '/approvals/select-organisation-service?action=request'
+    }
+  }
+  isRequestServiceAllowed = !!requestServicesRedirect
 
   return res.render('home/views/services', {
     title: 'Access DfE services',
@@ -190,6 +209,8 @@ const getServices = async (req, res) => {
     addServicesRedirect,
     editServicesRedirect,
     removeServicesRedirect,
+    requestServicesRedirect,
+    isRequestServiceAllowed,
   });
 };
 
