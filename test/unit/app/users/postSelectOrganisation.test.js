@@ -65,6 +65,7 @@ describe('when selecting an organisation', () => {
       selectedOrganisation: undefined,
       organisations: req.userOrganisations,
       currentPage: 'services',
+      isApprover: false,
       validationMessages: {
         selectedOrganisation: 'Select an organisation to continue.',
       },
