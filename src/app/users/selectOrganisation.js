@@ -1,5 +1,5 @@
 'use strict';
-const { getApproverOrgsFromReq, isUserManagement, getOrgNaturalIdentifiers } = require('./utils');
+const { getApproverOrgsFromReq, getUserOrgsFromReq, isUserManagement, isUserApprover, getOrgNaturalIdentifiers } = require('./utils');
 
 const buildAdditionalOrgDetails = (userOrgs) => {
   userOrgs.forEach((userOrg) => {
@@ -19,7 +19,9 @@ const renderSelectOrganisationPage = (req, res, model) => {
 
 
 const get = async (req, res) => {
-  req.userOrganisations = getApproverOrgsFromReq(req);
+  const isApprover = isUserApprover(req)
+  req.userOrganisations = isApprover ? getApproverOrgsFromReq(req) : getUserOrgsFromReq(req);
+
   buildAdditionalOrgDetails(req.userOrganisations);
 
   const model = {
@@ -30,6 +32,7 @@ const get = async (req, res) => {
     selectedOrganisation: req.session.user ? req.session.user.organisation : null,
     validationMessages: {},
     backLink: '/my-services',
+    isApprover
   };
 
   renderSelectOrganisationPage(req, res, model);
@@ -43,6 +46,7 @@ const validate = (req) => {
     selectedOrganisation: selectedOrg,
     validationMessages: {},
     backLink: '/my-services',
+    isApprover: isUserApprover(req),
   };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
@@ -52,7 +56,9 @@ const validate = (req) => {
 };
 
 const post = async (req, res) => {
-  req.userOrganisations = getApproverOrgsFromReq(req);
+  const isApprover = isUserApprover(req)
+  req.userOrganisations = isApprover ? getApproverOrgsFromReq(req) : getUserOrgsFromReq(req);
+
   buildAdditionalOrgDetails(req.userOrganisations);
   const model = validate(req);
 
@@ -66,7 +72,7 @@ const post = async (req, res) => {
     return renderSelectOrganisationPage(req, res, model);
   }
 
-  if (req.query.services === 'add') {
+  if (req.query.services === 'add' || req.query.services === 'request') {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
   } else if (req.query.services === 'edit') {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`);
