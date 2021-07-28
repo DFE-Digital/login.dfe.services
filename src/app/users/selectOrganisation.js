@@ -72,10 +72,12 @@ const post = async (req, res) => {
     return renderSelectOrganisationPage(req, res, model);
   }
 
-  if (req.query.services === 'add' || req.query.services === 'request') {
+  if (req.query.services === 'add') {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
   } else if (req.query.services === 'edit') {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`);
+  } else if (req.query.services === 'request') {
+    return res.redirect(`/request-service/${model.selectedOrganisation}/users/${req.user.sub}`);
   } else {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users`);
   }

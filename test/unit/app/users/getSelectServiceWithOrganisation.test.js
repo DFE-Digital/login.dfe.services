@@ -9,6 +9,7 @@ jest.mock('login.dfe.dao', () => {
     },
     services: {
       getUserServicesWithOrganisationOnlyApprover: () => [],
+      getFilteredUserServicesWithOrganisation: () => []
     },
   };
 });

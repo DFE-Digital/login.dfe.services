@@ -1,0 +1,40 @@
+<div class="govuk-width-container">
+  <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+          <h1 class="govuk-heading-xl">
+              Reason for rejection
+          </h1>
+          <form method="post" id="form-deactivate" class="prevent-form-double-submission">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+
+              <fieldset class="govuk-fieldset">
+
+                  <legend class="govuk-fieldset__legend">
+                      <p class="govuk-body">Please give a reason for this rejection. This will be recorded for audit purposes and shared with the requester.</p>
+                  </legend>
+
+                  <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>">
+                      <label class="govuk-label govuk-label--s" for="reason">Reason for rejection (optional) </label>
+                      <% if (locals.validationMessages.reason !== undefined) { %>
+                          <span id="validation-reason" class="govuk-error-message">
+                              <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.reason %>
+                          </span>
+                      <% } %>
+                      <textarea class="govuk-textarea govuk-!-width-full" rows="6" id="reason" name="reason"
+                      <% if (locals.validationMessages.reason !== undefined) { %>
+                                  aria-invalid="true" aria-describedby="validation-reason"
+                              <% } %>
+                                  value="<%= locals.reason %>"></textarea>
+                  </div>
+
+              </fieldset>
+
+              <div class="govuk-button-group">
+                  <button type="submit" class="govuk-button">Confirm</button>
+                  <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+              </div>
+          
+          </form>
+      </div>
+  </div>
+</div>

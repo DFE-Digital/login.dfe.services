@@ -24,15 +24,12 @@ const isApprover = (req, res, next) => {
   return res.status(401).render('errors/views/notAuthorised');
 };
 
-/*const setApproverContext = async (req, res, next) => {
-  res.locals.isApprover = false;
-  if (req.user) {
-    const user = req.user;
-    const services = await getServicesForUser(user.sub);
-    res.locals.isApprover = services.some(s => s.role.id >= APPROVER && s.status > 0);
+const isSelfRequest = (req, res, next) => {
+  if (req.user && req.user.sub === req.params.uid) {
+    return next();
   }
-  next();
-};*/
+  return res.status(401).render('errors/views/notAuthorised');
+};
 
 const getUserEmail = (user) => user.email || '';
 
@@ -91,4 +88,5 @@ module.exports = {
   setConfigContext,
   isApprover,
   mapUserStatus,
+  isSelfRequest,
 };
