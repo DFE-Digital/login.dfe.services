@@ -100,7 +100,6 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
     hasRequestPending: false,
     hasRequestRejected: false,
     approverForOrg: null,
-    organisations: null,
     multiOrgDetails: { orgs: 0, approvers: 0 },
   };
   let approvers = [];
@@ -112,7 +111,6 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
     taskListStatus.hasOrgAssigned = true;
     if (organisations) {
       taskListStatus.multiOrgDetails.orgs = organisations.length;
-      taskListStatus.organisations = organisations;
     }
     organisations.forEach((organisation) => {
       if (organisation.services && organisation.services.length > 0) {
@@ -184,20 +182,19 @@ const getServices = async (req, res) => {
     removeServicesRedirect = '/approvals/select-organisation-service?action=remove';
   }
   else {
-    if(taskListStatusAndApprovers &&
-      taskListStatusAndApprovers.taskListStatus &&
-      taskListStatusAndApprovers.taskListStatus.multiOrgDetails &&
-      taskListStatusAndApprovers.taskListStatus.multiOrgDetails.orgs > 1) {
+    const organisations = await getOrganisationAndServiceForUser(account.id, req.id)
+    const isEndUser = !!(organisations.filter((x) => x.role.id === 10000))
+    const orgLength = organisations.length
+
+    if(isEndUser && orgLength > 0) {
+      if(orgLength === 1) {
+        requestServicesRedirect = `/request-service/${organisations[0].organisation.id}/users/${req.user.sub}?services=request`
+      } else {
         requestServicesRedirect = '/approvals/select-organisation?services=request'
-    }
-    else if(taskListStatusAndApprovers && 
-      taskListStatusAndApprovers.taskListStatus &&
-      taskListStatusAndApprovers.taskListStatus.multiOrgDetails && 
-      taskListStatusAndApprovers.taskListStatus.multiOrgDetails.orgs === 1) {
-        const selectedOrganisation = taskListStatusAndApprovers.taskListStatus.organisations[0].organisation.id
-        requestServicesRedirect = `/request-service/${selectedOrganisation}/users/${req.user.sub}?services=request`
-    }
+      }
+    }    
   }
+
   isRequestServiceAllowed = !!requestServicesRedirect
 
   return res.render('home/views/services', {
