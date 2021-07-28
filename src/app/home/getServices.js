@@ -100,6 +100,7 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
     hasRequestPending: false,
     hasRequestRejected: false,
     approverForOrg: null,
+    organisations: null,
     multiOrgDetails: { orgs: 0, approvers: 0 },
   };
   let approvers = [];
@@ -111,6 +112,7 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
     taskListStatus.hasOrgAssigned = true;
     if (organisations) {
       taskListStatus.multiOrgDetails.orgs = organisations.length;
+      taskListStatus.organisations = organisations;
     }
     organisations.forEach((organisation) => {
       if (organisation.services && organisation.services.length > 0) {
@@ -192,7 +194,8 @@ const getServices = async (req, res) => {
       taskListStatusAndApprovers.taskListStatus &&
       taskListStatusAndApprovers.taskListStatus.multiOrgDetails && 
       taskListStatusAndApprovers.taskListStatus.multiOrgDetails.orgs === 1) {
-        requestServicesRedirect = '/approvals/select-organisation-service?action=request'
+        const selectedOrganisation = taskListStatusAndApprovers.taskListStatus.organisations[0].organisation.id
+        requestServicesRedirect = `/request-service/${selectedOrganisation}/users/${req.user.sub}?services=request`
     }
   }
   isRequestServiceAllowed = !!requestServicesRedirect

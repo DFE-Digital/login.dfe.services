@@ -8,6 +8,7 @@ const {
   getSingleInvitationService,
 } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
+
 const sortBy = require('lodash/sortBy');
 
 const getUserDetails = async (req) => {
