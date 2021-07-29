@@ -13,8 +13,11 @@ const renderAssociateServicesPage = (_req, res, model) => {
 
 const buildBackLink = (req) => {
   let backRedirect = '/approvals/select-organisation?services=request';
-  if (req.query.services === 'request') {
-    backRedirect = '/my-services';
+  if(req.session.user) {
+    const orgCount = req.session.user.orgCount
+    if(orgCount === 1) {
+      backRedirect = '/my-services';
+    }
   }
   return backRedirect;
 };
