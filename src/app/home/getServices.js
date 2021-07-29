@@ -170,6 +170,7 @@ const getServices = async (req, res) => {
     lastName: req.user.family_name,
     email: req.user.email,
     services: [],
+    orgCount: 0
   };
 
   if (approverOrgs && approverOrgs.length > 0) {
@@ -187,8 +188,16 @@ const getServices = async (req, res) => {
     const orgLength = organisations.length
 
     if(isEndUser && orgLength > 0) {
+      if (req.session.user) {
+        req.session.user.orgCount = orgLength
+      }
+      
       if(orgLength === 1) {
-        requestServicesRedirect = `/request-service/${organisations[0].organisation.id}/users/${req.user.sub}?services=request`
+        const selectedOrganisation = organisations[0].organisation.id
+        if (req.session.user) {
+          req.session.user.organisation = selectedOrganisation
+        }
+        requestServicesRedirect = `/request-service/${selectedOrganisation}/users/${req.user.sub}`
       } else {
         requestServicesRedirect = '/approvals/select-organisation?services=request'
       }
