@@ -100,7 +100,7 @@ const validate = async (req) => {
     validationMessages: {},
   };
   if (model.selectedServices.length < 1) {
-    model.validationMessages.services = 'Please select a service';
+    model.validationMessages.services = 'Select a service to continue';
   }
   if (
     model.selectedServices &&

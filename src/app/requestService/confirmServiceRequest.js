@@ -1,26 +1,14 @@
 'use strict';
-const { isServiceEmailNotificationAllowed } = require('../../infrastructure/applications');
-const { listRolesOfService, addInvitationService, addUserService } = require('../../infrastructure/access');
-const {
-  putUserInOrganisation,
-  putInvitationInOrganisation,
-  getOrganisationById,
-  getPendingRequestsAssociatedWithUser,
-  updateRequestById,
-} = require('../../infrastructure/organisations');
-const { getById, updateIndex, createIndex } = require('../../infrastructure/search');
-const { waitForIndexToUpdate, isSelfManagement } = require('../users/utils');
-const Account = require('../../infrastructure/account');
+const { listRolesOfService } = require('../../infrastructure/access');
 const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
+
 const NotificationClient = require('login.dfe.notifications.client');
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,
 });
 
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
-
-const { getApproversDetails } = require('../../infrastructure/helpers/common');
 
 const renderConfirmNewUserPage = (req, res, model) => {
   res.render('requestService/views/confirmServiceRequest', model);
@@ -91,16 +79,40 @@ const post = async (req, res) => {
   const rolesIds = roles.map(i => i.id) || []
   const roleNames = roles.map(i => i.name)
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId)
-  const selectedOrg = req.userOrganisations.find((x) => x.organisation.id === req.session.user.organisation)
-  const allApprovers =  await getApproversDetails([selectedOrg])
   const senderName = req.session.user.firstName + req.session.user.lastName
   const senderEmail = req.session.user.email
 
+  const baseUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`;
+  const approveUrl = `${baseUrl}/request-service/${organisationDetails.organisation.id}/users/${req.session.user.uid}/services/${serviceDetails.id}/roles/${encodeURIComponent(JSON.stringify(rolesIds))}/approve`
+  const rejectUrl = `${baseUrl}/request-service/${organisationDetails.organisation.id}/users/${req.session.user.uid}/services/${serviceDetails.id}/roles/${encodeURIComponent(JSON.stringify(rolesIds))}/reject`
+
+  const helpUrl = `${baseUrl}/approvers`;
+
+  await notificationClient.sendServiceRequestToApprovers(
+    senderName,
+    senderEmail,
+    organisationDetails.organisation.id,
+    organisationDetails.organisation.name,
+    serviceDetails.name,
+    roleNames,
+    rejectUrl,
+    approveUrl,
+    helpUrl
+  )
+
+  logger.audit({
+    type: 'services',
+    subType: 'access-request',
+    userId: req.session.user.uid,
+    userEmail: senderEmail,
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
+    message: `${senderEmail} (userId: ${req.session.user.uid}) requested service (serviceId: ${serviceDetails.id}) and roles (roleIds: ${JSON.stringify(rolesIds)}) for organisation (orgId: ${organisationDetails.organisation.id})`,
+  });
+
   res.flash('title', `Success`);
   res.flash('heading', `Service requested: ${serviceDetails.name}`);
-  res.flash('message', `Your request has been sent to all approvers at `);
-  res.flash('message1', `${organisationDetails.organisation.name}`);
-  res.flash('message2', `. Requests should be approved or rejected within 5 days of being raised.`);
+  res.flash('message', `Your request has been sent to all approvers at <b>${organisationDetails.organisation.name}</b>. Requests should be approved or rejected within 5 days of being raised.`);
 
   res.redirect(`/my-services`);
 };
