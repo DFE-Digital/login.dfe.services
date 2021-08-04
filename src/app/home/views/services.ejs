@@ -48,13 +48,7 @@
                                     <%= locals.flash.heading %>
                                 </h3>
                                 <p class="govuk-body">
-                                    <%= locals.flash.message %>
-                                    <% if (locals.flash.message1) { %>
-                                        <b><%= locals.flash.message1 %></b>
-                                    <% } %>
-                                    <% if (locals.flash.message2) { %>
-                                        <%= locals.flash.message2 %>
-                                    <% } %>  
+                                    <%- locals.flash.message %>
                                 </p>
                             </div>
                         </div>
