@@ -65,6 +65,7 @@ const post = async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/my-services');
   }
+
   if (!req.userOrganisations) {
     logger.warn('No req.userOrganisations on post of confirmNewUser');
     return res.redirect('/my-services');
@@ -75,14 +76,16 @@ const post = async (req, res) => {
   const allRolesOfService = await listRolesOfService(serviceDetails.id, req.id);
   const roles = allRolesOfService.filter((x) =>
       req.session.user.services[0].roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
-  );
+  )
+
   const rolesIds = roles.map(i => i.id) || []
   const roleNames = roles.map(i => i.name)
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId)
-  const senderName = req.session.user.firstName + req.session.user.lastName
+  const senderName = `${req.session.user.firstName} ${req.session.user.lastName}`
   const senderEmail = req.session.user.email
 
   const baseUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`;
+  
   const approveUrl = `${baseUrl}/request-service/${organisationDetails.organisation.id}/users/${req.session.user.uid}/services/${serviceDetails.id}/roles/${encodeURIComponent(JSON.stringify(rolesIds))}/approve`
   const rejectUrl = `${baseUrl}/request-service/${organisationDetails.organisation.id}/users/${req.session.user.uid}/services/${serviceDetails.id}/roles/${encodeURIComponent(JSON.stringify(rolesIds))}/reject`
 

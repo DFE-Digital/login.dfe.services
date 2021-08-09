@@ -28,8 +28,8 @@ const requestService = (csrf) => {
   router.get('/:orgId/users/:uid/services/:sid/roles/:rids/approve', csrf, isApprover, asyncWrapper(getApproveServiceRequest));
   router.get('/:orgId/users/:uid/services/:sid/roles/:rids/reject', csrf, isApprover, asyncWrapper(getRejectServiceRequest));
   
-  router.post('/:orgId/users/:uid/services/:sid/approve', csrf, isApprover, asyncWrapper(postApproveServiceRquest));
-  router.post('/:orgId/users/:uid/services/:sid/reject', csrf, isApprover, asyncWrapper(postRejectServiceRquest));
+  router.post('/:orgId/users/:uid/services/:sid/roles/:rids/approve', csrf, isApprover, asyncWrapper(postApproveServiceRquest));
+  router.post('/:orgId/users/:uid/services/:sid/roles/:rids/reject', csrf, isApprover, asyncWrapper(postRejectServiceRquest));
   return router;
 };
 module.exports = requestService;

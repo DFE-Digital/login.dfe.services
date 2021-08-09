@@ -48,6 +48,16 @@ const routes = (app, csrf) => {
           return next(loginErr);
         }
         if (redirectUrl.endsWith('signout/complete')) redirectUrl = '/';
+        if(!req.session.user) {
+          req.session.user = {
+            uid: user.sub,
+            firstName: user.given_name,
+            lastName: user.family_name,
+            email: user.email,
+            services: [],
+            orgCount: 0
+          };
+        }
         return res.redirect(redirectUrl);
       });
     })(req, res, next);

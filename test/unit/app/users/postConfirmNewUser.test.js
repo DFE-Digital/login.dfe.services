@@ -31,6 +31,7 @@ jest.mock('login.dfe.dao', () => {
 
 jest.mock('./../../../../src/infrastructure/access', () => {
   return {
+    listRolesOfService: jest.fn(),
     addInvitationService: jest.fn(),
     addUserService: jest.fn(),
   };
@@ -61,7 +62,7 @@ jest.mock('./../../../../src/app/users/utils');
 
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 
-const { addInvitationService, addUserService } = require('./../../../../src/infrastructure/access');
+const { listRolesOfService, addInvitationService, addUserService } = require('./../../../../src/infrastructure/access');
 const {
   putUserInOrganisation,
   putInvitationInOrganisation,
@@ -199,12 +200,25 @@ describe('when inviting a new user', () => {
       ],
       services: [],
     });
+
+    listRolesOfService.mockReset();
+    listRolesOfService.mockReturnValue([{
+      code: 'role_code',
+      id: 'role_id',
+      name: 'role_name',
+      status: {
+        id: 'status_id'
+      },
+    }]);
     postConfirmNewUser = require('./../../../../src/app/users/confirmNewUser').post;
     sendUserAddedToOrganisationStub = jest.fn();
     sendServiceAddedStub = jest.fn();
+    sendServiceRequestApprovedStub = jest.fn();
+
     notificationClient.mockReset().mockImplementation(() => ({
       sendUserAddedToOrganisation: sendUserAddedToOrganisationStub,
       sendServiceAdded: sendServiceAddedStub,
+      sendServiceRequestApproved: sendServiceRequestApprovedStub,
     }));
   });
 
@@ -424,10 +438,10 @@ describe('when inviting a new user', () => {
 
     await postConfirmNewUser(req, res);
 
-    expect(sendServiceAddedStub.mock.calls).toHaveLength(1);
+    expect(sendServiceRequestApprovedStub.mock.calls).toHaveLength(1);
 
-    expect(sendServiceAddedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
-    expect(sendServiceAddedStub.mock.calls[0][1]).toBe(expectedFirstName);
-    expect(sendServiceAddedStub.mock.calls[0][2]).toBe(expectedLastName);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][1]).toBe(expectedFirstName);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][2]).toBe(expectedLastName);
   });
 });
