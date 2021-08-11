@@ -1,40 +1,78 @@
 <div class="govuk-width-container">
-  <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-          <h1 class="govuk-heading-xl">
-              Reason for rejection
-          </h1>
-          <form method="post" id="form-deactivate" class="prevent-form-double-submission">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+    <div class="govuk-grid-row govuk-!-margin-top-5">
+        <div class="govuk-grid-column-three-quarters">
+            <h1 class="govuk-heading-m govuk-!-margin-top-5">
+                Reject service request
+            </h1>
 
-              <fieldset class="govuk-fieldset">
+            <p class="govuk-body">Review these details before rejecting.</p>
 
-                  <legend class="govuk-fieldset__legend">
-                      <p class="govuk-body">Please give a reason for this rejection. This will be recorded for audit purposes and shared with the requester.</p>
-                  </legend>
+            <h2 class="govuk-heading-m">
+                Request details
+            </h2>
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.endUserName %>
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Email address
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.endUserEmail %>
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Organisation
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.organisationDetails.organisation.name %>
+                    </dd>
+                </div>
 
-                  <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>">
-                      <label class="govuk-label govuk-label--s" for="reason">Reason for rejection (optional) </label>
-                      <% if (locals.validationMessages.reason !== undefined) { %>
-                          <span id="validation-reason" class="govuk-error-message">
-                              <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.reason %>
-                          </span>
-                      <% } %>
-                      <textarea class="govuk-textarea govuk-!-width-full" rows="6" id="reason" name="reason"
-                      <% if (locals.validationMessages.reason !== undefined) { %>
-                                  aria-invalid="true" aria-describedby="validation-reason"
-                              <% } %>
-                                  value="<%= locals.reason %>"></textarea>
-                  </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service requested
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.service.name %>
+                    </dd>
+                </div>
 
-              </fieldset>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Sub-service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <% if (locals.service.roles.length > 0) { %>
+                            <% for (let x = 0; x < locals.service.roles.length; x++) { %>
+                                <% const role = locals.service.roles[x]; %>
+                                <%= role.name %> <br>
+                            <% } %>
+                        <% } else { %>
+                            No roles selected
+                        <% } %>
+                    </dd>
+                </div>
+            </dl>
 
-              <div class="govuk-button-group">
-                  <button type="submit" class="govuk-button">Confirm</button>
-                  <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
-              </div>
-          
-          </form>
-      </div>
-  </div>
-</div>
+            <form method="post" id="form-deactivate" class="prevent-form-double-submission">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+                    Reason for rejection (optional)
+                </h2>
+                <p class="govuk-caption-l govuk-!-margin-top-0">Reason will be shared with requestee via email</p>
+                <textarea class="govuk-textarea govuk-!-width-full" rows="6" id="reason" name="reason"></textarea>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Reject request</button>
+                    <a href="/my-services" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
