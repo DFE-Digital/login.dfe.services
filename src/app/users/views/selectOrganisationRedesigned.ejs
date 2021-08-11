@@ -1,0 +1,92 @@
+<div class="govuk-width-container govuk-!-margin-top-3">
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <h1 class="govuk-heading-m govuk-!-margin-top-3">
+                Add service for which organisation?
+            </h1>
+
+            <form method="post" class="prevent-form-double-submission">
+
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+
+                <div class="govuk-form-group <%= (locals.validationMessages.selectedOrganisation !== undefined) ? 'govuk-form-group--error' : '' %>">
+
+                    <fieldset class="govuk-fieldset" id="selectedOrganisation">
+
+                        <% if (locals.validationMessages.selectedOrganisation !== undefined) { %>
+                        <span id="validation-selected-organisation" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>
+                            <%=locals.validationMessages.selectedOrganisation %>
+                        </span>
+                        <% } %>
+
+                        <legend class="govuk-visually-hidden">Select the organisation</legend>
+
+                        <table class="govuk-table govuk-!-margin-top-3">
+                            <thead class="govuk-table__head">
+                                <tr class="govuk-table__row extra-padding govuk-grid-row">
+                                    <th scope="col" class="govuk-table__header width-10">Select</th>
+                                    <th scope="col" class="govuk-table__header width-40">Organisation</th>
+                                    <th scope="col" class="govuk-table__header width-20">Status</th>
+                                    <th scope="col" class="govuk-table__header width-30">Reference</th>
+                                </tr>
+                            </thead>
+                            <tbody class="govuk-table__body">
+                                <% 
+                                    for(let i= 0; i < locals.organisations.length; i++) {
+                                        const org = locals.organisations[i];
+                                %>
+                                <tr class="govuk-table__row extra-padding">
+                                    <td class="govuk-table__cell">
+                                        <div class="govuk-radios">
+                                            <div class="govuk-radios__item">
+                                                <input class="govuk-radios__input <%= locals.organisations.length > 2 ? 'auto-scroll-on-change' : '' %>"
+                                                    id="<%= org.organisation.id %>" name="selectedOrganisation" type="radio" value="<%= org.organisation.id %>"
+                                                    <%= org.organisation.id === selectedOrganisation ? 'checked': ''%>
+                                                    >
+                                                <label class="govuk-label govuk-radios__label cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="govuk-table__cell">
+                                        <label
+                                            class="govuk-label govuk-radios__label govuk-!-font-weight-bold govuk-!-padding-left-0"
+                                            for="<%= org.organisation.id %>">
+                                            <span class="govuk-label govuk-label--s">
+                                                <%= org.organisation.name %>
+                                            </span>
+                                        </label>
+                                    </td>
+                                    <td class="govuk-table__cell">
+                                        <label class="cursor-pointer" for="<%= org.organisation.id %>">
+                                            <%=org.organisation.status ? `${org.organisation.status.name}` : '' %>
+                                        </label>
+                                     </td>
+                                    <td class="govuk-table__cell">
+                                        <label class="cursor-pointer" for="<%= org.organisation.id %>">
+                                            <% if (org.naturalIdentifiers) { %>
+                                                <% for(let i= 0; i < org.naturalIdentifiers.length; i++)  { %>
+                                                    <div> <%= org.naturalIdentifiers[i]  %></div>
+                                                <% } %>
+                                            <% } %>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </fieldset>
+
+                </div>
+
+                <div class="govuk-button-group auto-scroll-dest">
+                    <button type="submit" class="govuk-button">Continue</button>
+                    <a href="/my-services" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>

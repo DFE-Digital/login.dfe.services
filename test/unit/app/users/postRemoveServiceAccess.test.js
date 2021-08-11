@@ -1,11 +1,45 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
+const { mockRequest, mockResponse, mockAdapterConfig } = require('./../../../utils/jestMocks');
+const { checkCacheForAllServices } = require('./../../../../src/infrastructure/helpers/allServicesAppCache');
 
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/infrastructure/access', () => {
   return {
     removeServiceFromUser: jest.fn(),
     removeServiceFromInvitation: jest.fn(),
+  };
+});
+
+jest.mock('./../../../../src/infrastructure/helpers/allServicesAppCache', () => {
+  return {
+    checkCacheForAllServices: jest.fn(),
+  };
+});
+jest.mock('./../../../../src/infrastructure/config', () => {
+  return mockAdapterConfig();
+});
+jest.mock('login.dfe.dao', () => {
+  return {
+    services: {
+      list: async (pageNumber, pageSize) => {
+        return {
+          count: 10,
+          rows: [
+            {
+              id: 'service1',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service One',
+            },
+            {
+              id: 'service2',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service two',
+            },
+          ],
+        };
+      },
+    },
   };
 });
 
@@ -19,7 +53,7 @@ jest.mock('./../../../../src/infrastructure/search', () => {
 
 jest.mock('login.dfe.notifications.client');
 const logger = require('./../../../../src/infrastructure/logger');
-const { getUserDetails, getSingleServiceForUser } = require('./../../../../src/app/users/utils');
+const { getUserDetails, getSingleServiceForUser, isUserManagement } = require('./../../../../src/app/users/utils');
 const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../../../src/infrastructure/access');
 const { getById } = require('./../../../../src/infrastructure/search');
 
@@ -103,6 +137,19 @@ describe('when removing service access', () => {
       services: [],
     });
 
+    checkCacheForAllServices.mockReset();
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: 'service1',
+          name: 'service name',
+        },
+      ],
+    });
+
+    isUserManagement.mockReset();
+    isUserManagement.mockReturnValue(true);
+
     res = mockResponse();
     postRemoveServiceAccess = require('./../../../../src/app/users/removeServiceAccess').post;
   });
@@ -154,18 +201,46 @@ describe('when removing service access', () => {
     });
   });
 
-  it('then it should redirect to user details', async () => {
-    await postRemoveServiceAccess(req, res);
+  describe('when we are under manage-users', () => {
+    it('then it should redirect to user details', async () => {
+      await postRemoveServiceAccess(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
+      expect(res.redirect.mock.calls).toHaveLength(1);
+      expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
+    });
+
+    it('then a flash message is shown to the user', async () => {
+      await postRemoveServiceAccess(req, res);
+
+      expect(res.flash.mock.calls).toHaveLength(1);
+      expect(res.flash.mock.calls[0][0]).toBe('info');
+      expect(res.flash.mock.calls[0][1]).toBe(`service name successfully removed`);
+    });
   });
 
-  it('then a flash message is shown to the user', async () => {
-    await postRemoveServiceAccess(req, res);
+  describe('when we are under services (self-management for approver)', () => {
+    beforeEach(() => {
+      isUserManagement.mockReset();
+      isUserManagement.mockReturnValue(false);
+    });
 
-    expect(res.flash.mock.calls).toHaveLength(1);
-    expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`service name successfully removed`);
+    it('then it should redirect to services dashboard', async () => {
+      await postRemoveServiceAccess(req, res);
+
+      expect(res.redirect.mock.calls).toHaveLength(1);
+      expect(res.redirect.mock.calls[0][0]).toBe(`/my-services`);
+    });
+
+    it('then a flash message is shown to the user', async () => {
+      await postRemoveServiceAccess(req, res);
+
+      expect(res.flash.mock.calls).toHaveLength(3);
+      expect(res.flash.mock.calls[0][0]).toBe('title');
+      expect(res.flash.mock.calls[0][1]).toBe('Success');
+      expect(res.flash.mock.calls[1][0]).toBe('heading');
+      expect(res.flash.mock.calls[1][1]).toBe('Service removed: service name');
+      expect(res.flash.mock.calls[2][0]).toBe('message');
+      expect(res.flash.mock.calls[2][1]).toBe('This service (and all associated roles) has been removed from your account.');
+    });
   });
 });

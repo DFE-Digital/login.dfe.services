@@ -1,10 +1,38 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 jest.mock('./../../../../src/app/users/utils');
 jest.mock('./../../../../src/infrastructure/applications', () => {
   return {
     getAllServices: jest.fn(),
+  };
+});
+
+const { mockRequest, mockResponse, mockLogger, mockAdapterConfig } = require('./../../../utils/jestMocks');
+jest.mock('./../../../../src/infrastructure/logger', () => mockLogger());
+jest.mock('./../../../../src/infrastructure/config', () => {
+  return mockAdapterConfig();
+});
+jest.mock('login.dfe.dao', () => {
+  return {
+    services: {
+      list: async (pageNumber, pageSize) => {
+        return {
+          count: 10,
+          rows: [
+            {
+              id: 'service1',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service One',
+            },
+            {
+              id: 'service2',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service two',
+            },
+          ],
+        };
+      },
+    },
   };
 });
 
