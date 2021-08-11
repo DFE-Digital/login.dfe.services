@@ -15,20 +15,6 @@ const notificationClient = new NotificationClient({
 
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
-const renderApproveRequestPage = (req, res, model) => {
-  const isServiceAlreadyApproved = false;
-  let renderUrl;
-  if(isServiceAlreadyApproved) {
-    renderUrl = 'requestService/views/serviceAlreadyApproved'
-  }
-  else {
-    model.backLink = buildBackLink(req)
-    renderUrl = 'requestService/views/approveServiceRequest'
-  }
-
-  res.render(renderUrl, model);
-};
-
 const buildBackLink = (req) => {
   let backRedirect = `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}`;
   return backRedirect;
@@ -84,16 +70,15 @@ const get = async (req, res) => {
     return res.redirect('/my-services');
   }
   
+  const model = await getViewModel(req) 
   const endUserService = await getServicesForUser(req.params.uid)
 
   if(endUserService) {
     const hasServiceAlreadyApproved = endUserService.filter(i => i.serviceId === req.params.sid && i.organisationId === req.params.orgId)
     if(hasServiceAlreadyApproved && hasServiceAlreadyApproved.length > 0) {
-      return res.render('requestService/views/serviceAlreadyApproved');
+      return res.render('requestService/views/serviceAlreadyApproved', model)
     }
   }
-
-  const model = await getViewModel(req)
 
   const roleIds = JSON.parse(decodeURIComponent(req.params.rids))
   const roles = roleIds || [];
@@ -122,7 +107,8 @@ const get = async (req, res) => {
   req.session.user.email = endUser.email
   req.session.user.services = [model.service]
 
-  renderApproveRequestPage(req, res, model);  
+  model.backLink = buildBackLink(req)
+  return res.render('requestService/views/approveServiceRequest', model) 
 };
 
 const post = async (req, res) => {
@@ -131,7 +117,8 @@ const post = async (req, res) => {
   }
 
   const model = await getViewModel(req)
-
+  model.backLink = buildBackLink(req)
+  
   const roleIds = JSON.parse(decodeURIComponent(req.params.rids))
   const roles = roleIds || [];
   
@@ -145,7 +132,7 @@ const post = async (req, res) => {
 
   if (policyValidationResult.length > 0) {
     model.validationMessages.roles = policyValidationResult.map((x) => x.message)
-    renderApproveRequestPage(req, res, model);  
+    return res.render('requestService/views/approveServiceRequest', model) 
   }
 
   await addUserService(req.params.uid, req.params.sid, req.params.orgId, roles, req.id);
