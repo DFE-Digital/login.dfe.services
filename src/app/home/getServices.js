@@ -15,7 +15,7 @@ const {
 } = require('./../../infrastructure/organisations');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
-const { getApproverOrgsFromReq } = require('../users/utils');
+const { getApproverOrgsFromReq, isUserEndUser } = require('../users/utils');
 
 const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
@@ -173,20 +173,21 @@ const getServices = async (req, res) => {
     orgCount: 0
   };
 
+  const isEndUser = isUserEndUser(req)
+
   if (approverOrgs && approverOrgs.length > 0) {
-    if (approverOrgs.length === 1) {
+    if (approverOrgs.length === 1 && !isEndUser) {
       addServicesRedirect = `approvals/${approverOrgs[0].organisation.id}/users/${req.user.sub}/associate-services`;
     } else {
-      addServicesRedirect = '/approvals/select-organisation?services=add';
+      addServicesRedirect = '/approvals/select-organisation?services=add';      
     }
     editServicesRedirect = '/approvals/select-organisation-service?action=edit';
     removeServicesRedirect = '/approvals/select-organisation-service?action=remove';
   }
   else {
     const organisations = await getOrganisationAndServiceForUser(account.id, req.id)
-    const isEndUser = !!(organisations.filter((x) => x.role.id === 10000))
     const orgLength = organisations.length
-
+    
     if(isEndUser && orgLength > 0) {
       if (req.session.user) {
         req.session.user.orgCount = orgLength

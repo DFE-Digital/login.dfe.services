@@ -3,7 +3,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-!-margin-top-3 <%= locals.isApprover ? 'govuk-grid-column-three-quarters' : 'govuk-grid-column-two-thirds' %>">
             <h1 class="govuk-heading-m govuk-!-margin-top-3">
-                <% if (locals.isApprover) { %>
+                <% if (locals.isApprover || locals.hasDualPermission) { %>
                     Add service for which organisation?
                 <% } else { %>
                     Request a service for which organisation?                    

@@ -1,5 +1,5 @@
 'use strict';
-const { getApproverOrgsFromReq, getUserOrgsFromReq, isUserManagement, isUserApprover, getOrgNaturalIdentifiers } = require('./utils');
+const { getApproverOrgsFromReq, getUserOrgsFromReq, isUserManagement, isUserApprover, isUserEndUser, getOrgNaturalIdentifiers } = require('./utils');
 
 const buildAdditionalOrgDetails = (userOrgs) => {
   userOrgs.forEach((userOrg) => {
@@ -18,9 +18,16 @@ const renderSelectOrganisationPage = (req, res, model) => {
 };
 
 
+const setUserOrgs =  (req) => {
+  const isApprover = isUserApprover(req);
+  const isEndUser = isUserEndUser(req);
+  const hasDualPermission = isEndUser && isApprover;
+  req.userOrganisations = hasDualPermission || !isApprover ? getUserOrgsFromReq(req) : getApproverOrgsFromReq(req);
+  return { isApprover, hasDualPermission };
+}
+
 const get = async (req, res) => {
-  const isApprover = isUserApprover(req)
-  req.userOrganisations = isApprover ? getApproverOrgsFromReq(req) : getUserOrgsFromReq(req);
+  const { isApprover, hasDualPermission } = setUserOrgs(req);
 
   buildAdditionalOrgDetails(req.userOrganisations);
 
@@ -32,7 +39,8 @@ const get = async (req, res) => {
     selectedOrganisation: req.session.user ? req.session.user.organisation : null,
     validationMessages: {},
     backLink: '/my-services',
-    isApprover
+    isApprover,
+    hasDualPermission
   };
 
   renderSelectOrganisationPage(req, res, model);
@@ -45,8 +53,7 @@ const validate = (req) => {
     currentPage: 'users',
     selectedOrganisation: selectedOrg,
     validationMessages: {},
-    backLink: '/my-services',
-    isApprover: isUserApprover(req),
+    backLink: '/my-services'
   };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
@@ -56,11 +63,13 @@ const validate = (req) => {
 };
 
 const post = async (req, res) => {
-  const isApprover = isUserApprover(req)
-  req.userOrganisations = isApprover ? getApproverOrgsFromReq(req) : getUserOrgsFromReq(req);
+  const { isApprover, hasDualPermission } = setUserOrgs(req);
 
   buildAdditionalOrgDetails(req.userOrganisations);
+  
   const model = validate(req);
+  model.isApprover = isApprover
+  model.hasDualPermission = hasDualPermission
 
   // persist selected org in session
   if (req.session.user) {
@@ -71,13 +80,16 @@ const post = async (req, res) => {
     model.csrfToken = req.csrfToken();
     return renderSelectOrganisationPage(req, res, model);
   }
+  const selectedOrg = model.organisations.filter(o => o.organisation.id === model.selectedOrganisation)
+  const isApproverForSelectedOrg = selectedOrg.filter(r => r.role.id === 10000).length > 0
 
-  if (req.query.services === 'add') {
-    return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
+  if (req.query.services === 'add' || req.query.services === 'request') {
+    if(isApproverForSelectedOrg) {
+      return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
+    }
+    return res.redirect(`/request-service/${model.selectedOrganisation}/users/${req.user.sub}`);
   } else if (req.query.services === 'edit') {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`);
-  } else if (req.query.services === 'request') {
-    return res.redirect(`/request-service/${model.selectedOrganisation}/users/${req.user.sub}`);
   } else {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users`);
   }
@@ -87,3 +99,4 @@ module.exports = {
   get,
   post,
 };
+
