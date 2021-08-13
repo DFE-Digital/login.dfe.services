@@ -109,6 +109,13 @@ const isUserApprover = (req) => {
     return req.userOrganisations.filter((x) => x.role.id === 10000).length > 0;
   }
   return false;
+}
+
+const isUserEndUser = (req) => {
+  if (req.userOrganisations) {
+    return req.userOrganisations.filter((x) => x.role.id === 0).length > 0;
+  }
+  return false;
 };
 
 const getOrgNaturalIdentifiers = (org) => {
@@ -138,5 +145,6 @@ module.exports = {
   getApproverOrgsFromReq,
   getOrgNaturalIdentifiers,
   getUserOrgsFromReq,
-  isUserApprover
+  isUserApprover,
+  isUserEndUser
 };

@@ -1,6 +1,6 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg, isSelfManagement, isUserManagement, getApproverOrgsFromReq } = require('./utils');
+const { getAllServicesForUserInOrg, isSelfManagement, isUserManagement, getApproverOrgsFromReq, isUserEndUser } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
@@ -24,7 +24,9 @@ const buildBackLink = (req) => {
   } else if (isSelfManagement(req)) {
     // we need to check if user is approver at only one org to then send back to main services page
     const approverOrgs = getApproverOrgsFromReq(req);
-    if (approverOrgs.length === 1) {
+    if(isUserEndUser(req) && approverOrgs.length > 0) {
+      backRedirect = '/approvals/select-organisation?services=add';
+    } else if (approverOrgs.length === 1) {
       backRedirect = '/my-services';
     } else if (approverOrgs.length > 1) {
       backRedirect = '/approvals/select-organisation?services=add';
