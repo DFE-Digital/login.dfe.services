@@ -92,6 +92,7 @@ const get = async (req, res) => {
   if(endUserService) {
     const hasServiceAlreadyApproved = endUserService.filter(i => i.serviceId === req.params.sid && i.organisationId === req.params.orgId)
     if(hasServiceAlreadyApproved && hasServiceAlreadyApproved.length > 0) {
+      viewModel.validationMessages = {}
       return res.render('requestService/views/serviceAlreadyApproved', viewModel)
     }
   }

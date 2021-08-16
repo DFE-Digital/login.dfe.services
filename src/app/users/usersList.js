@@ -76,6 +76,7 @@ const get = async (req, res) => {
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
     organisationDetails: result.organisationDetails,
+    organisationStatus: result.organisationDetails.organisation.status.id,
   });
 };
 
