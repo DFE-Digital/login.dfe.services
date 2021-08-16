@@ -140,7 +140,7 @@ const post = async (req, res) => {
   const viewModel = await getViewModel(req, model)
   viewModel.backLink = buildBackLink(req)
 
-  if(model.validationMessages.messages) {
+  if(viewModel.validationMessages.messages) {
     return res.render('requestService/views/approveServiceRequest', viewModel)
   }
 
@@ -166,9 +166,9 @@ const post = async (req, res) => {
     req.session.user.email, 
     req.session.user.firstName, 
     req.session.user.lastName, 
-    model.organisationDetails.organisation.name,
-    model.service.name,
-    model.service.roles.map(i => i.name)
+    viewModel.organisationDetails.organisation.name,
+    viewModel.service.name,
+    viewModel.service.roles.map(i => i.name)
   )
 
   logger.audit({
