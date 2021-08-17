@@ -89,7 +89,7 @@ const post = async (req, res) => {
   const approveUrl = `${baseUrl}/request-service/${organisationDetails.organisation.id}/users/${req.session.user.uid}/services/${serviceDetails.id}/roles/${encodeURIComponent(JSON.stringify(rolesIds))}/approve`
   const rejectUrl = `${baseUrl}/request-service/${organisationDetails.organisation.id}/users/${req.session.user.uid}/services/${serviceDetails.id}/roles/${encodeURIComponent(JSON.stringify(rolesIds))}/reject`
 
-  const helpUrl = `${baseUrl}/requests/can-end-user-request-service`;
+  const helpUrl = `${config.hostingEnvironment.helpUrl}/requests/can-end-user-request-service`;
 
   await notificationClient.sendServiceRequestToApprovers(
     senderName,
