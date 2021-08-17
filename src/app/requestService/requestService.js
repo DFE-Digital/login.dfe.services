@@ -1,6 +1,6 @@
 'use strict';
 const config = require('../../infrastructure/config');
-const { getAllServicesForUserInOrg, isUserApprover } = require('../users/utils');
+const { getAllServicesForUserInOrg } = require('../users/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
@@ -60,15 +60,6 @@ const get = async (req, res) => {
     return res.redirect(`/my-services`);
   }
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
-
-  const isApprover = isUserApprover(req)
-
-  if(isApprover) {
-    //show banner
-    res.flash('title', `Important`);
-    res.flash('heading', `You are not an approver at: ${organisationDetails.organisation.name}`);
-    res.flash('message', `Because you are not an approver at this orgnaisation, you will need to request access to a service in order to use it. This request will be sent to approvers at <b>${organisationDetails.organisation.name}</b>.`);
-  }
 
   const externalServices = await getAllAvailableServices(req);
 

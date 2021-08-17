@@ -87,6 +87,13 @@ const post = async (req, res) => {
     if(isApproverForSelectedOrg) {
       return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
     }
+
+    if(isApprover) {
+      //show banner to an approver who is also an end-user
+      res.flash('title', `Important`);
+      res.flash('heading', `You are not an approver at: ${selectedOrg[0].organisation.name}`);
+      res.flash('message', `Because you are not an approver at this orgnaisation, you will need to request access to a service in order to use it. This request will be sent to approvers at <b>${selectedOrg[0].organisation.name}</b>.`);
+    }
     return res.redirect(`/request-service/${model.selectedOrganisation}/users/${req.user.sub}`);
   } else if (req.query.services === 'edit') {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`);
