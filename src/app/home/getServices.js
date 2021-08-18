@@ -4,6 +4,7 @@ const { getApplication } = require('./../../infrastructure/applications');
 const Account = require('./../../infrastructure/account');
 const appCache = require('./../../infrastructure/helpers/AppCache');
 
+const { directories } = require('login.dfe.dao');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const uniqBy = require('lodash/uniqBy');
@@ -15,7 +16,7 @@ const {
 } = require('./../../infrastructure/organisations');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
-const { getApproverOrgsFromReq, isUserEndUser } = require('../users/utils');
+const { getApproverOrgsFromReq, isUserEndUser, isUserApprover } = require('../users/utils');
 
 const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
@@ -207,6 +208,38 @@ const getServices = async (req, res) => {
 
   isRequestServiceAllowed = !!requestServicesRedirect
 
+  let banner = {}
+  //1: "request a service" feature notification banner
+  const useBanner = await directories.fetchUserBanners(req.session.user.uid, 1)
+
+  if(isRequestServiceAllowed) {
+    if(!useBanner) {
+      req.session.bannerId = 1
+      banner.type = 'notification'
+      banner.title = `Important`
+      banner.heading = `New feature: You can now request services`
+      banner.message = `Thanks to your feedback, you can now request access to services within DfE Sign-in. 
+      <p>
+      To get started, select 'Request access to a service' from the related actions menu.
+      </p>
+      <a href="${config.hostingEnvironment.helpUrl}/services/request-access" class="govuk-link-bold info-link" id='close-notification-link' target="_blank">Find out more about requesting services</a>.`
+     }
+  }
+  
+  if(isUserApprover(req)) {
+    if(!useBanner) {
+      req.session.bannerId = 1
+      banner.type = 'notification'
+      banner.title = `Important`
+      banner.heading = `New feature: End users can now request services`
+      banner.message = `As a result of user feedback, end users can now request access to services in DfE Sign-in. 
+      <p>
+      When a service access request is raised, you will receive an email. This email will explain how you can approve or reject the service access request.
+      </p>
+      <a href="${config.hostingEnvironment.helpUrl}/requests/can-end-user-request-service" class="govuk-link-bold info-link" id='close-notification-link' target="_blank">Find out more about end users requesting services</a>.`
+     }
+  }
+
   return res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
@@ -221,6 +254,7 @@ const getServices = async (req, res) => {
     removeServicesRedirect,
     requestServicesRedirect,
     isRequestServiceAllowed,
+    banner
   });
 };
 
