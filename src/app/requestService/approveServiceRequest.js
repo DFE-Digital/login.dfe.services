@@ -16,7 +16,7 @@ const notificationClient = new NotificationClient({
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
 const buildBackLink = (req) => {
-  let backRedirect = `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}`;
+  let backRedirect = `/my-services`;
   return backRedirect;
 };
 

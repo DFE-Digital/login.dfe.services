@@ -1,7 +1,6 @@
 'use strict';
-const { listRolesOfService, addUserService, getServicesForUser } = require('../../infrastructure/access');
-const { getUserDetails, getAndMapOrgRequest } = require('../users/utils');
-const { updateRequestById } = require('../../infrastructure/organisations');
+const { listRolesOfService } = require('../../infrastructure/access');
+const { getUserDetails } = require('../users/utils');
 
 const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
