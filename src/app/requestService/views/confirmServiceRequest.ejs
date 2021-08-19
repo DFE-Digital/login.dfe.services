@@ -1,21 +1,27 @@
 <div class="govuk-width-container">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-m govuk-!-margin-top-3">
-                Review amended service
-            </h1>
-            <p class="govuk-body">Review these details before confirming.</p>
 
+            <h1 class="govuk-heading-m govuk-!-margin-top-3">
+                Review new service
+            </h1>
+            <p class="govuk-body">
+                Review these details before submitting your request.
+            </p>
+            <p class="govuk-body">
+                Your request will be sent to all approvers at your selected organisation.
+            </p>
             <h2 class="govuk-heading-m">
                 Review summary
             </h2>
+
             <dl class="govuk-summary-list">
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Organisation
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        <%=locals.organisationDetails.organisation.name%>
+                        <%= locals.organisationDetails.organisation.name %>
                     </dd>
                 </div>
 
@@ -24,7 +30,7 @@
                         Service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        <%= locals.service.name%>
+                        <%= locals.services[0].name %>
                     </dd>
                 </div>
 
@@ -33,26 +39,33 @@
                         Sub-service/role
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        <% if (locals.roles.length > 0) { %>
-                            <%=locals.roles.name%>
-                            <% for (let i = 0; i < locals.roles.length; i++) { %>
-                                <% const role = locals.roles[i]; %>
+                        <% if (locals.services[0].roles.length > 0) { %>
+                            <% for (let x = 0; x < locals.services[0].roles.length; x++) { %>
+                                <% const role = locals.services[0].roles[x]; %>
                                 <%= role.name %> <br>
                             <% } %>
                         <% } else { %>
                             No roles selected
-                        <% }%>
+                        <% } %>
                     </dd>
                 </div>
             </dl>
+
             <form method="post" class="prevent-form-double-submission">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <div class="govuk-button-group">
-                    <button type="submit" class="govuk-button">Submit</button>
+                    <button type="submit" class="govuk-button">Request service</button>
                     <a href="/my-services" class="govuk-button govuk-button--secondary">Cancel</a>
                 </div>
             </form>
-
+        </div>
+        <div class="govuk-grid-column-one-third pull-right">
+            <aside class="govuk-!-margin-top-0">
+                <h2 class="govuk-heading-m">Related actions</h2>
+                <ul class="govuk-list">
+                    <li><a class="govuk-link-bold" href="<%=locals.urls.help%>/services/request-access">Help with requesting services</a></li>
+                </ul>
+            </aside>
         </div>
     </div>
 </div>

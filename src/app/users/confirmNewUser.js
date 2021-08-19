@@ -108,6 +108,7 @@ const post = async (req, res) => {
 
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
+  const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
 
   //if existing invitation or new invite
   if (uid.startsWith('inv-')) {
@@ -118,12 +119,27 @@ const post = async (req, res) => {
     if (req.session.user.services) {
       for (let i = 0; i < req.session.user.services.length; i++) {
         const service = req.session.user.services[i];
+        const allServices = await checkCacheForAllServices(req.id);
+        const serviceDetails = allServices.services.find((x) => x.id === service.serviceId);
+        const allRolesOfService = await listRolesOfService(service.serviceId, req.id);
+        const roleDetails = allRolesOfService.filter((x) =>
+          service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
+        );
+
         await addInvitationService(invitationId, service.serviceId, organisationId, service.roles, req.id);
+
+        await notificationClient.sendServiceRequestApproved(
+          req.session.user.email, 
+          req.session.user.firstName, 
+          req.session.user.lastName, 
+          org,
+          serviceDetails.name,
+          roleDetails.map(i => i.name)
+        )
       }
     }
   } else {
     //if existing user not in org
-    const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
     if (req.session.user.isInvite) {
       await putUserInOrganisation(uid, organisationId, 0, req.id);
       const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(uid, req.id);
@@ -144,16 +160,23 @@ const post = async (req, res) => {
     if (req.session.user.services) {
       for (let i = 0; i < req.session.user.services.length; i++) {
         const service = req.session.user.services[i];
+        const allServices = await checkCacheForAllServices(req.id);
+        const serviceDetails = allServices.services.find((x) => x.id === service.serviceId);
+        const allRolesOfService = await listRolesOfService(service.serviceId, req.id);
+        const roleDetails = allRolesOfService.filter((x) =>
+          service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
+        );
+
         await addUserService(uid, service.serviceId, organisationId, service.roles, req.id);
-      }
-      if (req.session.user.services.length > 0) {
-        if (isEmailAllowed) {
-          await notificationClient.sendServiceAdded(
-            req.session.user.email,
-            req.session.user.firstName,
-            req.session.user.lastName,
-          );
-        }
+
+        await notificationClient.sendServiceRequestApproved(
+          req.session.user.email, 
+          req.session.user.firstName, 
+          req.session.user.lastName, 
+          org,
+          serviceDetails.name,
+          roleDetails.map(i => i.name)
+        )
       }
     }
   }

@@ -8,6 +8,7 @@ const {
   getSingleInvitationService,
 } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
+
 const sortBy = require('lodash/sortBy');
 
 const getUserDetails = async (req) => {
@@ -99,6 +100,24 @@ const getApproverOrgsFromReq = (req) => {
   return [];
 };
 
+const getUserOrgsFromReq = (req) => {
+  return req.userOrganisations;
+};
+
+const isUserApprover = (req) => {
+  if (req.userOrganisations) {
+    return req.userOrganisations.filter((x) => x.role.id === 10000).length > 0;
+  }
+  return false;
+}
+
+const isUserEndUser = (req) => {
+  if (req.userOrganisations) {
+    return req.userOrganisations.filter((x) => x.role.id === 0).length > 0;
+  }
+  return false;
+};
+
 const getOrgNaturalIdentifiers = (org) => {
   const naturalIdentifiers = [];
   const urn = org.URN || org.urn;
@@ -125,4 +144,7 @@ module.exports = {
   isUserManagement,
   getApproverOrgsFromReq,
   getOrgNaturalIdentifiers,
+  getUserOrgsFromReq,
+  isUserApprover,
+  isUserEndUser
 };

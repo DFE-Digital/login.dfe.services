@@ -1,29 +1,16 @@
 'use strict';
-const config = require('./../../infrastructure/config');
-const { isSelfManagement, isUserManagement } = require('./utils');
-const { getApplication } = require('./../../infrastructure/applications');
-const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
+const config = require('../../infrastructure/config');
+const { getApplication } = require('../../infrastructure/applications');
+const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
-const renderAssociateRolesPage = (req, res, model) => {
-  const isSelfManage = isSelfManagement(req);
-  res.render(
-    `users/views/${isSelfManage ? "associateRolesRedesigned" : "associateRoles" }`,
-    { ...model, currentPage: isSelfManage? "services": "users" }
-  );
+const renderAssociateRolesPage = (_req, res, model) => {
+  res.render('requestService/views/requestRoles', model);
 };
 
-const buildBackLink = (req, currentServiceIndex) => {
-  let backRedirect = `/approvals/${req.params.orgId}/users`;
-  if (req.params.uid) {
-    backRedirect += `/${req.params.uid}`;
-  }
-  backRedirect += `/associate-services`;
-  if (currentServiceIndex > 0) {
-    // go back to previous select role page for previous service as we had multi-select for services
-    backRedirect += `/${req.session.user.services[currentServiceIndex - 1].serviceId}`;
-  }
+const buildBackLink = (req) => {
+  let backRedirect = `/request-service/${req.session.user.organisation}/users/${req.user.sub}`;
   return backRedirect;
 };
 
@@ -58,8 +45,8 @@ const getViewModel = async (req) => {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
     validationMessages: {},
-    backLink: buildBackLink(req, currentServiceIndex),
-    currentPage: 'users',
+    backLink: buildBackLink(req),
+    currentPage: 'services',
     organisationDetails,
     selectedRoles,
     serviceDetails,
@@ -71,7 +58,7 @@ const getViewModel = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/my-services');
   }
 
   const model = await getViewModel(req);
@@ -80,7 +67,7 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/my-services');
   }
 
   const currentService = req.session.user.services.findIndex((x) => x.serviceId === req.params.sid);
@@ -113,14 +100,7 @@ const post = async (req, res) => {
     renderAssociateRolesPage(req, res, model);
   }
 
-  if (currentService < req.session.user.services.length - 1) {
-    const nextService = currentService + 1;
-    return res.redirect(`${req.session.user.services[nextService].serviceId}`);
-  } else {
-    return req.session.user.uid
-      ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`)
-      : res.redirect(`/approvals/${req.params.orgId}/users/confirm-new-user`);
-  }
+  return res.redirect(`/request-service/${req.session.user.organisation}/users/${req.user.sub}/confirm-request`);
 };
 
 module.exports = {

@@ -1,38 +1,24 @@
 'use strict';
-const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg, isSelfManagement, isUserManagement, getApproverOrgsFromReq, isUserEndUser } = require('./utils');
+const config = require('../../infrastructure/config');
+const { getAllServicesForUserInOrg } = require('../users/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
-const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
+const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common');
 
 const policyEngine = new PolicyEngine(config);
 
-const renderAssociateServicesPage = (req, res, model) => {
-  const isSelfManage = isSelfManagement(req)
-  res.render(
-    `users/views/${isSelfManage ? "associateServicesRedesigned" : "associateServices" }`,
-    { ...model, currentPage: isSelfManage? "services": "users" }
-  );
+const renderAssociateServicesPage = (_req, res, model) => {
+  res.render('requestService/views/requestService', model);
 };
 
 const buildBackLink = (req) => {
-  let backRedirect;
-  if (req.session.user.isInvite) {
-    req.params.uid
-      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
-      : (backRedirect = 'new-user');
-  } else if (isSelfManagement(req)) {
-    // we need to check if user is approver at only one org to then send back to main services page
-    const approverOrgs = getApproverOrgsFromReq(req);
-    if(isUserEndUser(req) && approverOrgs.length > 0) {
-      backRedirect = '/approvals/select-organisation?services=add';
-    } else if (approverOrgs.length === 1) {
+  let backRedirect = '/approvals/select-organisation?services=request';
+  if(req.session.user) {
+    const orgCount = req.session.user.orgCount
+    if(orgCount === 1) {
       backRedirect = '/my-services';
-    } else if (approverOrgs.length > 1) {
-      backRedirect = '/approvals/select-organisation?services=add';
     }
-  } else {
-    backRedirect = 'services';
   }
   return backRedirect;
 };
@@ -72,9 +58,14 @@ const getAllAvailableServices = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect(`/my-services`);
   }
+
+  //Recording request-a-service banner acknowledgement by end-user
+  await recordRequestServiceBannerAck(req.session.user.uid)
+
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
+
   const externalServices = await getAllAvailableServices(req);
 
   const model = {
@@ -83,7 +74,7 @@ const get = async (req, res) => {
     user: req.session.user,
     validationMessages: {},
     backLink: buildBackLink(req),
-    currentPage: 'users',
+    currentPage: 'services',
     organisationDetails,
     services: externalServices,
     selectedServices: req.session.user.services || [],
@@ -96,7 +87,7 @@ const get = async (req, res) => {
 const validate = async (req) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
-
+  // TODO make selectedServices non array (selectedService) and refactor all code related to array in this file and in the EJS template
   let selectedServices = [];
   if (req.body.service && req.body.service instanceof Array) {
     selectedServices = req.body.service;
@@ -107,19 +98,15 @@ const validate = async (req) => {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
     backLink: buildBackLink(req),
-    currentPage: 'users',
+    currentPage: 'services',
     organisationDetails,
     services: externalServices,
     selectedServices,
     isInvite: req.session.user.isInvite,
     validationMessages: {},
   };
-  if (!req.session.user.isInvite && model.selectedServices.length < 1) {
-    if (isSelfManagement(req)) {
-      model.validationMessages.services = 'Please select a service';
-    } else {
-      model.validationMessages.services = 'At least one service must be selected';
-    }
+  if (model.selectedServices.length < 1) {
+    model.validationMessages.services = 'Select a service to continue';
   }
   if (
     model.selectedServices &&
@@ -133,7 +120,7 @@ const validate = async (req) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/my-services');
   }
 
   const model = await validate(req);
@@ -154,16 +141,8 @@ const post = async (req, res) => {
     return renderAssociateServicesPage(req, res, model);
   }
 
-  if (req.session.user.isInvite && model.selectedServices.length === 0) {
-    return res.redirect(
-      req.params.uid
-        ? `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`
-        : `/approvals/${req.params.orgId}/users/confirm-new-user`,
-    );
-  }
-
   const service = req.session.user.services[0].serviceId;
-  return res.redirect(`associate-services/${service}`);
+  return res.redirect(`/request-service/${req.session.user.organisation}/users/${req.user.sub}/services/${service}`);
 };
 
 module.exports = {

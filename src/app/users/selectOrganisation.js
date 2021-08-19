@@ -1,5 +1,6 @@
 'use strict';
-const { getApproverOrgsFromReq, isUserManagement, getOrgNaturalIdentifiers } = require('./utils');
+const { getApproverOrgsFromReq, getUserOrgsFromReq, isUserManagement, isUserApprover, isUserEndUser, getOrgNaturalIdentifiers } = require('./utils');
+const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common')
 
 const buildAdditionalOrgDetails = (userOrgs) => {
   userOrgs.forEach((userOrg) => {
@@ -18,8 +19,22 @@ const renderSelectOrganisationPage = (req, res, model) => {
 };
 
 
+const setUserOrgs =  (req) => {
+  const isApprover = isUserApprover(req);
+  const isEndUser = isUserEndUser(req);
+  const hasDualPermission = isEndUser && isApprover;
+  req.userOrganisations = hasDualPermission || !isApprover ? getUserOrgsFromReq(req) : getApproverOrgsFromReq(req);
+  return { isApprover, hasDualPermission, isEndUser };
+}
+
 const get = async (req, res) => {
-  req.userOrganisations = getApproverOrgsFromReq(req);
+  const { isApprover, isEndUser, hasDualPermission } = setUserOrgs(req);
+
+  if(isEndUser) {
+    //Recording request-a-service banner acknowledgement by end-user
+    await recordRequestServiceBannerAck(req.session.user.uid)
+  }
+
   buildAdditionalOrgDetails(req.userOrganisations);
 
   const model = {
@@ -30,6 +45,8 @@ const get = async (req, res) => {
     selectedOrganisation: req.session.user ? req.session.user.organisation : null,
     validationMessages: {},
     backLink: '/my-services',
+    isApprover,
+    hasDualPermission
   };
 
   renderSelectOrganisationPage(req, res, model);
@@ -42,7 +59,7 @@ const validate = (req) => {
     currentPage: 'users',
     selectedOrganisation: selectedOrg,
     validationMessages: {},
-    backLink: '/my-services',
+    backLink: '/my-services'
   };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
@@ -52,9 +69,13 @@ const validate = (req) => {
 };
 
 const post = async (req, res) => {
-  req.userOrganisations = getApproverOrgsFromReq(req);
+  const { isApprover, hasDualPermission } = setUserOrgs(req);
+
   buildAdditionalOrgDetails(req.userOrganisations);
+  
   const model = validate(req);
+  model.isApprover = isApprover
+  model.hasDualPermission = hasDualPermission
 
   // persist selected org in session
   if (req.session.user) {
@@ -65,9 +86,21 @@ const post = async (req, res) => {
     model.csrfToken = req.csrfToken();
     return renderSelectOrganisationPage(req, res, model);
   }
+  const selectedOrg = model.organisations.filter(o => o.organisation.id === model.selectedOrganisation)
+  const isApproverForSelectedOrg = selectedOrg.filter(r => r.role.id === 10000).length > 0
 
-  if (req.query.services === 'add') {
-    return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
+  if (req.query.services === 'add' || req.query.services === 'request') {
+    if(isApproverForSelectedOrg) {
+      return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
+    }
+
+    if(isApprover) {
+      //show banner to an approver who is also an end-user
+      res.flash('title', `Important`);
+      res.flash('heading', `You are not an approver at: ${selectedOrg[0].organisation.name}`);
+      res.flash('message', `Because you are not an approver at this orgnaisation, you will need to request access to a service in order to use it. This request will be sent to approvers at <b>${selectedOrg[0].organisation.name}</b>.`);
+    }
+    return res.redirect(`/request-service/${model.selectedOrganisation}/users/${req.user.sub}`);
   } else if (req.query.services === 'edit') {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`);
   } else {
@@ -79,3 +112,4 @@ module.exports = {
   get,
   post,
 };
+
