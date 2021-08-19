@@ -1,5 +1,6 @@
 'use strict';
 const { getApproverOrgsFromReq, getUserOrgsFromReq, isUserManagement, isUserApprover, isUserEndUser, getOrgNaturalIdentifiers } = require('./utils');
+const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common')
 
 const buildAdditionalOrgDetails = (userOrgs) => {
   userOrgs.forEach((userOrg) => {
@@ -23,11 +24,16 @@ const setUserOrgs =  (req) => {
   const isEndUser = isUserEndUser(req);
   const hasDualPermission = isEndUser && isApprover;
   req.userOrganisations = hasDualPermission || !isApprover ? getUserOrgsFromReq(req) : getApproverOrgsFromReq(req);
-  return { isApprover, hasDualPermission };
+  return { isApprover, hasDualPermission, isEndUser };
 }
 
 const get = async (req, res) => {
-  const { isApprover, hasDualPermission } = setUserOrgs(req);
+  const { isApprover, isEndUser, hasDualPermission } = setUserOrgs(req);
+
+  if(isEndUser) {
+    //Recording request-a-service banner acknowledgement by end-user
+    await recordRequestServiceBannerAck(req.session.user.uid)
+  }
 
   buildAdditionalOrgDetails(req.userOrganisations);
 

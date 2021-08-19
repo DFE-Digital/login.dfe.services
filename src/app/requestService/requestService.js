@@ -4,6 +4,7 @@ const { getAllServicesForUserInOrg } = require('../users/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common');
 
 const policyEngine = new PolicyEngine(config);
 
@@ -59,6 +60,10 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect(`/my-services`);
   }
+
+  //Recording request-a-service banner acknowledgement by end-user
+  await recordRequestServiceBannerAck(req.session.user.uid)
+
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
 
   const externalServices = await getAllAvailableServices(req);

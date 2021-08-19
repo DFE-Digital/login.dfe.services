@@ -2,6 +2,8 @@ jest.mock('login.dfe.policy-engine');
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/app/users/utils');
+jest.mock('./../../../../src/app/users/utils');
+
 
 jest.mock('login.dfe.dao', () => {
   return {
@@ -26,6 +28,14 @@ jest.mock('login.dfe.dao', () => {
         };
       },
     },
+    directories: {
+      fetchUserBanners: async (_userId, _bannerId) => {
+        return null
+      },
+      createUserBanners: async (_userId, _bannerId) => {
+        return Promise.resolve(true)
+      }
+    }
   };
 });
 

@@ -2,6 +2,19 @@ const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
+jest.mock('login.dfe.dao', () => {
+  return {
+    directories: {
+      fetchUserBanners: async (_userId, _bannerId) => {
+        return null
+      },
+      createUserBanners: async (_userId, _bannerId) => {
+        return Promise.resolve(true)
+      }
+    }
+  };
+});
+
 describe('when selecting an organisation', () => {
   let req;
   let res;
