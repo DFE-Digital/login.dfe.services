@@ -20,17 +20,18 @@ const renderSelectOrganisationPage = (req, res, model) => {
 
 
 const setUserOrgs =  (req) => {
+  const isManage = isUserManagement(req);
   const isApprover = isUserApprover(req);
   const isEndUser = isUserEndUser(req);
   const hasDualPermission = isEndUser && isApprover;
-  req.userOrganisations = hasDualPermission || !isApprover ? getUserOrgsFromReq(req) : getApproverOrgsFromReq(req);
-  return { isApprover, hasDualPermission, isEndUser };
+  req.userOrganisations = (hasDualPermission && !isManage) || !isApprover ? getUserOrgsFromReq(req) : getApproverOrgsFromReq(req);
+  return { isApprover, hasDualPermission, isEndUser, isManage };
 }
 
 const get = async (req, res) => {
-  const { isApprover, isEndUser, hasDualPermission } = setUserOrgs(req);
+  const { isApprover, isEndUser, hasDualPermission, isManage } = setUserOrgs(req);
 
-  if(isEndUser) {
+  if(isEndUser && !isApprover && isManage) {
     //Recording request-a-service banner acknowledgement by end-user
     await recordRequestServiceBannerAck(req.session.user.uid)
   }
@@ -69,7 +70,7 @@ const validate = (req) => {
 };
 
 const post = async (req, res) => {
-  const { isApprover, hasDualPermission } = setUserOrgs(req);
+  const { isApprover, hasDualPermission, isManage } = setUserOrgs(req);
 
   buildAdditionalOrgDetails(req.userOrganisations);
   
@@ -94,7 +95,7 @@ const post = async (req, res) => {
       return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
     }
 
-    if(isApprover) {
+    if(isApprover && !isManage) {
       //show banner to an approver who is also an end-user
       res.flash('title', `Important`);
       res.flash('heading', `You are not an approver at: ${selectedOrg[0].organisation.name}`);
