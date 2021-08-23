@@ -30,7 +30,7 @@ const setUserOrgs =  (req) => {
 const get = async (req, res) => {
   const { isApprover, isEndUser, hasDualPermission } = setUserOrgs(req);
 
-  if(isEndUser) {
+  if(isEndUser && !isApprover && req.query.services === 'request') {
     //Recording request-a-service banner acknowledgement by end-user
     await recordRequestServiceBannerAck(req.session.user.uid)
   }
