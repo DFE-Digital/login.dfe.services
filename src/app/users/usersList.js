@@ -28,9 +28,10 @@ const search = async (req) => {
       const me = await getById(req.user.sub);
       user.email = me.claims.email;
     }
-    const organisation = user.organisations.filter((x) => x.id === organisationId);
+    // TODO review logic to get all orgs
+    // const organisation = user.organisations.filter((x) => x.id === organisationId);
     user.statusId = mapUserStatus(user.statusId);
-    user.organisations = organisation;
+    user.organisations = user.organisations;
   }
   return {
     page,
