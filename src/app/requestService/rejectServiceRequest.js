@@ -131,6 +131,10 @@ const post = async (req, res) => {
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (approverId: ${req.user.sub}) rejected service (serviceId: ${req.params.sid}), roles (roleIds: ${JSON.stringify(roles)}) and organisation (orgId: ${req.params.orgId}) for end user (endUserId: ${req.params.uid}). ${rejectReason ? `The reject reason is ${rejectReason}` : ''}`
   });
+
+  res.flash('title', `Success`);
+  res.flash('heading', `Request rejected successfully`);
+  res.flash('message', `An email will be sent to the requestee informing them of the request rejection.`);
   
   res.redirect(`/my-services`);
 };
