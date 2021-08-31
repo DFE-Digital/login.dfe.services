@@ -199,3 +199,14 @@ const app = init().catch((err) => {
 });
 
 module.exports = app;
+
+
+logger.audit({
+  type: 'services',
+  subType: 'access-request',
+  userId: '4D6B486E-4E9B-48E5-AB2F-616721AD3183',
+  userEmail: 'Vijay.HIRUDAYASAMY@education.gov.uk',
+  application: 'Services',
+  env: 'dev',
+  message: 'This is message from vijay for testing',
+});
