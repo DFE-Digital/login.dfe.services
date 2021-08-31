@@ -137,16 +137,22 @@
                         </p>
                     </td>
 
-                    <td class="govuk-table__cell ">
-                        <span class="govuk-body govuk-!-font-weight-bold govuk-!-font-size-16"><%=user.organisations[0].name%></span>
-                    </td>
-
-                    <%
-                    if (user.organisations.length > 0) {
-                        const permissionName = user.organisations[0].roleId === 10000 ? 'Approver' : 'End user';
-                        %>
+                    <% if (user.organisations.length > 0) { %>
                         <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                            <%= permissionName %>
+                            <% for(let j= 0; j < user.organisations.length; j++) {
+                                const orgName = user.organisations[j].name %>
+                                <%=orgName%>
+                                <br>
+                            <% } %>
+                        </td>
+                    <% } %>
+                    <% if (user.organisations.length > 0) { %>
+                        <td class="govuk-table__cell govuk-body govuk-!-font-size-16" > 
+                            <% for(let j= 0; j < user.organisations.length; j++) {
+                                const permissionName = user.organisations[j].roleId === 10000 ? 'Approver' : 'End user';%>
+                                <%= permissionName %>
+                                <br>
+                            <% } %>
                         </td>
                     <% } else { %>
                         <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
