@@ -90,69 +90,88 @@
                 <thead class="govuk-table__head">
                 <% let baseSortUri = `?page=${page}`;%>
                 <tr class="govuk-table__row">
-                    <th scope="col" class="govuk-table__header">
-                        <a href="<%=baseSortUri%>&sort=searchableName&sortdir=<%= locals.sort.searchableName.nextDirection %>"
+                    <th scope="col" class="govuk-table__header width-30">
+                        <!-- <a href="<%=baseSortUri%>&sort=searchableName&sortdir=<%= locals.sort.searchableName.nextDirection %>"
                             class="govuk-link-bold govuk-link--no-underline <% if (locals.sort.searchableName.applied) { %>sorted dir-<%= (locals.sort.searchableName.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">
                             Name
-                        </a>
+                        </a> -->
+                        Name
                     </th>
-                    <th scope="col" class="govuk-table__header">
-                        <a href="#" class="govuk-link-bold govuk-link--no-underline">
-                            Organisation
-                        </a>
+
+                    <th scope="col" class="govuk-table__header width-50">
+                        <table class="govuk-table govuk-!-margin-bottom-0">
+                            <tr class="govuk-table__row">
+                                <td class="govuk-body govuk-!-font-weight-bold govuk-!-padding-right-3">
+                                    <!-- <a href="#" class="govuk-link-bold govuk-link--no-underline">
+                                        Organisation
+                                    </a> -->
+                                    Organisation
+                                </td>
+                                <td class="govuk-body govuk-!-font-weight-bold govuk-!-width-one-quarter">
+                                    <!-- <a href="#" class="govuk-link-bold govuk-link--no-underline">
+                                        Permission
+                                    </a> -->
+                                    Permission
+                                </td>
+                            </tr>
+                        </table>
                     </th>
-                    <th scope="col" class="govuk-table__header">
-                        <a href="#" class="govuk-link-bold govuk-link--no-underline">
-                            Permission
-                        </a>
-                    </th>
-                    <th scope="col" class="govuk-table__header">
-                        <a href="<%=baseSortUri%>&sort=statusId&sortdir=<%= locals.sort.statusId.nextDirection %>"
+
+                    <th scope="col" class="govuk-table__header width-10">
+                        <!-- <a href="<%=baseSortUri%>&sort=statusId&sortdir=<%= locals.sort.statusId.nextDirection %>"
                             class="govuk-link-bold govuk-link--no-underline <% if (locals.sort.statusId.applied) { %>sorted dir-<%= (locals.sort.statusId.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">
                             Status
-                        </a>
+                        </a> -->
+                        Status
                     </th>
-                    <th scope="col" class="govuk-table__header">
-                        <a href="<%=baseSortUri%>&sort=lastLogin&sortdir=<%= locals.sort.lastLogin.nextDirection %>"
+                    <th scope="col" class="govuk-table__header width-10">
+                        <!-- <a href="<%=baseSortUri%>&sort=lastLogin&sortdir=<%= locals.sort.lastLogin.nextDirection %>"
                             class="govuk-link-bold govuk-link--no-underline <% if (locals.sort.lastLogin.applied) { %>sorted dir-<%= (locals.sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">
                             Last login
-                        </a>
+                        </a> -->
+                        Last login
                     </th>
                 </tr>
                 </thead>
+                
                 <tbody class="govuk-table__body">
-                <% if(locals.usersForOrganisation.users.length === 0) { %>
+                
+                    <% if(locals.usersForOrganisation.users.length === 0) { %>
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell" colspan="5"><span class="empty-state">No users found</span></td>
                     </tr>
                 <% } %>
+                
                 <% for(let i= 0; i < locals.usersForOrganisation.users.length; i++) {
                 const user = locals.usersForOrganisation.users[i]%>
+                
                 <tr class="govuk-table__row">
-                    <td class="govuk-table__cell">
+                    <th scope="row" class="govuk-table__cell">
                         <p class="service-link">
                             <a class="govuk-link-bold" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= user.id%>">
                                 <%= user.firstName %> <%= user.lastName %>
                             </a>
                         </p>
-                    </td>
+                    </th>
 
                     <% if (user.organisations.length > 0) { %>
-                        <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                            <% for(let j= 0; j < user.organisations.length; j++) {
-                                const orgName = user.organisations[j].name %>
-                                <%=orgName%>
-                                <br>
-                            <% } %>
-                        </td>
-                    <% } %>
-                    <% if (user.organisations.length > 0) { %>
                         <td class="govuk-table__cell govuk-body govuk-!-font-size-16" > 
-                            <% for(let j= 0; j < user.organisations.length; j++) {
-                                const permissionName = user.organisations[j].roleId === 10000 ? 'Approver' : 'End user';%>
-                                <%= permissionName %>
-                                <br>
-                            <% } %>
+                            <table class="govuk-table govuk-!-margin-bottom-0">
+                                <% for(let j= 0; j < user.organisations.length; j++) { %>
+                                    <tr class="govuk-table__row">
+                                        <!-- <td class="govuk-table__cell govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold"> -->
+                                        <td class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold govuk-!-padding-right-3">
+                                            <% const orgName = user.organisations[j].name %>
+                                            <%= orgName %>
+                                        </td>
+                                        <!-- <td class="govuk-table__cell govuk-body govuk-!-font-size-16 govuk-!-width-one-quarter"> -->
+                                        <td class="govuk-body govuk-!-font-size-16 govuk-!-width-one-quarter">
+                                            <% const permissionName = user.organisations[j].roleId === 10000 ? 'Approver' : 'End user'; %>
+                                            <%= permissionName %>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </table>
                         </td>
                     <% } else { %>
                         <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
