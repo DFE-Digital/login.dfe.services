@@ -15,11 +15,6 @@ const notificationClient = new NotificationClient({
 
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
-const buildBackLink = (req) => {
-  let backRedirect = `/my-services`;
-  return backRedirect;
-};
-
 const validate = async (req) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const endUser = await getUserDetails(req);
@@ -127,8 +122,7 @@ const get = async (req, res) => {
     req.session.user.serviceId = viewModel.service.serviceId
     req.session.user.roleIds = roles
   }
-  
-  viewModel.backLink = buildBackLink(req)
+
   return res.render('requestService/views/approveServiceRequest', viewModel) 
 };
 
@@ -139,7 +133,6 @@ const post = async (req, res) => {
 
   const model = await validate(req)
   const viewModel = await getViewModel(req, model)
-  viewModel.backLink = buildBackLink(req)
 
   if(viewModel.validationMessages.messages) {
     return res.render('requestService/views/approveServiceRequest', viewModel)
