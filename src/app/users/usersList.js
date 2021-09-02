@@ -36,9 +36,9 @@ const search = async (req) => {
       user.email = me.claims.email;
     }
     
-    const organisation = user.organisations.filter((x) => orgIds.includes(x.id));
+    const approverUserOrgs = user.organisations.filter((x) => orgIds.includes(x.id));
     user.statusId = mapUserStatus(user.statusId);
-    user.organisations = organisation;
+    user.organisations = approverUserOrgs;
   }
 
   return {
