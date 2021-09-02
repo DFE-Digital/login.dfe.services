@@ -65,13 +65,11 @@
             <aside class="govuk-!-margin-top-9">
                 <h2 class="govuk-heading-m">Related actions</h2>
                 <ul class="govuk-list">
-                    <% if (locals.organisationStatus !== 2) { %>
-                        <li>
-                            <a class="govuk-link-bold" href="/approvals/<%=locals.organisationDetails.organisation.id%>/users/new-user">
-                                Invite new user
-                            </a>
-                        </li>
-                    <% } %>
+                    <li>
+                        <a class="govuk-link-bold" href="<%=locals.inviteUserUrl%>">
+                            Invite new user
+                        </a>
+                    </li>
                     <li>
                         <a class="govuk-link-bold" href="<%=locals.urls.help%>/manage-users">
                             Help with managing users
@@ -82,13 +80,11 @@
                             See my profile
                         </a>
                     </li>
-                    <% if (locals.useRequestOrg) { %>
-                        <li>
-                            <a class="govuk-link-bold" href="/access-requests/<%=locals.organisationDetails.organisation.id%>/requests">
-                                See requests
-                            </a>
-                        </li>
-                    <% } %>
+                    <li>
+                        <a class="govuk-link-bold" href="<%=locals.requestsUrl%>">
+                            See requests
+                        </a>
+                    </li>
                 </ul>
             </aside>
         </div>
@@ -165,7 +161,7 @@
                 
                 <tbody class="govuk-table__body">
                 
-                    <% if(locals.usersForOrganisation.users.length === 0) { %>
+                <% if(locals.usersForOrganisation.users.length === 0) { %>
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell" colspan="5"><span class="empty-state">No users found</span></td>
                     </tr>
@@ -177,7 +173,7 @@
                 <tr class="govuk-table__row">
                     <th scope="row" class="govuk-table__cell">
                         <p class="service-link">
-                            <a class="govuk-link-bold" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= user.id%>">
+                            <a class="govuk-link-bold" href="#">
                                 <%= user.firstName %> <%= user.lastName %>
                             </a>
                         </p>
