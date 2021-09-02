@@ -134,7 +134,7 @@ const post = async (req, res) => {
 
   res.flash('title', `Success`);
   res.flash('heading', `Request rejected successfully`);
-  res.flash('message', `An email will be sent to the requestee informing them of the request rejection.`);
+  res.flash('message', `An email will be sent to the requestee informing them of their request rejection.`);
   
   res.redirect(`/my-services`);
 };
