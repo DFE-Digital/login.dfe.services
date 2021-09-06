@@ -90,7 +90,15 @@ const isSelfManagement = (req) => {
 };
 
 const isUserManagement = (req) => {
-  return req.query.manage_users === 'true';
+  return req.query.manage_users === 'true' || isOrganisationInvite(req) || isViewOrganisationRequests(req);
+};
+
+const isOrganisationInvite = (req) => {
+  return req.query.action === 'organisation-invite';
+};
+
+const isViewOrganisationRequests = (req) => {
+  return req.query.action === 'view-organisation-requests';
 };
 
 const getApproverOrgsFromReq = (req) => {
@@ -146,5 +154,7 @@ module.exports = {
   getOrgNaturalIdentifiers,
   getUserOrgsFromReq,
   isUserApprover,
-  isUserEndUser
+  isUserEndUser,
+  isOrganisationInvite,
+  isViewOrganisationRequests,
 };

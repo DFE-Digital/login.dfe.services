@@ -1,5 +1,14 @@
 'use strict';
-const { getApproverOrgsFromReq, getUserOrgsFromReq, isUserManagement, isUserApprover, isUserEndUser, getOrgNaturalIdentifiers } = require('./utils');
+const {
+  getApproverOrgsFromReq,
+  getUserOrgsFromReq,
+  isUserManagement,
+  isUserApprover,
+  isUserEndUser,
+  getOrgNaturalIdentifiers,
+  isOrganisationInvite,
+  isViewOrganisationRequests,
+} = require('./utils');
 const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common')
 
 const buildAdditionalOrgDetails = (userOrgs) => {
@@ -11,13 +20,11 @@ const buildAdditionalOrgDetails = (userOrgs) => {
 
 const renderSelectOrganisationPage = (req, res, model) => {
   const isManage = isUserManagement(req);
-  const isEdit = req.query.services === 'edit';
   res.render(
-    `users/views/${isManage || isEdit ? "selectOrganisation": "selectOrganisationRedesigned"}`, 
-    { ...model, currentPage: isManage || isEdit ? "users": "services" }
+    `users/views/${isManage ? "selectOrganisation": "selectOrganisationRedesigned"}`, 
+    { ...model, currentPage: isManage ? "users": "services" }
   );
 };
-
 
 const setUserOrgs =  (req) => {
   const isManage = isUserManagement(req);
@@ -27,6 +34,17 @@ const setUserOrgs =  (req) => {
   req.userOrganisations = (hasDualPermission && !isManage) || !isApprover ? getUserOrgsFromReq(req) : getApproverOrgsFromReq(req);
   return { isApprover, hasDualPermission, isEndUser, isManage };
 }
+
+const buildBackLink = (req) => {
+  let backRedirect;
+  const isManage = isUserManagement(req);
+  if (isManage) {
+    backRedirect = '/approvals/users';
+  } else {
+    backRedirect = '/my-services';
+  }
+  return backRedirect;
+};
 
 const get = async (req, res) => {
   const { isApprover, isEndUser, hasDualPermission, isManage } = setUserOrgs(req);
@@ -45,7 +63,7 @@ const get = async (req, res) => {
     currentPage: 'users',
     selectedOrganisation: req.session.user ? req.session.user.organisation : null,
     validationMessages: {},
-    backLink: '/my-services',
+    backLink: buildBackLink(req),
     isApprover,
     hasDualPermission
   };
@@ -60,7 +78,7 @@ const validate = (req) => {
     currentPage: 'users',
     selectedOrganisation: selectedOrg,
     validationMessages: {},
-    backLink: '/my-services'
+    backLink: buildBackLink(req),
   };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
@@ -99,13 +117,17 @@ const post = async (req, res) => {
       //show banner to an approver who is also an end-user
       res.flash('title', `Important`);
       res.flash('heading', `You are not an approver at: ${selectedOrg[0].organisation.name}`);
-      res.flash('message', `Because you are not an approver at this orgnaisation, you will need to request access to a service in order to use it. This request will be sent to approvers at <b>${selectedOrg[0].organisation.name}</b>.`);
+      res.flash('message', `Because you are not an approver at this organisation, you will need to request access to a service in order to use it. This request will be sent to approvers at <b>${selectedOrg[0].organisation.name}</b>.`);
     }
     return res.redirect(`/request-service/${model.selectedOrganisation}/users/${req.user.sub}`);
   } else if (req.query.services === 'edit') {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`);
+  } else if (isOrganisationInvite(req)) {
+    return res.redirect(`/approvals/${model.selectedOrganisation}/users/new-user`);
+  } else if (isViewOrganisationRequests(req)) {
+    return res.redirect(`/access-requests/${model.selectedOrganisation}/requests`);
   } else {
-    return res.redirect(`/approvals/${model.selectedOrganisation}/users`);
+    return res.redirect(`/approvals/users`);
   }
 };
 

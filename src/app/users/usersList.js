@@ -74,16 +74,14 @@ const buildInviteUserLink = (orgIds) => {
   if(orgIds && orgIds.length === 1) {
     return `/approvals/${orgIds[0]}/users/new-user`
   }
-  //TODO: https://dfe-secureaccess.atlassian.net/browse/NSA-5108
-  return ""
+  return '/approvals/select-organisation?action=organisation-invite';
 }
 
 const buildRequestsLink = (orgIds) => {
   if(orgIds && orgIds.length === 1) {
     return `/access-requests/${orgIds[0]}/requests`
   }
-  //TODO: https://dfe-secureaccess.atlassian.net/browse/NSA-5109
-  return ""
+  return '/approvals/select-organisation?action=view-organisation-requests';
 }
 
 const get = async (req, res) => {
