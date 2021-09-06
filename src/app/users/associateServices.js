@@ -1,14 +1,15 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg, isSelfManagement, isUserManagement, getApproverOrgsFromReq, isUserEndUser } = require('./utils');
+const { getAllServicesForUserInOrg, isSelfManagement, getApproverOrgsFromReq, isUserEndUser } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+const { actions } = require('../constans/actions');
 
 const policyEngine = new PolicyEngine(config);
 
 const renderAssociateServicesPage = (req, res, model) => {
-  const isSelfManage = isSelfManagement(req)
+  const isSelfManage = isSelfManagement(req);
   res.render(
     `users/views/${isSelfManage ? "associateServicesRedesigned" : "associateServices" }`,
     { ...model, currentPage: isSelfManage? "services": "users" }
@@ -24,12 +25,12 @@ const buildBackLink = (req) => {
   } else if (isSelfManagement(req)) {
     // we need to check if user is approver at only one org to then send back to main services page
     const approverOrgs = getApproverOrgsFromReq(req);
-    if(isUserEndUser(req) && approverOrgs.length > 0) {
-      backRedirect = '/approvals/select-organisation?services=add';
+    if (isUserEndUser(req) && approverOrgs.length > 0) {
+      backRedirect = `/approvals/select-organisation?action=${actions.ADD_SERVICE}`;
     } else if (approverOrgs.length === 1) {
       backRedirect = '/my-services';
     } else if (approverOrgs.length > 1) {
-      backRedirect = '/approvals/select-organisation?services=add';
+      backRedirect = `/approvals/select-organisation?action=${actions.ADD_SERVICE}`;
     }
   } else {
     backRedirect = 'services';

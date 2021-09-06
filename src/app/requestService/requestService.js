@@ -5,6 +5,7 @@ const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common');
+const { actions } = require('../constans/actions');
 
 const policyEngine = new PolicyEngine(config);
 
@@ -13,10 +14,10 @@ const renderAssociateServicesPage = (_req, res, model) => {
 };
 
 const buildBackLink = (req) => {
-  let backRedirect = '/approvals/select-organisation?services=request';
-  if(req.session.user) {
-    const orgCount = req.session.user.orgCount
-    if(orgCount === 1) {
+  let backRedirect = `/approvals/select-organisation?action=${actions.REQUEST_SERVICE}`;
+  if (req.session.user) {
+    const orgCount = req.session.user.orgCount;
+    if (orgCount === 1) {
       backRedirect = '/my-services';
     }
   }
@@ -62,7 +63,7 @@ const get = async (req, res) => {
   }
 
   //Recording request-a-service banner acknowledgement by end-user
-  await recordRequestServiceBannerAck(req.session.user.uid)
+  await recordRequestServiceBannerAck(req.session.user.uid);
 
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
 

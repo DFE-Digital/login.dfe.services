@@ -5,6 +5,7 @@ const {
   getOrganisationAndServiceForInvitation,
 } = require('./../../infrastructure/organisations');
 const { emailPolicy } = require('login.dfe.validation');
+const { actions } = require('../constans/actions');
 
 const { getApproverOrgsFromReq } = require('./utils');
 
@@ -12,7 +13,7 @@ const buildBackLink = (req) => {
   let backRedirect;
   const approverOrgs = getApproverOrgsFromReq(req);
   if (approverOrgs.length !== 1) {
-    backRedirect = '/approvals/select-organisation?action=organisation-invite';
+    backRedirect = `/approvals/select-organisation?action=${actions.ORG_INVITE}`;
   } else {
     backRedirect = '/approvals/users';
   }
