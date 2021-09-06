@@ -25,7 +25,7 @@ const renderConfirmNewUserPage = (req, res, model) => {
 };
 
 const buildBackLink = (req, services) => {
-  let backRedirect = `/approvals/${req.params.orgId}/users`;
+  let backRedirect = '/approvals/users';
   if (req.params.uid) {
     backRedirect += `/${req.params.uid}`;
   }
@@ -39,7 +39,7 @@ const buildBackLink = (req, services) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
 
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
@@ -81,11 +81,11 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
   if (!req.userOrganisations) {
     logger.warn('No req.userOrganisations on post of confirmNewUser');
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
 
   let uid = req.params.uid;

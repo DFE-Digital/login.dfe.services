@@ -72,7 +72,7 @@ const getAllAvailableServices = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
@@ -133,7 +133,7 @@ const validate = async (req) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
 
   const model = await validate(req);
