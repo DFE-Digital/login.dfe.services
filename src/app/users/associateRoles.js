@@ -15,7 +15,7 @@ const renderAssociateRolesPage = (req, res, model) => {
 };
 
 const buildBackLink = (req, currentServiceIndex) => {
-  let backRedirect = '/approvals/users';
+  let backRedirect = `/approvals/${req.params.orgId}/users`;
   if (req.params.uid) {
     backRedirect += `/${req.params.uid}`;
   }

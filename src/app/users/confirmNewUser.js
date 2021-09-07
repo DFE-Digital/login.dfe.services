@@ -25,7 +25,7 @@ const renderConfirmNewUserPage = (req, res, model) => {
 };
 
 const buildBackLink = (req, services) => {
-  let backRedirect = '/approvals/users';
+  let backRedirect = `/approvals/${req.params.orgId}/users`;
   if (req.params.uid) {
     backRedirect += `/${req.params.uid}`;
   }
@@ -241,7 +241,7 @@ const post = async (req, res) => {
         ? `User ${req.session.user.email} added to organisation`
         : `Invitation email sent to ${req.session.user.email}`,
     );
-    res.redirect(`/approvals/${organisationId}/users`);
+    res.redirect(`/approvals/users`);
   } else {
     const getAllUserDetails = await getById(uid, req.id);
     if (!getAllUserDetails) {
@@ -282,6 +282,7 @@ const post = async (req, res) => {
       res.redirect(`/my-services`);
     } else {
       res.flash('info', 'Services successfully added');
+      // TODO NSA-5157 review this redirect once user details page is refactored with all orgs
       res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`);
     }
   }

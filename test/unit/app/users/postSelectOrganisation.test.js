@@ -61,10 +61,10 @@ describe('when selecting an organisation', () => {
     postMultipleOrgSelection = require('./../../../../src/app/users/selectOrganisation').post;
   });
 
-  it('then it should redirect to the selected organisation', async () => {
+  it('then it should redirect to the users list', async () => {
     await postMultipleOrgSelection(req, res);
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.body.selectedOrganisation}/users`);
+    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/users`);
   });
 
   it('then it should render validation message if no selected organisation', async () => {
