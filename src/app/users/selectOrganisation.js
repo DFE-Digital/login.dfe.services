@@ -1,6 +1,18 @@
 'use strict';
-const { getApproverOrgsFromReq, getUserOrgsFromReq, isUserManagement, isUserApprover, isUserEndUser, getOrgNaturalIdentifiers } = require('./utils');
-const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common')
+const {
+  getApproverOrgsFromReq,
+  getUserOrgsFromReq,
+  isUserManagement,
+  isUserApprover,
+  isUserEndUser,
+  getOrgNaturalIdentifiers,
+  isOrganisationInvite,
+  isViewOrganisationRequests,
+  isRequestService,
+  isAddService,
+  isEditService,
+} = require('./utils');
+const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common');
 
 const buildAdditionalOrgDetails = (userOrgs) => {
   userOrgs.forEach((userOrg) => {
@@ -11,29 +23,69 @@ const buildAdditionalOrgDetails = (userOrgs) => {
 
 const renderSelectOrganisationPage = (req, res, model) => {
   const isManage = isUserManagement(req);
-  const isEdit = req.query.services === 'edit';
-  res.render(
-    `users/views/${isManage || isEdit ? "selectOrganisation": "selectOrganisationRedesigned"}`, 
-    { ...model, currentPage: isManage || isEdit ? "users": "services" }
-  );
+  res.render(`users/views/${isManage ? 'selectOrganisation' : 'selectOrganisationRedesigned'}`, {
+    ...model,
+    currentPage: isManage ? 'users' : 'services',
+  });
 };
 
+const handleRedirectAfterOrgSelected = (req, res, model) => {
+  const selectedOrg = model.organisations.filter((o) => o.organisation.id === model.selectedOrganisation);
+  const isApproverForSelectedOrg = selectedOrg.filter((r) => r.role.id === 10000).length > 0;
 
-const setUserOrgs =  (req) => {
+  if (isAddService(req) || isRequestService(req)) {
+    if (isApproverForSelectedOrg) {
+      return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
+    }
+
+    if (isApprover && !isManage) {
+      //show banner to an approver who is also an end-user
+      res.flash('title', `Important`);
+      res.flash('heading', `You are not an approver at: ${selectedOrg[0].organisation.name}`);
+      res.flash(
+        'message',
+        `Because you are not an approver at this organisation, you will need to request access to a service in order to use it. This request will be sent to approvers at <b>${selectedOrg[0].organisation.name}</b>.`,
+      );
+    }
+    return res.redirect(`/request-service/${model.selectedOrganisation}/users/${req.user.sub}`);
+  } else if (isEditService(req)) {
+    return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`);
+  } else if (isOrganisationInvite(req)) {
+    return res.redirect(`/approvals/${model.selectedOrganisation}/users/new-user`);
+  } else if (isViewOrganisationRequests(req)) {
+    return res.redirect(`/access-requests/${model.selectedOrganisation}/requests`);
+  } else {
+    return res.redirect(`/approvals/users`);
+  }
+};
+
+const setUserOrgs = (req) => {
   const isManage = isUserManagement(req);
   const isApprover = isUserApprover(req);
   const isEndUser = isUserEndUser(req);
   const hasDualPermission = isEndUser && isApprover;
-  req.userOrganisations = (hasDualPermission && !isManage) || !isApprover ? getUserOrgsFromReq(req) : getApproverOrgsFromReq(req);
+  req.userOrganisations =
+    (hasDualPermission && !isManage) || !isApprover ? getUserOrgsFromReq(req) : getApproverOrgsFromReq(req);
   return { isApprover, hasDualPermission, isEndUser, isManage };
-}
+};
+
+const buildBackLink = (req) => {
+  let backRedirect;
+  const isManage = isUserManagement(req);
+  if (isManage) {
+    backRedirect = '/approvals/users';
+  } else {
+    backRedirect = '/my-services';
+  }
+  return backRedirect;
+};
 
 const get = async (req, res) => {
   const { isApprover, isEndUser, hasDualPermission, isManage } = setUserOrgs(req);
 
-  if(isEndUser && !isApprover && isManage) {
+  if (isEndUser && !isApprover && isManage) {
     //Recording request-a-service banner acknowledgement by end-user
-    await recordRequestServiceBannerAck(req.session.user.uid)
+    await recordRequestServiceBannerAck(req.session.user.uid);
   }
 
   buildAdditionalOrgDetails(req.userOrganisations);
@@ -45,9 +97,9 @@ const get = async (req, res) => {
     currentPage: 'users',
     selectedOrganisation: req.session.user ? req.session.user.organisation : null,
     validationMessages: {},
-    backLink: '/my-services',
+    backLink: buildBackLink(req),
     isApprover,
-    hasDualPermission
+    hasDualPermission,
   };
 
   renderSelectOrganisationPage(req, res, model);
@@ -60,7 +112,7 @@ const validate = (req) => {
     currentPage: 'users',
     selectedOrganisation: selectedOrg,
     validationMessages: {},
-    backLink: '/my-services'
+    backLink: buildBackLink(req),
   };
 
   if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
@@ -73,10 +125,10 @@ const post = async (req, res) => {
   const { isApprover, hasDualPermission, isManage } = setUserOrgs(req);
 
   buildAdditionalOrgDetails(req.userOrganisations);
-  
+
   const model = validate(req);
-  model.isApprover = isApprover
-  model.hasDualPermission = hasDualPermission
+  model.isApprover = isApprover;
+  model.hasDualPermission = hasDualPermission;
 
   // persist selected org in session
   if (req.session.user) {
@@ -87,30 +139,11 @@ const post = async (req, res) => {
     model.csrfToken = req.csrfToken();
     return renderSelectOrganisationPage(req, res, model);
   }
-  const selectedOrg = model.organisations.filter(o => o.organisation.id === model.selectedOrganisation)
-  const isApproverForSelectedOrg = selectedOrg.filter(r => r.role.id === 10000).length > 0
 
-  if (req.query.services === 'add' || req.query.services === 'request') {
-    if(isApproverForSelectedOrg) {
-      return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
-    }
-
-    if(isApprover && !isManage) {
-      //show banner to an approver who is also an end-user
-      res.flash('title', `Important`);
-      res.flash('heading', `You are not an approver at: ${selectedOrg[0].organisation.name}`);
-      res.flash('message', `Because you are not an approver at this orgnaisation, you will need to request access to a service in order to use it. This request will be sent to approvers at <b>${selectedOrg[0].organisation.name}</b>.`);
-    }
-    return res.redirect(`/request-service/${model.selectedOrganisation}/users/${req.user.sub}`);
-  } else if (req.query.services === 'edit') {
-    return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`);
-  } else {
-    return res.redirect(`/approvals/${model.selectedOrganisation}/users`);
-  }
+  handleRedirectAfterOrgSelected(req, res, model);
 };
 
 module.exports = {
   get,
   post,
 };
-

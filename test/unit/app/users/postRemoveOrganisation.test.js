@@ -172,7 +172,7 @@ describe('when removing organisation access', () => {
     await postRemoveOrganisationAccess(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users`);
+    expect(res.redirect.mock.calls[0][0]).toBe('/approvals/users');
   });
 
   it('then a flash message is shown to the user', async () => {

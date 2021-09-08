@@ -16,6 +16,8 @@ jest.mock('login.dfe.dao', () => {
 
 const dao = require('login.dfe.dao');
 
+const { actions } = require('../../../../src/app/constans/actions');
+
 describe('when displaying the select service with organisation page', () => {
   let req;
   let res;
@@ -32,7 +34,7 @@ describe('when displaying the select service with organisation page', () => {
       user: {},
     };
     req.query = {
-      action: 'edit',
+      action: actions.EDIT_SERVICE,
     };
     res = mockResponse();
 
@@ -60,19 +62,19 @@ describe('when displaying the select service with organisation page', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       currentPage: 'services',
       backLink: '/my-services',
-      action: 'edit',
+      action: actions.EDIT_SERVICE,
       title: 'Edit which service?',
     });
   });
 
   it('then it should match expected model for remove action', async () => {
-    req.query.action = 'remove';
+    req.query.action = actions.REMOVE_SERVICE;
     await getServiceOrgSelection(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       currentPage: 'services',
       backLink: '/my-services',
-      action: 'remove',
+      action: actions.REMOVE_SERVICE,
       title: 'Remove which service?',
     });
   });
