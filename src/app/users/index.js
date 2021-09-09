@@ -29,6 +29,7 @@ const users = (csrf) => {
 
   router.use(isLoggedIn);
 
+  // Manage users page - users list page
   router.get('/users', csrf, isApproverInSomeOrgs, asyncWrapper(getUsersList));
   router.post('/users', csrf, isApproverInSomeOrgs, asyncWrapper(postUserList));
 
@@ -53,13 +54,16 @@ const users = (csrf) => {
   router.get('/:orgId/users/:uid/confirm-details', csrf, isApprover, asyncWrapper(getConfirmNewUser));
   router.post('/:orgId/users/:uid/confirm-details', csrf, isApprover, asyncWrapper(postConfirmNewUser));
 
-  router.get(
-    '/:orgId/users/:uid',
-    asyncWrapper((req, res) => {
-      res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
-    }),
-  );
-  router.get('/:orgId/users/:uid/services', csrf, isApprover, asyncWrapper(getServices));
+  // router.get(
+  //   '/:orgId/users/:uid',
+  //   asyncWrapper((req, res) => {
+  //     res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
+  //   }),
+  // );
+  // router.get('/:orgId/users/:uid/services', csrf, isApprover, asyncWrapper(getServices));
+
+  // User details page within manage users
+  router.get('/users/:uid', csrf, isApproverInSomeOrgs, asyncWrapper(getServices));
 
   router.get('/:orgId/users/:uid/services/:sid', csrf, isApprover, asyncWrapper(getEditService));
   router.post('/:orgId/users/:uid/services/:sid', csrf, isApprover, asyncWrapper(postEditService));

@@ -1,16 +1,64 @@
 <div class="govuk-width-container">
-    <%- include('summaryPartial', {area: 'services'}); %>
-    <% let hasServices = false %>
+
+    <% if (locals.flash.info) { %>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <div class="notification notification-success">
+                    <%= locals.flash.info %>
+                </div>
+            </div>
+        </div>
+    <% } %>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                <span class="govuk-caption-xl"><%= locals.user.email %></span>
+                <%= locals.user.firstName%> <%= locals.user.lastName%>
+            </h1>
+            <dl class="inline">
+                <dt class="govuk-label">Account Status:</dt>
+                <%
+                    let tagColour = 'govuk-tag--'; 
+                    if(locals.user.status.id === 1) {
+                        tagColour += 'green';
+                    } else if(locals.user.status.id === 0) {
+                        tagColour += 'red';
+                    }
+                %>
+                <dd class="govuk-label govuk-tag <%= tagColour %>"><strong><%=locals.user.status.description%></strong></dd>
+            </dl>
+        </div>
+
+    </div>
+
+    <%
+        for (let i = 0; i < visibleUserOrgs.length; i++) {
+            const userOrg = visibleUserOrgs[i];
+            const organisation = userOrg.organisation;
+            let hasServices = userOrg.services.length > 0;
+    %>
 
     <article class="organisation-services">
         <section class="organisation">
             <header>
-                <h3 class="govuk-heading-s spacer-heading"><%= locals.organisationDetails.organisation.name%></h3>
+                <h3 class="govuk-heading-s spacer-heading"><%= organisation.name%></h3>
             </header>
+            <ul class="govuk-list govuk-!-font-size-16 govuk-!-margin-bottom-0">
+                <li>Permission: <%= userOrg.role.name %></li>
+                <!-- Do not show the add services link if the user is managing its own account -->
+                <% if (!locals.isSelfManage) { %>
+                    <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/associate-services">Add services</a></li>
+                <% } %>
+                <li><a class="govuk-link" href=""></a></li>
+                <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/edit-permission"><%=userOrg.role.id === 10000 ? 'Remove approver access' : 'Make approver';%></a></li>
+                <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/remove-organisation">Remove from organisation</a></li>
+                <% if (locals.isInvitation) { %>
+                    <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/resend-invitation">Resend invitation email</a></li>
+                <% } %>
+            </ul>
         </section>
         <section class="services">
-            <% if (locals.services.length > 0) { %>
-                <% hasServices = true %>
+            <% if (hasServices) { %>
                 <table class="custom-table data no-borders">
                     <thead>
                     <tr>
@@ -20,18 +68,18 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <% for (let i = 0; i < locals.services.length; i++) { %>
-                        <% const service = locals.services[i]; %>
+                    <% for (let j = 0; j < userOrg.services.length; j++) { %>
+                        <% const service = userOrg.services[j]; %>
                         <tr class="<%= service.disabled ? 'pending' : '' %>">
                             <td>
                                 <% if (service.disabled) { %>
                                     <p class="govuk-!-margin-0"><%=service.name%></p>
                                 <% } else { %>
-                                <a class="govuk-link-bold" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>?manage_users=true"><%=service.name%></a>
+                                <a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>?manage_users=true"><%=service.name%></a>
                                 <% } %>
                             </td>
-                            <% if (service.dateActivated) { %>
-                                <td><%=locals.moment(service.dateActivated).format('DD MMM YYYY')%></td>
+                            <% if (service.requestDate) { %>
+                                <td><%=locals.moment(service.requestDate).format('DD MMM YYYY')%></td>
                             <%} else {%>
                                 <td>Pending</td>
                             <%}%>
@@ -40,13 +88,13 @@
                     <% } %>
                     </tbody>
                 </table>
-                <% } %>
+            <% } else { %>
+                <div class="empty-state">
+                    <p class="govuk-body"><%=user.firstName%> <%=user.lastName%> does not have access to any services in this organisation.</p>
+                </div>
+            <% } %>
         </section>
     </article>
 
-    <% if (!hasServices) { %>
-        <div class="empty-state">
-            <p class="govuk-body"><%=user.firstName%> <%=user.lastName%> does not have access to any services.</p>
-        </div>
     <% } %>
 </div>
