@@ -33,8 +33,7 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    // TODO NSA-5157 review this redirect once user details page is refactored with all orgs
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
+    return res.redirect(`/approvals/users/${req.params.uid}`);
   }
   const uid = req.params.uid;
   const organisationId = req.params.orgId;

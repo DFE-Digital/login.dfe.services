@@ -282,8 +282,7 @@ const post = async (req, res) => {
       res.redirect(`/my-services`);
     } else {
       res.flash('info', 'Services successfully added');
-      // TODO NSA-5157 review this redirect once user details page is refactored with all orgs
-      res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`);
+      res.redirect(`/approvals/users/${req.session.user.uid}`);
     }
   }
 };
