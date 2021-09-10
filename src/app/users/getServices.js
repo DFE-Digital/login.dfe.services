@@ -1,5 +1,5 @@
 'use strict';
-const { getUserDetails, getAllServicesForUserInOrg, isSelfManagement, getApproverOrgsFromReq } = require('./utils');
+const { getUserDetails, isSelfManagement, getApproverOrgsFromReq } = require('./utils');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const Account = require('./../../infrastructure/account');
 const { getOrganisationAndServiceForUser } = require('./../../infrastructure/organisations');
