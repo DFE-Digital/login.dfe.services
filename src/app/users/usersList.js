@@ -3,6 +3,7 @@ const { mapUserStatus } = require('./../../infrastructure/utils');
 const { getAllUsersForOrg } = require('../../infrastructure/search');
 const { getById } = require('../../infrastructure/account');
 const { getApproverOrgsFromReq } = require('./utils');
+const { actions } = require('../constans/actions');
 
 const clearUserSessionData = (req) => {
   if (req.session.user) {
@@ -39,14 +40,14 @@ const search = async (req) => {
   }
 
   const usersForOrganisation = await getAllUsersForOrg(page, approverOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id);
-  
+
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
     const user = usersForOrganisation.users[i];
     if (req.user.sub === user.id) {
       const me = await getById(req.user.sub);
       user.email = me.claims.email;
     }
-    
+
     const approverUserOrgs = user.organisations.filter((x) => approverOrgIds.includes(x.id));
     user.statusId = mapUserStatus(user.statusId);
     user.organisations = approverUserOrgs;
@@ -84,27 +85,25 @@ const search = async (req) => {
 };
 
 const buildInviteUserLink = (orgIds) => {
-  if(orgIds && orgIds.length === 1) {
-    return `/approvals/${orgIds[0]}/users/new-user`
+  if (orgIds && orgIds.length === 1) {
+    return `/approvals/${orgIds[0]}/users/new-user`;
   }
-  //TODO: https://dfe-secureaccess.atlassian.net/browse/NSA-5108
-  return ""
-}
+  return `/approvals/select-organisation?action=${actions.ORG_INVITE}`;
+};
 
 const buildRequestsLink = (orgIds) => {
-  if(orgIds && orgIds.length === 1) {
-    return `/access-requests/${orgIds[0]}/requests`
+  if (orgIds && orgIds.length === 1) {
+    return `/access-requests/${orgIds[0]}/requests`;
   }
-  //TODO: https://dfe-secureaccess.atlassian.net/browse/NSA-5109
-  return ""
-}
+  return `/approvals/select-organisation?action=${actions.VIEW_ORG_REQUESTS}`;
+};
 
 const get = async (req, res) => {
   clearUserSessionData(req);
 
   const result = await search(req);
-  const inviteUserUrl = buildInviteUserLink(result.approverOrgIds)
-  const requestsUrl = buildRequestsLink(result.approverOrgIds)
+  const inviteUserUrl = buildInviteUserLink(result.approverOrgIds);
+  const requestsUrl = buildRequestsLink(result.approverOrgIds);
 
   return res.render('users/views/usersList', {
     title: 'Manage users',

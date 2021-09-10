@@ -14,6 +14,8 @@ jest.mock('./../../../../src/infrastructure/account', () => ({
   getInvitationByEmail: jest.fn(),
 }));
 
+const { actions } = require('../../../../src/app/constans/actions');
+
 const {
   getOrganisationAndServiceForUser,
   getOrganisationAndServiceForInvitation,
@@ -25,6 +27,8 @@ describe('when entering a new users details', () => {
   let res;
 
   let postNewUserDetails;
+
+  let backRedirect;
 
   beforeEach(() => {
     req = mockRequest();
@@ -63,6 +67,8 @@ describe('when entering a new users details', () => {
     getOrganisationAndServiceForUser.mockReset().mockReturnValue(null);
 
     postNewUserDetails = require('./../../../../src/app/users/newUserDetails').post;
+
+    backRedirect = `/approvals/select-organisation?action=${actions.ORG_INVITE}`
   });
 
   it('then it should include user details in session', async () => {
@@ -86,7 +92,7 @@ describe('when entering a new users details', () => {
       firstName: '',
       lastName: 'Doe',
       email: 'johndoe@gmail.com',
-      backLink: './',
+      backLink: backRedirect,
       currentPage: 'users',
       isDSIUser: false,
       organisationId: 'org1',
@@ -109,7 +115,7 @@ describe('when entering a new users details', () => {
       firstName: 'John',
       lastName: '',
       email: 'johndoe@gmail.com',
-      backLink: './',
+      backLink: backRedirect,
       currentPage: 'users',
       isDSIUser: false,
       organisationId: 'org1',
@@ -132,7 +138,7 @@ describe('when entering a new users details', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: '',
-      backLink: './',
+      backLink: backRedirect,
       currentPage: 'users',
       isDSIUser: false,
       organisationId: 'org1',
@@ -155,7 +161,7 @@ describe('when entering a new users details', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'not-an-email',
-      backLink: './',
+      backLink: backRedirect,
       currentPage: 'users',
       isDSIUser: false,
       organisationId: 'org1',
@@ -195,7 +201,7 @@ describe('when entering a new users details', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'johndoe@gmail.com',
-      backLink: './',
+      backLink: backRedirect,
       currentPage: 'users',
       isDSIUser: false,
       organisationId: 'org1',
@@ -228,7 +234,7 @@ describe('when entering a new users details', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'johndoe@gmail.com',
-      backLink: './',
+      backLink: backRedirect,
       currentPage: 'users',
       isDSIUser: false,
       organisationId: 'org1',

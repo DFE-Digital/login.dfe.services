@@ -8,6 +8,7 @@ const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+const { actions } = require('../constans/actions');
 
 const renderRemoveServicePage = (req, res, model) => {
   const isManage = isUserManagement(req);
@@ -21,7 +22,7 @@ const buildBackLink = (req) => {
   if (isUserManagement(req)) {
     return `/approvals/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}?manage_users=true`;
   }
-  return '/approvals/select-organisation-service?action=remove';
+  return `/approvals/select-organisation-service?action=${actions.REMOVE_SERVICE}`;
 };
 
 const buildCancelLink = (req) => {
