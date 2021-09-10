@@ -29,7 +29,7 @@ const renderSelectOrganisationPage = (req, res, model) => {
   });
 };
 
-const handleRedirectAfterOrgSelected = (req, res, model) => {
+const handleRedirectAfterOrgSelected = (req, res, model, isApprover, isManage) => {
   const selectedOrg = model.organisations.filter((o) => o.organisation.id === model.selectedOrganisation);
   const isApproverForSelectedOrg = selectedOrg.filter((r) => r.role.id === 10000).length > 0;
 
@@ -140,7 +140,7 @@ const post = async (req, res) => {
     return renderSelectOrganisationPage(req, res, model);
   }
 
-  handleRedirectAfterOrgSelected(req, res, model);
+  handleRedirectAfterOrgSelected(req, res, model, isApprover, isManage);
 };
 
 module.exports = {
