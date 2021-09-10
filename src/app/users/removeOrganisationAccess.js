@@ -26,7 +26,7 @@ const get = async (req, res) => {
       email: req.session.user.email,
     },
     currentPage: 'users',
-    backLink: 'services',
+    backLink: `/approvals/users/${req.params.uid}`,
     services: servicesForUser,
   });
 };
