@@ -2,12 +2,15 @@
 const { getUserDetails, isSelfManagement, getApproverOrgsFromReq } = require('./utils');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const Account = require('./../../infrastructure/account');
-const { getOrganisationAndServiceForUser } = require('./../../infrastructure/organisations');
+const {
+  getOrganisationAndServiceForUser,
+  getOrganisationAndServiceForInvitation,
+} = require('./../../infrastructure/organisations');
 
 const action = async (req, res) => {
   const user = await getUserDetails(req);
-  // TODO check what happens with invited users (test with Brian Corr DfE)
-  const userMigratedDetails = req.params.uid.startsWith('inv-')
+  const isInvitation = req.params.uid.startsWith('inv-');
+  const userMigratedDetails = isInvitation
     ? await Account.getInvitationById(req.params.uid.substr(4))
     : await Account.getById(req.params.uid);
   let isMigrated;
@@ -16,7 +19,13 @@ const action = async (req, res) => {
   }
 
   const approverOrgs = getApproverOrgsFromReq(req);
-  const userOrgs = await getOrganisationAndServiceForUser(req.params.uid, req.id);
+  let userOrgs;
+  if (isInvitation) {
+    const invitationId = req.params.uid.substr(4);
+    userOrgs = await getOrganisationAndServiceForInvitation(invitationId, req.id);
+  } else {
+    userOrgs = await getOrganisationAndServiceForUser(req.params.uid, req.id);
+  }
 
   // get array of org ids where current user is an approver
   const visibleUserOrgs = userOrgs.filter((x) => approverOrgs.find((y) => y.organisation.id === x.organisation.id));
