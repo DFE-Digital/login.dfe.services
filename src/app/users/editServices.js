@@ -19,7 +19,7 @@ const renderEditServicePage = (req, res, model) => {
 };
 
 const buildBackLink = (req) => {
-  let backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/services`;
+  let backRedirect = `/approvals/users/${req.params.uid}`;
   if (!isUserManagement(req)) {
     backRedirect = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
   }
