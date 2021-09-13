@@ -40,7 +40,7 @@ const getViewModel = async (req) => {
   const application = await getApplication(req.params.sid, req.id);
   return {
     backLink: buildBackLink(req),
-    cancelLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/services`,
+    cancelLink: `/approvals/users/${req.params.uid}`,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisationDetails,
