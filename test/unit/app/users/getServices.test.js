@@ -36,7 +36,29 @@ jest.mock('login.dfe.dao', () => {
   };
 });
 
-const { getUserDetails, getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
+const mockGetOrganisationAndServiceForUser = jest.fn().mockReturnValue([
+  {
+    organisation: {
+      id: 'org1',
+    },
+    services: [
+      {
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+      },
+    ],
+  },
+]);
+
+jest.mock('./../../../../src/infrastructure/organisations', () => {
+  return {
+    getOrganisationAndServiceForUser: mockGetOrganisationAndServiceForUser,
+  };
+});
+
+const { getUserDetails, getApproverOrgsFromReq } = require('./../../../../src/app/users/utils');
 const { getAllServices } = require('./../../../../src/infrastructure/applications');
 const getServices = require('./../../../../src/app/users/getServices');
 
@@ -69,11 +91,11 @@ describe('when displaying the users services', () => {
     req.userOrganisations = [
       {
         organisation: {
-          id: 'organisationId',
+          id: 'org1',
           name: 'organisationName',
         },
         role: {
-          id: 0,
+          id: 10000,
           name: 'category name',
         },
       },
@@ -84,16 +106,6 @@ describe('when displaying the users services', () => {
     getUserDetails.mockReturnValue({
       id: 'user1',
     });
-
-    getAllServicesForUserInOrg.mockReset();
-    getAllServicesForUserInOrg.mockReturnValue([
-      {
-        id: 'service1',
-        dateActivated: '10/10/2018',
-        name: 'service name',
-        status: 'active',
-      },
-    ]);
 
     getAllServices.mockReset();
     getAllServices.mockReturnValue({
@@ -110,6 +122,20 @@ describe('when displaying the users services', () => {
         },
       ],
     });
+
+    getApproverOrgsFromReq.mockReset();
+    getApproverOrgsFromReq.mockReturnValue([
+      {
+        organisation: {
+          id: 'org1',
+          name: 'organisationName',
+        },
+        role: {
+          id: 10000,
+          name: 'category name',
+        },
+      },
+    ]);
   });
 
   it('then it should get the users details', async () => {
@@ -125,10 +151,9 @@ describe('when displaying the users services', () => {
   it('then it should get the services for a user', async () => {
     await getServices(req, res);
 
-    expect(getAllServicesForUserInOrg.mock.calls).toHaveLength(1);
-    expect(getAllServicesForUserInOrg.mock.calls[0][0]).toBe('user1');
-    expect(getAllServicesForUserInOrg.mock.calls[0][1]).toBe('org1');
-    expect(getAllServicesForUserInOrg.mock.calls[0][2]).toBe('correlationId');
+    expect(mockGetOrganisationAndServiceForUser.mock.calls).toHaveLength(1);
+    expect(mockGetOrganisationAndServiceForUser.mock.calls[0][0]).toBe('user1');
+    expect(mockGetOrganisationAndServiceForUser.mock.calls[0][1]).toBe('correlationId');
   });
 
   it('then it should return the services view', async () => {
