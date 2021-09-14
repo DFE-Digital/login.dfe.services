@@ -12,20 +12,31 @@ const clearUserSessionData = (req) => {
 };
 
 const search = async (req) => {
-  const approverOrgs = getApproverOrgsFromReq(req);
   const paramsSource = req.method === 'POST' ? req.body : req.query;
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
   if (isNaN(page)) {
     page = 1;
   }
+  
   let sortBy = paramsSource.sort ? paramsSource.sort : 'searchableName';
   let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
 
-  let approverOrgIds = [];
-  for (let i = 0; i < approverOrgs.length; i++) {
-    const org = approverOrgs[i];
-    const orgId = org.organisation.id;
-    approverOrgIds.push(orgId);
+  const approverOrgs = getApproverOrgsFromReq(req);
+
+  let approverOrgIds = []
+  let selectedOrganisations = []
+
+  if(req.body && req.body.selectedOrganisation) {
+    const selectedOrgIds = req.body.selectedOrganisation
+    approverOrgIds = selectedOrgIds
+    selectedOrganisations = (typeof selectedOrgIds === 'string') ? Array(selectedOrgIds) : selectedOrgIds 
+  }
+  else {
+    for(let i= 0; i < approverOrgs.length; i++) {
+      const org = approverOrgs[i]
+      const orgId = org.organisation.id
+      approverOrgIds.push(orgId)
+    }
   }
 
   const usersForOrganisation = await getAllUsersForOrg(page, approverOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id);
@@ -48,6 +59,8 @@ const search = async (req) => {
     sortOrder: sortAsc ? 'asc' : 'desc',
     usersForOrganisation,
     approverOrgIds,
+    selectedOrganisations,
+    approverOrgs,
     numberOfPages: usersForOrganisation.numberOfPages,
     totalNumberOfResults: usersForOrganisation.totalNumberOfResults,
     sort: {
@@ -96,6 +109,57 @@ const get = async (req, res) => {
     title: 'Manage users',
     csrfToken: req.csrfToken(),
     currentPage: 'users',
+    approverOrgs: result.approverOrgs,
+    selectedOrganisations: [],
+    usersForOrganisation: result.usersForOrganisation,
+    page: result.page,
+    sort: result.sort,
+    sortBy: result.sortBy,
+    sortOrder: result.sortOrder,
+    numberOfPages: result.numberOfPages,
+    totalNumberOfResults: result.totalNumberOfResults,
+    inviteUserUrl,
+    requestsUrl,
+    validations: {},
+    showFilter: false
+  });
+};
+
+const validateOrgSelection = (req, model) => {
+  const selectedOrg = req.body.selectedOrganisation;
+  if (selectedOrg === undefined || selectedOrg === null) {
+    model.validations.selectedOrganisation = 'Select at least one organisation';
+  }
+};
+
+
+const post = async (req, res) => {
+  const reqBody = req.body
+
+  let model = {
+    validations: {},
+    showFilter: reqBody.showFilter || (reqBody.isFilterToggle === "true")
+  };
+
+  if(reqBody.showFilter) {
+    model.showFilter = !(model.showFilter === "true")
+  }
+
+  if (reqBody.applyFilter) {
+    validateOrgSelection(req, model)
+  }
+
+  const result = await search(req);
+  const inviteUserUrl = buildInviteUserLink(result.approverOrgIds)
+  const requestsUrl = buildRequestsLink(result.approverOrgIds)
+
+  return res.render('users/views/usersList', {
+    ...model,
+    title: 'Manage users',
+    csrfToken: req.csrfToken(),
+    currentPage: 'users',
+    approverOrgs: result.approverOrgs,
+    selectedOrganisations: result.selectedOrganisations,
     usersForOrganisation: result.usersForOrganisation,
     page: result.page,
     sort: result.sort,
@@ -108,23 +172,7 @@ const get = async (req, res) => {
   });
 };
 
-const post = async (req, res) => {
-  const result = await search(req);
-  return res.render('users/views/usersList', {
-    title: 'Manage users',
-    csrfToken: req.csrfToken(),
-    currentPage: 'users',
-    usersForOrganisation: result.usersForOrganisation,
-    page: result.page,
-    sort: result.sort,
-    sortBy: result.sortBy,
-    sortOrder: result.sortOrder,
-    numberOfPages: result.numberOfPages,
-    totalNumberOfResults: result.totalNumberOfResults,
-  });
-};
-
 module.exports = {
   get,
-  post,
+  post
 };
