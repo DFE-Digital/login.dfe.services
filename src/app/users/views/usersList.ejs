@@ -210,12 +210,12 @@
                     <% } %>
 
                     <% for(let i= 0; i < locals.usersForOrganisation.users.length; i++) {
-                const user = locals.usersForOrganisation.users[i]%>
+                    const user = locals.usersForOrganisation.users[i]%>
 
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__cell">
                             <p class="service-link">
-                                <a class="govuk-link-bold" href="#">
+                                <a class="govuk-link-bold" href="/approvals/users/<%= user.id%>">
                                     <%= user.firstName %> <%= user.lastName %>
                                 </a>
                             </p>

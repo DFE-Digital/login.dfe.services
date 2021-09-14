@@ -24,16 +24,13 @@ const buildBackLink = (req) => {
       : (backRedirect = 'new-user');
   } else if (isSelfManagement(req)) {
     // we need to check if user is approver at only one org to then send back to main services page
-    const approverOrgs = getApproverOrgsFromReq(req);
-    if (isUserEndUser(req) && approverOrgs.length > 0) {
-      backRedirect = `/approvals/select-organisation?action=${actions.ADD_SERVICE}`;
-    } else if (approverOrgs.length === 1) {
+    if (req.userOrganisations.length === 1) {
       backRedirect = '/my-services';
-    } else if (approverOrgs.length > 1) {
+    } else {
       backRedirect = `/approvals/select-organisation?action=${actions.ADD_SERVICE}`;
     }
   } else {
-    backRedirect = 'services';
+    backRedirect = `/approvals/users/${req.params.uid}`;
   }
   return backRedirect;
 };

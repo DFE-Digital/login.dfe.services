@@ -132,7 +132,7 @@ const post = async (req, res) => {
     'info',
     `Request approved - an email has been sent to ${model.request.usersEmail}. You can now add services for this user.`,
   );
-  return res.redirect(`/approvals/${model.request.org_id}/users/${model.request.user_id}/services`);
+  return res.redirect(`/approvals/users/${model.request.user_id}`);
 };
 
 module.exports = {

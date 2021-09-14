@@ -44,7 +44,7 @@ const getSelectedRoles = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.service || !req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
+    return res.redirect(`/approvals/users/${req.params.uid}`);
   }
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
@@ -56,7 +56,7 @@ const get = async (req, res) => {
     organisationDetails,
     currentPage: 'users',
     backLink: buildBackLink(req),
-    cancelLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/services`,
+    cancelLink: `/approvals/users/${req.params.uid}`,
     user: {
       firstName: req.session.user.firstName,
       lastName: req.session.user.lastName,
@@ -71,7 +71,7 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
+    return res.redirect(`/approvals/users/${req.params.uid}`);
   }
 
   const uid = req.params.uid;
@@ -122,7 +122,7 @@ const post = async (req, res) => {
     res.redirect(`/my-services`);
   } else {
     res.flash('info', `${service.name} updated successfully`);
-    return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
+    return res.redirect(`/approvals/users/${uid}`);
   }
 };
 

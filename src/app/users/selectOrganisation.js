@@ -48,8 +48,6 @@ const handleRedirectAfterOrgSelected = (req, res, model, isApprover, isManage) =
       );
     }
     return res.redirect(`/request-service/${model.selectedOrganisation}/users/${req.user.sub}`);
-  } else if (isEditService(req)) {
-    return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}`);
   } else if (isOrganisationInvite(req)) {
     return res.redirect(`/approvals/${model.selectedOrganisation}/users/new-user`);
   } else if (isViewOrganisationRequests(req)) {

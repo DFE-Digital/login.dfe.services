@@ -15,7 +15,7 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     organisationDetails,
     currentPage: 'users',
-    backLink: 'services',
+    backLink: `/approvals/users/${req.params.uid}`,
     validationMessages: {},
     user,
   });
