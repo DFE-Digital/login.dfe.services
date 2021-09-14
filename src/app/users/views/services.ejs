@@ -39,7 +39,7 @@
         for (let i = 0; i < visibleUserOrgs.length; i++) {
             const userOrg = visibleUserOrgs[i];
             const organisation = userOrg.organisation;
-            let hasServices = userOrg.services.length > 0;
+            let hasServices = userOrg.displayedServices.length > 0;
     %>
 
     <article class="organisation-services">
@@ -71,8 +71,8 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <% for (let j = 0; j < userOrg.services.length; j++) { %>
-                        <% const service = userOrg.services[j]; %>
+                    <% for (let j = 0; j < userOrg.displayedServices.length; j++) { %>
+                        <% const service = userOrg.displayedServices[j]; %>
                         <tr class="<%= service.disabled ? 'pending' : '' %>">
                             <td>
                                 <% if (service.disabled) { %>

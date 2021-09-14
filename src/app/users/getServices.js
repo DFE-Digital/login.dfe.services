@@ -40,7 +40,7 @@ const action = async (req, res) => {
 
   visibleUserOrgs.forEach((userOrg) => {
     userOrg.displayedServices = userOrg.services.filter((x) => externalServices.find((y) => y.id === x.id));
-    userOrg.services.forEach((service) => {
+    userOrg.displayedServices.forEach((service) => {
       const serviceDetails = allServices.services.find((x) => x.id === service.id);
       service.name = serviceDetails.name;
     });
