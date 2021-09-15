@@ -11,11 +11,13 @@ const get = async (req, res) => {
   const user = await getUserDetails(req);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
+  const linkToUserDetailsPage = `/approvals/users/${req.params.uid}`;
   return res.render('users/views/editPermission', {
     csrfToken: req.csrfToken(),
     organisationDetails,
     currentPage: 'users',
-    backLink: `/approvals/users/${req.params.uid}`,
+    backLink: linkToUserDetailsPage,
+    cancelLink: linkToUserDetailsPage,
     validationMessages: {},
     user,
   });
