@@ -83,7 +83,7 @@ const post = async (req, res) => {
     },
   });
   res.flash('info', role === 10000 ? `${user.email} now has approver access` : `${user.email} now has end user access`);
-  return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
+  return res.redirect(`/approvals/users/${uid}`);
 };
 
 module.exports = {
