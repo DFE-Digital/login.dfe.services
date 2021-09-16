@@ -16,6 +16,7 @@ const get = async (req, res) => {
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
+  const linkToUserDetailsPage = `/approvals/users/${req.params.uid}`;
 
   return res.render('users/views/removeOrganisation', {
     csrfToken: req.csrfToken(),
@@ -26,7 +27,8 @@ const get = async (req, res) => {
       email: req.session.user.email,
     },
     currentPage: 'users',
-    backLink: `/approvals/users/${req.params.uid}`,
+    backLink: linkToUserDetailsPage,
+    cancelLink: linkToUserDetailsPage,
     services: servicesForUser,
   });
 };
