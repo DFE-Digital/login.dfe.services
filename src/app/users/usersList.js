@@ -24,36 +24,39 @@ const search = async (req) => {
   const approverOrgs = getApproverOrgsFromReq(req);
 
   let approverOrgIds = []
+  for(let i= 0; i < approverOrgs.length; i++) {
+    const org = approverOrgs[i]
+    const orgId = org.organisation.id
+    approverOrgIds.push(orgId)
+  }
+
   let selectedOrganisations = []
+  let filteredOrgIds = []
 
   if(req.body && req.body.selectedOrganisation) {
     const selectedOrgIds = req.body.selectedOrganisation
-    selectedOrganisations = (typeof selectedOrgIds === 'string') ? Array(selectedOrgIds) : selectedOrgIds
-    approverOrgIds = selectedOrganisations
+    selectedOrganisations = (typeof selectedOrgIds === 'string') ? selectedOrgIds.split(',') : selectedOrgIds
+    filteredOrgIds = selectedOrganisations
   }
   else {
-    for(let i= 0; i < approverOrgs.length; i++) {
-      const org = approverOrgs[i]
-      const orgId = org.organisation.id
-      approverOrgIds.push(orgId)
-    }
+    filteredOrgIds = approverOrgIds
   }
 
   let usersForOrganisation
   if (paramsSource.searchUser && paramsSource.searchCriteria && paramsSource.searchCriteria.length >=3) {
     usersForOrganisation = await searchForUsers(
-      paramsSource.searchCriteria + '*', 
+      paramsSource.searchCriteria.replace(" ","*&*").trim() + '*', 
       page, 
       sortBy, 
       sortAsc ? 'asc' : 'desc', 
       {
-        organisations: approverOrgIds,
+        organisations: filteredOrgIds,
       }, 
       ['firstName', 'lastName'], 
       req.id
     )
   } else {
-    usersForOrganisation = await getAllUsersForOrg(page, approverOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id)
+    usersForOrganisation = await getAllUsersForOrg(page, filteredOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id)
   }
 
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
@@ -63,7 +66,7 @@ const search = async (req) => {
       user.email = me.claims.email;
     }
 
-    const approverUserOrgs = user.organisations.filter((x) => approverOrgIds.includes(x.id));
+    const approverUserOrgs = user.organisations.filter((x) => filteredOrgIds.includes(x.id));
     user.statusId = mapUserStatus(user.statusId);
     user.organisations = approverUserOrgs;
   }
@@ -74,6 +77,7 @@ const search = async (req) => {
     sortOrder: sortAsc ? 'asc' : 'desc',
     usersForOrganisation,
     approverOrgIds,
+    filteredOrgIds,
     selectedOrganisations,
     approverOrgs,
     numberOfPages: usersForOrganisation.numberOfPages,
