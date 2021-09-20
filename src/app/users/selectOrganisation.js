@@ -129,9 +129,10 @@ const post = async (req, res) => {
   model.hasDualPermission = hasDualPermission;
 
   // persist selected org in session
-  if (req.session.user) {
-    req.session.user.organisation = model.selectedOrganisation;
+  if (!req.session.user) {
+    req.session.user = {};
   }
+  req.session.user.organisation = model.selectedOrganisation;
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
