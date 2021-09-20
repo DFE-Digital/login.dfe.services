@@ -28,7 +28,7 @@ const search = async (req) => {
 
   if(req.body && req.body.selectedOrganisation) {
     const selectedOrgIds = req.body.selectedOrganisation
-    selectedOrganisations = (typeof selectedOrgIds === 'string') ? Array(selectedOrgIds) : selectedOrgIds
+    selectedOrganisations = (typeof selectedOrgIds === 'string') ? selectedOrgIds.split(',') : selectedOrgIds
     approverOrgIds = selectedOrganisations
   }
   else {
