@@ -28,7 +28,9 @@
                         %>
                             <div class="govuk-radios__item">
                                 <input class="govuk-radios__input <%= locals.organisations.length > 2 ? 'auto-scroll-on-change' : '' %>"
-                                    id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>">
+                                    id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>"
+                                    <%= org.organisation.id === selectedOrganisation ? 'checked': ''%>
+                                    >
                                 <label class="govuk-label govuk-radios__label" for="<%= org.organisation.id %>">
                                     <span class="govuk-label govuk-label--s">
                                         <%= org.organisation.name %> <%=org.organisation.status ? `(${org.organisation.status.name})` : '' %>
