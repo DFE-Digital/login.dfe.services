@@ -45,7 +45,7 @@ const search = async (req) => {
   let usersForOrganisation
   if (paramsSource.searchUser && paramsSource.searchCriteria && paramsSource.searchCriteria.length >=3) {
     usersForOrganisation = await searchForUsers(
-      paramsSource.searchCriteria + '*', 
+      paramsSource.searchCriteria.replace(" ","*&*").trim() + '*', 
       page, 
       sortBy, 
       sortAsc ? 'asc' : 'desc', 
