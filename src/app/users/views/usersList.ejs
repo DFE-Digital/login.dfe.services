@@ -42,12 +42,19 @@
                     <div id="search-user-hint" class="govuk-caption-l govuk-!-margin-top-0">
                         Search by user name
                     </div>
-                    <div class="govuk-grid-row">
-                        <div class="govuk-grid-column-two-thirds">
-                            <input class="govuk-input govuk-grid-column-two-thirds" id="search-user" name="search-user"
-                                type="text" aria-describedby="search-user-hint">
+                    <div class="govuk-form-group <%= (locals.validations.searchUser !== undefined) ? 'govuk-form-group--error' : '' %>">
+                        <% if (locals.validations.searchUser !== undefined) { %>
+                            <span id="validation-search-users" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> <%=locals.validations.searchUser %>
+                            </span>
+                        <% } %>
+                        <div class="govuk-grid-row">
+                            <div class="govuk-grid-column-two-thirds">
+                                <input class="govuk-input govuk-grid-column-two-thirds <%= (locals.validations.searchUser !== undefined) ? 'govuk-input--error' : '' %>" id="searchCriteria" name="searchCriteria"
+                                    type="text" aria-describedby="search-user-hint" value="<%=locals.searchCriteria%>" >
+                            </div>
+                            <button type="submit" class="govuk-button" name="searchUser" value="searchUser">Search</button>
                         </div>
-                        <button type="submit" class="govuk-button" name="searchUser" value="searchUser">Search</button>
                     </div>
                 </div>
 
@@ -82,9 +89,9 @@
                                                     name="selectedOrganisation" value="<%=org.id%>"
                                                     <% if (locals.selectedOrganisations && locals.selectedOrganisations.length > 0) {
                                                         for(let i = 0; i < locals.selectedOrganisations.length; i++) {
-                                                            const selectedRole = locals.selectedOrganisations[i];
+                                                            const selectedOrg = locals.selectedOrganisations[i];
                                                         %>
-                                                        <%= org.id === selectedRole ? 'checked': ''%><% } }%>>
+                                                        <%= org.id === selectedOrg ? 'checked': ''%><% } }%>>
                                                 <label class="govuk-label govuk-checkboxes__label"
                                                     for="<%=org.id%>"><%=org.name%></label>
                                             </div>
@@ -205,7 +212,11 @@
 
                     <% if(locals.usersForOrganisation.users.length === 0) { %>
                     <tr class="govuk-table__row">
-                        <td class="govuk-table__cell" colspan="5"><span class="empty-state">No users found</span></td>
+                        <td class="govuk-table__cell" colspan="4">
+                            <div class="empty-state">
+                                <p class="govuk-body">No users found</p>
+                            </div>
+                        </td>
                     </tr>
                     <% } %>
 

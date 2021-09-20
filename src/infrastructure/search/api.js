@@ -29,6 +29,55 @@ const getAllUsersForOrg = async (page, orgId, sortBy, sortDirection, correlation
   }
 };
 
+const searchForUsers = async (criteria, pageNumber, sortBy, sortDirection, filters, searchFields, correlationId) => {
+  const token = await jwtStrategy(config.search.service).getBearerToken();  
+  try {
+    let endpoint = `${config.search.service.url}/users?criteria=${criteria}&page=${pageNumber}`;
+    if (sortBy) {
+      endpoint += `&sortBy=${sortBy}`;
+    }
+    if (sortDirection) {
+      endpoint += `&sortDirection=${sortDirection}`;
+    }
+    if (filters) {
+      const properties = Object.keys(filters);
+      properties.forEach((property) => {
+        const values = filters[property];
+        endpoint += values.map(v => `&filter_${property}=${v}`).join('');
+      });
+    }
+
+    if(searchFields) {
+      let fieldParam = '';
+      searchFields.forEach((field) => {
+        if (fieldParam.length > 0) {
+          fieldParam += ',';
+        }
+        fieldParam += field;
+      });
+      endpoint += `&searchFields=${fieldParam}`;
+    }
+    
+    const results = await rp({
+      method: 'GET',
+      uri: `${endpoint}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true
+    });
+
+    return {
+      numberOfPages: results.numberOfPages,
+      totalNumberOfResults: results.totalNumberOfResults,
+      users: results.users
+    }
+  } catch (e) {
+    throw new Error(`Error searching for users with criteria ${criteria} (page: ${pageNumber}) - ${e.message}`);
+  }
+};
+
 const getById = async (userId, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
@@ -110,6 +159,7 @@ const createIndex = async (id, correlationId) => {
 
 module.exports = {
   getAllUsersForOrg,
+  searchForUsers,
   getById,
   updateIndex,
   createIndex,

@@ -1,6 +1,6 @@
 'use strict';
 const { mapUserStatus } = require('./../../infrastructure/utils');
-const { getAllUsersForOrg } = require('../../infrastructure/search');
+const { getAllUsersForOrg, searchForUsers } = require('../../infrastructure/search');
 const { getById } = require('../../infrastructure/account');
 const { getApproverOrgsFromReq } = require('./utils');
 const { actions } = require('../constans/actions');
@@ -28,8 +28,8 @@ const search = async (req) => {
 
   if(req.body && req.body.selectedOrganisation) {
     const selectedOrgIds = req.body.selectedOrganisation
-    approverOrgIds = selectedOrgIds
-    selectedOrganisations = (typeof selectedOrgIds === 'string') ? Array(selectedOrgIds) : selectedOrgIds 
+    selectedOrganisations = (typeof selectedOrgIds === 'string') ? Array(selectedOrgIds) : selectedOrgIds
+    approverOrgIds = selectedOrganisations
   }
   else {
     for(let i= 0; i < approverOrgs.length; i++) {
@@ -39,7 +39,22 @@ const search = async (req) => {
     }
   }
 
-  const usersForOrganisation = await getAllUsersForOrg(page, approverOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id);
+  let usersForOrganisation
+  if (paramsSource.searchUser && paramsSource.searchCriteria && paramsSource.searchCriteria.length >=3) {
+    usersForOrganisation = await searchForUsers(
+      paramsSource.searchCriteria + '*', 
+      page, 
+      sortBy, 
+      sortAsc ? 'asc' : 'desc', 
+      {
+        organisations: approverOrgIds,
+      }, 
+      ['firstName', 'lastName'], 
+      req.id
+    )
+  } else {
+    usersForOrganisation = await getAllUsersForOrg(page, approverOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id)
+  }
 
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
     const user = usersForOrganisation.users[i];
@@ -121,17 +136,24 @@ const get = async (req, res) => {
     inviteUserUrl,
     requestsUrl,
     validations: {},
-    showFilter: false
+    showFilter: false,
+    searchCriteria: ''
   });
 };
 
 const validateOrgSelection = (req, model) => {
-  const selectedOrg = req.body.selectedOrganisation;
+  const selectedOrg = req.body.selectedOrganisation
   if (selectedOrg === undefined || selectedOrg === null) {
     model.validations.selectedOrganisation = 'Select at least one organisation';
   }
 };
 
+const validateSearch = (req, model) => {
+  const searchCriteria = req.body.searchCriteria
+  if (searchCriteria === undefined || searchCriteria === null || searchCriteria.length < 3) {
+    model.validations.searchUser = 'Enter at least three characters to search users';
+  }
+}
 
 const post = async (req, res) => {
   const reqBody = req.body
@@ -141,8 +163,16 @@ const post = async (req, res) => {
     showFilter: reqBody.showFilter || (reqBody.isFilterToggle === "true")
   };
 
+  model.searchCriteria = req.body.searchCriteria || ""
+
   if(reqBody.showFilter) {
     model.showFilter = !(model.showFilter === "true")
+  }
+
+  if(reqBody.searchUser) {
+    validateSearch(req, model)
+  } else {
+    model.searchCriteria = ""
   }
 
   if (reqBody.applyFilter) {
