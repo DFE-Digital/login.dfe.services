@@ -43,7 +43,7 @@ const search = async (req) => {
   }
 
   let usersForOrganisation
-  if (paramsSource.searchUser && paramsSource.searchCriteria && paramsSource.searchCriteria.length >=3) {
+  if (paramsSource.searchCriteria && paramsSource.searchCriteria.length >=3) {
     usersForOrganisation = await searchForUsers(
       paramsSource.searchCriteria.replace(" ","*&*").trim() + '*', 
       page, 
@@ -175,8 +175,6 @@ const post = async (req, res) => {
 
   if(reqBody.searchUser) {
     validateSearch(req, model)
-  } else {
-    model.searchCriteria = ""
   }
 
   if (reqBody.applyFilter) {
