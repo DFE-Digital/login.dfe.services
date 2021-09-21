@@ -68,7 +68,7 @@ const search = async (req) => {
 
     const approverUserOrgs = user.organisations.filter((x) => filteredOrgIds.includes(x.id));
     user.statusId = mapUserStatus(user.statusId);
-    user.organisations = approverUserOrgs;
+    user.organisations = approverUserOrgs.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   return {
