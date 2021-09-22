@@ -1,14 +1,15 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg, isSelfManagement, isUserManagement, getApproverOrgsFromReq, isUserEndUser } = require('./utils');
+const { getAllServicesForUserInOrg, isSelfManagement, getApproverOrgsFromReq, isUserEndUser } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+const { actions } = require('../constans/actions');
 
 const policyEngine = new PolicyEngine(config);
 
 const renderAssociateServicesPage = (req, res, model) => {
-  const isSelfManage = isSelfManagement(req)
+  const isSelfManage = isSelfManagement(req);
   res.render(
     `users/views/${isSelfManage ? "associateServicesRedesigned" : "associateServices" }`,
     { ...model, currentPage: isSelfManage? "services": "users" }
@@ -23,16 +24,13 @@ const buildBackLink = (req) => {
       : (backRedirect = 'new-user');
   } else if (isSelfManagement(req)) {
     // we need to check if user is approver at only one org to then send back to main services page
-    const approverOrgs = getApproverOrgsFromReq(req);
-    if(isUserEndUser(req) && approverOrgs.length > 0) {
-      backRedirect = '/approvals/select-organisation?services=add';
-    } else if (approverOrgs.length === 1) {
+    if (req.userOrganisations.length === 1) {
       backRedirect = '/my-services';
-    } else if (approverOrgs.length > 1) {
-      backRedirect = '/approvals/select-organisation?services=add';
+    } else {
+      backRedirect = `/approvals/select-organisation?action=${actions.ADD_SERVICE}`;
     }
   } else {
-    backRedirect = 'services';
+    backRedirect = `/approvals/users/${req.params.uid}`;
   }
   return backRedirect;
 };
@@ -72,7 +70,7 @@ const getAllAvailableServices = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
@@ -133,7 +131,7 @@ const validate = async (req) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
 
   const model = await validate(req);

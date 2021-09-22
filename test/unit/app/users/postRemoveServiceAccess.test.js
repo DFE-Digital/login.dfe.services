@@ -206,7 +206,7 @@ describe('when removing service access', () => {
       await postRemoveServiceAccess(req, res);
 
       expect(res.redirect.mock.calls).toHaveLength(1);
-      expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
+      expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/users/${req.params.uid}`);
     });
 
     it('then a flash message is shown to the user', async () => {

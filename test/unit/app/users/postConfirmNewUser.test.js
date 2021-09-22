@@ -227,7 +227,7 @@ describe('when inviting a new user', () => {
     await postConfirmNewUser(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users`);
+    expect(res.redirect.mock.calls[0][0]).toBe('/approvals/users');
     expect(Account.createInvite.mock.calls).toHaveLength(0);
   });
 
@@ -350,7 +350,7 @@ describe('when inviting a new user', () => {
     await postConfirmNewUser(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users`);
+    expect(res.redirect.mock.calls[0][0]).toBe('/approvals/users');
   });
 
   it('then a flash message is displayed for a user being added to an org', async () => {
@@ -403,7 +403,7 @@ describe('when inviting a new user', () => {
     await postConfirmNewUser(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
+    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/users/${req.params.uid}`);
   });
 
   it('then a flash message is displayed showing services have been added', async () => {

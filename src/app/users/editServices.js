@@ -3,6 +3,7 @@ const _ = require('lodash');
 const config = require('./../../infrastructure/config');
 const { isUserManagement, getSingleServiceForUser, isSelfManagement } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
+const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
@@ -18,9 +19,9 @@ const renderEditServicePage = (req, res, model) => {
 };
 
 const buildBackLink = (req) => {
-  let backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/services`;
+  let backRedirect = `/approvals/users/${req.params.uid}`;
   if (!isUserManagement(req)) {
-    backRedirect = '/approvals/select-organisation-service?action=edit';
+    backRedirect = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
   }
   return backRedirect;
 };
@@ -39,7 +40,7 @@ const getViewModel = async (req) => {
   const application = await getApplication(req.params.sid, req.id);
   return {
     backLink: buildBackLink(req),
-    cancelLink: `/approvals/${req.params.orgId}/users/${req.params.uid}/services`,
+    cancelLink: `/approvals/users/${req.params.uid}`,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisationDetails,

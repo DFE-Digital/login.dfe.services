@@ -39,7 +39,7 @@ const buildBackLink = (req, services) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
 
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
@@ -81,11 +81,11 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
   if (!req.userOrganisations) {
     logger.warn('No req.userOrganisations on post of confirmNewUser');
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
 
   let uid = req.params.uid;
@@ -241,7 +241,7 @@ const post = async (req, res) => {
         ? `User ${req.session.user.email} added to organisation`
         : `Invitation email sent to ${req.session.user.email}`,
     );
-    res.redirect(`/approvals/${organisationId}/users`);
+    res.redirect(`/approvals/users`);
   } else {
     const getAllUserDetails = await getById(uid, req.id);
     if (!getAllUserDetails) {
@@ -282,7 +282,7 @@ const post = async (req, res) => {
       res.redirect(`/my-services`);
     } else {
       res.flash('info', 'Services successfully added');
-      res.redirect(`/approvals/${organisationId}/users/${req.session.user.uid}/services`);
+      res.redirect(`/approvals/users/${req.session.user.uid}`);
     }
   }
 };

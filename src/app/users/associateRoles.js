@@ -71,7 +71,7 @@ const getViewModel = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
 
   const model = await getViewModel(req);
@@ -80,7 +80,7 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
 
   const currentService = req.session.user.services.findIndex((x) => x.serviceId === req.params.sid);

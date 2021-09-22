@@ -8,6 +8,7 @@ const {
   getSingleInvitationService,
 } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
+const { actions } = require('../constans/actions');
 
 const sortBy = require('lodash/sortBy');
 
@@ -90,7 +91,31 @@ const isSelfManagement = (req) => {
 };
 
 const isUserManagement = (req) => {
-  return req.query.manage_users === 'true';
+  return req.query.manage_users === 'true' || isOrganisationInvite(req) || isViewOrganisationRequests(req);
+};
+
+const isRequestService = (req) => {
+  return req.query.action === actions.REQUEST_SERVICE;
+};
+
+const isAddService = (req) => {
+  return req.query.action === actions.ADD_SERVICE;
+};
+
+const isEditService = (req) => {
+  return req.query.action === actions.EDIT_SERVICE;
+};
+
+const isRemoveService = (req) => {
+  return req.query.action === actions.REMOVE_SERVICE;
+};
+
+const isOrganisationInvite = (req) => {
+  return req.query.action === actions.ORG_INVITE;
+};
+
+const isViewOrganisationRequests = (req) => {
+  return req.query.action === actions.VIEW_ORG_REQUESTS;
 };
 
 const getApproverOrgsFromReq = (req) => {
@@ -109,7 +134,7 @@ const isUserApprover = (req) => {
     return req.userOrganisations.filter((x) => x.role.id === 10000).length > 0;
   }
   return false;
-}
+};
 
 const isUserEndUser = (req) => {
   if (req.userOrganisations) {
@@ -146,5 +171,11 @@ module.exports = {
   getOrgNaturalIdentifiers,
   getUserOrgsFromReq,
   isUserApprover,
-  isUserEndUser
+  isUserEndUser,
+  isOrganisationInvite,
+  isViewOrganisationRequests,
+  isRequestService,
+  isAddService,
+  isEditService,
+  isRemoveService,
 };

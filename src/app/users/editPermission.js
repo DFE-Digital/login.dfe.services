@@ -11,11 +11,13 @@ const get = async (req, res) => {
   const user = await getUserDetails(req);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
+  const linkToUserDetailsPage = `/approvals/users/${req.params.uid}`;
   return res.render('users/views/editPermission', {
     csrfToken: req.csrfToken(),
     organisationDetails,
     currentPage: 'users',
-    backLink: 'services',
+    backLink: linkToUserDetailsPage,
+    cancelLink: linkToUserDetailsPage,
     validationMessages: {},
     user,
   });
@@ -81,7 +83,7 @@ const post = async (req, res) => {
     },
   });
   res.flash('info', role === 10000 ? `${user.email} now has approver access` : `${user.email} now has end user access`);
-  return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
+  return res.redirect(`/approvals/users/${uid}`);
 };
 
 module.exports = {

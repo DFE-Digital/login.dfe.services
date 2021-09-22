@@ -301,7 +301,7 @@ describe('when displaying the associate service view', () => {
       name: 'test name',
       user: { email: 'test@test.com', firstName: 'test', lastName: 'name' },
       validationMessages: {},
-      backLink: 'services',
+      backLink: '/approvals/users/user1',
       currentPage: 'users',
       organisationDetails: undefined,
       services: [
@@ -339,7 +339,7 @@ describe('when displaying the associate service view', () => {
       name: 'test name',
       user: { email: 'test@test.com', firstName: 'test', lastName: 'name' },
       validationMessages: {},
-      backLink: 'services',
+      backLink: '/approvals/users/user1',
       currentPage: 'users',
       organisationDetails: undefined,
       services: [
@@ -379,7 +379,7 @@ describe('when displaying the associate service view', () => {
       name: 'test name',
       user: { email: 'test@test.com', firstName: 'test', lastName: 'name' },
       validationMessages: {},
-      backLink: 'services',
+      backLink: '/approvals/users/user1',
       currentPage: 'users',
       organisationDetails: undefined,
       services: [
@@ -402,7 +402,7 @@ describe('when displaying the associate service view', () => {
       name: 'test name',
       user: { email: 'test@test.com', firstName: 'test', lastName: 'name' },
       validationMessages: {},
-      backLink: 'services',
+      backLink: '/approvals/users/user1',
       currentPage: 'users',
       organisationDetails: undefined,
       services: [
@@ -455,7 +455,7 @@ describe('when displaying the associate service view', () => {
       name: 'test name',
       user: { email: 'test@test.com', firstName: 'test', lastName: 'name' },
       validationMessages: {},
-      backLink: 'services',
+      backLink: '/approvals/users/user1',
       currentPage: 'users',
       organisationDetails: undefined,
       services: [
