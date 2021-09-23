@@ -42,19 +42,19 @@ const search = async (req) => {
     filteredOrgIds = approverOrgIds
   }
 
-  let usersForOrganisation
-  if (paramsSource.searchCriteria && paramsSource.searchCriteria.length >=3) {
+  let usersForOrganisation;
+  if (paramsSource.searchCriteria && paramsSource.searchCriteria.length >= 3) {
     usersForOrganisation = await searchForUsers(
-      paramsSource.searchCriteria.replace(" ","*&*").trim() + '*', 
-      page, 
-      sortBy, 
-      sortAsc ? 'asc' : 'desc', 
+      paramsSource.searchCriteria.replace(' ', '*&*').trim() + '*',
+      page,
+      sortBy,
+      sortAsc ? 'asc' : 'desc',
       {
-        organisations: filteredOrgIds,
-      }, 
-      ['firstName', 'lastName'], 
-      req.id
-    )
+        filter_organisations: filteredOrgIds,
+      },
+      ['firstName', 'lastName'],
+      req.id,
+    );
   } else {
     usersForOrganisation = await getAllUsersForOrg(page, filteredOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id)
   }

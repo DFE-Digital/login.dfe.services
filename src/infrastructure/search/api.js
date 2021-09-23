@@ -2,22 +2,22 @@ const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
-const getAllUsersForOrg = async (page, orgId, sortBy, sortDirection, correlationId) => {
+const getAllUsersForOrg = async (page, orgIds, sortBy, sortDirection, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
-    let endpoint = `${config.search.service.url}/users/?page=${page}&filter_organisations=${orgId}`;
-    if (sortBy) {
-      endpoint += `&sortBy=${sortBy}`;
-    }
-    if (sortDirection) {
-      endpoint += `&sortDirection=${sortDirection}`;
-    }
+    let endpoint = `${config.search.service.url}/users`;
     return await rp({
-      method: 'GET',
+      method: 'POST',
       uri: endpoint,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
+      },
+      body: {
+        page,
+        filter_organisations: orgIds,
+        sortBy,
+        sortDirection,
       },
       json: true,
     });
@@ -29,52 +29,36 @@ const getAllUsersForOrg = async (page, orgId, sortBy, sortDirection, correlation
   }
 };
 
-const searchForUsers = async (criteria, pageNumber, sortBy, sortDirection, filters, searchFields, correlationId) => {
-  const token = await jwtStrategy(config.search.service).getBearerToken();  
+const searchForUsers = async (criteria, page, sortBy, sortDirection, filters, searchFields, correlationId) => {
+  const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
-    let endpoint = `${config.search.service.url}/users?criteria=${criteria}&page=${pageNumber}`;
-    if (sortBy) {
-      endpoint += `&sortBy=${sortBy}`;
-    }
-    if (sortDirection) {
-      endpoint += `&sortDirection=${sortDirection}`;
-    }
-    if (filters) {
-      const properties = Object.keys(filters);
-      properties.forEach((property) => {
-        const values = filters[property];
-        endpoint += values.map(v => `&filter_${property}=${v}`).join('');
-      });
-    }
+    let endpoint = `${config.search.service.url}/users`;
 
-    if(searchFields) {
-      let fieldParam = '';
-      searchFields.forEach((field) => {
-        if (fieldParam.length > 0) {
-          fieldParam += ',';
-        }
-        fieldParam += field;
-      });
-      endpoint += `&searchFields=${fieldParam}`;
-    }
-    
     const results = await rp({
-      method: 'GET',
+      method: 'POST',
       uri: `${endpoint}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      json: true
+      body: {
+        page,
+        criteria,
+        sortBy,
+        sortDirection,
+        searchFields,
+        ...filters,
+      },
+      json: true,
     });
 
     return {
       numberOfPages: results.numberOfPages,
       totalNumberOfResults: results.totalNumberOfResults,
-      users: results.users
-    }
+      users: results.users,
+    };
   } catch (e) {
-    throw new Error(`Error searching for users with criteria ${criteria} (page: ${pageNumber}) - ${e.message}`);
+    throw new Error(`Error searching for users with criteria ${criteria} (page: ${page}) - ${e.message}`);
   }
 };
 
