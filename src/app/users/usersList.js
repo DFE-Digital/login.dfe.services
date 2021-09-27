@@ -167,8 +167,6 @@ const post = async (req, res) => {
     showFilter: reqBody.showFilter || (reqBody.isFilterToggle === "true")
   };
 
-  model.searchCriteria = req.body.searchCriteria || ""
-
   if(reqBody.showFilter) {
     model.showFilter = !(model.showFilter === "true")
   }
@@ -180,6 +178,13 @@ const post = async (req, res) => {
   if (reqBody.applyFilter) {
     validateOrgSelection(req, model)
   }
+
+  if(reqBody.removeFilter) {
+    req.body.selectedOrganisation = null
+    req.body.searchCriteria = ""
+  }
+
+  model.searchCriteria = req.body.searchCriteria || ""
 
   const result = await search(req);
   const inviteUserUrl = buildInviteUserLink(result.approverOrgIds)
