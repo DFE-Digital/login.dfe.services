@@ -181,7 +181,6 @@ const post = async (req, res) => {
 
   if(reqBody.removeFilter) {
     req.body.selectedOrganisation = null
-    req.body.searchCriteria = ""
   }
 
   model.searchCriteria = req.body.searchCriteria || ""
