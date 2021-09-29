@@ -1,32 +1,45 @@
-<div class="govuk-width-container">
-    <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
-        <div class="panel panel-border-narrow alert-default" tabindex="0">
-            <% if (locals.approverRequests.length === 1) { %>
-                <p class="govuk-body">There is <strong class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %> request</strong> you need to
-                    action - <a class="govuk-link-bold" href="/access-requests">view requests</a></p>
-            <% } else { %>
-                <p class="govuk-body">There are <strong class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %> requests</strong> you need to
-                    action - <a class="govuk-link-bold" href="/access-requests">view requests</a></p>
-            <% } %>
-        </div>
-    <% } %>
-    <% if (locals.flash.info) { %>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            <div class="notification notification-success">
-                <%= locals.flash.info %>
+<div id="home-top" class="home-top">
+    <div class="govuk-width-container home-top__inner">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl govuk-!-margin-top-5 govuk-!-margin-bottom-5">Organisations</h1>
+                <h3 class="govuk-heading-m">
+                    Here you'll find all the organisations to which your account is connected, along with your permission level.
+                </h3>
             </div>
         </div>
     </div>
-    <% } %>
+</div>
 
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-xl">Organisations</h1>
-            <% if (organisations.length === 0) { %>
-                <p class="govuk-body">To access services, your DfE Sign-in account must be linked to an organisation.</p>
-            <% } %>
+<div class="govuk-width-container">
 
+    <div class="govuk-grid-row govuk-!-margin-bottom-9">
+        
+        <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
+
+            <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
+
+                <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
+                    <div class="panel panel-border-narrow alert-default" tabindex="0">
+                        <% if (locals.approverRequests.length === 1) { %>
+                            <p class="govuk-body">There is <strong class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %> request</strong> you need to
+                                action - <a class="govuk-link-bold" href="/access-requests">view requests</a></p>
+                        <% } else { %>
+                            <p class="govuk-body">There are <strong class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %> requests</strong> you need to
+                                action - <a class="govuk-link-bold" href="/access-requests">view requests</a></p>
+                        <% } %>
+                    </div>
+                <% } %>
+                <% if (locals.flash.info) { %>
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-full">
+                        <div class="notification notification-success">
+                            <%= locals.flash.info %>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
         </div>
 
         <% if (locals.useRequestOrg && !disableReqOrgLink) { %>
@@ -40,10 +53,12 @@
                 </aside>
             </div>
         <% } %>
+
     </div>
 
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-full-width">
+
             <% if (organisations.length <= 0) { %>
                 <div class="empty-state">
                     <% if (locals.useRequestOrg) { %>
@@ -52,89 +67,76 @@
                         <p class="govuk-body">You are not linked to any organisations in DfE Sign-in, please contact your approver.</p>
                     <% } %>
                 </div>
-            <% } else { %>
-            <table class="custom-table data">
-                <thead>
-                <tr class="sortable">
-                    <th scope="col" class="cwp-30">
-                        Organisation</th>
-                    <th scope="col">
-                        Approvers</th>
-                    <th scope="col">
-                        Your permission</th>
-                </tr>
-                </thead>
-                <tbody>
 
-                <% for (let o = 0; o < locals.organisations.length; o++) {
-                const organisation = locals.organisations[o]%>
-                <% if (organisation.requestDate) { %>
-                <tr class="pending">
-                <% } else { %>
-                <tr>
-                <% } %>
-                    <td>
-                        <%= organisation.name %>
-                        <% if (organisation.status) { %>
-                            <br> Status: <%= organisation.status.name %>
-                        <% } %>
-                        <% if (organisation.urn) { %>
-                            <br> URN: <%= organisation.urn %>
-                        <% } %>
-                        <% if (organisation.uid) { %>
-                            <br> UID: <%= organisation.uid %>
-                        <% } %>
-                        <% if (organisation.ukprn) { %>
-                            <br> UKPRN: <%= organisation.ukprn %>
-                        <% } %>
-                    </td>
-                    <% if (organisation.requestDate) { %>
-                        <td>-</td>
-                    <% } else { %>
-                        <td>
-                            <% if (organisation.approvers.length === 0) { %>
-                                No approvers
-                            <% } else if (organisation.approvers.length < 5) { %>
-                                <ul>
-                                    <% for (let a = 0; a < organisation.approvers.length; a++) { %>
-                                    <li><a class="govuk-link" href="mailto:<%=organisation.approvers[a].email%>"><%= organisation.approvers[a].email %></a> </li>
+            <% } else { %>
+
+                <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header width-40">
+                                Organisation
+                            </th>
+                            <th scope="col" class="govuk-table__header">
+                                URN
+                            </th>
+                            <th scope="col" class="govuk-table__header">
+                                UKPRN
+                            </th>
+                            <th scope="col" class="govuk-table__header">
+                                Status
+                            </th>
+                            <th scope="col" class="govuk-table__header">
+                                Permission
+                            </th>
+                            <th scope="col" class="govuk-table__header">
+                                Approvers
+                            </th>
+                        </tr>
+                    </thead>
+    
+                    <tbody class="govuk-table__body">
+    
+                        <% for(let i= 0; i < locals.organisations.length; i++) {
+                            const organisation = locals.organisations[i]%>
+        
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">
+                                    <p><%= organisation.name %></p>
+                                </th>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.urn %></td>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.ukprn %></td>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.status.name %></td>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                    <% if (organisation.role) { %>
+                                        <%= organisation.role.name %>
+                                    <% } else { %>
+                                        <span class="font-style-italic">REQUESTED <br> <%= locals.moment(organisation.requestDate).format('DD/MM/YYYY') %></span>
                                     <% } %>
-                                </ul>
-                            <% } else { %>
-                                <article class="organisation-services" style="margin-bottom: 0">
-                                    <section class="organisation" style="padding: 0; margin:0;">
-                                        <div class="user">
-                                            <a class="govuk-link info-link" href="" style="float: none;"><%= organisation.approvers.length %> approvers</a>
-                                        </div>
-                                        <div class="meta js-hidden">
+                                </td>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                    <% if (!organisation.approvers || (organisation.approvers && organisation.approvers.length === 0)) { %>
+                                        No approvers
+                                    <% } else { %>
+                                        <a class="govuk-link-bold govuk-link--no-visited-state toggle-open" href="">Show approvers</a>
+                                        <div class="meta govuk-visually-hidden">
                                             <div class="approvers">
                                                 <dl class="inline condensed small-dt">
                                                     <ul>
                                                         <% for (let a = 0; a < organisation.approvers.length; a++) { %>
-                                                        <li><a class="govuk-link" href="mailto:<%=organisation.approvers[a].email%>"><%= organisation.approvers[a].email %></a> </li>
+                                                            <li><%= organisation.approvers[a].email %></li>
                                                         <% } %>
                                                     </ul>
                                                 </dl>
                                             </div>
                                         </div>
-                                    </section>
-                                </article>
-                            <% } %>
-                        </td>
-                    <% } %>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% } %>
 
-                    <% if (organisation.role) { %>
-                        <td><%= organisation.role.name %></td>
-                    <% } else { %>
-                        <td>
-                            Requested <br> <%= locals.moment(organisation.requestDate).format('DD/MM/YYYY') %>
-                        </td>
-                    <% } %>
+                    </tbody>
+                </table>
 
-                </tr>
-                <% } %>
-                </tbody>
-            </table>
             <% } %>
         </div>
     </div>
