@@ -60,9 +60,9 @@
         <% if (locals.useRequestOrg && !disableReqOrgLink) { %>
             <div class="govuk-grid-column-one-third">
                 <aside class="govuk-!-margin-top-9">
-                    <h2 class="govuk-heading-m">Actions</h2>
+                    <h2 class="govuk-heading-m">Related actions</h2>
                     <ul class="govuk-list">
-                        <li><a class="govuk-link-bold" href="/request-organisation/search">Request an organisation</a></li>
+                        <li><a class="govuk-link-bold" href="/request-organisation/search">Request access to an organisation</a></li>
                         <li><a class="govuk-link-bold" href="<%=locals.urls.help%>/organisations">Help with organisations</a></li>
                     </ul>
                 </aside>
@@ -129,9 +129,9 @@
                                     <% } %>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                                    <% if (!organisation.approvers || (organisation.approvers && organisation.approvers.length === 0)) { %>
+                                    <% if (organisation.approvers && organisation.approvers.length === 0) { %>
                                         No approvers
-                                    <% } else { %>
+                                    <% } else if (organisation.approvers) { %>
                                         <a class="govuk-link-bold govuk-link--no-visited-state toggle-open" href="">Show approvers</a>
                                         <div class="meta govuk-visually-hidden">
                                             <div class="approvers">
