@@ -1,6 +1,7 @@
 'use strict';
 const { listRolesOfService, addUserService, getServicesForUser } = require('../../infrastructure/access');
 const { getUserDetails } = require('../users/utils');
+const { actions } = require('../constans/actions');
 
 const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
@@ -56,8 +57,8 @@ const getViewModel = async (req, existingModel) => {
   const allRolesOfService = await listRolesOfService(serviceId, req.id);
   const roleDetails = allRolesOfService.filter((x) => roles.find((y) => y.toLowerCase() === x.id.toLowerCase()));
 
-  const serviceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services`;
-  const subServiceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${serviceId}`;
+  const serviceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.REQUEST_SERVICE}`;
+  const subServiceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${serviceId}?action=${actions.REQUEST_SERVICE}`;
 
   const service = {
     serviceId,
