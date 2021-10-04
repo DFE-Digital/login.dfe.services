@@ -1,6 +1,6 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg, isSelfManagement, getApproverOrgsFromReq, isUserEndUser } = require('./utils');
+const { getAllServicesForUserInOrg, isSelfManagement, isRequestService } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
@@ -18,7 +18,15 @@ const renderAssociateServicesPage = (req, res, model) => {
 
 const buildBackLink = (req) => {
   let backRedirect;
-  if (req.session.user.isInvite) {
+
+  const isRequestServiceUrl = isRequestService(req)
+
+  if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
+    const sid = req.session.user.serviceId
+    const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds))
+    backRedirect = `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${sid}/roles/${roleIds}/approve`
+  }
+  else if (req.session.user.isInvite) {
     req.params.uid
       ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
       : (backRedirect = 'new-user');
