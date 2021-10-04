@@ -21,8 +21,8 @@ const buildBackLink = (req) => {
 
   const isRequestServiceUrl = isRequestService(req)
 
-  if(isRequestServiceUrl) {
-    const sid = req.session.user.serviceId ? req.session.user.serviceId : ""
+  if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
+    const sid = req.session.user.serviceId
     const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds))
     backRedirect = `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${sid}/roles/${roleIds}/approve`
   }
