@@ -124,6 +124,7 @@ const get = async (req, res) => {
     req.session.user.services = [viewModel.service];
     req.session.user.serviceId = viewModel.service.serviceId;
     req.session.user.roleIds = roles;
+    req.session.action = actions.REQUEST_SERVICE;
   }
 
   return res.render('requestService/views/approveServiceRequest', viewModel);
