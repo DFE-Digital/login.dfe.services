@@ -98,6 +98,10 @@ const isRequestService = (req) => {
   return req.query.action === actions.REQUEST_SERVICE;
 };
 
+const isRequestServiceInSession = (req) => {
+  return req.session.action === actions.REQUEST_SERVICE;
+};
+
 const isAddService = (req) => {
   return req.query.action === actions.ADD_SERVICE;
 };
@@ -175,6 +179,7 @@ module.exports = {
   isOrganisationInvite,
   isViewOrganisationRequests,
   isRequestService,
+  isRequestServiceInSession,
   isAddService,
   isEditService,
   isRemoveService,

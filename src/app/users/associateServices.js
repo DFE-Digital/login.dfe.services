@@ -1,6 +1,6 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg, isSelfManagement, isRequestService } = require('./utils');
+const { getAllServicesForUserInOrg, isSelfManagement, isRequestService, isRequestServiceInSession } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
@@ -19,7 +19,7 @@ const renderAssociateServicesPage = (req, res, model) => {
 const buildBackLink = (req) => {
   let backRedirect;
 
-  const isRequestServiceUrl = isRequestService(req)
+  const isRequestServiceUrl = isRequestService(req) || isRequestServiceInSession(req)
 
   if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
     const sid = req.session.user.serviceId
