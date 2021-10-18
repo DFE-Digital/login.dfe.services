@@ -116,7 +116,7 @@ describe('when selecting the roles for a service', () => {
     await postAssociateRoles(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users`);
+    expect(res.redirect.mock.calls[0][0]).toBe('/approvals/users');
   });
 
   it('then it should render view with error if selection do not meet requirements of service', async () => {

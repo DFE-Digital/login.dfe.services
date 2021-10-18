@@ -11,6 +11,7 @@ const users = require('./app/users');
 const requestOrganisation = require('./app/requestOrganisation');
 const appCache = require('./app/appCache');
 const version = require('../package.json').version;
+const requestService = require('./app/requestService');
 
 const routes = (app, csrf) => {
   // auth callbacks
@@ -47,6 +48,16 @@ const routes = (app, csrf) => {
           return next(loginErr);
         }
         if (redirectUrl.endsWith('signout/complete')) redirectUrl = '/';
+        if(!req.session.user) {
+          req.session.user = {
+            uid: user.sub,
+            firstName: user.given_name,
+            lastName: user.family_name,
+            email: user.email,
+            services: [],
+            orgCount: 0
+          };
+        }
         return res.redirect(redirectUrl);
       });
     })(req, res, next);
@@ -64,6 +75,7 @@ const routes = (app, csrf) => {
     app.use('/request-organisation', requestOrganisation(csrf));
     app.use('/access-requests', accessRequests(csrf));
   }
+  app.use('/request-service', requestService(csrf));
   app.use('/appcache', appCache(csrf));
 
   app.get('*', (req, res) => {

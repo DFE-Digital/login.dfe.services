@@ -112,7 +112,7 @@ describe('when displaying the confirm edit service view', () => {
     await getConfirmEditService(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/confirmEditService');
+    expect(res.render.mock.calls[0][0]).toBe('users/views/confirmEditServiceRedesigned');
   });
 
   it('then it should include csrf token', async () => {

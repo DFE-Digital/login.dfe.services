@@ -82,12 +82,13 @@ const post = async (req, res) => {
     message: `${req.user.email} (id: ${req.user.sub}) requested organisation (id: ${req.body.organisationId})`,
   });
   if ((await getApproversForOrganisation(req.body.organisationId, req.id)).length > 0) {
-    res.flash('info', `Your request has been sent to approvers at ${req.body.organisationName}`);
+    res.flash('title', `Success`);
+    res.flash('heading', `Your request has been sent to approvers at ${req.body.organisationName}`);
+    res.flash('message', `You should receive a response within the next 5 working days.`);
   } else {
-    res.flash(
-      'info',
-      `There are no approvers at ${req.body.organisationName} so your request has been forwarded to the DfE Sign-in Helpdesk.`,
-    );
+    res.flash('title', `Success`);
+    res.flash('heading', `Your request has been sent to the DfE Sign-in Helpdesk.`);
+    res.flash('message', `There are no approvers at ${req.body.organisationName} so your request has been forwarded to the DfE Sign-in Helpdesk.`);
   }
   return res.redirect('/organisations');
 };

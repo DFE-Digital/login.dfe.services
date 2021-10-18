@@ -262,7 +262,7 @@ describe('when adding services to a user', () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       name: 'test name',
       user: { email: 'test@test.com', firstName: 'test', lastName: 'name', services: [] },
-      backLink: 'services',
+      backLink: '/approvals/users/user1',
       currentPage: 'users',
       organisationDetails: undefined,
       services: [

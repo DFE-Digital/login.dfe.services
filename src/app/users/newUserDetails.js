@@ -5,6 +5,20 @@ const {
   getOrganisationAndServiceForInvitation,
 } = require('./../../infrastructure/organisations');
 const { emailPolicy } = require('login.dfe.validation');
+const { actions } = require('../constans/actions');
+
+const { getApproverOrgsFromReq } = require('./utils');
+
+const buildBackLink = (req) => {
+  let backRedirect;
+  const approverOrgs = getApproverOrgsFromReq(req);
+  if (approverOrgs.length !== 1) {
+    backRedirect = `/approvals/select-organisation?action=${actions.ORG_INVITE}`;
+  } else {
+    backRedirect = '/approvals/users';
+  }
+  return backRedirect;
+};
 
 const get = (req, res) => {
   const model = {
@@ -13,7 +27,7 @@ const get = (req, res) => {
     lastName: '',
     email: '',
     validationMessages: {},
-    backLink: './',
+    backLink: buildBackLink(req),
     currentPage: 'users',
     organisationId: req.params.orgId,
   };
@@ -34,7 +48,7 @@ const validate = async (req) => {
     email: req.body.email || '',
     uid: '',
     validationMessages: {},
-    backLink: './',
+    backLink: buildBackLink(req),
     currentPage: 'users',
     organisationId: req.params.orgId,
     isDSIUser: false,

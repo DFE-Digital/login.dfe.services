@@ -8,6 +8,8 @@ const {
   getSingleInvitationService,
 } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
+const { actions } = require('../constans/actions');
+
 const sortBy = require('lodash/sortBy');
 
 const getUserDetails = async (req) => {
@@ -88,11 +90,78 @@ const isSelfManagement = (req) => {
   return req.user.sub === req.session.user.uid;
 };
 
+const isUserManagement = (req) => {
+  return req.query.manage_users === 'true' || isOrganisationInvite(req) || isViewOrganisationRequests(req);
+};
+
+const isRequestService = (req) => {
+  return req.query.action === actions.REQUEST_SERVICE;
+};
+
+const isRequestServiceInSession = (req) => {
+  return req.session.action === actions.REQUEST_SERVICE;
+};
+
+const isAddService = (req) => {
+  return req.query.action === actions.ADD_SERVICE;
+};
+
+const isEditService = (req) => {
+  return req.query.action === actions.EDIT_SERVICE;
+};
+
+const isRemoveService = (req) => {
+  return req.query.action === actions.REMOVE_SERVICE;
+};
+
+const isOrganisationInvite = (req) => {
+  return req.query.action === actions.ORG_INVITE;
+};
+
+const isViewOrganisationRequests = (req) => {
+  return req.query.action === actions.VIEW_ORG_REQUESTS;
+};
+
 const getApproverOrgsFromReq = (req) => {
   if (req.userOrganisations) {
     return req.userOrganisations.filter((x) => x.role.id === 10000);
   }
   return [];
+};
+
+const getUserOrgsFromReq = (req) => {
+  return req.userOrganisations;
+};
+
+const isUserApprover = (req) => {
+  if (req.userOrganisations) {
+    return req.userOrganisations.filter((x) => x.role.id === 10000).length > 0;
+  }
+  return false;
+};
+
+const isUserEndUser = (req) => {
+  if (req.userOrganisations) {
+    return req.userOrganisations.filter((x) => x.role.id === 0).length > 0;
+  }
+  return false;
+};
+
+const getOrgNaturalIdentifiers = (org) => {
+  const naturalIdentifiers = [];
+  const urn = org.URN || org.urn;
+  const uid = org.UID || org.uid;
+  const ukprn = org.UKPRN || org.ukprn;
+  if (urn) {
+    naturalIdentifiers.push(`URN: ${urn}`);
+  }
+  if (uid) {
+    naturalIdentifiers.push(`UID: ${uid}`);
+  }
+  if (ukprn) {
+    naturalIdentifiers.push(`UKPRN: ${ukprn}`);
+  }
+  return naturalIdentifiers;
 };
 
 module.exports = {
@@ -101,5 +170,17 @@ module.exports = {
   getSingleServiceForUser,
   waitForIndexToUpdate,
   isSelfManagement,
+  isUserManagement,
   getApproverOrgsFromReq,
+  getOrgNaturalIdentifiers,
+  getUserOrgsFromReq,
+  isUserApprover,
+  isUserEndUser,
+  isOrganisationInvite,
+  isViewOrganisationRequests,
+  isRequestService,
+  isRequestServiceInSession,
+  isAddService,
+  isEditService,
+  isRemoveService,
 };

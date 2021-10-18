@@ -73,7 +73,7 @@
                                     <% const role = locals.serviceRoles[i]; %>
                                     <div class="govuk-checkboxes__item">
                                         <input class="govuk-checkboxes__input" id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
-                                                <% if (locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
+                                                <% if (locals.selectedRoles && locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
                                                 for(let i = 0; i < locals.selectedRoles.roles.length; i++) {
                                                     const selectedRole = locals.selectedRoles.roles[i];
                                                 %>

@@ -4,7 +4,6 @@
             <h1 class="govuk-heading-xl">
                 Select organisation
             </h1>
-            <p class="govuk-body">Select the organisation that you want to manage users for.</p>
 
             <form method="post">
 
@@ -28,7 +27,10 @@
                             const org = locals.organisations[i];
                         %>
                             <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>">
+                                <input class="govuk-radios__input <%= locals.organisations.length > 2 ? 'auto-scroll-on-change' : '' %>"
+                                    id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>"
+                                    <%= org.organisation.id === selectedOrganisation ? 'checked': ''%>
+                                    >
                                 <label class="govuk-label govuk-radios__label" for="<%= org.organisation.id %>">
                                     <span class="govuk-label govuk-label--s">
                                         <%= org.organisation.name %> <%=org.organisation.status ? `(${org.organisation.status.name})` : '' %>
@@ -53,7 +55,9 @@
 
                 </div>
 
-                <button class="govuk-button">Continue</button>
+                <div class="govuk-button-group auto-scroll-dest">
+                    <button type="submit" class="govuk-button">Continue</button>
+                </div>
 
             </form>
 

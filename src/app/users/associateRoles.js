@@ -1,6 +1,6 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { isSelfManagement } = require('./utils');
+const { isSelfManagement, isRequestService } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const PolicyEngine = require('login.dfe.policy-engine');
@@ -15,6 +15,13 @@ const renderAssociateRolesPage = (req, res, model) => {
 };
 
 const buildBackLink = (req, currentServiceIndex) => {
+  const isRequestServiceUrl = isRequestService(req)
+  if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
+    const sid = req.session.user.serviceId
+    const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds))
+    return `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${sid}/roles/${roleIds}/approve`
+  }
+
   let backRedirect = `/approvals/${req.params.orgId}/users`;
   if (req.params.uid) {
     backRedirect += `/${req.params.uid}`;
@@ -71,7 +78,7 @@ const getViewModel = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
 
   const model = await getViewModel(req);
@@ -80,7 +87,7 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
 
   const currentService = req.session.user.services.findIndex((x) => x.serviceId === req.params.sid);

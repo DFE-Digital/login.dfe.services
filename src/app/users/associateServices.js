@@ -1,9 +1,10 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg, isSelfManagement, getApproverOrgsFromReq } = require('./utils');
+const { getAllServicesForUserInOrg, isSelfManagement, isRequestService, isRequestServiceInSession } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+const { actions } = require('../constans/actions');
 
 const policyEngine = new PolicyEngine(config);
 
@@ -17,20 +18,27 @@ const renderAssociateServicesPage = (req, res, model) => {
 
 const buildBackLink = (req) => {
   let backRedirect;
-  if (req.session.user.isInvite) {
+
+  const isRequestServiceUrl = isRequestService(req) || isRequestServiceInSession(req)
+
+  if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
+    const sid = req.session.user.serviceId
+    const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds))
+    backRedirect = `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${sid}/roles/${roleIds}/approve`
+  }
+  else if (req.session.user.isInvite) {
     req.params.uid
       ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
       : (backRedirect = 'new-user');
   } else if (isSelfManagement(req)) {
     // we need to check if user is approver at only one org to then send back to main services page
-    const approverOrgs = getApproverOrgsFromReq(req);
-    if (approverOrgs.length === 1) {
+    if (req.userOrganisations.length === 1) {
       backRedirect = '/my-services';
-    } else if (approverOrgs.length > 1) {
-      backRedirect = '/approvals/select-organisation?services=add';
+    } else {
+      backRedirect = `/approvals/select-organisation?action=${actions.ADD_SERVICE}`;
     }
   } else {
-    backRedirect = 'services';
+    backRedirect = `/approvals/users/${req.params.uid}`;
   }
   return backRedirect;
 };
@@ -70,7 +78,7 @@ const getAllAvailableServices = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
@@ -131,7 +139,7 @@ const validate = async (req) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
 
   const model = await validate(req);
