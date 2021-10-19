@@ -240,6 +240,11 @@ const getServices = async (req, res) => {
     }
   }
 
+  const { jobTitle } = await Account.getById(req.user.id)
+  //2: "job title" notification banner
+  const useJobTitleBanner = await directories.fetchUserBanners(req.user.id, 2)
+  const showJobTitleBanner = !useJobTitleBanner && !jobTitle
+
   return res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
@@ -255,6 +260,7 @@ const getServices = async (req, res) => {
     requestServicesRedirect,
     isRequestServiceAllowed,
     banner,
+    showJobTitleBanner,
   });
 };
 
