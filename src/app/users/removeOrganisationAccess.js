@@ -16,6 +16,7 @@ const get = async (req, res) => {
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
+  const linkToUserDetailsPage = `/approvals/users/${req.params.uid}`;
 
   return res.render('users/views/removeOrganisation', {
     csrfToken: req.csrfToken(),
@@ -26,14 +27,15 @@ const get = async (req, res) => {
       email: req.session.user.email,
     },
     currentPage: 'users',
-    backLink: 'services',
+    backLink: linkToUserDetailsPage,
+    cancelLink: linkToUserDetailsPage,
     services: servicesForUser,
   });
 };
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
+    return res.redirect(`/approvals/users/${req.params.uid}`);
   }
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
@@ -94,7 +96,7 @@ const post = async (req, res) => {
     env: config.hostingEnvironment.env,
   });
   res.flash('info', `${req.session.user.email} removed from organisation`);
-  return res.redirect(`/approvals/${organisationId}/users`);
+  return res.redirect(`/approvals/users`);
 };
 
 module.exports = {

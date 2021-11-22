@@ -1,34 +1,143 @@
-<div class="govuk-width-container">
-    <% if (locals.flash.info) { %>
+<div id="home-top" class="home-top">
+    <div class="govuk-width-container home-top__inner">
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                <div class="notification notification-success">
-                    <%=locals.flash.info%>
-                </div>
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl govuk-!-margin-top-5 govuk-!-margin-bottom-5">Manage users</h1>
+            </div>
+            <div class="govuk-grid-column-two-thirds">
+                <h3 class="govuk-heading-m">
+                    Here you'll find the users associated with your organisations, along with their details and
+                    permissions.
+                </h3>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="govuk-width-container">
+    <% if (locals.flash.info) { %>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <div class="notification notification-success">
+                <%=locals.flash.info%>
+            </div>
+        </div>
+    </div>
     <% } %>
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-xl">
-                <span class="govuk-caption-xl"><%= locals.organisationDetails.organisation.name%> <%=locals.organisationDetails.organisation.status ? `(${locals.organisationDetails.organisation.status.name})` : '' %></span>
-                Manage users
-            </h1>
-            <p class="govuk-body">Select a user from the list below and you'll be able to edit their permissions and services.</p>
-            <p class="govuk-body"><a class="govuk-link-bold" href="<%=locals.urls.help%>/manage-users" target="_blank">Learn more about managing users</a></p>
-        </div>
-            <div class="govuk-grid-column-one-third">
-                <aside class="govuk-!-margin-top-9">
-                    <h2 class="govuk-heading-m">Actions</h2>
-                    <ul class="govuk-list">
-                        <li><a class="govuk-link-bold" href="/approvals/<%=locals.organisationDetails.organisation.id%>/users/new-user">Invite user</a></li>
-                        <% if (locals.useRequestOrg) { %>
-                            <li><a class="govuk-link-bold" href="/access-requests/<%=locals.organisationDetails.organisation.id%>/requests">View requests</a></li>
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                <input type="hidden" name="page" value="1" />
+                <input type="hidden" name="isFilterToggle" value="<%= locals.showFilter %>"/>
+
+                <!--Search users-->
+                <div class="govuk-form-group">
+                    <h2 class="govuk-heading-m govuk-!-margin-top-9 govuk-!-margin-bottom-0">
+                        <label for="search-user">
+                            Search users
+                        </label>
+                    </h2>
+                    <div id="search-user-hint" class="govuk-caption-l govuk-!-margin-top-0">
+                        Search by user name
+                    </div>
+                    <div class="govuk-form-group <%= (locals.validations.searchUser !== undefined) ? 'govuk-form-group--error' : '' %>">
+                        <% if (locals.validations.searchUser !== undefined) { %>
+                            <span id="validation-search-users" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> <%=locals.validations.searchUser %>
+                            </span>
                         <% } %>
-                    </ul>
-                </aside>
-            </div>
+                        <div class="govuk-grid-row">
+                            <div class="govuk-grid-column-two-thirds">
+                                <input class="govuk-input govuk-grid-column-two-thirds <%= (locals.validations.searchUser !== undefined) ? 'govuk-input--error' : '' %>" id="searchCriteria" name="searchCriteria"
+                                    type="text" aria-describedby="search-user-hint" value="<%=locals.searchCriteria%>" >
+                            </div>
+                            <button type="submit" class="govuk-button" name="searchUser" value="searchUser">Search</button>
+                        </div>
+                    </div>
+                </div>
+
+                <% if (locals.approverOrgs && locals.approverOrgs.length > 1) {%>
+                    <!--Filter by Orgs-->
+                    <div class="govuk-!-margin-top-4">
+                        <button type="submit" class="button-link govuk-!-font-size-19 govuk-!-font-weight-bold" name="showFilter" value="<%=locals.showFilter %>">
+                            <%=locals.showFilter ? "Hide filters": "Filter by organisation" %>
+                        </button>
+                    </div>
+                    <div class="govuk-!-margin-top-4 <%= (!locals.showFilter) ? 'govuk-!-display-none' : '' %>" id="result">
+                        <div class="filter-box-bg govuk-!-width-three-quarters">
+                            <div class="govuk-!-padding-top-2 govuk-!-padding-left-1">
+                                <div class="govuk-form-group <%= (locals.validations.selectedOrganisation !== undefined) ? 'govuk-form-group--error' : '' %>">
+                                    <fieldset class="govuk-fieldset">
+                                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                            <h3 class="govuk-fieldset__heading">
+                                                Choose organisation
+                                            </h3>
+                                        </legend>
+                                        <% if (locals.validations.selectedOrganisation !== undefined) { %>
+                                            <span id="validation-selected-organisation" class="govuk-error-message">
+                                                <span class="govuk-visually-hidden">Error:</span> <%=locals.validations.selectedOrganisation %>
+                                            </span>
+                                        <% } %>
+                                        <div class="govuk-checkboxes govuk-checkboxes--small"
+                                            data-module="govuk-checkboxes">
+                                            <% for (let i = 0; i < approverOrgs.length; i++) { %>
+                                            <% const org = approverOrgs[i].organisation %>
+                                            <div class="govuk-checkboxes__item">
+                                                <input class="govuk-checkboxes__input" id="<%=org.id%>" type="checkbox"
+                                                    name="selectedOrganisation" value="<%=org.id%>"
+                                                    <% if (locals.selectedOrganisations && locals.selectedOrganisations.length > 0) {
+                                                        for(let i = 0; i < locals.selectedOrganisations.length; i++) {
+                                                            const selectedOrg = locals.selectedOrganisations[i];
+                                                        %>
+                                                        <%= org.id === selectedOrg ? 'checked': ''%><% } }%>>
+                                                <label class="govuk-label govuk-checkboxes__label"
+                                                    for="<%=org.id%>"><%=org.name%></label>
+                                            </div>
+                                            <% } %>
+                                        </div>
+                                    </fieldset>
+                                    <div class="govuk-button-group">
+                                        <button type="submit" class="govuk-button" name="applyFilter" value="applyFilter" >Apply filter</button>
+                                        <button type="submit" class="govuk-button govuk-button--secondary govuk-button--secondary-dark <%=locals.selectedOrganisations.length > 0 ? '' : 'govuk-button--disabled' %>" name="removeFilter" value="removeFilter" <%=locals.selectedOrganisations.length > 0 ? '' : 'disabled' %> > Remove filter</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            </form>
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+            <aside class="govuk-!-margin-top-9">
+                <h2 class="govuk-heading-m">Related actions</h2>
+                <ul class="govuk-list">
+                    <li>
+                        <a class="govuk-link-bold" href="<%=locals.inviteUserUrl%>">
+                            Invite new user
+                        </a>
+                    </li>
+                    <li>
+                        <a class="govuk-link-bold" href="<%=locals.urls.help%>/manage-users">
+                            Help with managing users
+                        </a>
+                    </li>
+                    <li>
+                        <a class="govuk-link-bold" href="<%=locals.urls.profile%>">
+                            See my profile
+                        </a>
+                    </li>
+                    <li>
+                        <a class="govuk-link-bold" href="<%=locals.requestsUrl%>">
+                            See requests
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+        </div>
+
     </div>
 
     <%
@@ -40,63 +149,125 @@
         totalNumberOfResults: locals.totalNumberOfResults,
         numberOfResultsOnPage: locals.usersForOrganisation.users.length,
         data: [
-            { key: 'criteria', value: locals.criteria },
+            { key: 'searchCriteria', value: locals.searchCriteria },
             { key: 'sort', value: locals.sortBy },
             { key: 'sortDir', value: locals.sortOrder },
-            { key: 'showFilters', value: locals.showFilters }
+            { key: 'isFilterToggle', value: locals.showFilter },
+            { key: 'selectedOrganisation', value: locals.selectedOrganisations }
         ]
     }
     %>
 
-    <div class="govuk-grid-row">
+    <div class="govuk-grid-row govuk-!-margin-top-9">
         <div class="govuk-grid-column-full">
             <%- include('../../layouts/pagination', paginationModel); %>
-            <table class="custom-table data">
-                <thead>
-                <% let baseSortUri = `?page=${page}`;%>
-                <tr class="sortable">
-                    <th scope="col" class="cwp-15">
-                        <a href="<%=baseSortUri%>&sort=searchableName&sortdir=<%= locals.sort.searchableName.nextDirection %>"
-                        class="<% if (locals.sort.searchableName.applied) { %>sorted dir-<%= (locals.sort.searchableName.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">Name</a></th>
-                    <th scope="col" class="cwp-35">
-                        <a href="<%=baseSortUri%>&sort=searchableEmail&sortdir=<%= locals.sort.searchableEmail.nextDirection %>"
-                        class="<% if (locals.sort.searchableEmail.applied) { %>sorted dir-<%= (locals.sort.searchableEmail.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">Email</a></th>
-                    <th scope="col" class="cwp-15">
-                        <a href="#" class="">Is approver</a></th>
-                    <th scope="col" class="cwp-10">
-                        <a href="<%=baseSortUri%>&sort=lastLogin&sortdir=<%= locals.sort.lastLogin.nextDirection %>"
-                        class="<% if (locals.sort.lastLogin.applied) { %>sorted dir-<%= (locals.sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">Last login</a></th>
-                    <th scope="col" class="cwp-10">
-                        <a href="<%=baseSortUri%>&sort=statusId&sortdir=<%= locals.sort.statusId.nextDirection %>"
-                        class="<% if (locals.sort.statusId.applied) { %>sorted dir-<%= (locals.sort.statusId.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">Status</a></th>
-                </tr>
-                </thead>
-                <tbody>
-                <% if(locals.usersForOrganisation.users.length === 0) { %>
-                    <tr>
-                        <td colspan="5"><span class="empty-state">No users found</span></td>
-                    </tr>
-                <% } %>
-                <% for(let i= 0; i < locals.usersForOrganisation.users.length; i++) {
-                const user = locals.usersForOrganisation.users[i]%>
-                <tr>
-                    <td><a class="govuk-link" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/<%= user.id%>"><%= user.firstName %> <%= user.lastName %></a></td>
+            <table class="govuk-table">
+                <thead class="govuk-table__head">
+                    <% let baseSortUri = `?page=${page}`;%>
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header width-30">
+                            <!-- <a href="<%=baseSortUri%>&sort=searchableName&sortdir=<%= locals.sort.searchableName.nextDirection %>"
+                            class="govuk-link-bold govuk-link--no-underline <% if (locals.sort.searchableName.applied) { %>sorted dir-<%= (locals.sort.searchableName.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">
+                            Name
+                        </a> -->
+                            Name
+                        </th>
 
-                    <td><span class="breakable"><%=user.email%></span></td>
-                    <%
-                    if (user.organisations.length > 0) {
-                        const permissionName = user.organisations[0].roleId === 10000 ? 'Yes' : '';
-                        %>
-                        <td><%= permissionName %></td>
-                    <% } else { %>
-                        <td>Unknown</td>
+                        <th scope="col" class="govuk-table__header width-50">
+                            <table class="govuk-table govuk-!-margin-bottom-0">
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-body govuk-!-font-weight-bold govuk-!-padding-right-3">
+                                        <!-- <a href="#" class="govuk-link-bold govuk-link--no-underline">
+                                        Organisation
+                                    </a> -->
+                                        Organisation
+                                    </td>
+                                    <td class="govuk-body govuk-!-font-weight-bold govuk-!-width-one-quarter">
+                                        <!-- <a href="#" class="govuk-link-bold govuk-link--no-underline">
+                                        Permission
+                                    </a> -->
+                                        Permission
+                                    </td>
+                                </tr>
+                            </table>
+                        </th>
+
+                        <th scope="col" class="govuk-table__header width-10">
+                            <!-- <a href="<%=baseSortUri%>&sort=statusId&sortdir=<%= locals.sort.statusId.nextDirection %>"
+                            class="govuk-link-bold govuk-link--no-underline <% if (locals.sort.statusId.applied) { %>sorted dir-<%= (locals.sort.statusId.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">
+                            Status
+                        </a> -->
+                            Status
+                        </th>
+                        <th scope="col" class="govuk-table__header width-10">
+                            <!-- <a href="<%=baseSortUri%>&sort=lastLogin&sortdir=<%= locals.sort.lastLogin.nextDirection %>"
+                            class="govuk-link-bold govuk-link--no-underline <% if (locals.sort.lastLogin.applied) { %>sorted dir-<%= (locals.sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">
+                            Last login
+                        </a> -->
+                            Last login
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody class="govuk-table__body">
+
+                    <% if(locals.usersForOrganisation.users.length === 0) { %>
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell" colspan="4">
+                            <div class="empty-state">
+                                <p class="govuk-body">No users found</p>
+                            </div>
+                        </td>
+                    </tr>
                     <% } %>
 
-                    <td><%=user.lastLogin ? locals.moment(user.lastLogin).fromNow() : 'Never'%></td>
+                    <% for(let i= 0; i < locals.usersForOrganisation.users.length; i++) {
+                    const user = locals.usersForOrganisation.users[i]%>
 
-                    <td><%= user.statusId.description %></td>
-                </tr>
-                <% } %>
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__cell">
+                            <p class="service-link">
+                                <a class="govuk-link-bold" href="/approvals/users/<%= user.id%>">
+                                    <%= user.firstName %> <%= user.lastName %>
+                                </a>
+                            </p>
+                        </th>
+
+                        <% if (user.organisations.length > 0) { %>
+                        <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                            <table class="govuk-table govuk-!-margin-bottom-0">
+                                <% for(let j= 0; j < user.organisations.length; j++) { %>
+                                <tr class="govuk-table__row">
+                                    <!-- <td class="govuk-table__cell govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold"> -->
+                                    <td
+                                        class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold govuk-!-padding-right-3">
+                                        <% const orgName = user.organisations[j].name %>
+                                        <%= orgName %>
+                                    </td>
+                                    <!-- <td class="govuk-table__cell govuk-body govuk-!-font-size-16 govuk-!-width-one-quarter"> -->
+                                    <td class="govuk-body govuk-!-font-size-16 govuk-!-width-one-quarter">
+                                        <% const permissionName = user.organisations[j].roleId === 10000 ? 'Approver' : 'End user'; %>
+                                        <%= permissionName %>
+                                    </td>
+                                </tr>
+                                <% } %>
+                            </table>
+                        </td>
+                        <% } else { %>
+                        <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                            Unknown
+                        </td>
+                        <% } %>
+
+                        <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                            <%= user.statusId.description %>
+                        </td>
+
+                        <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                            <%=user.lastLogin ? locals.moment(user.lastLogin).format('DD/MM/YYYY hh:mm A') : 'Never'%>
+                        </td>
+                    </tr>
+                    <% } %>
                 </tbody>
             </table>
             <%- include('../../layouts/pagination', paginationModel); %>

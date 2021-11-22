@@ -29,8 +29,6 @@
 
 <a href="#content" class="govuk-skip-link">Skip to main content</a>
 
-<%-include(process.cwd()+'/node_modules/dfe-frontend-toolkit/app/gds-upgrade/views/concepts/components/cookie-banner.html') %>
-
 <div class="wrapper">
     <%if(app.environmentBannerMessage) {%>
     <div class="environment-banner">
@@ -195,12 +193,7 @@
 </footer>
 
 <script type="text/javascript" src="<%= locals.urls.assets %>/gds-upgrade/javascript/vendors/vendors.min.js?version=<%= locals.assets.version %>"></script>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script>
-    window.gaTrackingId = '<%=locals.gaTrackingId || 'UA-114739594-1'%>';
-</script>
 <script src="<%= locals.urls.assets %>/gds-upgrade/javascript/app.min.js?version=<%= locals.assets.version %>"></script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=<%=locals.gaTrackingId || 'UA-114739594-1'%>"></script>
 
 <script>
     function signOut(){

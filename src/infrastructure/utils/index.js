@@ -24,15 +24,22 @@ const isApprover = (req, res, next) => {
   return res.status(401).render('errors/views/notAuthorised');
 };
 
-/*const setApproverContext = async (req, res, next) => {
-  res.locals.isApprover = false;
-  if (req.user) {
-    const user = req.user;
-    const services = await getServicesForUser(user.sub);
-    res.locals.isApprover = services.some(s => s.role.id >= APPROVER && s.status > 0);
+const isApproverInSomeOrgs = (req, res, next) => {
+  if (req.userOrganisations) {
+    const userApproverOrgs = req.userOrganisations.filter((x) => x.role.id === 10000);
+    if (userApproverOrgs.length > 0) {
+      return next();
+    }
   }
-  next();
-};*/
+  return res.status(401).render('errors/views/notAuthorised');
+};
+
+const isSelfRequest = (req, res, next) => {
+  if (req.user && req.user.sub === req.params.uid) {
+    return next();
+  }
+  return res.status(401).render('errors/views/notAuthorised');
+};
 
 const getUserEmail = (user) => user.email || '';
 
@@ -90,5 +97,7 @@ module.exports = {
   asyncMiddleware,
   setConfigContext,
   isApprover,
+  isApproverInSomeOrgs,
   mapUserStatus,
+  isSelfRequest,
 };

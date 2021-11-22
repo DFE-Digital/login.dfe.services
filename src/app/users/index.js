@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const { isLoggedIn, isApprover } = require('../../infrastructure/utils');
+const { isLoggedIn, isApprover, isApproverInSomeOrgs } = require('../../infrastructure/utils');
 const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
@@ -29,23 +29,9 @@ const users = (csrf) => {
 
   router.use(isLoggedIn);
 
-  router.get(
-    '/users',
-    asyncWrapper((req, res) => {
-      req.userOrganisations = getApproverOrgsFromReq(req);
-      if (req.userOrganisations.length === 0) {
-        return res.status(401).render('errors/views/notAuthorised');
-      }
-      if (req.userOrganisations.length === 1) {
-        return res.redirect(`${req.userOrganisations[0].organisation.id}/users`);
-      } else {
-        return res.redirect(`/approvals/select-organisation?manage_users=true`);
-      }
-    }),
-  );
-
-  router.get('/:orgId/users', csrf, isApprover, asyncWrapper(getUsersList));
-  router.post('/:orgId/users', csrf, isApprover, asyncWrapper(postUserList));
+  // Manage users page - users list page
+  router.get('/users', csrf, isApproverInSomeOrgs, asyncWrapper(getUsersList));
+  router.post('/users', csrf, isApproverInSomeOrgs, asyncWrapper(postUserList));
 
   router.get('/:orgId/users/new-user', csrf, isApprover, asyncWrapper(getNewUserDetails));
   router.post('/:orgId/users/new-user', csrf, isApprover, asyncWrapper(postNewUserDetails));
@@ -68,13 +54,8 @@ const users = (csrf) => {
   router.get('/:orgId/users/:uid/confirm-details', csrf, isApprover, asyncWrapper(getConfirmNewUser));
   router.post('/:orgId/users/:uid/confirm-details', csrf, isApprover, asyncWrapper(postConfirmNewUser));
 
-  router.get(
-    '/:orgId/users/:uid',
-    asyncWrapper((req, res) => {
-      res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
-    }),
-  );
-  router.get('/:orgId/users/:uid/services', csrf, isApprover, asyncWrapper(getServices));
+  // User details page within manage users
+  router.get('/users/:uid', csrf, isApproverInSomeOrgs, asyncWrapper(getServices));
 
   router.get('/:orgId/users/:uid/services/:sid', csrf, isApprover, asyncWrapper(getEditService));
   router.post('/:orgId/users/:uid/services/:sid', csrf, isApprover, asyncWrapper(postEditService));

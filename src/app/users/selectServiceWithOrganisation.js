@@ -1,7 +1,7 @@
 'use strict';
 
 const { services, organisation } = require('login.dfe.dao');
-const { getOrgNaturalIdentifiers } = require('./utils');
+const { getOrgNaturalIdentifiers, isRemoveService } = require('./utils');
 
 const buildAdditionalOrgDetails = (serviceOrganisations) => {
   serviceOrganisations.forEach((serviceOrg) => {
@@ -14,7 +14,7 @@ const buildAdditionalOrgDetails = (serviceOrganisations) => {
 };
 
 const buildPageTitle = (req) => {
-  if (req.query.action === 'remove') {
+  if (isRemoveService(req)) {
     return 'Remove which service?';
   }
   return 'Edit which service?';
@@ -26,7 +26,7 @@ const renderSelectServiceWithOrganisationPage = (req, res, model) => {
 
 const buildRedirectURL = (req, serviceOrgDetails) => {
   let redirectURL = `/approvals/${serviceOrgDetails.Organisation.id}/users/${req.user.sub}/services/${serviceOrgDetails.Service.id}`;
-  if (req.query.action === 'remove') {
+  if (isRemoveService(req)) {
     redirectURL += '/remove-service';
   }
   return redirectURL;

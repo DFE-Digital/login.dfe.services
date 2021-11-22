@@ -2,7 +2,7 @@
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   return res.render('users/views/confirmExistingUser', {
@@ -16,7 +16,7 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users`);
+    return res.redirect('/approvals/users');
   }
   return req.query.review
     ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`)

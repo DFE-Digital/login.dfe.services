@@ -8,6 +8,7 @@ const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+const { actions } = require('../constans/actions');
 
 const renderRemoveServicePage = (req, res, model) => {
   const isManage = isUserManagement(req);
@@ -21,19 +22,19 @@ const buildBackLink = (req) => {
   if (isUserManagement(req)) {
     return `/approvals/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}?manage_users=true`;
   }
-  return '/approvals/select-organisation-service?action=remove';
+  return `/approvals/select-organisation-service?action=${actions.REMOVE_SERVICE}`;
 };
 
 const buildCancelLink = (req) => {
   if (isUserManagement(req)) {
-    return `/approvals/${req.params.orgId}/users/${req.params.uid}/services`;
+    return `/approvals/users/${req.params.uid}`;
   }
   return '/my-services';
 };
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
+    return res.redirect(`/approvals/users/${req.params.uid}`);
   }
   const service = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
@@ -56,7 +57,7 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
+    return res.redirect(`/approvals/users/${req.params.uid}`);
   }
   const uid = req.params.uid;
   const serviceId = req.params.sid;
@@ -111,7 +112,7 @@ const post = async (req, res) => {
 
   if (isUserManagement(req)) {
     res.flash('info', `${service.name} successfully removed`);
-    return res.redirect(`/approvals/${organisationId}/users/${uid}/services`);
+    return res.redirect(`/approvals/users/${uid}`);
   } else {
     const allServices = await checkCacheForAllServices();
     const serviceDetails = allServices.services.find((x) => x.id === serviceId);

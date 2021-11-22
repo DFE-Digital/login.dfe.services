@@ -1,3 +1,9 @@
+
+jest.mock('./../../../../src/infrastructure/account', () => ({
+  fromContext: jest.fn(),
+  getUsersById: jest.fn(),
+  getById: jest.fn(),
+}));
 jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
   getUsersById: jest.fn(),
@@ -15,6 +21,15 @@ jest.mock('./../../../../src/infrastructure/logger', () => ({
   info: jest.fn(),
 }));
 
+jest.mock('login.dfe.dao', () => {
+  return {
+    directories: {
+      fetchUserBanners: async (userId, bannerId) => {
+        return null;
+      }
+    }
+  };
+});
 
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
