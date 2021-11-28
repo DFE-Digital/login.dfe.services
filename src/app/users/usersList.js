@@ -58,7 +58,7 @@ const search = async (req) => {
   } else {
     usersForOrganisation = await getAllUsersForOrg(page, filteredOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id)
   }
-
+  
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
     const user = usersForOrganisation.users[i];
     if (req.user.sub === user.id) {
@@ -69,6 +69,15 @@ const search = async (req) => {
     const approverUserOrgs = user.organisations.filter((x) => filteredOrgIds.includes(x.id));
     user.statusId = mapUserStatus(user.statusId);
     user.organisations = approverUserOrgs.sort((a, b) => a.name.localeCompare(b.name));
+    user.primaryOrganisation = [...user.organisations].shift().name;
+  }
+
+  if(sortBy === 'primaryOrganisation') {
+    if(sortAsc){ 
+      usersForOrganisation.users.sort((a, b) => (a.primaryOrganisation > b.primaryOrganisation) ? 1 : -1)
+    } else{
+      usersForOrganisation.users.sort((a, b) => (a.primaryOrganisation > b.primaryOrganisation) ? -1 : 1)
+    }
   }
 
   return {
@@ -87,9 +96,9 @@ const search = async (req) => {
         nextDirection: sortBy === 'searchableName' ? (sortAsc ? 'desc' : 'asc') : 'asc',
         applied: sortBy === 'searchableName',
       },
-      searchableEmail: {
-        nextDirection: sortBy === 'searchableEmail' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'searchableEmail',
+      primaryOrganisation: {
+        nextDirection: sortBy === 'primaryOrganisation' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'primaryOrganisation',
       },
       lastLogin: {
         nextDirection: sortBy === 'lastLogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',

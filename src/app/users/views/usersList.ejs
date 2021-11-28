@@ -164,28 +164,24 @@
             <table class="govuk-table">
                 <thead class="govuk-table__head">
                     <% let baseSortUri = `?page=${page}`;%>
-                    <tr class="govuk-table__row">
-                        <th scope="col" class="govuk-table__header width-30">
-                            <!-- <a href="<%=baseSortUri%>&sort=searchableName&sortdir=<%= locals.sort.searchableName.nextDirection %>"
-                            class="govuk-link-bold govuk-link--no-underline <% if (locals.sort.searchableName.applied) { %>sorted dir-<%= (locals.sort.searchableName.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">
-                            Name
-                        </a> -->
-                            Name
+                    <tr class="govuk-table__row sortable">
+                        <th scope="col" class="govuk-table__header width-20">
+                            <a href="<%=baseSortUri%>&sort=searchableName&sortdir=<%= locals.sort.searchableName.nextDirection %>"
+                                class="govuk-link-bold govuk-link--no-underline <% if (locals.sort.searchableName.applied) { %>sorted dir-<%= (locals.sort.searchableName.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">
+                                Name
+                            </a>
                         </th>
 
                         <th scope="col" class="govuk-table__header width-50">
                             <table class="govuk-table govuk-!-margin-bottom-0">
                                 <tr class="govuk-table__row">
                                     <td class="govuk-body govuk-!-font-weight-bold govuk-!-padding-right-3">
-                                        <!-- <a href="#" class="govuk-link-bold govuk-link--no-underline">
-                                        Organisation
-                                    </a> -->
-                                        Organisation
+                                        <a href="<%=baseSortUri%>&sort=primaryOrganisation&sortdir=<%= locals.sort.primaryOrganisation.nextDirection %>"
+                                            class="govuk-link-bold govuk-link--no-underline <% if (locals.sort.primaryOrganisation.applied) { %>sorted dir-<%= (locals.sort.primaryOrganisation.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">
+                                            Organisation
+                                        </a>
                                     </td>
                                     <td class="govuk-body govuk-!-font-weight-bold govuk-!-width-one-quarter">
-                                        <!-- <a href="#" class="govuk-link-bold govuk-link--no-underline">
-                                        Permission
-                                    </a> -->
                                         Permission
                                     </td>
                                 </tr>
@@ -193,18 +189,16 @@
                         </th>
 
                         <th scope="col" class="govuk-table__header width-10">
-                            <!-- <a href="<%=baseSortUri%>&sort=statusId&sortdir=<%= locals.sort.statusId.nextDirection %>"
+                            <a href="<%=baseSortUri%>&sort=statusId&sortdir=<%= locals.sort.statusId.nextDirection %>"
                             class="govuk-link-bold govuk-link--no-underline <% if (locals.sort.statusId.applied) { %>sorted dir-<%= (locals.sort.statusId.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">
-                            Status
-                        </a> -->
-                            Status
+                                Status
+                            </a>
                         </th>
-                        <th scope="col" class="govuk-table__header width-10">
-                            <!-- <a href="<%=baseSortUri%>&sort=lastLogin&sortdir=<%= locals.sort.lastLogin.nextDirection %>"
+                        <th scope="col" class="govuk-table__header width-20">
+                            <a href="<%=baseSortUri%>&sort=lastLogin&sortdir=<%= locals.sort.lastLogin.nextDirection %>"
                             class="govuk-link-bold govuk-link--no-underline <% if (locals.sort.lastLogin.applied) { %>sorted dir-<%= (locals.sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>">
-                            Last login
-                        </a> -->
-                            Last login
+                                Last login
+                            </a>
                         </th>
                     </tr>
                 </thead>
@@ -238,13 +232,11 @@
                             <table class="govuk-table govuk-!-margin-bottom-0">
                                 <% for(let j= 0; j < user.organisations.length; j++) { %>
                                 <tr class="govuk-table__row">
-                                    <!-- <td class="govuk-table__cell govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold"> -->
                                     <td
                                         class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold govuk-!-padding-right-3">
                                         <% const orgName = user.organisations[j].name %>
                                         <%= orgName %>
                                     </td>
-                                    <!-- <td class="govuk-table__cell govuk-body govuk-!-font-size-16 govuk-!-width-one-quarter"> -->
                                     <td class="govuk-body govuk-!-font-size-16 govuk-!-width-one-quarter">
                                         <% const permissionName = user.organisations[j].roleId === 10000 ? 'Approver' : 'End user'; %>
                                         <%= permissionName %>
