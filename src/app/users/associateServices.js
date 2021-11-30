@@ -124,7 +124,7 @@ const validate = async (req) => {
     if (isSelfManagement(req)) {
       model.validationMessages.services = 'Please select a service';
     } else {
-      model.validationMessages.services = 'At least one service must be selected';
+      model.validationMessages.services = 'Select a service to continue';
     }
   }
   if (
