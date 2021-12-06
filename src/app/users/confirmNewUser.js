@@ -61,6 +61,7 @@ const get = async (req, res) => {
     service.roles = rotails;
   }
 
+  const subServiceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${services[0].id}`;
   const model = {
     backLink: buildBackLink(req, services),
     currentPage: 'users',
@@ -73,6 +74,7 @@ const get = async (req, res) => {
       uid: req.session.user.uid ? req.session.user.uid : '',
     },
     services,
+    subServiceUrl,
     organisationDetails,
   };
 
@@ -92,6 +94,7 @@ const post = async (req, res) => {
   const organisationId = req.params.orgId;
   const organisation = await getOrganisationById(organisationId, req.id);
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
+  
   if (!uid) {
     const redirectUri = `https://${config.hostingEnvironment.host}/auth`;
     const invitationId = await Account.createInvite(
@@ -273,15 +276,17 @@ const post = async (req, res) => {
       },
     });
 
-    if (isSelfManagement(req)) {
-      const allServices = await checkCacheForAllServices();
-      const serviceDetails = allServices.services.find((x) => x.id === req.session.user.services[0].serviceId);
-      res.flash('title', `Success`);
-      res.flash('heading', `New service added: ${serviceDetails.name}`);
+    const allServices = await checkCacheForAllServices();
+    const serviceDetails = allServices.services.find((x) => x.id === req.session.user.services[0].serviceId);
+    
+    res.flash('title', `Success`);
+    res.flash('heading', `New service added: ${serviceDetails.name}`);
+
+    if (isSelfManagement(req)) {  
       res.flash('message', `Select the service from the list below to access its functions and features.`);
       res.redirect(`/my-services`);
     } else {
-      res.flash('info', 'Services successfully added');
+      res.flash('message', `The user can now access its functions and features.`);
       res.redirect(`/approvals/users/${req.session.user.uid}`);
     }
   }
