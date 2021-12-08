@@ -60,8 +60,12 @@ const get = async (req, res) => {
     service.name = serviceDetails.name;
     service.roles = rotails;
   }
+  
+  let subServiceUrl = ''
+  if(!req.session.user.isInvite) {
+    subServiceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${services[0].id}`;
+  }
 
-  const subServiceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${services[0].id}`;
   const model = {
     backLink: buildBackLink(req, services),
     currentPage: 'users',
@@ -276,18 +280,23 @@ const post = async (req, res) => {
       },
     });
 
-    const allServices = await checkCacheForAllServices();
-    const serviceDetails = allServices.services.find((x) => x.id === req.session.user.services[0].serviceId);
-    
-    res.flash('title', `Success`);
-    res.flash('heading', `New service added: ${serviceDetails.name}`);
-
-    if (isSelfManagement(req)) {  
-      res.flash('message', `Select the service from the list below to access its functions and features.`);
-      res.redirect(`/my-services`);
-    } else {
-      res.flash('message', `The user can now access its functions and features.`);
+    if(req.session.user.isInvite) {
+      res.flash('info', 'Services successfully added');
       res.redirect(`/approvals/users/${req.session.user.uid}`);
+    } else {
+      const allServices = await checkCacheForAllServices();
+      const serviceDetails = allServices.services.find((x) => x.id === req.session.user.services[0].serviceId);
+      
+      res.flash('title', `Success`);
+      res.flash('heading', `New service added: ${serviceDetails.name}`);
+  
+      if (isSelfManagement(req)) {  
+        res.flash('message', `Select the service from the list below to access its functions and features.`);
+        res.redirect(`/my-services`);
+      } else {
+        res.flash('message', `The user can now access its functions and features.`);
+        res.redirect(`/approvals/users/${req.session.user.uid}`);
+      }
     }
   }
 };
