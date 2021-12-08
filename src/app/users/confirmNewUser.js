@@ -15,6 +15,7 @@ const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { checkCacheForAllServices } = require('./../../infrastructure/helpers/allServicesAppCache');
+const { actions } = require('../constans/actions');
 
 const renderConfirmNewUserPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
@@ -61,9 +62,11 @@ const get = async (req, res) => {
     service.roles = rotails;
   }
   
+  let serviceUrl = ''
   let subServiceUrl = ''
   if(!req.session.user.isInvite) {
-    subServiceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${services[0].id}`;
+    subServiceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${services[0].id}?action=${actions.MANAGE_SERVICE}`;
+    serviceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.MANAGE_SERVICE}`;
   }
 
   const model = {
@@ -79,6 +82,7 @@ const get = async (req, res) => {
     },
     services,
     subServiceUrl,
+    serviceUrl,
     organisationDetails,
   };
 

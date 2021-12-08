@@ -1,6 +1,6 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg, isSelfManagement, isRequestService, isRequestServiceInSession } = require('./utils');
+const { getAllServicesForUserInOrg, isSelfManagement, isRequestService, isRequestServiceInSession, isManageUserService } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
@@ -20,8 +20,11 @@ const buildBackLink = (req) => {
   let backRedirect;
 
   const isRequestServiceUrl = isRequestService(req) || isRequestServiceInSession(req)
-
-  if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
+  const isManageUserServiceUrl = isManageUserService(req)
+  if(isManageUserService) {
+    backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`
+  }
+  else if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
     const sid = req.session.user.serviceId
     const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds))
     backRedirect = `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${sid}/roles/${roleIds}/approve`
