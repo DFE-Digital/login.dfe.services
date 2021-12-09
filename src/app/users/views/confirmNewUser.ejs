@@ -1,141 +1,234 @@
-<div class="govuk-width-container">
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
 
-            <% if (locals.user.isInvite) { %>
-                <h1 class="govuk-heading-xl">
-                    Review invite details
-                </h1>
-                <p class="govuk-body">The user will have to confirm their email address and create a password before their account is
-                    active.</p>
-            <% } else { %>
-                <h1 class="govuk-heading-xl">
-                    Review new services
-                </h1>
-                <p class="govuk-body">Please review these details before granting access</p>
-            <% } %>
-
-            <h2 class="govuk-heading-m">
-                Request details
-            </h2>
-
-            <dl class="govuk-summary-list">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Personal details
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <% if (locals.user.isInvite) { %>
-                        <a class="govuk-link-bold pull-right" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/new-user?review=true">
-                            Change<span class="govuk-visually-hidden"> personal details</span>
-                        </a>
+<% if (locals.user.isInvite) { %>
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+    
+                <% if (locals.user.isInvite) { %>
+                    <h1 class="govuk-heading-xl">
+                        Review invite details
+                    </h1>
+                    <p class="govuk-body">The user will have to confirm their email address and create a password before their account is
+                        active.</p>
+                <% } else { %>
+                    <h1 class="govuk-heading-xl">
+                        Review new services
+                    </h1>
+                    <p class="govuk-body">Please review these details before granting access</p>
+                <% } %>
+    
+                <h2 class="govuk-heading-m">
+                    Request details
+                </h2>
+    
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Personal details
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <% if (locals.user.isInvite) { %>
+                            <a class="govuk-link-bold pull-right" href="/approvals/<%= locals.organisationDetails.organisation.id %>/users/new-user?review=true">
+                                Change<span class="govuk-visually-hidden"> personal details</span>
+                            </a>
+                            <% } %>
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            First name
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= locals.user.firstName %>
+                        </dd>
+                    </div>
+    
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Last name
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= locals.user.lastName %>
+                        </dd>
+    
+                    </div>
+    
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Email Address
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= locals.user.email %>
+                        </dd>
+                    </div>
+                </dl>
+    
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Organisation
+                        </dt>
+                        <dd class="govuk-summary-list__value"></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Name
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= locals.organisationDetails.organisation.name %>
+                        </dd>
+                    </div>
+                </dl>
+    
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Services
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <a class="govuk-link-bold pull-right" href="associate-services">
+                                Change<span class="govuk-visually-hidden"> services</span>
+                            </a>
+                        </dd>
+                    </div>
+    
+                    <% if (locals.services.length > 0) { %>
+                        <% for (let i = 0; i < locals.services.length; i++) { %>
+                            <% const service = locals.services[i]; %>
+                            <div class="govuk-summary-list__row govuk-summary-list--no-border">
+                                <dt class="govuk-summary-list__key">
+                                    Service
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    <%= service.name %>
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Roles
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    <% if (locals.services[i].roles.length > 0) { %>
+                                        <% for (let x = 0; x < locals.services[i].roles.length; x++) { %>
+                                            <% const role = locals.services[i].roles[x]; %>
+                                            <%= role.name %> <br>
+                                        <% } %>
+                                    <% } else { %>
+                                        No roles selected
+                                    <% } %>
+                                </dd>
+                            </div>
                         <% } %>
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        First name
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <%= locals.user.firstName %>
-                    </dd>
-                </div>
-
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Last name
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <%= locals.user.lastName %>
-                    </dd>
-
-                </div>
-
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Email Address
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <%= locals.user.email %>
-                    </dd>
-                </div>
-            </dl>
-
-            <dl class="govuk-summary-list">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Organisation
-                    </dt>
-                    <dd class="govuk-summary-list__value"></dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Name
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <%= locals.organisationDetails.organisation.name %>
-                    </dd>
-                </div>
-            </dl>
-
-            <dl class="govuk-summary-list">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Services
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <a class="govuk-link-bold pull-right" href="associate-services">
-                            Change<span class="govuk-visually-hidden"> services</span>
-                        </a>
-                    </dd>
-                </div>
-
-                <% if (locals.services.length > 0) { %>
-                    <% for (let i = 0; i < locals.services.length; i++) { %>
-                        <% const service = locals.services[i]; %>
-                        <div class="govuk-summary-list__row govuk-summary-list--no-border">
+                    <% } else { %>
+                        <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 Service
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                <%= service.name %>
-                            </dd>
-                        </div>
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Roles
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                <% if (locals.services[i].roles.length > 0) { %>
-                                    <% for (let x = 0; x < locals.services[i].roles.length; x++) { %>
-                                        <% const role = locals.services[i].roles[x]; %>
-                                        <%= role.name %> <br>
-                                    <% } %>
-                                <% } else { %>
-                                    No roles selected
-                                <% } %>
+                                None selected
                             </dd>
                         </div>
                     <% } %>
-                <% } else { %>
+                </dl>
+    
+                <form method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button">Submit</button>
+                        <a href="/approvals/users" class="govuk-button govuk-button--secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<% } else { %>
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-m govuk-!-margin-top-3">
+                    Review new service for <%= locals.user.firstName %> <%= locals.user.lastName %>
+                </h1>
+                <p class="govuk-body">Review these details before confirming.</p>
+
+                <h2 class="govuk-heading-m">
+                    Review summary
+                </h2>
+
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            User name
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= locals.user.firstName %> <%= locals.user.lastName %>
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Email address
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= locals.user.email %>
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Organisation
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= locals.organisationDetails.organisation.name %>
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                        </dd>
+                    </div>
+
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             Service
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            None selected
+                            <%= locals.services[0].name %>
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            <a class="govuk-link"  href="<%=locals.serviceUrl %>">
+                                Amend
+                            </a>
                         </dd>
                     </div>
-                <% } %>
-            </dl>
 
-            <form method="post">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <div class="govuk-button-group">
-                    <button type="submit" class="govuk-button">Submit</button>
-                    <a href="/approvals/users" class="govuk-button govuk-button--secondary">Cancel</a>
-                </div>
-            </form>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Sub-service/role
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <% if (locals.services[0].roles.length > 0) { %>
+                                <% for (let x = 0; x < locals.services[0].roles.length; x++) { %>
+                                    <% const role = locals.services[0].roles[x]; %>
+                                    <%= role.name %> <br>
+                                <% } %>
+                            <% } else { %>
+                                No roles selected
+                            <% } %>
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            <a class="govuk-link" href="<%=locals.subServiceUrl %>">
+                                Amend
+                            </a>
+                        </dd>
+                    </div>
+                </dl>
+                <form method="post" class="prevent-form-double-submission">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button">Approve service</button>
+                        <a href="/approvals/users/<%=locals.user.uid%>" class="govuk-button govuk-button--secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+<% } %>
