@@ -21,7 +21,7 @@ const buildBackLink = (req) => {
 
   const isRequestServiceUrl = isRequestService(req) || isRequestServiceInSession(req)
   const isManageUserServiceUrl = isManageUserService(req)
-  if(isManageUserService) {
+  if(isManageUserServiceUrl) {
     backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`
   }
   else if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {

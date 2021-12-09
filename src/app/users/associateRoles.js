@@ -18,7 +18,7 @@ const buildBackLink = (req, currentServiceIndex) => {
   const isRequestServiceUrl = isRequestService(req)
   const isManageUserServiceUrl = isManageUserService(req)
 
-  if(isManageUserService) {
+  if(isManageUserServiceUrl) {
     return `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`
   }
   else if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
