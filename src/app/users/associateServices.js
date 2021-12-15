@@ -193,6 +193,10 @@ const post = async (req, res) => {
   }
 
   const service = req.session.user.services[0].serviceId;
+  const isEditServiceUrl = isEditService(req);
+  if(isEditServiceUrl) {
+    return res.redirect(`services/${service}?manage_users=true&action=edit-service`);
+  }
   return res.redirect(`associate-services/${service}`);
 };
 
