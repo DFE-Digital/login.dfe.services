@@ -90,10 +90,6 @@ const post = async (req, res) => {
     selectedRoles = [req.body.role];
   }
 
-  if (isUserManagement(req) && haveRolesNotBeenUpdated(req, selectedRoles)) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
-  }
-
   const policyValidationResult = await policyEngine.validate(
     req.params.uid.startsWith('inv-') ? undefined : req.params.uid,
     req.params.orgId,
