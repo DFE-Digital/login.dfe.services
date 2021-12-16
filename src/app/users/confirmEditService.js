@@ -115,13 +115,14 @@ const post = async (req, res) => {
     message: `${req.user.email} (id: ${req.user.sub}) updated service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
   });
 
+  res.flash('title', `Success`);
+  res.flash('heading', `Service amended: ${service.name}`);
+
   if (!isUserManagement(req)) {
-    res.flash('title', `Success`);
-    res.flash('heading', `Service amended: ${service.name}`);
     res.flash('message', `Select the service from the list below to access its functions and features.`);
     res.redirect(`/my-services`);
   } else {
-    res.flash('info', `${service.name} updated successfully`);
+    res.flash('message', `The user can now access its edited functions and features.`);
     return res.redirect(`/approvals/users/${uid}`);
   }
 };

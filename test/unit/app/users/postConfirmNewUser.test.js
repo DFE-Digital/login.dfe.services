@@ -411,9 +411,13 @@ describe('when inviting a new user', () => {
     req.session.user.uid = 'user1';
     await postConfirmNewUser(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(1);
-    expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`Services successfully added`);
+    expect(res.flash.mock.calls).toHaveLength(3);
+    expect(res.flash.mock.calls[0][0]).toBe('title');
+    expect(res.flash.mock.calls[0][1]).toBe(`Success`);
+    expect(res.flash.mock.calls[1][0]).toBe('heading');
+    expect(res.flash.mock.calls[1][1]).toBe(`New service added: Service One`);
+    expect(res.flash.mock.calls[2][0]).toBe('message');
+    expect(res.flash.mock.calls[2][1]).toBe('The user can now access its functions and features.');
   });
 
   it('then it should send an email notification to user when added to organisation', async () => {

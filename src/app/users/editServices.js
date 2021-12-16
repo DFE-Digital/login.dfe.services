@@ -1,7 +1,7 @@
 'use strict';
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { isUserManagement, getSingleServiceForUser, isSelfManagement } = require('./utils');
+const { isUserManagement, getSingleServiceForUser, isEditService } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
@@ -10,7 +10,7 @@ const policyEngine = new PolicyEngine(config);
 const renderEditServicePage = (req, res, model) => {
   const isManage = isUserManagement(req);
   res.render(
-    `users/views/${isManage ? "editServices" : "editServicesRedesigned"}`,
+    `users/views/editServices`,
     { 
       ...model, 
       currentPage: isManage? "users" : "services"
@@ -19,14 +19,18 @@ const renderEditServicePage = (req, res, model) => {
 };
 
 const buildBackLink = (req) => {
-  let backRedirect = `/approvals/users/${req.params.uid}`;
-  if (!isUserManagement(req)) {
-    backRedirect = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
+  const isEditServiceUrl = isEditService(req)
+  if(isEditServiceUrl) {
+    return `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=edit-service`
+  } else if (!isUserManagement(req)) {
+    return `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
+  } else {
+    return `/approvals/users/${req.params.uid}`;
   }
-  return backRedirect;
 };
 
 const getViewModel = async (req) => {
+  const isManage = isUserManagement(req);
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
@@ -40,7 +44,7 @@ const getViewModel = async (req) => {
   const application = await getApplication(req.params.sid, req.id);
   return {
     backLink: buildBackLink(req),
-    cancelLink: `/approvals/users/${req.params.uid}`,
+    cancelLink: isManage ? `/approvals/users/${req.params.uid}` : `/my-services`,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisationDetails,
@@ -84,10 +88,6 @@ const post = async (req, res) => {
   let selectedRoles = req.body.role ? req.body.role : [];
   if (!(selectedRoles instanceof Array)) {
     selectedRoles = [req.body.role];
-  }
-
-  if (isUserManagement(req) && haveRolesNotBeenUpdated(req, selectedRoles)) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}/services`);
   }
 
   const policyValidationResult = await policyEngine.validate(

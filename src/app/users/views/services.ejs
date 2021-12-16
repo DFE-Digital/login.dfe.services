@@ -64,6 +64,7 @@
             const userOrg = visibleUserOrgs[i];
             const organisation = userOrg.organisation;
             let hasServices = userOrg.displayedServices.length > 0;
+            let singleService = userOrg.displayedServices.length === 1 ? userOrg.displayedServices[0] : false
     %>
 
     <article class="organisation-services">
@@ -76,9 +77,21 @@
                 <!-- Do not show the add services link if the user is managing its own account -->
                 <% if (!locals.isSelfManage) { %>
                     <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/associate-services">Add services</a></li>
+                    <% if (hasServices) { %>
+                        <li>
+                            <a href=<%= singleService ? 
+                                    `/approvals/${organisation.id}/users/${locals.user.id}/services/${singleService.id}?manage_users=true` : 
+                                    `/approvals/${organisation.id}/users/${locals.user.id}/associate-services?action=edit-service` 
+                                    %>
+                                class="govuk-link-bold" 
+                            >
+                                Edit services
+                            </a>
+                        </li>
+                    <% } %>
                 <% } %>
                 <li><a class="govuk-link" href=""></a></li>
-                <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/edit-permission"><%=userOrg.role.id === 10000 ? 'Remove approver access' : 'Make approver';%></a></li>
+                <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/edit-permission"><%=userOrg.role.id === 10000 ? 'Remove approver access' : 'Make approver'%></a></li>
                 <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/remove-organisation">Remove from organisation</a></li>
                 <% if (locals.isInvitation) { %>
                     <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/resend-invitation">Resend invitation email</a></li>
@@ -99,11 +112,7 @@
                         <% const service = userOrg.displayedServices[j]; %>
                         <tr class="<%= service.disabled ? 'pending' : '' %>">
                             <td>
-                                <% if (service.disabled) { %>
-                                    <p class="govuk-!-margin-0"><%=service.name%></p>
-                                <% } else { %>
-                                <a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>?manage_users=true"><%=service.name%></a>
-                                <% } %>
+                               <p class="govuk-!-margin-0 govuk-!-font-weight-bold"><%=service.name%></p>
                             </td>
                             <% if (service.requestDate) { %>
                                 <td><%=locals.moment(service.requestDate).format('DD MMM YYYY')%></td>
