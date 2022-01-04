@@ -83,8 +83,10 @@
                 <h1 class="govuk-heading-m govuk-!-margin-top-3">
                     <%= locals.title%>
                 </h1>
-                <p class="govuk-body"><%= locals.subHeading%>: <b><%=locals.organisationDetails.organisation.name%></b></p>
-                
+                <% if (locals.subHeading) { %>
+                    <p class="govuk-body"><%= locals.subHeading%>: <b><%=locals.organisationDetails.organisation.name%></b></p>
+                <% } %>
+
                 <% if (locals.services.length > 0) { %>
                     <form method="post" class="prevent-form-double-submission">
                         <input type="hidden" name="_csrf" value="<%=csrfToken%>" />

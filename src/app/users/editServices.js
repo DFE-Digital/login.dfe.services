@@ -21,7 +21,7 @@ const renderEditServicePage = (req, res, model) => {
 const buildBackLink = (req) => {
   const isEditServiceUrl = isEditService(req)
   if(isEditServiceUrl) {
-    return `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=edit-service`
+    return `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.EDIT_SERVICE}`
   } else if (!isUserManagement(req)) {
     return `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
   } else {

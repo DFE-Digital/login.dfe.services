@@ -88,6 +88,16 @@
                                 Edit services
                             </a>
                         </li>
+                        <li>
+                            <a href=<%= singleService ? 
+                                    `/approvals/${organisation.id}/users/${locals.user.id}/services/${singleService.id}/remove-service?manage_users=true` : 
+                                    `/approvals/${organisation.id}/users/${locals.user.id}/associate-services?action=remove-service` 
+                                    %>
+                                class="govuk-link-bold" 
+                            >
+                                Remove services
+                            </a>
+                        </li>
                     <% } %>
                 <% } %>
                 <li><a class="govuk-link" href=""></a></li>
