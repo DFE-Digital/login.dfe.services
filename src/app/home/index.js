@@ -11,11 +11,18 @@ const { bannerHandler, jobTitleBannerHandler } = require('./closeBanner');
 
 const router = express.Router({ mergeParams: true });
 
-const home = () => {
+const home = (csrf, app) => {
   logger.info('Mounting home routes');
 
   router.get('/', asyncWrapper(getIndex));
-  router.get('/my-services', isLoggedIn, asyncWrapper(getServices));
+  router.get(
+    '/my-services', 
+    isLoggedIn,
+    asyncWrapper((req, res) => {
+      app.locals.approverRequests = req.organisationRequests;
+      getServices(req, res)
+    })
+  );
   router.get('/close-banner', isLoggedIn, asyncWrapper(bannerHandler));
   router.get('/close-missing-jobtitle', isLoggedIn, asyncWrapper(jobTitleBannerHandler));
   

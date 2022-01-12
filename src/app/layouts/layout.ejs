@@ -76,6 +76,13 @@
                                     </a>
                                 </li>
                             <% } %>
+                            <% if (locals.isApprover && locals.useApproverJourney) { %>
+                                <li class="govuk-header__navigation-item <%= locals.currentPage === 'requests' ? 'govuk-header__navigation-item--active' : '' %>">
+                                    <a class="govuk-header__link" href="/access-requests">
+                                        Requests <% if (locals.approverRequests && locals.approverRequests.length) { %> <span class="govuk-notification-badge"><%= locals.approverRequests.length %></span> <% } %>
+                                    </a>
+                                </li>
+                            <% } %>
                             <li class="govuk-header__navigation-item">
                                 <a class="govuk-header__link" href="<%=locals.urls.profile%>">
                                     Profile

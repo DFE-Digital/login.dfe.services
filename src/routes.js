@@ -65,7 +65,7 @@ const routes = (app, csrf) => {
 
   // app routes
   app.use('/healthcheck', healthCheck({ config, version }));
-  app.use('/', home(csrf));
+  app.use('/', home(csrf, app));
   app.use('/signout', signOut(csrf));
   app.use('/organisations', organisations(csrf));
   if (config.toggles.useApproverJourney) {
@@ -73,7 +73,7 @@ const routes = (app, csrf) => {
   }
   if (config.toggles.useRequestOrganisation) {
     app.use('/request-organisation', requestOrganisation(csrf));
-    app.use('/access-requests', accessRequests(csrf));
+    app.use('/access-requests', accessRequests(csrf, app));
   }
   app.use('/request-service', requestService(csrf));
   app.use('/appcache', appCache(csrf));
