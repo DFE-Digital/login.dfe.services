@@ -116,11 +116,12 @@ const post = async (req, res) => {
 
   res.flash('title', `Success`);
   res.flash('heading', `Service removed: ${service.name}`);
-  res.flash('message', `This service (and its associated roles) has been removed from your account.`);
-
+  
   if (isUserManagement(req)) {
+    res.flash('message', `This service (and its associated roles) has been removed from this user's account.`);
     return res.redirect(`/approvals/users/${uid}`);
   } else {
+    res.flash('message', `This service (and its associated roles) has been removed from your account.`);
     res.redirect(`/my-services`);
   }
 };
