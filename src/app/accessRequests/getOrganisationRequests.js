@@ -1,4 +1,6 @@
-const { getRequestsForOrganisation } = require('./../../infrastructure/organisations');
+const { getRequestsForOrganisations } = require('./../../infrastructure/organisations');
+const { getApproverOrgsFromReq } = require('../users/utils');
+
 const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
@@ -13,8 +15,30 @@ const getUserDetails = async (usersForApproval) => {
   return await Account.getUsersById(distinctUserIds);
 };
 
+const mapOrganisationsWithRequest = async (req) => {
+  let orgsWithRequests;
+  req.userOrganisations = getApproverOrgsFromReq(req);
+  
+  if (req.organisationRequests.length > 0) {
+    orgsWithRequests = req.userOrganisations.filter((x) =>
+      req.organisationRequests.find((y) => y.org_id === x.organisation.id),
+    );
+    for (let i = 0; i < orgsWithRequests.length; i++) {
+      const org = orgsWithRequests[i];
+      org.requestCount = req.organisationRequests.reduce((a, c) => (c.org_id === org.organisation.id ? ++a : a), 0);
+    }
+  } else {
+    orgsWithRequests = req.userOrganisations;
+  }
+  return orgsWithRequests;
+};
+
+
 const getOrganisationRequests = async (req, res) => {
-  let requests = await getRequestsForOrganisation(req.params.orgId, req.id);
+  const orgs = await mapOrganisationsWithRequest(req)
+  const orgIds = orgs.map(o => o.organisation.id)
+  const encodedOrgIds = encodeURIComponent(JSON.stringify(orgIds))
+  let requests = await getRequestsForOrganisations(encodedOrgIds, req.id);
 
   if (requests) {
     const userList = (await getUserDetails(requests)) || [];
@@ -22,21 +46,18 @@ const getOrganisationRequests = async (req, res) => {
     requests = requests.map((user) => {
       const userFound = userList.find((c) => c.claims.sub.toLowerCase() === user.user_id.toLowerCase());
       const usersEmail = userFound ? userFound.claims.email : '';
-      return Object.assign({ usersEmail }, user);
+      const userName = userFound ? `${userFound.claims.given_name} ${userFound.claims.family_name}` : '';
+      return Object.assign({ usersEmail, userName }, user);
     });
 
-    requests = sortBy(requests, ['created_date']);
+    requests = sortBy(requests, ['created_date']).reverse();
   }
-
-  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
 
   return res.render('accessRequests/views/organisationRequests', {
     csrfToken: req.csrfToken(),
     title: 'Requests - DfE Sign-in',
-    organisation: organisationDetails.organisation,
-    currentPage: 'users',
-    requests,
-    backLink: true,
+    currentPage: 'requests',
+    requests
   });
 };
 

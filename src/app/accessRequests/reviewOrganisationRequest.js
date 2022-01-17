@@ -19,17 +19,17 @@ const get = async (req, res) => {
 
   if (request.approverEmail) {
     res.flash('warn', `Request already actioned by ${request.approverEmail}`);
-    return res.redirect(`/access-requests/${req.params.orgId}/requests`);
+    return res.redirect(`/access-requests/requests`);
   }
   return res.render('accessRequests/views/reviewOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Review request - DfE Sign-in',
     backLink: true,
-    cancelLink: `/access-requests/${req.params.orgId}/requests`,
+    cancelLink: `/access-requests/requests`,
     request,
     selectedResponse: null,
     validationMessages: {},
-    currentPage: 'users',
+    currentPage: 'requests',
   });
 };
 
@@ -38,11 +38,11 @@ const validate = async (req) => {
   const model = {
     title: 'Review request - DfE Sign-in',
     backLink: true,
-    cancelLink: `/access-requests/${req.params.orgId}/requests`,
+    cancelLink: `/access-requests/requests`,
     request,
     selectedResponse: req.body.selectedResponse,
     validationMessages: {},
-    currentPage: 'users',
+    currentPage: 'requests',
   };
   if (model.selectedResponse === undefined || model.selectedResponse === null) {
     model.validationMessages.selectedResponse = 'Approve or Reject must be selected';

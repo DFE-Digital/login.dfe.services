@@ -13,10 +13,10 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     title: 'Reason for rejection - DfE Sign-in',
     backLink: true,
-    cancelLink: `/access-requests/${req.params.orgId}/requests`,
+    cancelLink: `/access-requests/requests`,
     reason: '',
     validationMessages: {},
-    currentPage: 'users',
+    currentPage: 'requests',
   });
 };
 
@@ -25,7 +25,7 @@ const validate = async (req) => {
   const model = {
     title: 'Reason for rejection - DfE Sign-in',
     backLink: true,
-    cancelLink: `/access-requests/${req.params.orgId}/requests`,
+    cancelLink: `/access-requests/requests`,
     reason: req.body.reason,
     request,
     validationMessages: {},
@@ -65,14 +65,14 @@ const post = async (req, res) => {
     userId: req.user.sub,
     editedUser: model.request.user_id,
     reason: model.reason,
-    currentPage: 'users',
+    currentPage: 'requests',
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`,
   });
 
   res.flash('info', `Request rejected - an email has been sent to ${model.request.usersEmail}.`);
-  return res.redirect(`/access-requests/${req.params.orgId}/requests`);
+  return res.redirect(`/access-requests/requests`);
 };
 
 module.exports = {
