@@ -79,9 +79,8 @@ describe('when displaying the requests for an organisation', () => {
 
   it('then it should get requests for organisation', async () => {
     await getOrganisationRequests(req, res);
-
     expect(getRequestsForOrganisations.mock.calls).toHaveLength(1);
-    expect(getRequestsForOrganisations.mock.calls[0][0]).toBe(encodeURIComponent('organisationId'));
+    expect(getRequestsForOrganisations.mock.calls[0][0]).toBe("%5B%22organisationId%22%5D");
     expect(getRequestsForOrganisations.mock.calls[0][1]).toBe('correlationId');
   });
 
@@ -97,17 +96,6 @@ describe('when displaying the requests for an organisation', () => {
 
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/organisationRequests');
-  });
-
-  it('then it should include the org details', async () => {
-    await getOrganisationRequests(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      organisation: {
-        id: 'organisationId',
-        name: 'organisationName',
-      },
-    });
   });
 
   it('then it should include the mapped request details', async () => {
