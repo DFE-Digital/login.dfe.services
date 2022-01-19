@@ -26,9 +26,6 @@ const action = (csrf, app) => {
     '/',
     asyncWrapper((req, res) => {
       const approverOrgs = getApproverOrgsFromReq(req);
-      const allUserOrganisationRequests = req.organisationRequests;
-      app.locals.approverRequests = allUserOrganisationRequests;
-      const orgs = approverOrgs.filter((x) => allUserOrganisationRequests.find((y) => y.org_id === x.organisation.id));
       if (approverOrgs.length === 0) {
         return res.status(401).render('errors/views/notAuthorised');
       }

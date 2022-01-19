@@ -1,12 +1,5 @@
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-
-jest.mock('./../../../../src/infrastructure/config', () => {
-  return {
-    organisations: {
-      type: 'static',
-    },
-  };
-});
+jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
 jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
@@ -14,11 +7,11 @@ jest.mock('./../../../../src/infrastructure/account', () => ({
 }));
 
 jest.mock('./../../../../src/infrastructure/organisations', () => ({
-  getRequestsForOrganisation: jest.fn(),
+  getRequestsForOrganisations: jest.fn(),
 }));
 
 const Account = require('./../../../../src/infrastructure/account');
-const { getRequestsForOrganisation } = require('./../../../../src/infrastructure/organisations');
+const { getRequestsForOrganisations } = require('./../../../../src/infrastructure/organisations');
 
 describe('when displaying the requests for an organisation', () => {
   let req;
@@ -32,10 +25,6 @@ describe('when displaying the requests for an organisation', () => {
       sub: 'user1',
       email: 'user.one@unit.test',
     };
-    req.params = {
-      orgId: 'organisationId',
-    };
-    res = mockResponse();
     req.userOrganisations = [
       {
         organisation: {
@@ -48,9 +37,22 @@ describe('when displaying the requests for an organisation', () => {
         },
       },
     ];
+    req.organisationRequests = [
+      {
+        id: 'requestId',
+        org_id: 'organisationId',
+        org_name: 'organisationName',
+        user_id: 'user1',
+        status: {
+          id: 0,
+          name: 'pending',
+        },
+      },
+    ];
+    res = mockResponse();
 
-    getRequestsForOrganisation.mockReset();
-    getRequestsForOrganisation.mockReturnValue([
+    getRequestsForOrganisations.mockReset();
+    getRequestsForOrganisations.mockReturnValue([
       {
         id: 'requestId',
         org_id: 'organisationId',
@@ -78,9 +80,9 @@ describe('when displaying the requests for an organisation', () => {
   it('then it should get requests for organisation', async () => {
     await getOrganisationRequests(req, res);
 
-    expect(getRequestsForOrganisation.mock.calls).toHaveLength(1);
-    expect(getRequestsForOrganisation.mock.calls[0][0]).toBe('organisationId');
-    expect(getRequestsForOrganisation.mock.calls[0][1]).toBe('correlationId');
+    expect(getRequestsForOrganisations.mock.calls).toHaveLength(1);
+    expect(getRequestsForOrganisations.mock.calls[0][0]).toBe(encodeURIComponent('organisationId'));
+    expect(getRequestsForOrganisations.mock.calls[0][1]).toBe('correlationId');
   });
 
   it('then it should include the user requests with the user details', async () => {
