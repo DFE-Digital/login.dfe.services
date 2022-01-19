@@ -24,7 +24,7 @@ const get = async (req, res) => {
   return res.render('accessRequests/views/reviewOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Review request - DfE Sign-in',
-    backLink: true,
+    backLink: `/access-requests/requests`,
     cancelLink: `/access-requests/requests`,
     request,
     selectedResponse: null,
@@ -37,7 +37,7 @@ const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const model = {
     title: 'Review request - DfE Sign-in',
-    backLink: true,
+    backLink: `/access-requests/requests`,
     cancelLink: `/access-requests/requests`,
     request,
     selectedResponse: req.body.selectedResponse,
@@ -61,6 +61,7 @@ const post = async (req, res) => {
   }
 
   if (model.selectedResponse === 'reject') {
+    model.validationMessages = {}
     return res.redirect(`${model.request.id}/rejected`);
   }
   const actionedDate = Date.now();
