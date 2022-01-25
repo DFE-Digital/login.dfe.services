@@ -109,6 +109,10 @@ const getRequestsForOrganisation = async (organisationId, correlationId) => {
   return callApi('GET', `/organisations/${organisationId}/requests`, correlationId);
 };
 
+const getRequestsForOrganisations = async (organisationIds, correlationId) => {
+  return callApi('GET', `/organisations/${organisationIds}/requests/all`, correlationId);
+};
+
 const getRequestById = async (...args) => {
   const { dataValues, ...request } = await organisation.getUserOrganisationRequest(...args);
   return { ...dataValues, ...request, org_id: dataValues.organisation_id, org_name: dataValues.Organisation.name };
@@ -165,6 +169,7 @@ module.exports = {
   createUserOrganisationRequest,
   getAllRequestsForApprover,
   getRequestsForOrganisation,
+  getRequestsForOrganisations,
   getRequestById,
   updateRequestById,
   getPendingRequestsAssociatedWithUser,

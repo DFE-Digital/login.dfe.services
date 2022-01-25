@@ -91,6 +91,7 @@ describe('when reviewing an organisation request', () => {
 
   it('then it should render error if no response selected', async () => {
     req.body.selectedResponse = null;
+    req.params.rid = 1;
 
     await post(req, res);
 
@@ -99,10 +100,10 @@ describe('when reviewing an organisation request', () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/reviewOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: true,
-      cancelLink: '/access-requests/org1/requests',
+      backLink: "/access-requests/requests",
+      cancelLink: '/access-requests/requests',
       csrfToken: 'token',
-      currentPage: 'users',
+      currentPage: 'requests',
       request: {
         actioned_by: null,
         actioned_date: null,
@@ -156,10 +157,10 @@ describe('when reviewing an organisation request', () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/reviewOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: true,
-      cancelLink: '/access-requests/org1/requests',
+      backLink: "/access-requests/requests",
+      cancelLink: '/access-requests/requests',
       csrfToken: 'token',
-      currentPage: 'users',
+      currentPage: 'requests',
       request: {
         actioned_by: null,
         actioned_date: null,

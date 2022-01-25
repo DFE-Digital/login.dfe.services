@@ -11,7 +11,7 @@ const { bannerHandler, jobTitleBannerHandler } = require('./closeBanner');
 
 const router = express.Router({ mergeParams: true });
 
-const home = () => {
+const home = (csrf, app) => {
   logger.info('Mounting home routes');
 
   router.get('/', asyncWrapper(getIndex));
