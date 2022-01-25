@@ -58,7 +58,16 @@ const search = async (req) => {
   } else {
     usersForOrganisation = await getAllUsersForOrg(page, filteredOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id)
   }
-  
+
+  if(usersForOrganisation.users.length) {
+    const users = usersForOrganisation.users.filter(item => item.id !== req.user.sub)
+    if(users.length == 0) {
+      usersForOrganisation.numberOfPages = 0
+      usersForOrganisation.totalNumberOfResults = 0
+    }
+    usersForOrganisation.users = users
+  }
+
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
     const user = usersForOrganisation.users[i];
     if (req.user.sub === user.id) {
