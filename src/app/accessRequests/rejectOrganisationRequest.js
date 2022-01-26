@@ -45,6 +45,7 @@ const post = async (req, res) => {
     model.csrfToken = req.csrfToken();
     return res.render('accessRequests/views/rejectOrganisationRequest', model);
   }
+
   // patch request with rejection
   const actionedDate = Date.now();
   await updateRequestById(model.request.id, -1, req.user.sub, model.reason, actionedDate, req.id);
@@ -71,7 +72,10 @@ const post = async (req, res) => {
     message: `${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`,
   });
 
-  res.flash('info', `Request rejected - an email has been sent to ${model.request.usersEmail}.`);
+  res.flash('title', `Success`);
+  res.flash('heading', `Request rejected: Organisation access`);
+  res.flash('message', `${model.request.usersName} cannot access your organisation.`);
+
   return res.redirect(`/access-requests/requests`);
 };
 

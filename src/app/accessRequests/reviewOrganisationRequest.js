@@ -64,6 +64,7 @@ const post = async (req, res) => {
     model.validationMessages = {}
     return res.redirect(`${model.request.id}/rejected`);
   }
+
   const actionedDate = Date.now();
   await putUserInOrganisation(model.request.user_id, model.request.org_id, 0, null, req.id);
   await updateRequestById(model.request.id, 1, req.user.sub, null, actionedDate, req.id);
@@ -129,11 +130,11 @@ const post = async (req, res) => {
     message: `${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`,
   });
 
-  res.flash(
-    'info',
-    `Request approved - an email has been sent to ${model.request.usersEmail}. You can now add services for this user.`,
-  );
-  return res.redirect(`/approvals/users/${model.request.user_id}`);
+  res.flash('title', `Success`);
+  res.flash('heading', `Request approved: Organisation access`);
+  res.flash('message', `${model.request.usersName} has been added to your organisation.`);
+
+  return res.redirect(`/access-requests/requests`);
 };
 
 module.exports = {
