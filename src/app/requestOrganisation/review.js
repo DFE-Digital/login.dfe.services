@@ -66,6 +66,13 @@ const post = async (req, res) => {
     return res.render('requestOrganisation/views/review', model);
   }
 
+  // check if outstanding request
+  const requestsForOrg = await getRequestsForOrganisation(req.body.organisationId, req.id);
+  const userRequested = requestsForOrg ? requestsForOrg.find((x) => x.user_id === req.user.sub) : null;
+  if (userRequested) {
+    return res.redirect('/request-organisation/search?error=already-requested');
+  }
+
   const request = await createUserOrganisationRequest(req.user.sub, req.body.organisationId, req.body.reason, req.id);
 
   await notificationClient.sendUserOrganisationRequest(request);

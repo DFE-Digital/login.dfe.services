@@ -40,12 +40,19 @@ const retrieveOrganisationCategories = async () => {
 const buildModel = async (req, results) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
 
+  const alreadyRequested = inputSource.error ? inputSource.error === 'already-requested' ? true : false : false;
+
   const model = {
     criteria: inputSource.criteria || '',
     currentPage: 'organisations',
     validationMessages: {},
     backLink: true,
   };
+
+  if(alreadyRequested)  {
+    model.validationMessages.selectedOrganisation = 'You have already requested this organisation';
+  }
+
   if (results) {
     model.organisations = results.organisations;
     model.page = results.page;
