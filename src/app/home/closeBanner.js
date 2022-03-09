@@ -28,9 +28,9 @@ const passwordChangeBannerHandler = async (req, res) => {
   }
   const userId = req.session.user.uid
   
-  const isExist = await directories.fetchUserBanners(userId, -3) //-3: "Unacknowledged" banner for changed password
-  if(isExist) {
-    await createUserBanners(userId, 3)
+  const banner = await directories.fetchUserBanners(userId, -3) //-3: "Unacknowledged" banner for changed password
+  if(banner) {
+    await directories.updateUserBanners({id: banner.id, userId, bannerId: 3});
     res.status(200).send('User banner acknowledgement received').end();
   }
   res.status(200).end()
