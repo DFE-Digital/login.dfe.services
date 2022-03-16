@@ -246,11 +246,13 @@ const post = async (req, res) => {
       message: `${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: ${uid})`,
     });
 
+    res.flash('title', `Success`);
+    res.flash('heading', req.params.uid ? `${req.session.user.email} added to organisation` : `Invitation sent`);
     res.flash(
-      'info',
+      'message',
       req.params.uid
-        ? `User ${req.session.user.email} added to organisation`
-        : `Invitation email sent to ${req.session.user.email}`,
+        ? `${req.session.user.email} has been successfully added to ${org}`
+        : `An invitation email has been sent to: ${req.session.user.email}`,
     );
     res.redirect(`/approvals/users`);
   } else {
