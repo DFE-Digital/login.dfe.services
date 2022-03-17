@@ -90,7 +90,7 @@ const post = async (req, res) => {
   res.flash(
     'message',
     role === 10000
-      ? `${user.email} is now approver at ${organisationName}`
+      ? `${user.email} is now an approver at ${organisationName}`
       : `${user.email} is now an end user at ${organisationName}`,
   );
   return res.redirect(`/approvals/users/${uid}`);

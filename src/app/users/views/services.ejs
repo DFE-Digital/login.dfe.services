@@ -1,39 +1,42 @@
 <div class="govuk-width-container">
-
-    <% if (locals.flash.info) { %>
-        <%console.log(locals)%>
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                <div class="notification notification-success">
-                    <%= locals.flash.info %>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <% if (locals.flash.info) { %>
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-full">
+                        <div class="notification notification-success">
+                            <%= locals.flash.info %>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                <% } %>
+                    <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
+                        <div id="notification-wrapper"
+                            class="govuk-notification-banner govuk-notification-banner--success govuk-!-margin-bottom-0"
+                            role="alert" aria-labelledby="govuk-notification-banner-title"
+                            data-module="govuk-notification-banner">
+                            <div class="govuk-notification-banner__header govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                                        <%= locals.flash.title %>
+                                    </h2>
+                                </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <span class="close-button pull-right" id="close">x</span>
+                                </div>
+                            </div>
+                            <div class="govuk-notification-banner__content" id="notification-content">
+                                <h3 class="govuk-notification-banner__heading">
+                                    <%= locals.flash.heading %>
+                                </h3>
+                                <p class="govuk-body">
+                                    <%- locals.flash.message %>
+                                </p>
+                            </div>
+                        </div>
+                        <% } %>
         </div>
-    <% } %>
-    <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
-        <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
-            role="alert" aria-labelledby="govuk-notification-banner-title"
-            data-module="govuk-notification-banner">
-            <div class="govuk-notification-banner__header govuk-grid-row">
-                <div class="govuk-grid-column-two-thirds">
-                    <h2 class="govuk-notification-banner__title" id="notification-title">
-                        <%= locals.flash.title %>
-                    </h2>
-                </div>
-                <div class="govuk-grid-column-one-third">
-                    <span class="close-button pull-right" id="close">x</span>
-                </div>
-            </div>
-            <div class="govuk-notification-banner__content" id="notification-content">
-                <h3 class="govuk-notification-banner__heading">
-                    <%= locals.flash.heading %>
-                </h3>
-                <p class="govuk-body">
-                    <%- locals.flash.message %>
-                </p>
-            </div>
-        </div>
-    <% } %>
+    </div>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-xl text-break">
