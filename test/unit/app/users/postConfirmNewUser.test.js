@@ -361,10 +361,10 @@ describe('when inviting a new user', () => {
     expect(res.flash.mock.calls[0][0]).toBe('title');
     expect(res.flash.mock.calls[0][1]).toBe(`Success`);
     expect(res.flash.mock.calls[1][0]).toBe(`heading`);
-    expect(res.flash.mock.calls[1][1]).toBe(`${expectedEmailAddress} added to organisation`);
+    expect(res.flash.mock.calls[1][1]).toBe(`${expectedFirstName} ${expectedLastName} added to organisation`);
     expect(res.flash.mock.calls[2][0]).toBe(`message`);
     expect(res.flash.mock.calls[2][1]).toBe(
-      `${expectedEmailAddress} has been successfully added to ${expectedOrgName}`,
+      `${expectedFirstName} ${expectedLastName} has been successfully added to ${expectedOrgName}`,
     );
   });
 

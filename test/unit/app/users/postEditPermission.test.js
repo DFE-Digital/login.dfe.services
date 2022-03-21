@@ -179,7 +179,7 @@ describe('when editing organisation permission level', () => {
     expect(res.flash.mock.calls[1][1]).toBe(`Permission level upgraded to approver`);
     expect(res.flash.mock.calls[2][0]).toBe('message');
     expect(res.flash.mock.calls[2][1]).toBe(
-      `${expectedEmailAddress} is now an ${expectedPermissionName[0]} at ${organisationName}`,
+      `${expectedFirstName} ${expectedLastName} is now an ${expectedPermissionName[0]} at ${organisationName}`,
     );
   });
 
