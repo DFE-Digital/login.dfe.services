@@ -82,7 +82,17 @@ const post = async (req, res) => {
       editedUser: uid,
     },
   });
-  res.flash('info', role === 10000 ? `${user.email} now has approver access` : `${user.email} now has end user access`);
+  res.flash('title', `Success`);
+  res.flash(
+    'heading',
+    role === 10000 ? `Permission level upgraded to approver` : `Permission level downgraded to end user`,
+  );
+  res.flash(
+    'message',
+    role === 10000
+      ? `${user.firstName} ${user.lastName} is now an approver at ${organisationName}`
+      : `${user.firstName} ${user.lastName} is now an end user at ${organisationName}`,
+  );
   return res.redirect(`/approvals/users/${uid}`);
 };
 

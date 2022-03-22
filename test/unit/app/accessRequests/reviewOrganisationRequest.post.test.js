@@ -267,6 +267,6 @@ describe('when reviewing an organisation request', () => {
     await post(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/approvals/users/userId');
+    expect(res.redirect.mock.calls[0][0]).toBe('/access-requests/requests');
   });
 });
