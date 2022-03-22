@@ -377,9 +377,9 @@ describe('when inviting a new user', () => {
     expect(res.flash.mock.calls[0][0]).toBe('title');
     expect(res.flash.mock.calls[0][1]).toBe(`Success`);
     expect(res.flash.mock.calls[1][0]).toBe(`heading`);
-    expect(res.flash.mock.calls[1][1]).toBe(`Invitation sent`);
+    expect(res.flash.mock.calls[1][1]).toBe(`Invitation email sent`);
     expect(res.flash.mock.calls[2][0]).toBe(`message`);
-    expect(res.flash.mock.calls[2][1]).toBe(`An invitation email has been sent to: ${expectedEmailAddress}`);
+    expect(res.flash.mock.calls[2][1]).toBe(`Invitation email sent to: ${expectedEmailAddress}`);
   });
 
   it('then it should should audit adding services to an existing user', async () => {
