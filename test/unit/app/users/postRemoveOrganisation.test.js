@@ -178,9 +178,15 @@ describe('when removing organisation access', () => {
   it('then a flash message is shown to the user', async () => {
     await postRemoveOrganisationAccess(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(1);
-    expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`${expectedEmailAddress} removed from organisation`);
+    expect(res.flash.mock.calls).toHaveLength(3);
+    expect(res.flash.mock.calls[0][0]).toBe('title');
+    expect(res.flash.mock.calls[0][1]).toBe(`Success`);
+    expect(res.flash.mock.calls[1][0]).toBe('heading');
+    expect(res.flash.mock.calls[1][1]).toBe(`${expectedFirstName} ${expectedLastName} removed from organisation`);
+    expect(res.flash.mock.calls[2][0]).toBe('message');
+    expect(res.flash.mock.calls[2][1]).toBe(
+      `${expectedFirstName} ${expectedLastName} no longer has access to ${organisationName}`,
+    );
   });
 
   it('then it should send an email notification to user', async () => {
