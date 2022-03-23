@@ -95,7 +95,9 @@ const post = async (req, res) => {
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
   });
-  res.flash('info', `${req.session.user.email} removed from organisation`);
+  res.flash('title', `Success`);
+  res.flash('heading', `${req.session.user.firstName} ${req.session.user.lastName} removed from organisation`);
+  res.flash('message', `${req.session.user.firstName} ${req.session.user.lastName} no longer has access to ${org}`);
   return res.redirect(`/approvals/users`);
 };
 
