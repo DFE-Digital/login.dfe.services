@@ -7,7 +7,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="keywords" content="DfE Sign-In, Secure Access, DfE Login, Key to Success, Analyse School Performance, Teacher services, Teaching jobs, Trainee Teacher Portal, Collect, Get Information About Schools, Information exchange, Post 16 portal, School to School, Publish teacher training courses">
     <meta name="description" content ="Use DfE Sign-in to login to services including Analyse School Performance, COLLECT, Key to Success and other services previously accessed through Secure Access.">
-    <title><%= locals.title || (locals.app ? locals.app.title : null) || 'DfE Sign-in'%></title>
+    <!-- <title><%= locals.title || (locals.app ? locals.app.title : null) || 'DfE Sign-in'%></title> -->
+    <% if(locals.validationMessages){ %>
+        <title>
+            <% if (Object.keys(locals.validationMessages).length !==0) { %>
+                <% console.log(locals) %> 
+                Error:
+                <% } %>
+                    <%=locals.title || (locals.app ? locals.app.title : null) || 'DfE Sign-in' %>
+        </title>
+        <% } else { %>
+            <title>
+                <%=locals.title || locals.app.title || 'DfE Sign-in' %>
+            </title>
+            <% } %>         
 
     <link rel="stylesheet" href="<%= locals.urls.assets %>/gds-upgrade/css/screen.css?version=<%= locals.assets.version %>">
 
