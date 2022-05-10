@@ -181,9 +181,13 @@ describe('when editing a service for a user', () => {
     it('then a flash message is shown to the user', async () => {
       await postConfirmEditService(req, res);
 
-      expect(res.flash.mock.calls).toHaveLength(1);
-      expect(res.flash.mock.calls[0][0]).toBe('info');
-      expect(res.flash.mock.calls[0][1]).toBe(`service name updated successfully`);
+      expect(res.flash.mock.calls).toHaveLength(3);
+      expect(res.flash.mock.calls[0][0]).toBe('title');
+      expect(res.flash.mock.calls[0][1]).toBe(`Success`);
+      expect(res.flash.mock.calls[1][0]).toBe('heading');
+      expect(res.flash.mock.calls[1][1]).toBe(`Service amended: service name`);
+      expect(res.flash.mock.calls[2][0]).toBe('message');
+      expect(res.flash.mock.calls[2][1]).toBe('The user can now access its edited functions and features.');
     });
   });
 

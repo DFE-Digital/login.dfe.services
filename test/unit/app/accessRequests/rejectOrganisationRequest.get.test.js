@@ -37,10 +37,11 @@ describe('when rejecting an organisation request', () => {
   });
 
   it('then it should include back link', async () => {
+    req.params.rid = 1;
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      backLink: true,
+      backLink: "/access-requests/requests/1",
     });
   });
 
@@ -48,7 +49,7 @@ describe('when rejecting an organisation request', () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      cancelLink: '/access-requests/org1/requests',
+      cancelLink: '/access-requests/requests',
     });
   });
 });

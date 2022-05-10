@@ -1,6 +1,6 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg, isSelfManagement, isRequestService, isRequestServiceInSession } = require('./utils');
+const { getAllServicesForUserInOrg, isSelfManagement, isRequestService, isRemoveService, isRequestServiceInSession, isManageUserService, isEditService } = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
@@ -20,8 +20,12 @@ const buildBackLink = (req) => {
   let backRedirect;
 
   const isRequestServiceUrl = isRequestService(req) || isRequestServiceInSession(req)
-
-  if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
+  const isManageUserServiceUrl = isManageUserService(req)
+  
+  if(isManageUserServiceUrl) {
+    backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`
+  }
+  else if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
     const sid = req.session.user.serviceId
     const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds))
     backRedirect = `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${sid}/roles/${roleIds}/approve`
@@ -44,6 +48,9 @@ const buildBackLink = (req) => {
 };
 
 const getAllAvailableServices = async (req) => {
+  const isEditServiceUrl = isEditService(req)
+  const isRemoveUserServiceUrl = isRemoveService(req)
+
   const allServices = await checkCacheForAllServices(req.id);
   let externalServices = allServices.services.filter(
     (x) =>
@@ -52,16 +59,22 @@ const getAllAvailableServices = async (req) => {
   );
   if (req.params.uid) {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
-    externalServices = externalServices.filter((ex) => !allUserServicesInOrg.find((as) => as.id === ex.id));
+    if (isEditServiceUrl || isRemoveUserServiceUrl) {
+      externalServices = externalServices.filter((ex) => allUserServicesInOrg.find((as) => as.id === ex.id));
+    }
+    else {
+      externalServices = externalServices.filter((ex) => !allUserServicesInOrg.find((as) => as.id === ex.id));
+    }
   }
+
   const servicesNotAvailableThroughPolicies = [];
-  const userOrganisations =
-    req.params.uid && !req.params.uid.startsWith('inv-')
-      ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
-      : undefined;
+  const userOrganisations = req.params.uid && !req.params.uid.startsWith('inv-')
+    ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
+    : undefined;
   const userAccessToSpecifiedOrganisation = userOrganisations
     ? userOrganisations.find((x) => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())
     : undefined;
+
   for (let i = 0; i < externalServices.length; i++) {
     const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
       userAccessToSpecifiedOrganisation ? req.params.uid : undefined,
@@ -80,16 +93,35 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/approvals/users');
   }
+  const isRemoveUserServiceUrl = isRemoveService(req)
+
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
+  const name = req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '';
+  const title = isRemoveUserServiceUrl ? 
+      'Remove which service?' : 
+      (
+        isEditService(req) ? 
+          `Edit which service for ${name}` : 
+          `Select a service for ${name}`
+      );
+  const subHeading = isRemoveUserServiceUrl ? 
+      '' : 
+      (
+        isEditService(req) ? 
+          `This service will be edited on the user's account, assigned to organisation` : 
+          `This service will be added to the user’s account, assigned to organisation`
+      );
 
   const model = {
     csrfToken: req.csrfToken(),
-    name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
+    name,
     user: req.session.user,
     validationMessages: {},
     backLink: buildBackLink(req),
     currentPage: 'users',
+    title,
+    subHeading,
     organisationDetails,
     services: externalServices,
     selectedServices: req.session.user.services || [],
@@ -100,6 +132,24 @@ const get = async (req, res) => {
 };
 
 const validate = async (req) => {
+  const name = req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '';
+  const isRemoveUserServiceUrl = isRemoveService(req)
+
+  const title = isRemoveUserServiceUrl ? 
+    'Remove which service?' : 
+    (
+      isEditService(req) ? 
+        `Edit which service for ${name}` : 
+        `Select a service for ${name}`
+    );
+  const subHeading = isRemoveUserServiceUrl ? 
+    '' : 
+    (
+      isEditService(req) ? 
+        `This service will be edited on the user's account, assigned to organisation` : 
+        `This service will be added to the user’s account, assigned to organisation`
+    );
+
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
 
@@ -110,7 +160,9 @@ const validate = async (req) => {
     selectedServices = [req.body.service];
   }
   const model = {
-    name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
+    name,
+    title,
+    subHeading,
     user: req.session.user,
     backLink: buildBackLink(req),
     currentPage: 'users',
@@ -124,7 +176,7 @@ const validate = async (req) => {
     if (isSelfManagement(req)) {
       model.validationMessages.services = 'Please select a service';
     } else {
-      model.validationMessages.services = 'At least one service must be selected';
+      model.validationMessages.services = 'Select a service to continue';
     }
   }
   if (
@@ -143,7 +195,6 @@ const post = async (req, res) => {
   }
 
   const model = await validate(req);
-
   // persist current selection in session
   req.session.user.services = model.selectedServices.map((serviceId) => {
     const existingServiceSelections = req.session.user.services
@@ -169,6 +220,15 @@ const post = async (req, res) => {
   }
 
   const service = req.session.user.services[0].serviceId;
+  const isEditServiceUrl = isEditService(req);
+  const isRemoveUserServiceUrl = isRemoveService(req)
+
+  if(isRemoveUserServiceUrl) {
+    return res.redirect(`services/${service}/remove-service?manage_users=true&action=${actions.REMOVE_SERVICE}`);
+  }
+  else if(isEditServiceUrl) {
+    return res.redirect(`services/${service}?manage_users=true&action=${actions.EDIT_SERVICE}`);
+  }
   return res.redirect(`associate-services/${service}`);
 };
 

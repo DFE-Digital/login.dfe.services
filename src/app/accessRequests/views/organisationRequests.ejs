@@ -1,65 +1,123 @@
+<div id="home-top" class="home-top">
+    <div class="govuk-width-container home-top__inner">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl govuk-!-margin-top-5 govuk-!-margin-bottom-5">Requests</h1>
+            </div>
+            <div class="govuk-grid-column-two-thirds">
+                <h3 class="govuk-heading-m">
+                    Here you'll find the requests raised by users at your organisations. Select 'review' to approve or reject.
+                </h3>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="govuk-width-container">
-    <% if (locals.flash.info) { %>
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                <div class="notification notification-success">
-                    <%= locals.flash.info %>
-                </div>
-            </div>
-        </div>
-    <% } %>
-    
-    <% if (locals.flash.warn) { %>
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                <div class="notification notification-information">
-                    <%= locals.flash.warn %>
-                </div>
-            </div>
-        </div>
-    <% } %>
-
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            <h1 class="govuk-heading-xl">
-                <span class="govuk-caption-xl"><%= locals.organisation.name%> <%= locals.organisation.status ? `(${locals.organisation.status.name})` : '' %></span>
-                Requests
-            </h1>
-
-            <div class="govuk-tabs" data-module="govuk-tabs">
-                <ul class="govuk-tabs__list">
-                    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-                        Organisation requests <span>(<%= locals.requests.length %>)</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="pane">
-                <% if (locals.requests.length > 0) { %>
-                    <% for (let i = 0; i < locals.requests.length; i++) { %>
-                    <div class="request <%= locals.requests[i].status && locals.requests[i].status.id === 2 ? 'overdue' : '' %>">
-                        <p class="govuk-body">
-                            <% if (locals.requests[i].status && locals.requests[i].status.id === 2) { %>
-                                <span class="overdue-text">
-                                    Overdue request from
-                                </span>
-                            <% } else { %>
-                                    Request from
-                            <% }%>
-                                <b><%= locals.requests[i].usersEmail %></b> -
-                            <time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time>
-                        </p>
-                        <p class="govuk-body">
-                            <a href="requests/<%= locals.requests[i].id %>" class="button-respond">Review request</a>
-                        </p>
-                    </div>
-                    <% } %>
-                <% } else { %>
-                    <div class="empty-state">
-                        <p class="govuk-body">You have no outstanding requests for <%= locals.organisation.name %></p>
+    <div class="govuk-grid-row govuk-!-margin-bottom-3">
+        <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
+            <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
+                <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
+                    <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
+                        role="alert" aria-labelledby="govuk-notification-banner-title"
+                        data-module="govuk-notification-banner">
+                        <div class="govuk-notification-banner__header govuk-grid-row">
+                            <div class="govuk-grid-column-two-thirds">
+                                <h2 class="govuk-notification-banner__title" id="notification-title">
+                                    <%= locals.flash.title %>
+                                </h2>
+                            </div>
+                            <div class="govuk-grid-column-one-third">
+                                <span class="close-button pull-right" id="close">x</span>
+                            </div>
+                        </div>
+                        <div class="govuk-notification-banner__content" id="notification-content">
+                            <h3 class="govuk-notification-banner__heading">
+                                <%= locals.flash.heading %>
+                            </h3>
+                            <p class="govuk-body">
+                                <%- locals.flash.message %>
+                            </p>
+                        </div>
                     </div>
                 <% } %>
             </div>
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+            <aside class="govuk-!-margin-top-9">
+                <h2 class="govuk-heading-m">Related actions</h2>
+                <ul class="govuk-list">
+                    <li><a class="govuk-link-bold" href="<%=locals.urls.help%>/requests">Help with requests</a></li>
+                </ul>
+            </aside>
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full-width">
+            <table class="govuk-table">
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header width-20">
+                            Date raised
+                        </th>
+                        <th scope="col" class="govuk-table__header">
+                            Name
+                        </th>
+                        <th scope="col" class="govuk-table__header">
+                            Request type
+                        </th>
+                        <th scope="col" class="govuk-table__header">
+                            Organisation
+                        </th>
+                        <th scope="col" class="govuk-table__header">
+                            Status
+                        </th>
+                        <th scope="col" class="govuk-table__header">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody class="govuk-table__body">
+                    <% if(locals.requests.length === 0) { %>
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell" colspan="6">
+                                <div class="empty-state">
+                                    <p class="govuk-body">You have no requests</p>
+                                </div>
+                            </td>
+                        </tr>
+                    <% } %>
+
+                    <% for(let i= 0; i < locals.requests.length; i++) {
+                        const request = locals.requests[i]%>
+                            <tr class="govuk-table__row">
+                                <th class="govuk-table__cell govuk-body govuk-!-font-size-15 govuk-!-font-weight-bold">
+                                    <%= locals.moment(request.created_date).format('DD MMM YYYY') %>
+                                </th>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                    <%= request.userName %>
+                                </td>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                    Organisation access
+                                </td>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                    <%= request.org_name %>
+                                </td>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                    <%= request.status.name %>
+                                </td>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                    <a class="govuk-link" href="requests/<%= request.id %>">
+                                        Review
+                                    </a>
+                                </td>
+                            </tr>
+                    <% } %>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

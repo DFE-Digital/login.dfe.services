@@ -1,14 +1,42 @@
 <div class="govuk-width-container">
-
-    <% if (locals.flash.info) { %>
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                <div class="notification notification-success">
-                    <%= locals.flash.info %>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <% if (locals.flash.info) { %>
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-full">
+                        <div class="notification notification-success">
+                            <%= locals.flash.info %>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                <% } %>
+                    <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
+                        <div id="notification-wrapper"
+                            class="govuk-notification-banner govuk-notification-banner--success govuk-!-margin-bottom-0"
+                            role="alert" aria-labelledby="govuk-notification-banner-title"
+                            data-module="govuk-notification-banner">
+                            <div class="govuk-notification-banner__header govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                                        <%= locals.flash.title %>
+                                    </h2>
+                                </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <span class="close-button pull-right" id="close">x</span>
+                                </div>
+                            </div>
+                            <div class="govuk-notification-banner__content" id="notification-content">
+                                <h3 class="govuk-notification-banner__heading wrap">
+                                    <%= locals.flash.heading %>
+                                </h3>
+                                <p class="govuk-body wrap">
+                                    <%- locals.flash.message %>
+                                </p>
+                            </div>
+                        </div>
+                        <% } %>
         </div>
-    <% } %>
+    </div>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-xl text-break">
@@ -40,6 +68,7 @@
             const userOrg = visibleUserOrgs[i];
             const organisation = userOrg.organisation;
             let hasServices = userOrg.displayedServices.length > 0;
+            let singleService = userOrg.displayedServices.length === 1 ? userOrg.displayedServices[0] : false
     %>
 
     <article class="organisation-services">
@@ -52,9 +81,31 @@
                 <!-- Do not show the add services link if the user is managing its own account -->
                 <% if (!locals.isSelfManage) { %>
                     <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/associate-services">Add services</a></li>
+                    <% if (hasServices) { %>
+                        <li>
+                            <a href=<%= singleService ? 
+                                    `/approvals/${organisation.id}/users/${locals.user.id}/services/${singleService.id}?manage_users=true` : 
+                                    `/approvals/${organisation.id}/users/${locals.user.id}/associate-services?action=edit-service` 
+                                    %>
+                                class="govuk-link-bold" 
+                            >
+                                Edit services
+                            </a>
+                        </li>
+                        <li>
+                            <a href=<%= singleService ? 
+                                    `/approvals/${organisation.id}/users/${locals.user.id}/services/${singleService.id}/remove-service?manage_users=true` : 
+                                    `/approvals/${organisation.id}/users/${locals.user.id}/associate-services?action=remove-service` 
+                                    %>
+                                class="govuk-link-bold" 
+                            >
+                                Remove services
+                            </a>
+                        </li>
+                    <% } %>
                 <% } %>
                 <li><a class="govuk-link" href=""></a></li>
-                <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/edit-permission"><%=userOrg.role.id === 10000 ? 'Remove approver access' : 'Make approver';%></a></li>
+                <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/edit-permission"><%=userOrg.role.id === 10000 ? 'Remove approver access' : 'Make approver'%></a></li>
                 <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/remove-organisation">Remove from organisation</a></li>
                 <% if (locals.isInvitation) { %>
                     <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/resend-invitation">Resend invitation email</a></li>
@@ -75,11 +126,7 @@
                         <% const service = userOrg.displayedServices[j]; %>
                         <tr class="<%= service.disabled ? 'pending' : '' %>">
                             <td>
-                                <% if (service.disabled) { %>
-                                    <p class="govuk-!-margin-0"><%=service.name%></p>
-                                <% } else { %>
-                                <a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id%>/services/<%=service.id%>?manage_users=true"><%=service.name%></a>
-                                <% } %>
+                               <p class="govuk-!-margin-0 govuk-!-font-weight-bold"><%=service.name%></p>
                             </td>
                             <% if (service.requestDate) { %>
                                 <td><%=locals.moment(service.requestDate).format('DD MMM YYYY')%></td>

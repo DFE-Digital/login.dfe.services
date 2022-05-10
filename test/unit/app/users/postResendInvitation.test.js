@@ -233,14 +233,18 @@ describe('when resending an invitation', () => {
     await postResendInvitation(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`services`);
+    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/users`);
   });
 
   it('then a flash message is shown to the user', async () => {
     await postResendInvitation(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(1);
-    expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`Invitation email sent to ${req.session.user.email}`);
+    expect(res.flash.mock.calls).toHaveLength(3);
+    expect(res.flash.mock.calls[0][0]).toBe('title');
+    expect(res.flash.mock.calls[0][1]).toBe(`Success`);
+    expect(res.flash.mock.calls[1][0]).toBe(`heading`);
+    expect(res.flash.mock.calls[1][1]).toBe(`Invitation email sent`);
+    expect(res.flash.mock.calls[2][0]).toBe(`message`);
+    expect(res.flash.mock.calls[2][1]).toBe(`Invitation email sent to: ${req.body.email}`);
   });
 });

@@ -1,6 +1,6 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { isSelfManagement, isRequestService } = require('./utils');
+const { isSelfManagement, isRequestService, isManageUserService } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const PolicyEngine = require('login.dfe.policy-engine');
@@ -16,7 +16,12 @@ const renderAssociateRolesPage = (req, res, model) => {
 
 const buildBackLink = (req, currentServiceIndex) => {
   const isRequestServiceUrl = isRequestService(req)
-  if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
+  const isManageUserServiceUrl = isManageUserService(req)
+
+  if(isManageUserServiceUrl) {
+    return `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`
+  }
+  else if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
     const sid = req.session.user.serviceId
     const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds))
     return `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${sid}/roles/${roleIds}/approve`

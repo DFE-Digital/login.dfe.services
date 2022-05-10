@@ -85,8 +85,10 @@ const post = async (req, res) => {
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.email} (id: ${req.session.user.uid})`,
   });
-  res.flash('info', `Invitation email sent to ${req.session.user.email}`);
-  return res.redirect('services');
+  res.flash('title', `Success`);
+  res.flash('heading', `Invitation email sent`);
+  res.flash('message', `Invitation email sent to: ${req.session.user.email}`);
+  return res.redirect('/approvals/users');
 };
 
 module.exports = {

@@ -212,9 +212,13 @@ describe('when removing service access', () => {
     it('then a flash message is shown to the user', async () => {
       await postRemoveServiceAccess(req, res);
 
-      expect(res.flash.mock.calls).toHaveLength(1);
-      expect(res.flash.mock.calls[0][0]).toBe('info');
-      expect(res.flash.mock.calls[0][1]).toBe(`service name successfully removed`);
+      expect(res.flash.mock.calls).toHaveLength(3);
+      expect(res.flash.mock.calls[0][0]).toBe('title');
+      expect(res.flash.mock.calls[0][1]).toBe('Success');
+      expect(res.flash.mock.calls[1][0]).toBe('heading');
+      expect(res.flash.mock.calls[1][1]).toBe('Service removed: service name');
+      expect(res.flash.mock.calls[2][0]).toBe('message');
+      expect(res.flash.mock.calls[2][1]).toBe("This service (and its associated roles) has been removed from this user's account.");
     });
   });
 
@@ -240,7 +244,7 @@ describe('when removing service access', () => {
       expect(res.flash.mock.calls[1][0]).toBe('heading');
       expect(res.flash.mock.calls[1][1]).toBe('Service removed: service name');
       expect(res.flash.mock.calls[2][0]).toBe('message');
-      expect(res.flash.mock.calls[2][1]).toBe('This service (and all associated roles) has been removed from your account.');
+      expect(res.flash.mock.calls[2][1]).toBe('This service (and its associated roles) has been removed from your account.');
     });
   });
 });

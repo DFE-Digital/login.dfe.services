@@ -245,6 +245,9 @@ const getServices = async (req, res) => {
   const useJobTitleBanner = await directories.fetchUserBanners(req.user.id, 2)
   const showJobTitleBanner = !useJobTitleBanner && !jobTitle
 
+  //-3: "Unacknowledged" banner for changed password
+  const passwordChangedBanner = await directories.fetchUserBanners(req.user.id, -3)
+ 
   return res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
@@ -260,6 +263,7 @@ const getServices = async (req, res) => {
     requestServicesRedirect,
     isRequestServiceAllowed,
     banner,
+    passwordChangedBanner,
     showJobTitleBanner,
   });
 };

@@ -1,115 +1,221 @@
-<div class="govuk-width-container">
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-
-            <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader) { %>
-                <div class="govuk-warning-text">
-                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                    <strong class="govuk-warning-text__text">
-                        <span class="govuk-warning-text__assistive">Warning</span>
-                        <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader %>
-                    </strong>
-                </div>
-            <% } %>
-
-            <h1 class="govuk-heading-xl">
-                Select roles
-            </h1>
-
-            <p class="govuk-body">Showing service <%= locals.currentService%> of <%=locals.totalNumberOfServices%></p>
-            
-            <dl class="govuk-summary-list">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        User
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <%= locals.name%>
-                    </dd>
-                </div>
-
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Organisation
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <%=locals.organisationDetails.organisation.name%>
-                    </dd>
-                </div>
-
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Service
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <%=locals.serviceDetails.name%>
-                    </dd>
-                </div>
-            </dl>
-
-            <form method="post">
-                <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-                
-                <div class="govuk-form-group  <%= (locals.validationMessages.roles !== undefined) ? 'govuk-form-group--error' : '' %>">
-                    <fieldset class="govuk-fieldset" id="roles">
-                        
-                        <% if (locals.validationMessages.roles !== undefined) { %>
-                            <span id="validation-selected-role" class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.roles %>
-                            </span>
-                        <% } %>
-                        
-                        <% if (locals.serviceRoles.length > 0) { %>
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceRoleMessage) { %>
-                                    <span class="body-text"><%= locals.serviceDetails.relyingParty.params.serviceRoleMessage %></span>
-                                <% } else { %>
-                                    <span class="body-text">Select all required roles</span>
-                                <% } %>
-                            </legend>
-
-                            <div class="govuk-checkboxes">
-                                <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
-                                    <% const role = locals.serviceRoles[i]; %>
-                                    <div class="govuk-checkboxes__item">
-                                        <input class="govuk-checkboxes__input" id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
-                                                <% if (locals.selectedRoles && locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
-                                                for(let i = 0; i < locals.selectedRoles.roles.length; i++) {
-                                                    const selectedRole = locals.selectedRoles.roles[i];
-                                                %>
-                                                <%= role.id === selectedRole ? 'checked': ''%><% } }%>>
-                                        <label class="govuk-label govuk-checkboxes__label" for="<%=role.id%>"><%=role.name%></label>
-                                    </div>
-                                <% } %>
-                            </div>
-
-                        <% } else { %>
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                <h2 class="govuk-fieldset__legend__heading govuk-heading-s">
-                                    There are no available roles for <%= locals.serviceDetails.name %>.
-                                </h2>
-                            </legend>
-                        <% } %>
-
-                    </fieldset>
-                </div>
-
-                <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter) { %>
+<% if (locals.user.isInvite) { %>
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+    
+                <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader) { %>
                     <div class="govuk-warning-text">
                         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                         <strong class="govuk-warning-text__text">
                             <span class="govuk-warning-text__assistive">Warning</span>
-                            <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter %>
+                            <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader %>
+                        </strong>
+                    </div>
+                <% } %>
+    
+                <h1 class="govuk-heading-xl">
+                    Select roles
+                </h1>
+    
+                <p class="govuk-body">Showing service <%= locals.currentService%> of <%=locals.totalNumberOfServices%></p>
+                
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            User
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= locals.name%>
+                        </dd>
+                    </div>
+    
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Organisation
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%=locals.organisationDetails.organisation.name%>
+                        </dd>
+                    </div>
+    
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Service
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%=locals.serviceDetails.name%>
+                        </dd>
+                    </div>
+                </dl>
+    
+                <form method="post">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                    
+                    <div class="govuk-form-group  <%= (locals.validationMessages.roles !== undefined) ? 'govuk-form-group--error' : '' %>">
+                        <fieldset class="govuk-fieldset" id="roles">
+                            
+                            <% if (locals.validationMessages.roles !== undefined) { %>
+                                <span id="validation-selected-role" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.roles %>
+                                </span>
+                            <% } %>
+                            
+                            <% if (locals.serviceRoles.length > 0) { %>
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                    <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceRoleMessage) { %>
+                                        <span class="body-text"><%= locals.serviceDetails.relyingParty.params.serviceRoleMessage %></span>
+                                    <% } else { %>
+                                        <span class="body-text">Select all required roles</span>
+                                    <% } %>
+                                </legend>
+    
+                                <div class="govuk-checkboxes">
+                                    <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
+                                        <% const role = locals.serviceRoles[i]; %>
+                                        <div class="govuk-checkboxes__item">
+                                            <input class="govuk-checkboxes__input" id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
+                                                    <% if (locals.selectedRoles && locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
+                                                    for(let i = 0; i < locals.selectedRoles.roles.length; i++) {
+                                                        const selectedRole = locals.selectedRoles.roles[i];
+                                                    %>
+                                                    <%= role.id === selectedRole ? 'checked': ''%><% } }%>>
+                                            <label class="govuk-label govuk-checkboxes__label" for="<%=role.id%>"><%=role.name%></label>
+                                        </div>
+                                    <% } %>
+                                </div>
+    
+                            <% } else { %>
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                    <h2 class="govuk-fieldset__legend__heading govuk-heading-s">
+                                        There are no available roles for <%= locals.serviceDetails.name %>.
+                                    </h2>
+                                </legend>
+                            <% } %>
+    
+                        </fieldset>
+                    </div>
+    
+                    <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter) { %>
+                        <div class="govuk-warning-text">
+                            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                            <strong class="govuk-warning-text__text">
+                                <span class="govuk-warning-text__assistive">Warning</span>
+                                <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter %>
+                            </strong>
+                        </div>
+                    <% } %>
+    
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button">Continue</button>
+                        <a href="<%= locals.user.uid && locals.user.isInvite ? "./../../" : "./../"%>" class="govuk-button govuk-button--secondary">Cancel</a>
+                    </div>
+    
+                </form>
+            </div>
+        </div>
+    </div>
+<% } else { %>
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-three-quarters">
+
+                <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader) { %>
+                    <div class="govuk-warning-text">
+                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                        <strong class="govuk-warning-text__text">
+                            <span class="govuk-warning-text__assistive">Warning</span>
+                            <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader %>
                         </strong>
                     </div>
                 <% } %>
 
-                <div class="govuk-button-group">
-                    <button type="submit" class="govuk-button">Continue</button>
-                    <a href="<%= locals.user.uid && locals.user.isInvite ? "./../../" : "./../"%>" class="govuk-button govuk-button--secondary">Cancel</a>
-                </div>
+                <h1 class="govuk-heading-m govuk-!-margin-top-3">
+                    Select a sub-service for: <%= locals.serviceDetails.name %>
+                </h1>
 
-            </form>
+                <form method="post" class="prevent-form-double-submission">
+
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                        
+                    <div class="govuk-form-group  <%= (locals.validationMessages.roles !== undefined) ? 'govuk-form-group--error' : '' %>">
+                        <fieldset class="govuk-fieldset" id="roles">
+
+                            <% if (locals.validationMessages.roles !== undefined) { %>
+                                <span id="validation-selected-role" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.roles %>
+                                </span>
+                            <% } %>
+
+                            <legend class="govuk-visually-hidden">'Select all required sub-services'</legend>
+
+                            <% if (locals.serviceRoles.length > 0) { %>
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--xs">
+                                    <p class="govuk-body">This service will be added to the user’s account, assigned to organisation: <b><%=locals.organisationDetails.organisation.name%></b>.
+                                        <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceRoleMessage) { %>
+                                            <%= locals.serviceDetails.relyingParty.params.serviceRoleMessage %>
+                                        <% } %>
+                                    </p>
+                                </legend>
+
+                                <table class="govuk-table">
+                                    <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">Select all required sub-services</caption>
+                                    <thead class="govuk-table__head">
+                                        <tr class="govuk-table__row">
+                                        <th scope="col" class="govuk-table__header">Select</th>
+                                        <th scope="col" class="govuk-table__header govuk-!-width-full">Sub-service</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="govuk-table__body">
+        
+                                        <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
+                                            <% const role = locals.serviceRoles[i]; %>
+                                            <tr class="govuk-table__row extra-padding">
+                                                <td class="govuk-table__cell">
+                                                    <div class="govuk-checkboxes__item">
+                                                        <input class="govuk-checkboxes__input" id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
+                                                            <% if (locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
+                                                            for(let i = 0; i < locals.selectedRoles.roles.length; i++) {
+                                                                const selectedRole = locals.selectedRoles.roles[i];
+                                                            %>
+                                                            <%= role.id === selectedRole ? 'checked': ''%><% } }%>>
+                                                        <label class="govuk-label govuk-checkboxes__label" for="<%=role.id%>"></label>                                                    
+                                                    </div>
+                                                </td>
+                                                <th scope="row" class="govuk-table__header govuk-table__cell">
+                                                    <label class="cursor-pointer" for="<%=role.id%>"><%=role.name%></label>
+                                                </th>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            <% } else { %>
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                    <h2 class="govuk-fieldset__legend__heading govuk-heading-s">
+                                        There are no available sub-services.
+                                    </h2>
+                                </legend>
+                            <% } %>
+
+                        </fieldset>
+                    </div>
+
+                    <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter) { %>
+                        <div class="govuk-warning-text">
+                            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                            <strong class="govuk-warning-text__text">
+                                <span class="govuk-warning-text__assistive">Warning</span>
+                                <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter %>
+                            </strong>
+                        </div>
+                    <% } %>
+
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button">Continue</button>
+                        <a href="/approvals/users/<%=locals.user.uid%>" class="govuk-button govuk-button--secondary">Cancel</a>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </div>
-</div>
+<% } %>

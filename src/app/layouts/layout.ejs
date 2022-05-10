@@ -7,7 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="keywords" content="DfE Sign-In, Secure Access, DfE Login, Key to Success, Analyse School Performance, Teacher services, Teaching jobs, Trainee Teacher Portal, Collect, Get Information About Schools, Information exchange, Post 16 portal, School to School, Publish teacher training courses">
     <meta name="description" content ="Use DfE Sign-in to login to services including Analyse School Performance, COLLECT, Key to Success and other services previously accessed through Secure Access.">
-    <title><%= locals.title || (locals.app ? locals.app.title : null) || 'DfE Sign-in'%></title>
+
+    <% if((locals.validationMessages && Object.keys(locals.validationMessages).length !==0) || 
+           (locals.validations && Object.keys(locals.validations).length !==0 )) { %>
+        <title>
+           Error: <%=locals.title || (locals.app ? locals.app.title : null) || 'DfE Sign-in' %>
+        </title>
+        <% } else { %>
+            <title>
+                <%=locals.title || locals.app.title || 'DfE Sign-in' %>
+            </title>
+            <% } %>         
 
     <link rel="stylesheet" href="<%= locals.urls.assets %>/gds-upgrade/css/screen.css?version=<%= locals.assets.version %>">
 
@@ -73,6 +83,13 @@
                                 <li class="govuk-header__navigation-item <%= locals.currentPage === 'users' ? 'govuk-header__navigation-item--active' : '' %>">
                                     <a class="govuk-header__link" href="/approvals/users">
                                         Manage users
+                                    </a>
+                                </li>
+                            <% } %>
+                            <% if (locals.isApprover && locals.useApproverJourney) { %>
+                                <li class="govuk-header__navigation-item <%= locals.currentPage === 'requests' ? 'govuk-header__navigation-item--active' : '' %>">
+                                    <a class="govuk-header__link" href="/access-requests">
+                                        Requests <% if (locals.approverRequests && locals.approverRequests.length) { %> <span class="govuk-notification-badge"><%= locals.approverRequests.length %></span> <% } %>
                                     </a>
                                 </li>
                             <% } %>
@@ -168,6 +185,11 @@
                 <li class="govuk-footer__inline-list-item">
                     <a class="govuk-footer__link" href="<%=locals.urls.interactions%>/privacy">
                         Privacy Notice
+                    </a>
+                </li>
+                <li class="govuk-footer__inline-list-item">
+                    <a class="govuk-footer__link" href="<%=locals.urls.interactions%>/accessibility-statement">
+                    Accessibility statement
                     </a>
                 </li>
                 <li class="govuk-footer__inline-list-item">

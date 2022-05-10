@@ -59,6 +59,15 @@ const search = async (req) => {
     usersForOrganisation = await getAllUsersForOrg(page, filteredOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id)
   }
 
+  if(usersForOrganisation.users.length) {
+    const users = usersForOrganisation.users.filter(item => item.id !== req.user.sub)
+    if(users.length == 0) {
+      usersForOrganisation.numberOfPages = 0
+      usersForOrganisation.totalNumberOfResults = 0
+    }
+    usersForOrganisation.users = users
+  }
+
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
     const user = usersForOrganisation.users[i];
     if (req.user.sub === user.id) {
@@ -69,6 +78,15 @@ const search = async (req) => {
     const approverUserOrgs = user.organisations.filter((x) => filteredOrgIds.includes(x.id));
     user.statusId = mapUserStatus(user.statusId);
     user.organisations = approverUserOrgs.sort((a, b) => a.name.localeCompare(b.name));
+    user.primaryOrganisation = [...user.organisations].shift().name;
+  }
+
+  if(sortBy === 'primaryOrganisation') {
+    if(sortAsc){ 
+      usersForOrganisation.users.sort((a, b) => (a.primaryOrganisation > b.primaryOrganisation) ? 1 : -1)
+    } else{
+      usersForOrganisation.users.sort((a, b) => (a.primaryOrganisation > b.primaryOrganisation) ? -1 : 1)
+    }
   }
 
   return {
@@ -87,9 +105,9 @@ const search = async (req) => {
         nextDirection: sortBy === 'searchableName' ? (sortAsc ? 'desc' : 'asc') : 'asc',
         applied: sortBy === 'searchableName',
       },
-      searchableEmail: {
-        nextDirection: sortBy === 'searchableEmail' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'searchableEmail',
+      primaryOrganisation: {
+        nextDirection: sortBy === 'primaryOrganisation' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'primaryOrganisation',
       },
       lastLogin: {
         nextDirection: sortBy === 'lastLogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',
@@ -110,19 +128,12 @@ const buildInviteUserLink = (orgIds) => {
   return `/approvals/select-organisation?action=${actions.ORG_INVITE}`;
 };
 
-const buildRequestsLink = (orgIds) => {
-  if (orgIds && orgIds.length === 1) {
-    return `/access-requests/${orgIds[0]}/requests`;
-  }
-  return `/approvals/select-organisation?action=${actions.VIEW_ORG_REQUESTS}`;
-};
-
 const get = async (req, res) => {
   clearUserSessionData(req);
 
   const result = await search(req);
   const inviteUserUrl = buildInviteUserLink(result.approverOrgIds);
-  const requestsUrl = buildRequestsLink(result.approverOrgIds);
+  const requestsUrl = `/access-requests/requests`;
 
   return res.render('users/views/usersList', {
     title: 'Manage users',
@@ -187,7 +198,7 @@ const post = async (req, res) => {
 
   const result = await search(req);
   const inviteUserUrl = buildInviteUserLink(result.approverOrgIds)
-  const requestsUrl = buildRequestsLink(result.approverOrgIds)
+  const requestsUrl = `/access-requests/requests`
 
   return res.render('users/views/usersList', {
     ...model,

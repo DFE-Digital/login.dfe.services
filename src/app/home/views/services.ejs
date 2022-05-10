@@ -85,6 +85,33 @@
                             </div>
                         </div>
                     <% } %>
+                    <!-- If user is an approver, and there are requests pending, show this banner -->
+                    <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
+                        <div id="notification-wrapper-approver-request"
+                            class="govuk-notification-banner"
+                            role="region" 
+                            aria-labelledby="govuk-notification-banner-title" 
+                            data-module="govuk-notification-banner">
+                            <div class="govuk-notification-banner__header govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                                    Important
+                                    </h2>
+                                </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <span class="close-button pull-right" id="close-missing-jobtitle">x</span>
+                                </div>
+                            </div>
+                            <div class="govuk-notification-banner__content" id="notification-content">
+                                <h3 class="govuk-notification-banner__heading">
+                                    You have requests awaiting review
+                                </h3>
+                                <p>
+                                    <a class="govuk-link-bold" href="/access-requests">Go to requests</a>
+                                </p>
+                            </div>
+                        </div>
+                    <% } %>
                     <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
                         <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
                             role="alert" aria-labelledby="govuk-notification-banner-title"
@@ -109,29 +136,33 @@
                             </div>
                         </div>
                     <% } %>
+                    <% if (locals.passwordChangedBanner) { %>
+                        <div id="notification-wrapper-password-change" class="govuk-notification-banner govuk-notification-banner--success"
+                            role="alert" aria-labelledby="govuk-notification-banner-title"
+                            data-module="govuk-notification-banner">
+                            <div class="govuk-notification-banner__header govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                                        Success
+                                    </h2>
+                                </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <span class="close-button pull-right" id="close-password-change">x</span>
+                                </div>
+                            </div>
+                            <div class="govuk-notification-banner__content" id="notification-content">
+                                <h3 class="govuk-notification-banner__heading">
+                                    Password changed successfully
+                                </h3>
+                                <p class="govuk-body">
+                                    The password associated with your account has been updated.
+                                </p>
+                            </div>
+                        </div>
+                    <% } %>
+
                     <%- include reviewUsers.ejs %>
                 </div>
-
-                <!-- If user is an approver, and there are requests pending, show this banner -->
-                <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
-                <div class="panel panel-border-narrow alert-default" tabindex="0">
-                    <% if (locals.approverRequests.length === 1) { %>
-                    <p class="govuk-body">There is <strong
-                            class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %>
-                            request</strong>
-                        you need to action - <a class="govuk-link-bold" href="/access-requests">view requests</a>
-                    </p>
-                    <% } else { %>
-                    <p class="govuk-body">There are <strong
-                            class="govuk-!-font-size-19 govuk-!-font-weight-bold"><%= locals.approverRequests.length %>
-                            requests</strong> you need to action - <a class="govuk-link-bold"
-                            href="/access-requests">view
-                            requests</a>
-                    </p>
-                    <% } %>
-                </div>
-                <% } %>
-
                 <!-- Show Task List version if it is enabled in config and user has no services -->
                 <% if (enableTaskList && services.length === 0) { %>
                 <div>
@@ -366,15 +397,23 @@
 <script>
     $('#close-notification, #close-notification-link').on('click', () => {
         $.ajax(`/close-banner`).done(() => {
-            var item = $('#notification-wrapper-medium')
+            const item = $('#notification-wrapper-medium')
             item.remove();
         });
     })
     $('#close-missing-jobtitle').on('click', () => {
         $.ajax(`/close-missing-jobtitle`).done(() => {
-            var item = $('#notification-wrapper-missing-jobtitle')
+            const item = $('#notification-wrapper-missing-jobtitle')
             item.remove();
         });
+    })
+    $('#close-password-change, .servicesv2, .govuk-link-bold, .govuk-footer__link, .govuk-header__link').on('click', () => {
+        const item = $('#notification-wrapper-password-change')
+        if(item.length) { 
+            $.ajax(`/close-password-change`).done(() => {
+                item.remove();
+            });
+        }
     })
 </script>
 

@@ -1,7 +1,7 @@
 'use strict';
 
 const logger = require('./../../infrastructure/logger');
-const { getSingleServiceForUser, waitForIndexToUpdate, isUserManagement } = require('./utils');
+const { getSingleServiceForUser, waitForIndexToUpdate, isUserManagement, isRemoveService } = require('./utils');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 const { getById, updateIndex } = require('./../../infrastructure/search');
 const config = require('./../../infrastructure/config');
@@ -19,10 +19,14 @@ const renderRemoveServicePage = (req, res, model) => {
 };
 
 const buildBackLink = (req) => {
-  if (isUserManagement(req)) {
-    return `/approvals/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}?manage_users=true`;
+  const isRemoveServiceUrl = isRemoveService(req)
+  if(isRemoveServiceUrl) {
+    return `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.REMOVE_SERVICE}`
+  } else if (!isUserManagement(req)) {
+    return `/approvals/select-organisation-service?action=${actions.REMOVE_SERVICE}`;
+  } else {
+    return `/approvals/users/${req.params.uid}`;
   }
-  return `/approvals/select-organisation-service?action=${actions.REMOVE_SERVICE}`;
 };
 
 const buildCancelLink = (req) => {
@@ -110,15 +114,14 @@ const post = async (req, res) => {
     message: `${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
   });
 
+  res.flash('title', `Success`);
+  res.flash('heading', `Service removed: ${service.name}`);
+  
   if (isUserManagement(req)) {
-    res.flash('info', `${service.name} successfully removed`);
+    res.flash('message', `This service (and its associated roles) has been removed from this user's account.`);
     return res.redirect(`/approvals/users/${uid}`);
   } else {
-    const allServices = await checkCacheForAllServices();
-    const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-    res.flash('title', `Success`);
-    res.flash('heading', `Service removed: ${serviceDetails.name}`);
-    res.flash('message', `This service (and all associated roles) has been removed from your account.`);
+    res.flash('message', `This service (and its associated roles) has been removed from your account.`);
     res.redirect(`/my-services`);
   }
 };

@@ -12,11 +12,11 @@ const get = async (req, res) => {
   return res.render('accessRequests/views/rejectOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Reason for rejection - DfE Sign-in',
-    backLink: true,
-    cancelLink: `/access-requests/${req.params.orgId}/requests`,
+    backLink: `/access-requests/requests/${req.params.rid}`,
+    cancelLink: `/access-requests/requests`,
     reason: '',
     validationMessages: {},
-    currentPage: 'users',
+    currentPage: 'requests',
   });
 };
 
@@ -24,8 +24,8 @@ const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const model = {
     title: 'Reason for rejection - DfE Sign-in',
-    backLink: true,
-    cancelLink: `/access-requests/${req.params.orgId}/requests`,
+    backLink: `/access-requests/requests/${req.params.rid}`,
+    cancelLink: `/access-requests/requests`,
     reason: req.body.reason,
     request,
     validationMessages: {},
@@ -45,6 +45,7 @@ const post = async (req, res) => {
     model.csrfToken = req.csrfToken();
     return res.render('accessRequests/views/rejectOrganisationRequest', model);
   }
+
   // patch request with rejection
   const actionedDate = Date.now();
   await updateRequestById(model.request.id, -1, req.user.sub, model.reason, actionedDate, req.id);
@@ -65,14 +66,17 @@ const post = async (req, res) => {
     userId: req.user.sub,
     editedUser: model.request.user_id,
     reason: model.reason,
-    currentPage: 'users',
+    currentPage: 'requests',
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`,
   });
 
-  res.flash('info', `Request rejected - an email has been sent to ${model.request.usersEmail}.`);
-  return res.redirect(`/access-requests/${req.params.orgId}/requests`);
+  res.flash('title', `Success`);
+  res.flash('heading', `Request rejected: Organisation access`);
+  res.flash('message', `${model.request.usersName} cannot access your organisation.`);
+
+  return res.redirect(`/access-requests/requests`);
 };
 
 module.exports = {

@@ -261,6 +261,8 @@ describe('when adding services to a user', () => {
     expect(res.render.mock.calls[0][0]).toBe('users/views/associateServices');
     expect(res.render.mock.calls[0][1]).toEqual({
       name: 'test name',
+      title: "Select a service for test name",
+      subHeading: "This service will be added to the user’s account, assigned to organisation",
       user: { email: 'test@test.com', firstName: 'test', lastName: 'name', services: [] },
       backLink: '/approvals/users/user1',
       currentPage: 'users',
@@ -275,7 +277,7 @@ describe('when adding services to a user', () => {
       ],
       selectedServices: [],
       isInvite: undefined,
-      validationMessages: { services: 'At least one service must be selected' },
+      validationMessages: { services: 'Select a service to continue' },
       csrfToken: 'token',
     });
   });
