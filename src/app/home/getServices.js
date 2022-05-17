@@ -16,7 +16,7 @@ const {
 } = require('./../../infrastructure/organisations');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
-const { getApproverOrgsFromReq, isUserEndUser, isUserApprover } = require('../users/utils');
+const { getApproverOrgsFromReq, isUserEndUser } = require('../users/utils');
 const { actions } = require('../constans/actions');
 
 const getAndMapServices = async (account, correlationId) => {
@@ -223,20 +223,6 @@ const getServices = async (req, res) => {
       To get started, select 'Request access to a service' from the related actions menu.
       </p>
       <a href="${config.hostingEnvironment.helpUrl}/services/request-access" class="govuk-link-bold info-link" id='close-notification-link' target="_blank">Find out more about requesting services</a>.`;
-    }
-  }
-
-  if (isUserApprover(req)) {
-    if (!useBanner) {
-      req.session.bannerId = 1;
-      banner.type = 'notification';
-      banner.title = `Important`;
-      banner.heading = `New feature: End users can now request services`;
-      banner.message = `As a result of user feedback, end users can now request access to services in DfE Sign-in. 
-      <p>
-      When a service access request is raised, you will receive an email. This email will explain how you can approve or reject the service access request.
-      </p>
-      <a href="${config.hostingEnvironment.helpUrl}/requests/can-end-user-request-service" class="govuk-link-bold info-link" id='close-notification-link' target="_blank">Find out more about end users requesting services</a>.`;
     }
   }
 
