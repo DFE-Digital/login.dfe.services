@@ -7,7 +7,7 @@ const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const getIndex = require('./home');
 const getServices = require('./getServices');
-const { bannerHandler, jobTitleBannerHandler, passwordChangeBannerHandler } = require('./closeBanner');
+const { jobTitleBannerHandler, passwordChangeBannerHandler } = require('./closeBanner');
 
 const router = express.Router({ mergeParams: true });
 
@@ -16,7 +16,6 @@ const home = (csrf, app) => {
 
   router.get('/', asyncWrapper(getIndex));
   router.get('/my-services', isLoggedIn, asyncWrapper(getServices));
-  router.get('/close-banner', isLoggedIn, asyncWrapper(bannerHandler));
   router.get('/close-missing-jobtitle', isLoggedIn, asyncWrapper(jobTitleBannerHandler));
   router.get('/close-password-change', isLoggedIn, asyncWrapper(passwordChangeBannerHandler));
   
