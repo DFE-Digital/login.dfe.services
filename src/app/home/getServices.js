@@ -208,24 +208,6 @@ const getServices = async (req, res) => {
 
   isRequestServiceAllowed = !!requestServicesRedirect;
 
-  let banner = {};
-  //1: "request a service" feature notification banner
-  const useBanner = await directories.fetchUserBanners(req.session.user.uid, 1);
-
-  if (isRequestServiceAllowed) {
-    if (!useBanner) {
-      req.session.bannerId = 1;
-      banner.type = 'notification';
-      banner.title = `Important`;
-      banner.heading = `New feature: You can now request services`;
-      banner.message = `Thanks to your feedback, you can now request access to services within DfE Sign-in. 
-      <p>
-      To get started, select 'Request access to a service' from the related actions menu.
-      </p>
-      <a href="${config.hostingEnvironment.helpUrl}/services/request-access" class="govuk-link-bold info-link" id='close-notification-link' target="_blank">Find out more about requesting services</a>.`;
-    }
-  }
-
   const { jobTitle } = await Account.getById(req.user.id)
   //2: "job title" notification banner
   const useJobTitleBanner = await directories.fetchUserBanners(req.user.id, 2)
@@ -248,7 +230,6 @@ const getServices = async (req, res) => {
     removeServicesRedirect,
     requestServicesRedirect,
     isRequestServiceAllowed,
-    banner,
     passwordChangedBanner,
     showJobTitleBanner,
   });

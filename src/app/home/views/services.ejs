@@ -31,31 +31,6 @@
                 <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
 
                     <!-- Banner messages after completing an action (add service, edit service...) -->
-                    <% if (locals.banner.type == 'notification') { %>
-                        <% if (locals.banner.title && locals.banner.heading && locals.banner.message) { %>
-                            <div id="notification-wrapper-medium" class="govuk-notification-banner" role="alert"
-                                aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-                                <div class="govuk-notification-banner__header govuk-grid-row">
-                                    <div class="govuk-grid-column-two-thirds">
-                                        <h2 class="govuk-notification-banner__title" id="notification-title">
-                                            <%= locals.banner.title %>
-                                        </h2>
-                                    </div>
-                                    <div class="govuk-grid-column-one-third">
-                                        <span class="close-button pull-right" id="close-notification" >x</span>
-                                    </div>
-                                </div>
-                                <div class="govuk-notification-banner__content" id="notification-content">
-                                    <h3 class="govuk-notification-banner__heading">
-                                        <%= locals.banner.heading %>
-                                    </h3>
-                                    <p class="govuk-body">
-                                        <%- locals.banner.message %>
-                                    </p>
-                                </div>
-                            </div>
-                        <% } %>
-                    <% } %>
                     <% if(locals.showJobTitleBanner) { %>
                         <div id="notification-wrapper-missing-jobtitle"
                             class="govuk-notification-banner"
@@ -395,12 +370,6 @@
     </div>
 </div>
 <script>
-    $('#close-notification, #close-notification-link').on('click', () => {
-        $.ajax(`/close-banner`).done(() => {
-            const item = $('#notification-wrapper-medium')
-            item.remove();
-        });
-    })
     $('#close-missing-jobtitle').on('click', () => {
         $.ajax(`/close-missing-jobtitle`).done(() => {
             const item = $('#notification-wrapper-missing-jobtitle')
