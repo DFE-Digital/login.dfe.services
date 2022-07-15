@@ -155,7 +155,7 @@ const getServices = async (req, res) => {
   );
   const approverRequests = req.organisationRequests || [];
   let taskListStatusAndApprovers;
-  if (config.toggles.useRequestOrganisation && services.length <= 0) {
+  if (services.length <= 0) {
     taskListStatusAndApprovers = await getTasksListStatusAndApprovers(account, req.id);
   }
 
@@ -224,7 +224,6 @@ const getServices = async (req, res) => {
     approverRequests,
     taskListStatus: taskListStatusAndApprovers ? taskListStatusAndApprovers.taskListStatus : null,
     approvers: taskListStatusAndApprovers ? taskListStatusAndApprovers.approvers : null,
-    enableTaskList: config.toggles.useRequestOrganisation,
     addServicesRedirect,
     editServicesRedirect,
     removeServicesRedirect,
