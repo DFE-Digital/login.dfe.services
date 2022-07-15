@@ -12,7 +12,6 @@ const identifyingPartySchema = new SimpleSchema({
 
 const togglesSchema = new SimpleSchema({
   useApproverJourney: Boolean,
-  useRequestOrganisation: Boolean,
   generateUserOrgIdentifiers: Boolean,
 });
 
