@@ -127,6 +127,7 @@ const init = async () => {
     },
     gaTrackingId: config.hostingEnvironment.gaTrackingId,
     useApproverJourney: config.toggles.useApproverJourney,
+    useRequestOrg: config.toggles.useRequestOrganisation,
     assets: {
       version: config.assets.version,
     },

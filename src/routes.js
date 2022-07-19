@@ -71,8 +71,10 @@ const routes = (app, csrf) => {
   if (config.toggles.useApproverJourney) {
     app.use('/approvals', users(csrf));
   }
-  app.use('/request-organisation', requestOrganisation(csrf));
-  app.use('/access-requests', accessRequests(csrf, app));
+  if (config.toggles.useRequestOrganisation) {
+    app.use('/request-organisation', requestOrganisation(csrf));
+    app.use('/access-requests', accessRequests(csrf, app));
+  }
   app.use('/request-service', requestService(csrf));
   app.use('/appcache', appCache(csrf));
 

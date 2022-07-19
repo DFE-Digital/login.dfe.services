@@ -74,6 +74,7 @@ const getAndMapPendingRequests = async (account, correlationId) => {
 
 const disableRequestOrgLink = async (orgRequests, organisations) => {
   if (
+    config.toggles.useRequestOrganisation &&
     organisations &&
     organisations.length <= 0 &&
     orgRequests &&

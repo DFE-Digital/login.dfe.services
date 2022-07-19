@@ -30,6 +30,7 @@ const mockConfig = () => {
     },
     toggles: {
       useApproverJourney: true,
+      useRequestOrganisation: true,
     },
     database: {
       host: 'host',
@@ -71,6 +72,7 @@ const mockAdapterConfig = () => {
     },
     toggles: {
       useApproverJourney: true,
+      useRequestOrganisation: true,
     },
     hostingEnvironment: {},
     loggerSettings: {},

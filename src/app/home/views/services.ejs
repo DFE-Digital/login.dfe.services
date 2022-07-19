@@ -1,5 +1,5 @@
 <!-- Show blue banner with header text when it is not the Task List version of the page -->
-<% if (services.length !== 0) { %>
+<% if (!enableTaskList || services.length !== 0) { %>
 <div id="home-top" class="home-top">
     <div class="govuk-width-container home-top__inner">
         <div class="govuk-grid-row">
@@ -139,7 +139,7 @@
                     <%- include reviewUsers.ejs %>
                 </div>
                 <!-- Show Task List version if it is enabled in config and user has no services -->
-                <% if (services.length === 0) { %>
+                <% if (enableTaskList && services.length === 0) { %>
                 <div>
                     <h1 class="govuk-heading-xl">
                         Set up your DfE Sign-in account
@@ -329,7 +329,7 @@
 
         <!-- Show services list if task list version is disabled or user is mapped to at least 1 service -->
         <div class="govuk-grid-row">
-            <% if (services.length !== 0) { %>
+            <% if (!enableTaskList || services.length !== 0) { %>
             <div class="govuk-grid-column-full-width">
                 <table class="govuk-table">
                     <thead class="govuk-table__head">
