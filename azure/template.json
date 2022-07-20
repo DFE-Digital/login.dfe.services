@@ -234,6 +234,9 @@
                     },
                     "enablePrivateEndpointSupport": {
                         "value": "[parameters('enablePrivateEndpoint')]"
+                    },
+                    "http20Enabled": {
+                        "value": true
                     }
 
                 }

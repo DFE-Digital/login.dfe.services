@@ -280,6 +280,9 @@
                             "TOPIC_NAME": "[parameters('auditServiceBusTopicName')]",
                             "SUBSCRIPTION_NAME": "[parameters('auditServiceBusSubscriptionName')]"
                         }
+                    },
+                    "http20Enabled": {
+                        "value": true
                     }
                 }
             },
