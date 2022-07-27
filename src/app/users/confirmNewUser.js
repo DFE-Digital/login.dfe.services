@@ -102,8 +102,9 @@ const post = async (req, res) => {
   const organisationId = req.params.orgId;
   const organisation = await getOrganisationById(organisationId, req.id);
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
-  
+
   if (!uid) {
+    const isApprover = req.session.user.permission === 10000;
     const redirectUri = `https://${config.hostingEnvironment.host}/auth`;
     const invitationId = await Account.createInvite(
       req.session.user.firstName,
@@ -113,6 +114,7 @@ const post = async (req, res) => {
       redirectUri,
       req.user.email,
       organisation.name,
+      isApprover,
     );
     uid = `inv-${invitationId}`;
   }
