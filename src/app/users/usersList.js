@@ -17,29 +17,22 @@ const search = async (req) => {
   if (isNaN(page)) {
     page = 1;
   }
-  
+
   let sortBy = paramsSource.sort ? paramsSource.sort : 'searchableName';
   let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
 
   const approverOrgs = getApproverOrgsFromReq(req);
+  const approverOrgIds = approverOrgs.map((org) => org.organisation.id);
 
-  let approverOrgIds = []
-  for(let i= 0; i < approverOrgs.length; i++) {
-    const org = approverOrgs[i]
-    const orgId = org.organisation.id
-    approverOrgIds.push(orgId)
-  }
+  let selectedOrganisations = [];
+  let filteredOrgIds = [];
 
-  let selectedOrganisations = []
-  let filteredOrgIds = []
-
-  if(req.body && req.body.selectedOrganisation) {
-    const selectedOrgIds = req.body.selectedOrganisation
-    selectedOrganisations = (typeof selectedOrgIds === 'string') ? selectedOrgIds.split(',') : selectedOrgIds
-    filteredOrgIds = selectedOrganisations
-  }
-  else {
-    filteredOrgIds = approverOrgIds
+  if (paramsSource && paramsSource.selectedOrganisation) {
+    const selectedOrgIds = paramsSource.selectedOrganisation;
+    selectedOrganisations = typeof selectedOrgIds === 'string' ? selectedOrgIds.split(',') : selectedOrgIds;
+    filteredOrgIds = selectedOrganisations;
+  } else {
+    filteredOrgIds = approverOrgIds;
   }
 
   let usersForOrganisation;
@@ -56,16 +49,16 @@ const search = async (req) => {
       req.id,
     );
   } else {
-    usersForOrganisation = await getAllUsersForOrg(page, filteredOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id)
+    usersForOrganisation = await getAllUsersForOrg(page, filteredOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id);
   }
 
-  if(usersForOrganisation.users.length) {
-    const users = usersForOrganisation.users.filter(item => item.id !== req.user.sub)
-    if(users.length == 0) {
-      usersForOrganisation.numberOfPages = 0
-      usersForOrganisation.totalNumberOfResults = 0
+  if (usersForOrganisation.users.length) {
+    const users = usersForOrganisation.users.filter((item) => item.id !== req.user.sub);
+    if (users.length == 0) {
+      usersForOrganisation.numberOfPages = 0;
+      usersForOrganisation.totalNumberOfResults = 0;
     }
-    usersForOrganisation.users = users
+    usersForOrganisation.users = users;
   }
 
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
@@ -81,11 +74,11 @@ const search = async (req) => {
     user.primaryOrganisation = [...user.organisations].shift().name;
   }
 
-  if(sortBy === 'primaryOrganisation') {
-    if(sortAsc){ 
-      usersForOrganisation.users.sort((a, b) => (a.primaryOrganisation > b.primaryOrganisation) ? 1 : -1)
-    } else{
-      usersForOrganisation.users.sort((a, b) => (a.primaryOrganisation > b.primaryOrganisation) ? -1 : 1)
+  if (sortBy === 'primaryOrganisation') {
+    if (sortAsc) {
+      usersForOrganisation.users.sort((a, b) => (a.primaryOrganisation > b.primaryOrganisation ? 1 : -1));
+    } else {
+      usersForOrganisation.users.sort((a, b) => (a.primaryOrganisation > b.primaryOrganisation ? -1 : 1));
     }
   }
 
@@ -100,6 +93,7 @@ const search = async (req) => {
     approverOrgs,
     numberOfPages: usersForOrganisation.numberOfPages,
     totalNumberOfResults: usersForOrganisation.totalNumberOfResults,
+    searchCriteria: paramsSource.searchCriteria || '',
     sort: {
       searchableName: {
         nextDirection: sortBy === 'searchableName' ? (sortAsc ? 'desc' : 'asc') : 'asc',
@@ -134,13 +128,14 @@ const get = async (req, res) => {
   const result = await search(req);
   const inviteUserUrl = buildInviteUserLink(result.approverOrgIds);
   const requestsUrl = `/access-requests/requests`;
+  const showFilter = req.query.showFilter?.toLowerCase() === 'true';
 
   return res.render('users/views/usersList', {
     title: 'Manage users',
     csrfToken: req.csrfToken(),
     currentPage: 'users',
     approverOrgs: result.approverOrgs,
-    selectedOrganisations: [],
+    selectedOrganisations: result.selectedOrganisations,
     usersForOrganisation: result.usersForOrganisation,
     page: result.page,
     sort: result.sort,
@@ -151,55 +146,54 @@ const get = async (req, res) => {
     inviteUserUrl,
     requestsUrl,
     validations: {},
-    showFilter: false,
-    searchCriteria: ''
+    showFilter,
+    searchCriteria: result.searchCriteria,
   });
 };
 
 const validateOrgSelection = (req, model) => {
-  const selectedOrg = req.body.selectedOrganisation
+  const selectedOrg = req.body.selectedOrganisation;
   if (selectedOrg === undefined || selectedOrg === null) {
     model.validations.selectedOrganisation = 'Select at least one organisation';
   }
 };
 
 const validateSearch = (req, model) => {
-  const searchCriteria = req.body.searchCriteria
+  const searchCriteria = req.body.searchCriteria;
   if (searchCriteria === undefined || searchCriteria === null || searchCriteria.length < 3) {
     model.validations.searchUser = 'Enter at least three characters to search users';
   }
-}
+};
 
 const post = async (req, res) => {
-  const reqBody = req.body
+  const reqBody = req.body;
 
   let model = {
     validations: {},
-    showFilter: reqBody.showFilter || (reqBody.isFilterToggle === "true")
+    showFilter: reqBody.showFilter || reqBody.isFilterToggle === 'true',
   };
 
-  if(reqBody.showFilter) {
-    model.showFilter = !(model.showFilter === "true")
+  if (reqBody.showFilter) {
+    model.showFilter = !(model.showFilter === 'true');
   }
 
-  if(reqBody.searchUser) {
-    validateSearch(req, model)
+  if (reqBody.searchUser) {
+    validateSearch(req, model);
   }
 
   if (reqBody.applyFilter) {
-    validateOrgSelection(req, model)
+    validateOrgSelection(req, model);
   }
 
-  if(reqBody.removeFilter) {
-    req.body.selectedOrganisation = null
+  if (reqBody.removeFilter) {
+    req.body.selectedOrganisation = null;
   }
 
-  model.searchCriteria = req.body.searchCriteria || ""
+  model.searchCriteria = req.body.searchCriteria || '';
 
   const result = await search(req);
-  const inviteUserUrl = buildInviteUserLink(result.approverOrgIds)
-  const requestsUrl = `/access-requests/requests`
-
+  const inviteUserUrl = buildInviteUserLink(result.approverOrgIds);
+  const requestsUrl = `/access-requests/requests`;
   return res.render('users/views/usersList', {
     ...model,
     title: 'Manage users',
@@ -216,10 +210,11 @@ const post = async (req, res) => {
     totalNumberOfResults: result.totalNumberOfResults,
     inviteUserUrl,
     requestsUrl,
+    searchCriteria: result.searchCriteria,
   });
 };
 
 module.exports = {
   get,
-  post
+  post,
 };
