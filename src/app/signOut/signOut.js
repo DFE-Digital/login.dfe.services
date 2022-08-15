@@ -26,7 +26,11 @@ const signUserOut = async (req, res) => {
     let returnUrl,
       skipIssuerSession = false,
       isValidRedirect = false;
-    if (req.query.redirected === 'true' && !req.query.redirect_uri) {
+
+    if (req.query.timeout === '1') {
+      logger.info(`session timeout signout`);
+      returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/session-timeout`;
+    } else if (req.query.redirected === 'true' && !req.query.redirect_uri) {
       logger.info('service signout :: there were no redirect_uri');
       returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
     } else if (req.query.redirected === 'true' && req.query.redirect_uri) {
