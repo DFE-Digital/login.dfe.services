@@ -6,7 +6,7 @@
                 Sorry, your session has<br>timed out
             </h2>
 
-            <h2 class="govuk-heading">Your session automatically ends if you don't do<br>anything for 30 minutes</h2>
+            <h2 class="govuk-heading">Your session automatically ends if you don't do<br>anything for 20 minutes</h2>
             
             <h2 class="govuk-heading">We do this to keep your information safe.<h2/>
 
@@ -17,5 +17,5 @@
 </div>
 <script>
     var signLink = document.getElementById('signin');
-    signLink.href = localStorage.getItem('ReturnUrl') ?? '/my-services';
+    signLink.href = localStorage.getItem('uri') ?? '/my-services';
 </script>
