@@ -22,12 +22,14 @@ const getAndMapExternalServices = async (correlationId) => {
 
 const home = async (req, res) => {
   const services = await getAndMapExternalServices(req.id);
+  const sessionExpiryTime = config.hostingEnvironment.sessionCookieExpiryInMinutes || 20;
 
   return res.render('home/views/landingPage', {
     title: 'DfE Sign-in',
     services,
     loggedOut: true,
     profileUrl: config.hostingEnvironment.profileUrl,
+    sessionExpiryTime,
   });
 };
 
