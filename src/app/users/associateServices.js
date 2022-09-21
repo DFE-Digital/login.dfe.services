@@ -32,8 +32,8 @@ const buildBackLink = (req) => {
   }
   else if (req.session.user.isInvite) {
     req.params.uid
-      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
-      : (backRedirect = 'new-user');
+      ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/organisation-permissions`)
+      : (backRedirect = `/approvals/${req.params.orgId}/users/organisation-permissions`);
   } else if (isSelfManagement(req)) {
     // we need to check if user is approver at only one org to then send back to main services page
     if (req.userOrganisations.length === 1) {

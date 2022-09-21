@@ -97,6 +97,7 @@ describe('when inviting a new user', () => {
         email: 'test@test.com',
         firstName: 'test',
         lastName: 'name',
+        permission: 0,
         services: [
           {
             serviceId: 'service1',

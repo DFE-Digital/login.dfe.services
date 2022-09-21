@@ -54,12 +54,12 @@ describe('when posting the existing user view', () => {
     postConfirmExistingUser = require('./../../../../src/app/users/confirmExistingUser').post;
   });
 
-  it('then it should redirect to associate services', async () => {
+  it('then it should redirect to organisation permissions', async () => {
     await postConfirmExistingUser(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe(
-      `/approvals/${req.params.orgId}/users/${req.session.user.uid}/associate-services`,
+      `/approvals/${req.params.orgId}/users/${req.session.user.uid}/organisation-permissions`,
     );
   });
 
