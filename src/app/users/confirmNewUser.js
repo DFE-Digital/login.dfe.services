@@ -51,7 +51,7 @@ const get = async (req, res) => {
   }));
 
   const orgRole = parseInt(req.session.user.permission);
-  const orgPermissionName = orgRole === 10000 ? 'Approver' : 'End user';
+  const orgPermissionName = orgRole === 10000 ? 'Approver' : 'End User';
 
   const allServices = await checkCacheForAllServices(req.id);
   for (let i = 0; i < services.length; i++) {

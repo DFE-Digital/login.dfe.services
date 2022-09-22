@@ -8,18 +8,19 @@ const buildBackLink = (req) => {
   }
 };
 const get = async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/approvals/users');
+  }
   const { organisation } = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
 
   return res.render('users/views/organisationPermission', {
     csrfToken: req.csrfToken(),
     backLink: buildBackLink(req),
-    cancelLink: `/services/${req.params.sid}/users`,
     user: `${req.session.user.firstName} ${req.session.user.lastName}`,
     organisation,
     selectedLevel: req.session.user.permission || 0,
     validationMessages: {},
-    serviceId: req.params.sid,
-    currentNavigation: 'users',
+    currentPage: 'users',
   });
 };
 
@@ -30,11 +31,9 @@ const validate = async (req) => {
   const model = {
     backLink: buildBackLink(req),
     user: `${req.session.user.firstName} ${req.session.user.lastName}`,
-    organisation: req.session.user.organisationName,
     selectedLevel: isNaN(level) ? undefined : level,
     validationMessages: {},
-    serviceId: req.params.sid,
-    currentNavigation: 'users',
+    currentPage: 'users',
   };
 
   if (model.selectedLevel === undefined || model.selectedLevel === null) {
@@ -47,7 +46,7 @@ const validate = async (req) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/services/${req.params.sid}/users`);
+    return res.redirect('/approvals/users');
   }
   const model = await validate(req);
 
