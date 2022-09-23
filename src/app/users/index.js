@@ -17,6 +17,7 @@ const getServices = require('./getServices');
 const { get: getNewUserDetails, post: postNewUserDetails } = require('./newUserDetails');
 const { get: getConfirmExistingUser, post: postConfirmExistingUser } = require('./confirmExistingUser');
 const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
+const { get: getOrganisationPermission, post: postOrganisationPermission } = require('./organisationPermission');
 const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');
 const { get: getConfirmNewUser, post: postConfirmNewUser } = require('./confirmNewUser');
 const { get: getResendInvitation, post: postResendInvitation } = require('./resendInvitation');
@@ -39,6 +40,8 @@ const users = (csrf) => {
   router.post('/:orgId/users/:uid/confirm-user', csrf, isApprover, asyncWrapper(postConfirmExistingUser));
 
   //add services to new user (invitation) if no user exists in DSI (from invite journey)
+  router.get('/:orgId/users/organisation-permissions', csrf, isApprover, asyncWrapper(getOrganisationPermission));
+  router.post('/:orgId/users/organisation-permissions', csrf, isApprover, asyncWrapper(postOrganisationPermission));
   router.get('/:orgId/users/associate-services', csrf, isApprover, asyncWrapper(getAssociateServices));
   router.post('/:orgId/users/associate-services', csrf, isApprover, asyncWrapper(postAssociateServices));
   router.get('/:orgId/users/associate-services/:sid', csrf, isApprover, asyncWrapper(getAssociateRoles));
@@ -47,6 +50,13 @@ const users = (csrf) => {
   router.post('/:orgId/users/confirm-new-user', csrf, isApprover, asyncWrapper(postConfirmNewUser));
 
   //add services to existing user from user details page or invite journey if user found in DSI
+  router.get('/:orgId/users/:uid/organisation-permissions', csrf, isApprover, asyncWrapper(getOrganisationPermission));
+  router.post(
+    '/:orgId/users/:uid/organisation-permissions',
+    csrf,
+    isApprover,
+    asyncWrapper(postOrganisationPermission),
+  );
   router.get('/:orgId/users/:uid/associate-services', csrf, isApprover, asyncWrapper(getAssociateServices));
   router.post('/:orgId/users/:uid/associate-services', csrf, isApprover, asyncWrapper(postAssociateServices));
   router.get('/:orgId/users/:uid/associate-services/:sid', csrf, isApprover, asyncWrapper(getAssociateRoles));

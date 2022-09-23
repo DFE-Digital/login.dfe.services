@@ -50,6 +50,9 @@ const get = async (req, res) => {
     roles: service.roles,
   }));
 
+  const orgRole = parseInt(req.session.user.permission);
+  const orgPermissionName = orgRole === 10000 ? 'Approver' : 'End User';
+
   const allServices = await checkCacheForAllServices(req.id);
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
@@ -84,6 +87,7 @@ const get = async (req, res) => {
     subServiceUrl,
     serviceUrl,
     organisationDetails,
+    orgPermissionName,
   };
 
   renderConfirmNewUserPage(req, res, model);
@@ -127,7 +131,7 @@ const post = async (req, res) => {
   if (uid.startsWith('inv-')) {
     const invitationId = uid.substr(4);
     if (req.session.user.isInvite) {
-      await putInvitationInOrganisation(invitationId, organisationId, 0, req.id);
+      await putInvitationInOrganisation(invitationId, organisationId, req.session.user.permission, req.id);
     }
     if (req.session.user.services) {
       for (let i = 0; i < req.session.user.services.length; i++) {
@@ -154,7 +158,7 @@ const post = async (req, res) => {
   } else {
     //if existing user not in org
     if (req.session.user.isInvite) {
-      await putUserInOrganisation(uid, organisationId, 0, req.id);
+      await putUserInOrganisation(uid, organisationId, 0, req.session.user.permission, req.id);
       const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(uid, req.id);
       const requestForOrg = pendingOrgRequests.find((x) => x.org_id === organisationId);
       if (requestForOrg) {
@@ -217,7 +221,7 @@ const post = async (req, res) => {
           laNumber: organisation.localAuthority ? organisation.localAuthority.code : undefined,
           categoryId: organisation.category.id,
           statusId: organisation.status.id,
-          roleId: 0,
+          roleId: req.session.user.permission,
         };
         currentOrganisationDetails.push(newOrgDetails);
         await updateIndex(req.params.uid, currentOrganisationDetails, null, req.id);

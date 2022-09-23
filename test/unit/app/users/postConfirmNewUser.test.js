@@ -97,6 +97,7 @@ describe('when inviting a new user', () => {
         email: 'test@test.com',
         firstName: 'test',
         lastName: 'name',
+        permission: 0,
         services: [
           {
             serviceId: 'service1',
@@ -273,7 +274,8 @@ describe('when inviting a new user', () => {
     expect(putUserInOrganisation.mock.calls[0][0]).toBe('user1');
     expect(putUserInOrganisation.mock.calls[0][1]).toBe('org1');
     expect(putUserInOrganisation.mock.calls[0][2]).toBe(0);
-    expect(putUserInOrganisation.mock.calls[0][3]).toBe('correlationId');
+    expect(putUserInOrganisation.mock.calls[0][3]).toBe(0);
+    expect(putUserInOrganisation.mock.calls[0][4]).toBe('correlationId');
   });
 
   it('then it should not attempt to add user to organisation if not through invite journey', async () => {
