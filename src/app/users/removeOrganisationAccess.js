@@ -75,6 +75,9 @@ const post = async (req, res) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
 
+  const numericIdentifier = getAllUserDetails.organisations[0]['numericIdentifier'];
+  const textIdentifier = getAllUserDetails.organisations[0]['textIdentifier'];
+
   logger.audit({
     type: 'approver',
     subType: 'user-org-deleted',
@@ -91,7 +94,8 @@ const post = async (req, res) => {
       ],
       editedUser: uid,
     },
-    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
+    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})
+      numericIdentifier (${numericIdentifier}) and textIdentifier (${textIdentifier})`,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
   });
