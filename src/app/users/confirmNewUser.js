@@ -158,7 +158,7 @@ const post = async (req, res) => {
   } else {
     //if existing user not in org
     if (req.session.user.isInvite) {
-      await putUserInOrganisation(uid, organisationId, req.session.user.permission, req.id);
+      await putUserInOrganisation(uid, organisationId, 0, req.session.user.permission, req.id);
       const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(uid, req.id);
       const requestForOrg = pendingOrgRequests.find((x) => x.org_id === organisationId);
       if (requestForOrg) {
