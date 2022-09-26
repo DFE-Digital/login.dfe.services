@@ -13,6 +13,7 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
   }
+
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
@@ -75,8 +76,11 @@ const post = async (req, res) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
 
-  const numericIdentifier = getAllUserDetails.organisations[0]['numericIdentifier'];
-  const textIdentifier = getAllUserDetails.organisations[0]['textIdentifier'];
+  const numericIdentifierAndtextIdentifier = {};
+  getAllUserDetails.organisations.filter((org) => {
+    numericIdentifierAndtextIdentifier['numericIdentifier'] = org['numericIdentifier'];
+    numericIdentifierAndtextIdentifier['textIdentifier'] = org['textIdentifier'];
+  });
 
   logger.audit({
     type: 'approver',
@@ -94,8 +98,10 @@ const post = async (req, res) => {
       ],
       editedUser: uid,
     },
-    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})
-      numericIdentifier (${numericIdentifier}) and textIdentifier (${textIdentifier})`,
+    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${
+      req.session.user.email
+    } (id: ${uid})
+      numeric Identifier and textIdentifier(${JSON.stringify(numericIdentifierAndtextIdentifier)})`,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
   });
