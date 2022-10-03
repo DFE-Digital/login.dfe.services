@@ -101,7 +101,7 @@ const post = async (req, res) => {
     message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${
       req.session.user.email
     } (id: ${uid})
-      numeric Identifier and textIdentifier(${JSON.stringify(numericIdentifierAndtextIdentifier)})`,
+      numeric Identifier and text Identifier(${JSON.stringify(numericIdentifierAndtextIdentifier)})`,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
   });
