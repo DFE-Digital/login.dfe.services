@@ -77,9 +77,11 @@ const post = async (req, res) => {
   const org = organisationDetails.organisation.name;
 
   const numericIdentifierAndtextIdentifier = {};
-  getAllUserDetails.organisations.filter((org) => {
-    numericIdentifierAndtextIdentifier['numericIdentifier'] = org['numericIdentifier'];
-    numericIdentifierAndtextIdentifier['textIdentifier'] = org['textIdentifier'];
+  getAllUserDetails.organisations.map((org) => {
+    if (org['numericIdentifier'] && org['textIdentifier']) {
+      numericIdentifierAndtextIdentifier['numericIdentifier'] = org['numericIdentifier'];
+      numericIdentifierAndtextIdentifier['textIdentifier'] = org['textIdentifier'];
+    }
   });
 
   logger.audit({
@@ -100,8 +102,11 @@ const post = async (req, res) => {
     },
     message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${
       req.session.user.email
-    } (id: ${uid})
-      numeric Identifier and textIdentifier(${JSON.stringify(numericIdentifierAndtextIdentifier)})`,
+    } (id: ${uid}) numeric Identifier and textIdentifier(${
+      Object.keys(numericIdentifierAndtextIdentifier).length === 0
+        ? 'null'
+        : JSON.stringify(numericIdentifierAndtextIdentifier)
+    })`,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
   });

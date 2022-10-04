@@ -2,7 +2,7 @@
 
 const winston = require('winston');
 const config = require('./../config');
-const AuditTransporter = require('login.dfe.audit.transporter');
+const WinstonSequelizeTransport = require('login.dfe.audit.winston-sequelize-transport');
 const appInsights = require('applicationinsights');
 const AppInsightsTransport = require('login.dfe.winston-appinsights');
 
@@ -47,12 +47,12 @@ if (config && config.loggerSettings && config.loggerSettings.redis && config.log
 }
 
 const opts = { application: config.loggerSettings.applicationName, level: 'audit' };
-const auditTransport = AuditTransporter(opts);
+const sequelizeTransport = WinstonSequelizeTransport(config);
+console.log('sequelizeTransport', sequelizeTransport);
 
-if (auditTransport) {
-  loggerConfig.transports.push(auditTransport);
+if (sequelizeTransport) {
+  loggerConfig.transports.push(sequelizeTransport);
 }
-
 if (config.hostingEnvironment.applicationInsights) {
   appInsights.setup(config.hostingEnvironment.applicationInsights).setAutoCollectConsole(false, false).start();
   loggerConfig.transports.push(
@@ -70,6 +70,5 @@ const logger = winston.createLogger(loggerConfig);
 process.on('unhandledRejection', (reason, p) => {
   logger.error(`Unhandled Rejection at: ${JSON.stringify(p)}, reason: ${reason}`);
 });
-
 
 module.exports = logger;
