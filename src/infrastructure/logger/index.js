@@ -48,7 +48,6 @@ if (config && config.loggerSettings && config.loggerSettings.redis && config.log
 
 const opts = { application: config.loggerSettings.applicationName, level: 'audit' };
 const sequelizeTransport = WinstonSequelizeTransport(config);
-console.log('sequelizeTransport', sequelizeTransport);
 
 if (sequelizeTransport) {
   loggerConfig.transports.push(sequelizeTransport);
