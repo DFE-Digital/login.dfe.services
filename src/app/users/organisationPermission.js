@@ -7,6 +7,18 @@ const buildBackLink = (req) => {
     return backRedirect;
   }
 };
+
+const buildRedirectLink = (req) => {
+  if (req.session.user.isInvite) {
+    if (req.params.uid) {
+      req.query.review ? (continueRedirect = 'confirm-details') : (continueRedirect = 'associate-services');
+    } else {
+      req.query.review ? (continueRedirect = 'confirm-new-user') : (continueRedirect = 'associate-services');
+    }
+    return continueRedirect;
+  }
+};
+
 const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/approvals/users');
@@ -55,7 +67,8 @@ const post = async (req, res) => {
     return res.render('users/views/organisationPermission', model);
   }
   req.session.user.permission = model.selectedLevel;
-  return req.query.review ? res.redirect('confirm-new-user') : res.redirect('associate-services');
+  const redirectLink = buildRedirectLink(req);
+  return res.redirect(redirectLink);
 };
 
 module.exports = {
