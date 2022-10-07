@@ -1,5 +1,6 @@
 'use strict';
 const { listRolesOfService, addUserService, getServicesForUser } = require('../../infrastructure/access');
+const { getOrganisationAndServiceForUser } = require('../../infrastructure/organisations');
 const { getUserDetails } = require('../users/utils');
 const { actions } = require('../constans/actions');
 
@@ -158,6 +159,13 @@ const post = async (req, res) => {
     return res.render('requestService/views/approveServiceRequest', viewModel);
   }
 
+  const mngUserOrganisations = await getOrganisationAndServiceForUser(req.params.uid, req.id);
+  const mngUserOrganisationDetails = mngUserOrganisations.find(x => x.organisation.id === req.params.orgId);
+  const mngUserOrgPermission = {
+    id: mngUserOrganisationDetails.role.id,
+    name: mngUserOrganisationDetails.role.name,
+  };
+
   await addUserService(req.params.uid, req.params.sid, req.params.orgId, roles, req.id);
 
   await notificationClient.sendServiceRequestApproved(
@@ -167,6 +175,7 @@ const post = async (req, res) => {
     viewModel.organisationDetails.organisation.name,
     viewModel.service.name,
     viewModel.service.roles.map((i) => i.name),
+    mngUserOrgPermission,
   );
 
   logger.audit({
