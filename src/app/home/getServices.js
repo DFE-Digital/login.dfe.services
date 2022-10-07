@@ -1,4 +1,5 @@
 'use strict';
+
 const { getServicesForUser } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
 const Account = require('./../../infrastructure/account');
@@ -18,6 +19,8 @@ const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 const { getApproverOrgsFromReq, isUserEndUser } = require('../users/utils');
 const { actions } = require('../constans/actions');
+
+const pireanServices = process.env.PIREAN_SERVICES ? process.env.PIREAN_SERVICES.split(',') : [];
 
 const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
@@ -215,7 +218,7 @@ const getServices = async (req, res) => {
 
   //-3: "Unacknowledged" banner for changed password
   const passwordChangedBanner = await directories.fetchUserBanners(req.user.id, -3)
- 
+
   return res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
@@ -231,6 +234,7 @@ const getServices = async (req, res) => {
     isRequestServiceAllowed,
     passwordChangedBanner,
     showJobTitleBanner,
+    pireanServices,
   });
 };
 
