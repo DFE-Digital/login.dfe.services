@@ -138,6 +138,10 @@ const post = async (req, res) => {
     ? await getOrganisationAndServiceForInvitation(invitationId, req.id)
     : await getOrganisationAndServiceForUser(uid, req.id);
   const mngUserOrganisationDetails = mngUserOrganisations.find((x) => x.organisation.id === organisation.id);
+  const mngUserOrgPermission = {
+    id: mngUserOrganisationDetails.role.id,
+    name: mngUserOrganisationDetails.role.name,
+  };
   const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
 
   // if existing invitation
@@ -161,10 +165,7 @@ const post = async (req, res) => {
           org,
           serviceDetails.name,
           roleDetails.map((i) => i.name),
-          {
-            id: mngUserOrganisationDetails.role.id,
-            name: mngUserOrganisationDetails.role.name,
-          },
+          mngUserOrgPermission,
         );
       }
     }
@@ -206,10 +207,7 @@ const post = async (req, res) => {
           org,
           serviceDetails.name,
           roleDetails.map((i) => i.name),
-          {
-            id: mngUserOrganisationDetails.role.id,
-            name: mngUserOrganisationDetails.role.name,
-          },
+          mngUserOrgPermission,
         );
       }
     }

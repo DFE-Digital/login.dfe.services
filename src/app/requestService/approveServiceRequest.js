@@ -161,6 +161,10 @@ const post = async (req, res) => {
 
   const mngUserOrganisations = await getOrganisationAndServiceForUser(req.params.uid, req.id);
   const mngUserOrganisationDetails = mngUserOrganisations.find(x => x.organisation.id === req.params.orgId);
+  const mngUserOrgPermission = {
+    id: mngUserOrganisationDetails.role.id,
+    name: mngUserOrganisationDetails.role.name,
+  };
 
   await addUserService(req.params.uid, req.params.sid, req.params.orgId, roles, req.id);
 
@@ -171,10 +175,7 @@ const post = async (req, res) => {
     viewModel.organisationDetails.organisation.name,
     viewModel.service.name,
     viewModel.service.roles.map((i) => i.name),
-    {
-      id: mngUserOrganisationDetails.role.id,
-      name: mngUserOrganisationDetails.role.name,
-    },
+    mngUserOrgPermission,
   );
 
   logger.audit({
