@@ -29,10 +29,10 @@
             <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
 
                 <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-                    <%for (let i = 0; i < locals.services.length; i++) {
+                    <% for (let i = 0; i < locals.services.length; i++) {
                         const userServices = locals.services[i];
                     %>
-                        <%for (let j = 0; j < locals.pireanServices.length; j++) {
+                        <% for (let j = 0; j < locals.pireanServices.length; j++) {
                             const userPireanServices = locals.pireanServices[j];
                         %>
                             <% if(userServices.name.includes(userPireanServices)) { 
