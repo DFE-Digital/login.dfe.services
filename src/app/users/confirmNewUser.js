@@ -6,6 +6,8 @@ const {
   putInvitationInOrganisation,
   getOrganisationById,
   getPendingRequestsAssociatedWithUser,
+  getOrganisationAndServiceForInvitation,
+  getOrganisationAndServiceForUser,
   updateRequestById,
 } = require('./../../infrastructure/organisations');
 const { getById, updateIndex, createIndex } = require('./../../infrastructure/search');
@@ -50,6 +52,9 @@ const get = async (req, res) => {
     roles: service.roles,
   }));
 
+  const orgRole = parseInt(req.session.user.permission);
+  const orgPermissionName = orgRole === 10000 ? 'Approver' : 'End User';
+
   const allServices = await checkCacheForAllServices(req.id);
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
@@ -61,10 +66,10 @@ const get = async (req, res) => {
     service.name = serviceDetails.name;
     service.roles = rotails;
   }
-  
+
   let serviceUrl = ''
   let subServiceUrl = ''
-  if(!req.session.user.isInvite) {
+  if (!req.session.user.isInvite) {
     subServiceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${services[0].id}?action=${actions.MANAGE_SERVICE}`;
     serviceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.MANAGE_SERVICE}`;
   }
@@ -84,6 +89,7 @@ const get = async (req, res) => {
     subServiceUrl,
     serviceUrl,
     organisationDetails,
+    orgPermissionName,
   };
 
   renderConfirmNewUserPage(req, res, model);
@@ -102,8 +108,9 @@ const post = async (req, res) => {
   const organisationId = req.params.orgId;
   const organisation = await getOrganisationById(organisationId, req.id);
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
-  
+
   if (!uid) {
+    const isApprover = req.session.user.permission === 10000;
     const redirectUri = `https://${config.hostingEnvironment.host}/auth`;
     const invitationId = await Account.createInvite(
       req.session.user.firstName,
@@ -113,20 +120,35 @@ const post = async (req, res) => {
       redirectUri,
       req.user.email,
       organisation.name,
+      isApprover,
     );
     uid = `inv-${invitationId}`;
   }
 
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
+  // existing invitation or new invite
+  const invitationId = uid.startsWith('inv-') ? uid.substr(4) : undefined;
+
+  if (req.session.user.isInvite) {
+    if (invitationId) {
+      await putInvitationInOrganisation(invitationId, organisationId, req.session.user.permission, req.id);
+    } else {
+      await putUserInOrganisation(uid, organisationId, 0, req.session.user.permission, req.id);
+    }
+  }
+
+  const mngUserOrganisations = invitationId
+    ? await getOrganisationAndServiceForInvitation(invitationId, req.id)
+    : await getOrganisationAndServiceForUser(uid, req.id);
+  const mngUserOrganisationDetails = mngUserOrganisations.find((x) => x.organisation.id === organisation.id);
+  const mngUserOrgPermission = {
+    id: mngUserOrganisationDetails.role.id,
+    name: mngUserOrganisationDetails.role.name,
+  };
   const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
 
-  //if existing invitation or new invite
-  if (uid.startsWith('inv-')) {
-    const invitationId = uid.substr(4);
-    if (req.session.user.isInvite) {
-      await putInvitationInOrganisation(invitationId, organisationId, 0, req.id);
-    }
+  if (invitationId) {
     if (req.session.user.services) {
       for (let i = 0; i < req.session.user.services.length; i++) {
         const service = req.session.user.services[i];
@@ -140,19 +162,19 @@ const post = async (req, res) => {
         await addInvitationService(invitationId, service.serviceId, organisationId, service.roles, req.id);
 
         await notificationClient.sendServiceRequestApproved(
-          req.session.user.email, 
-          req.session.user.firstName, 
-          req.session.user.lastName, 
+          req.session.user.email,
+          req.session.user.firstName,
+          req.session.user.lastName,
           org,
           serviceDetails.name,
-          roleDetails.map(i => i.name)
-        )
+          roleDetails.map((i) => i.name),
+          mngUserOrgPermission,
+        );
       }
     }
   } else {
-    //if existing user not in org
+    // if existing user not in org
     if (req.session.user.isInvite) {
-      await putUserInOrganisation(uid, organisationId, 0, req.id);
       const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(uid, req.id);
       const requestForOrg = pendingOrgRequests.find((x) => x.org_id === organisationId);
       if (requestForOrg) {
@@ -181,13 +203,14 @@ const post = async (req, res) => {
         await addUserService(uid, service.serviceId, organisationId, service.roles, req.id);
 
         await notificationClient.sendServiceRequestApproved(
-          req.session.user.email, 
-          req.session.user.firstName, 
-          req.session.user.lastName, 
+          req.session.user.email,
+          req.session.user.firstName,
+          req.session.user.lastName,
           org,
           serviceDetails.name,
-          roleDetails.map(i => i.name)
-        )
+          roleDetails.map((i) => i.name),
+          mngUserOrgPermission,
+        );
       }
     }
   }
@@ -215,7 +238,7 @@ const post = async (req, res) => {
           laNumber: organisation.localAuthority ? organisation.localAuthority.code : undefined,
           categoryId: organisation.category.id,
           statusId: organisation.status.id,
-          roleId: 0,
+          roleId: req.session.user.permission,
         };
         currentOrganisationDetails.push(newOrgDetails);
         await updateIndex(req.params.uid, currentOrganisationDetails, null, req.id);
@@ -291,17 +314,17 @@ const post = async (req, res) => {
       },
     });
 
-    if(req.session.user.isInvite) {
+    if (req.session.user.isInvite) {
       res.flash('info', 'Services successfully added');
       res.redirect(`/approvals/users/${req.session.user.uid}`);
     } else {
       const allServices = await checkCacheForAllServices();
       const serviceDetails = allServices.services.find((x) => x.id === req.session.user.services[0].serviceId);
-      
+
       res.flash('title', `Success`);
       res.flash('heading', `New service added: ${serviceDetails.name}`);
-  
-      if (isSelfManagement(req)) {  
+
+      if (isSelfManagement(req)) {
         res.flash('message', `Select the service from the list below to access its functions and features.`);
         res.redirect(`/my-services`);
       } else {

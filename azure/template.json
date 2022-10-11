@@ -121,6 +121,13 @@
             "metadata": {
                 "description": "Add app settings to support virtual network private endpoints"
             }
+        },
+         "pireanServices": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Add app settings to support the display of warning messages for pirean services"
+            }
         }
     },
     "variables": {
@@ -223,7 +230,8 @@
                             "QUEUE_CONNECTION_STRING": "[parameters('auditServiceBusConnectionString')]",
                             "TOPIC_NAME": "[parameters('auditServiceBusTopicName')]",
                             "SUBSCRIPTION_NAME": "[parameters('auditServiceBusSubscriptionName')]",
-                            "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4"
+                            "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
+                            "PIREAN_SERVICES": "[parameters('pireanServices')]"
                         }
                     },
                      "healthCheckPath": {
@@ -234,6 +242,9 @@
                     },
                     "enablePrivateEndpointSupport": {
                         "value": "[parameters('enablePrivateEndpoint')]"
+                    },
+                    "http20Enabled": {
+                        "value": true
                     }
 
                 }

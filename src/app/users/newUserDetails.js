@@ -54,14 +54,20 @@ const validate = async (req) => {
     isDSIUser: false,
   };
 
+  const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,60}$/i;
+
   if (!model.firstName) {
     model.validationMessages.firstName = 'Please enter a first name';
+  } else if (!userRegex.test(model.firstName)) {
+    model.validationMessages.firstName = 'Special characters cannot be used';
   }
 
   if (!model.lastName) {
     model.validationMessages.lastName = 'Please enter a last name';
+  } else if (!userRegex.test(model.lastName)) {
+    model.validationMessages.lastName = 'Special characters cannot be used';
   }
-
+  
   if (!model.email) {
     model.validationMessages.email = 'Please enter an email address';
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
@@ -121,7 +127,7 @@ const post = async (req, res) => {
       ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user?review=true`)
       : res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`);
   } else {
-    return req.query.review ? res.redirect('confirm-new-user') : res.redirect('associate-services');
+    return req.query.review ? res.redirect('confirm-new-user') : res.redirect('organisation-permissions');
   }
 };
 

@@ -1,5 +1,5 @@
 <!-- Show blue banner with header text when it is not the Task List version of the page -->
-<% if (!enableTaskList || services.length !== 0) { %>
+<% if (services.length !== 0) { %>
 <div id="home-top" class="home-top">
     <div class="govuk-width-container home-top__inner">
         <div class="govuk-grid-row">
@@ -29,33 +29,32 @@
             <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
 
                 <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-
-                    <!-- Banner messages after completing an action (add service, edit service...) -->
-                    <% if (locals.banner.type == 'notification') { %>
-                        <% if (locals.banner.title && locals.banner.heading && locals.banner.message) { %>
-                            <div id="notification-wrapper-medium" class="govuk-notification-banner" role="alert"
-                                aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-                                <div class="govuk-notification-banner__header govuk-grid-row">
-                                    <div class="govuk-grid-column-two-thirds">
-                                        <h2 class="govuk-notification-banner__title" id="notification-title">
-                                            <%= locals.banner.title %>
-                                        </h2>
-                                    </div>
-                                    <div class="govuk-grid-column-one-third">
-                                        <span class="close-button pull-right" id="close-notification" >x</span>
-                                    </div>
-                                </div>
-                                <div class="govuk-notification-banner__content" id="notification-content">
-                                    <h3 class="govuk-notification-banner__heading">
-                                        <%= locals.banner.heading %>
-                                    </h3>
-                                    <p class="govuk-body">
-                                        <%- locals.banner.message %>
-                                    </p>
-                                </div>
-                            </div>
+                    <% for (let i = 0; i < locals.services.length; i++) {
+                        const userServices = locals.services[i];
+                    %>
+                        <% for (let j = 0; j < locals.pireanServices.length; j++) {
+                            const userPireanServices = locals.pireanServices[j];
+                        %>
+                            <% if(userServices.name.includes(userPireanServices)) { 
+                                const pireanWarningBanner = userPireanServices;  %> 
+                                <div class="govuk-warning-text">
+                                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                                    <strong class="govuk-warning-text__text">
+                                        <span class="govuk-warning-text__assistive">Warning</span>
+                                        <p>
+                                            The  <%=pireanWarningBanner%> service is moving from IDAMS to DfE Sign-in. 
+                                            You can only access the services from this page once they have moved. 
+                                            Use your normal IDAMS username and password until then.                    
+                                        </p>
+                                        <p>
+                                            We will have moved all services from IDAMS to DfE Sign-in by June 2023.
+                                        </p>   
+                                    </strong>
+                                </div> 
+                                <% } %>
+                            <% } %>
                         <% } %>
-                    <% } %>
+                    <!-- Banner messages after completing an action (add service, edit service...) -->
                     <% if(locals.showJobTitleBanner) { %>
                         <div id="notification-wrapper-missing-jobtitle"
                             class="govuk-notification-banner"
@@ -164,7 +163,7 @@
                     <%- include reviewUsers.ejs %>
                 </div>
                 <!-- Show Task List version if it is enabled in config and user has no services -->
-                <% if (enableTaskList && services.length === 0) { %>
+                <% if (services.length === 0) { %>
                 <div>
                     <h1 class="govuk-heading-xl">
                         Set up your DfE Sign-in account
@@ -354,7 +353,7 @@
 
         <!-- Show services list if task list version is disabled or user is mapped to at least 1 service -->
         <div class="govuk-grid-row">
-            <% if (!enableTaskList || services.length !== 0) { %>
+            <% if (services.length !== 0) { %>
             <div class="govuk-grid-column-full-width">
                 <table class="govuk-table">
                     <thead class="govuk-table__head">
@@ -395,12 +394,6 @@
     </div>
 </div>
 <script>
-    $('#close-notification, #close-notification-link').on('click', () => {
-        $.ajax(`/close-banner`).done(() => {
-            const item = $('#notification-wrapper-medium')
-            item.remove();
-        });
-    })
     $('#close-missing-jobtitle').on('click', () => {
         $.ajax(`/close-missing-jobtitle`).done(() => {
             const item = $('#notification-wrapper-missing-jobtitle')

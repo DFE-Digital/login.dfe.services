@@ -168,7 +168,16 @@ class DirectoriesApiAccount extends Account {
     }
   }
 
-  static async createInvite(firstName, lastName, email, originClientId, originRedirectUri, approverEmail, orgName) {
+  static async createInvite(
+    firstName,
+    lastName,
+    email,
+    originClientId,
+    originRedirectUri,
+    approverEmail,
+    orgName,
+    isApprover,
+  ) {
     try {
       const response = await invitation.postInvitation({
         firstName,
@@ -178,6 +187,7 @@ class DirectoriesApiAccount extends Account {
         originRedirectUri,
         approverEmail,
         orgName,
+        isApprover,
       });
       return response ? response.id : null;
     } catch (ex) {

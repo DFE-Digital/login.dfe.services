@@ -20,7 +20,7 @@ const post = async (req, res) => {
   }
   return req.query.review
     ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`)
-    : res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/associate-services`);
+    : res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/organisation-permissions`);
 };
 
 module.exports = {
