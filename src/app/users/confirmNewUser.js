@@ -127,11 +127,15 @@ const post = async (req, res) => {
 
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const org = organisationDetails.organisation.name;
+  // existing invitation or new invite
   const invitationId = uid.startsWith('inv-') ? uid.substr(4) : undefined;
 
-  // if new invite
-  if (invitationId && req.session.user.isInvite) {
-    await putInvitationInOrganisation(invitationId, organisationId, req.session.user.permission, req.id);
+  if (req.session.user.isInvite) {
+    if (invitationId) {
+      await putInvitationInOrganisation(invitationId, organisationId, req.session.user.permission, req.id);
+    } else {
+      await putUserInOrganisation(uid, organisationId, 0, req.session.user.permission, req.id);
+    }
   }
 
   const mngUserOrganisations = invitationId
@@ -144,7 +148,6 @@ const post = async (req, res) => {
   };
   const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
 
-  // if existing invitation
   if (invitationId) {
     if (req.session.user.services) {
       for (let i = 0; i < req.session.user.services.length; i++) {
@@ -172,7 +175,6 @@ const post = async (req, res) => {
   } else {
     // if existing user not in org
     if (req.session.user.isInvite) {
-      await putUserInOrganisation(uid, organisationId, 0, req.session.user.permission, req.id);
       const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(uid, req.id);
       const requestForOrg = pendingOrgRequests.find((x) => x.org_id === organisationId);
       if (requestForOrg) {
