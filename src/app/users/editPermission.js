@@ -1,9 +1,14 @@
 'use strict';
-const { putUserInOrganisation, putInvitationInOrganisation } = require('./../../infrastructure/organisations');
+const {
+  putUserInOrganisation,
+  putInvitationInOrganisation,
+  getOrganisationAndServiceForUser,
+} = require('./../../infrastructure/organisations');
 const { getById, updateIndex } = require('./../../infrastructure/search');
 const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
 const logger = require('./../../infrastructure/logger');
 const { getUserDetails, waitForIndexToUpdate } = require('./utils');
+const { mapRole } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 
@@ -25,26 +30,35 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   const user = await getUserDetails(req);
-  const role = parseInt(req.body.selectedLevel);
+  const roleId = parseInt(req.body.selectedLevel);
+  const roleName = mapRole(roleId).description;
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const organisationName = organisationDetails.organisation.name;
-  const permissionName = role === 10000 ? 'approver' : 'end user';
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
 
   if (uid.startsWith('inv-')) {
-    await putInvitationInOrganisation(uid.substr(4), organisationId, role, req.id);
+    await putInvitationInOrganisation(uid.substr(4), organisationId, roleId, req.id);
   } else {
-    await putUserInOrganisation(uid, organisationId, 1, role, req.id);
+    const mngUserOrganisations = await getOrganisationAndServiceForUser(uid, req.id);
+
+    await putUserInOrganisation(uid, organisationId, 1, roleId, req.id);
     if (isEmailAllowed) {
+      const mngUserOrganisationDetails = mngUserOrganisations.find((x) => x.organisation.id === organisationId);
+      const mngUserOrgPermission = {
+        id: roleId,
+        name: roleName,
+        oldName: mngUserOrganisationDetails.role.name,
+      };
       const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
+
       await notificationClient.sendUserPermissionChanged(
         user.email,
         user.firstName,
         user.lastName,
         organisationName,
-        permissionName,
+        mngUserOrgPermission,
       );
     }
   }
@@ -53,7 +67,7 @@ const post = async (req, res) => {
   const allOrganisationDetails = getAllUserDetails.organisations;
   const updatedOrganisationDetails = allOrganisationDetails.map((org) => {
     if (org.id === organisationId) {
-      return Object.assign({}, org, { roleId: role });
+      return Object.assign({}, org, { roleId });
     }
     return org;
   });
@@ -61,7 +75,7 @@ const post = async (req, res) => {
   await updateIndex(uid, updatedOrganisationDetails, null, null, req.id);
   await waitForIndexToUpdate(
     uid,
-    (updated) => updated.organisations.find((x) => x.id === organisationId).roleId === role,
+    (updated) => updated.organisations.find((x) => x.id === organisationId).roleId === roleId,
   );
 
   logger.audit({
@@ -71,12 +85,12 @@ const post = async (req, res) => {
     userEmail: req.user.email,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for org ${organisationDetails.organisation.name} (id: ${organisationId}) for user ${user.email} (id: ${uid})`,
+    message: `${req.user.email} (id: ${req.user.sub}) edited permission level to ${roleName.toLowerCase()} for org ${organisationDetails.organisation.name} (id: ${organisationId}) for user ${user.email} (id: ${uid})`,
     meta: {
       editedFields: [
         {
           name: 'edited_permission',
-          newValue: permissionName,
+          newValue: roleName,
         },
       ],
       editedUser: uid,
@@ -85,11 +99,11 @@ const post = async (req, res) => {
   res.flash('title', `Success`);
   res.flash(
     'heading',
-    role === 10000 ? `Permission level upgraded to approver` : `Permission level downgraded to end user`,
+    roleId === 10000 ? `Permission level upgraded to approver` : `Permission level downgraded to end user`,
   );
   res.flash(
     'message',
-    role === 10000
+    roleId === 10000
       ? `${user.firstName} ${user.lastName} is now an approver at ${organisationName}`
       : `${user.firstName} ${user.lastName} is now an end user at ${organisationName}`,
   );

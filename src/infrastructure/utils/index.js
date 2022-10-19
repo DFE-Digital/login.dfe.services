@@ -90,6 +90,13 @@ const mapUserStatus = (status, changedOn = null) => {
   return { id: 1, description: 'Active', changedOn };
 };
 
+const mapRole = (roleId) => {
+  if (roleId === 10000) {
+    return { id: 10000, description: 'Approver' };
+  }
+  return { id: 0, description: 'End user' };
+};
+
 module.exports = {
   isLoggedIn,
   getUserEmail,
@@ -101,4 +108,5 @@ module.exports = {
   isApproverInSomeOrgs,
   mapUserStatus,
   isSelfRequest,
+  mapRole,
 };
