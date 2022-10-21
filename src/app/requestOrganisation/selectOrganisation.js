@@ -44,7 +44,7 @@ const buildModel = async (req, results) => {
     criteria: inputSource.criteria || '',
     currentPage: 'organisations',
     validationMessages: {},
-    backLink: true,
+    backLink: '/organisations',
   };
   if (results) {
     model.organisations = results.organisations;
