@@ -20,20 +20,6 @@ const getApproversDetails = async (organisations) => {
   return Account.getUsersById(distinctApproverIds);
 };
 
-const mapRole = (role) => {
-  let id = role.id;
-  if (id === 0) {
-    id = 'end-user';
-  }
-  if (id === 10000) {
-    id = 'approver';
-  }
-  return {
-    id,
-    name: role.name,
-  };
-};
-
 const getAndMapOrganisationsAndServices = async (account, correlationId) => {
   const organisations = await getOrganisationAndServiceForUser(account.id, correlationId);
   const allApprovers = await getApproversDetails(organisations, correlationId);
@@ -52,7 +38,7 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
       uid: organisation.organisation.uid,
       ukprn: organisation.organisation.ukprn,
       status: organisation.organisation.status,
-      role: mapRole(organisation.role),
+      role: organisation.role,
       approvers,
     };
   });

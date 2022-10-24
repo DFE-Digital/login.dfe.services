@@ -86,7 +86,7 @@ describe('when select the organisation permission level', () => {
     expect(req.session.user.permission).toBe(10000);
   });
 
-  it('then it should set the permission to 0 if the selection is End User', async () => {
+  it('then it should set the permission to 0 if the selection is End user', async () => {
     req.body.selectedLevel = 0;
     await postOrganisationPermission(req, res);
     expect(req.session.user.permission).toBe(0);

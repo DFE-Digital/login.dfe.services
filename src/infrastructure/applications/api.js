@@ -47,7 +47,7 @@ const getAllServices = async () => {
 const isServiceEmailNotificationAllowed = async () => {
   const statusFlags = await services.getToggleStatuses('email', 'services');
   if (statusFlags && statusFlags.length === 1) {
-    return statusFlags[0].flag;
+    return statusFlags[0].Flag;
   }
   return true;
 };

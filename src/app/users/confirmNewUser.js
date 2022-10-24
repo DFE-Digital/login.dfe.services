@@ -11,6 +11,7 @@ const {
   updateRequestById,
 } = require('./../../infrastructure/organisations');
 const { getById, updateIndex, createIndex } = require('./../../infrastructure/search');
+const { mapRole } = require('./../../infrastructure/utils');
 const { waitForIndexToUpdate, isSelfManagement } = require('./utils');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
@@ -53,7 +54,7 @@ const get = async (req, res) => {
   }));
 
   const orgRole = parseInt(req.session.user.permission);
-  const orgPermissionName = orgRole === 10000 ? 'Approver' : 'End User';
+  const orgPermissionName = mapRole(orgRole).description;
 
   const allServices = await checkCacheForAllServices(req.id);
   for (let i = 0; i < services.length; i++) {
