@@ -54,15 +54,35 @@
                                         <% const role = locals.serviceRoles[i]; %>
                                         <tr class="govuk-table__row extra-padding">
                                             <td class="govuk-table__cell">
-                                                <div class="govuk-checkboxes__item">
-                                                    <input class="govuk-checkboxes__input" id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
+
+                                                <% if (locals.serviceDetails.name == 'Get information about pupils') { %>
+
+                                                    <div class="govuk-radios govuk-radios--inline">
+                                                        <div class="govuk-radios__item">
+                                                            <input class="govuk-radios__input" id="<%=role.id%>" name="role" type="radio" value="<%=role.id%>">
+                                                                <% if (locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
+                                                                for(let i = 0; i < locals.selectedRoles.roles.length; i++) {
+                                                                    const selectedRole = locals.selectedRoles.roles[i];
+                                                                %>
+                                                                <%= role.id === selectedRole ? 'checked': ''%><% } }%>
+                                                            <label class="govuk-label govuk-radios__label" for="<%=role.id%>"></label>
+                                                        </div>
+                                                    </div>
+
+                                                <% } else { %>
+                                                    <div class="govuk-checkboxes__item">
+                                                        <input class="govuk-checkboxes__input" id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
                                                             <% if (locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
                                                             for(let i = 0; i < locals.selectedRoles.roles.length; i++) {
                                                                 const selectedRole = locals.selectedRoles.roles[i];
                                                             %>
                                                             <%= role.id === selectedRole ? 'checked': ''%><% } }%>>
-                                                    <label class="govuk-label govuk-checkboxes__label" for="<%=role.id%>"></label>                                                    
-                                                </div>
+                                                        <label class="govuk-label govuk-checkboxes__label" for="<%=role.id%>"></label>                                                    
+                                                    </div>
+
+                                                <% } %>
+                                                
+
                                             </td>
                                             <th scope="row" class="govuk-table__header govuk-table__cell">
                                                 <label class="cursor-pointer" for="<%=role.id%>"><%=role.name%></label>
