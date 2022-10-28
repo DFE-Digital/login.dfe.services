@@ -43,6 +43,14 @@ jest.mock('./../../../../src/infrastructure/organisations', () => {
     putInvitationInOrganisation: jest.fn(),
     getOrganisationById: jest.fn(),
     getPendingRequestsAssociatedWithUser: jest.fn(),
+    getOrganisationAndServiceForInvitation: jest.fn(),
+    getOrganisationAndServiceForUser: jest.fn(),
+  };
+});
+
+jest.mock('./../../../../src/infrastructure/helpers/allServicesAppCache', () => {
+  return {
+    checkCacheForAllServices: jest.fn(),
   };
 });
 
@@ -68,7 +76,10 @@ const {
   putInvitationInOrganisation,
   getOrganisationById,
   getPendingRequestsAssociatedWithUser,
+  getOrganisationAndServiceForInvitation,
+  getOrganisationAndServiceForUser,
 } = require('./../../../../src/infrastructure/organisations');
+const { checkCacheForAllServices } = require('./../../../../src/infrastructure/helpers/allServicesAppCache');
 const { getById, updateIndex, createIndex } = require('./../../../../src/infrastructure/search');
 const Account = require('./../../../../src/infrastructure/account');
 const logger = require('./../../../../src/infrastructure/logger');
@@ -85,6 +96,12 @@ describe('when inviting a new user', () => {
   const expectedEmailAddress = 'test@test.com';
   const expectedFirstName = 'test';
   const expectedLastName = 'name';
+  const expectedServiceName = 'Service One';
+  const expectedRoles = [];
+  const expectedPermission = {
+    id: 0,
+    name: 'End user',
+  };
 
   beforeEach(() => {
     req = mockRequest();
@@ -97,6 +114,7 @@ describe('when inviting a new user', () => {
         email: 'test@test.com',
         firstName: 'test',
         lastName: 'name',
+        permission: 0,
         services: [
           {
             serviceId: 'service1',
@@ -146,6 +164,39 @@ describe('when inviting a new user', () => {
           name: 'pending',
         },
         created_date: '2019-08-12',
+      },
+    ]);
+    getOrganisationAndServiceForUser.mockReset().mockReturnValue([
+      {
+        organisation: {
+          id: 'org2',
+          name: 'Great Big School'
+        },
+        role: {
+          id: 0,
+          name: 'End user'
+        },
+      },
+    ]);
+    checkCacheForAllServices.mockReset().mockReturnValue({
+      services: [
+        {
+          id: 'service1',
+          name: 'Service One',
+        },
+      ],
+    });
+    getOrganisationAndServiceForInvitation.mockReset().mockReturnValue([
+      {
+        invitationId: 'E89DF8C6-BED4-480D-9F02-34D177E86DAD',
+        organisation: {
+          id: 'org2',
+          name: 'Great Big School',
+        },
+        role: {
+          id: 0,
+          name: 'End user',
+        },
       },
     ]);
     res = mockResponse();
@@ -202,14 +253,16 @@ describe('when inviting a new user', () => {
     });
 
     listRolesOfService.mockReset();
-    listRolesOfService.mockReturnValue([{
-      code: 'role_code',
-      id: 'role_id',
-      name: 'role_name',
-      status: {
-        id: 'status_id'
+    listRolesOfService.mockReturnValue([
+      {
+        code: 'role_code',
+        id: 'role_id',
+        name: 'role_name',
+        status: {
+          id: 'status_id',
+        },
       },
-    }]);
+    ]);
     postConfirmNewUser = require('./../../../../src/app/users/confirmNewUser').post;
     sendUserAddedToOrganisationStub = jest.fn();
     sendServiceAddedStub = jest.fn();
@@ -273,7 +326,8 @@ describe('when inviting a new user', () => {
     expect(putUserInOrganisation.mock.calls[0][0]).toBe('user1');
     expect(putUserInOrganisation.mock.calls[0][1]).toBe('org1');
     expect(putUserInOrganisation.mock.calls[0][2]).toBe(0);
-    expect(putUserInOrganisation.mock.calls[0][3]).toBe('correlationId');
+    expect(putUserInOrganisation.mock.calls[0][3]).toBe(0);
+    expect(putUserInOrganisation.mock.calls[0][4]).toBe('correlationId');
   });
 
   it('then it should not attempt to add user to organisation if not through invite journey', async () => {
@@ -457,5 +511,9 @@ describe('when inviting a new user', () => {
     expect(sendServiceRequestApprovedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
     expect(sendServiceRequestApprovedStub.mock.calls[0][1]).toBe(expectedFirstName);
     expect(sendServiceRequestApprovedStub.mock.calls[0][2]).toBe(expectedLastName);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][3]).toBe(expectedOrgName);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][4]).toBe(expectedServiceName);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][5]).toEqual(expectedRoles);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][6]).toEqual(expectedPermission);
   });
 });

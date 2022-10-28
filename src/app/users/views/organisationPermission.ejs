@@ -1,0 +1,44 @@
+<div class="govuk-width-container govuk-main-wrapper">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <h1 class="govuk-heading-l">
+                Permission level
+            </h1>
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <form method="post">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+            <div class="govuk-form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'govuk-form-group--error' : '' %>">
+                <fieldset class="govuk-fieldset" id="selectedLevel">
+                    <legend class="govuk-fieldset__legend govuk-!-margin-bottom-4">
+                        Select the permission level for <b><%= locals.user %></b> at <b><%= locals.organisation.name %></b>
+                    </legend>
+                    <% if (locals.validationMessages.selectedLevel !== undefined) { %>
+                    <p class="govuk-error-message" id="validation-permission-level"><span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.selectedLevel %></p>
+                    <% } %>
+                    <div class="govuk-radios">
+                        <div class="govuk-radios__item">
+                        <input 
+                        class="govuk-radios__input"
+                        id="level-user" type="radio" name="selectedLevel" value="0" 
+                        <%= locals.selectedLevel === 0 ? 'checked' : '' %> >
+                        <label class="govuk-label govuk-radios__label" for="level-user">End user</label>
+                        </div>
+                  
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="level-approver" type="radio" name="selectedLevel" value="10000" 
+                        <%= locals.selectedLevel === 10000 ? 'checked' : '' %> >
+                        <label class="govuk-label govuk-radios__label" for="level-approver">Approver</label>
+                    </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="govuk-button-group">
+                <button type="submit" class="govuk-button" data-module="govuk-button">Continue</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -127,7 +127,7 @@ const post = async (req, res) => {
       ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user?review=true`)
       : res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`);
   } else {
-    return req.query.review ? res.redirect('confirm-new-user') : res.redirect('associate-services');
+    return req.query.review ? res.redirect('confirm-new-user') : res.redirect('organisation-permissions');
   }
 };
 

@@ -29,7 +29,31 @@
             <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
 
                 <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-
+                    <% for (let i = 0; i < locals.services.length; i++) {
+                        const userServices = locals.services[i];
+                    %>
+                        <% for (let j = 0; j < locals.pireanServices.length; j++) {
+                            const userPireanServices = locals.pireanServices[j];
+                        %>
+                            <% if(userServices.name.includes(userPireanServices)) { 
+                                const pireanWarningBanner = userPireanServices;  %> 
+                                <div class="govuk-warning-text">
+                                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                                    <strong class="govuk-warning-text__text">
+                                        <span class="govuk-warning-text__assistive">Warning</span>
+                                        <p>
+                                            The  <%=pireanWarningBanner%> service is moving from IDAMS to DfE Sign-in. 
+                                            You can only access the services from this page once they have moved. 
+                                            Use your normal IDAMS username and password until then.                    
+                                        </p>
+                                        <p>
+                                            We will have moved all services from IDAMS to DfE Sign-in by June 2023.
+                                        </p>   
+                                    </strong>
+                                </div> 
+                                <% } %>
+                            <% } %>
+                        <% } %>
                     <!-- Banner messages after completing an action (add service, edit service...) -->
                     <% if(locals.showJobTitleBanner) { %>
                         <div id="notification-wrapper-missing-jobtitle"
