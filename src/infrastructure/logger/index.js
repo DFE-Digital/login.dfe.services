@@ -1,14 +1,9 @@
 'use strict';
-
 const winston = require('winston');
 const config = require('./../config');
-const AuditTransporter = require('login.dfe.audit.transporter');
 const appInsights = require('applicationinsights');
 const AppInsightsTransport = require('login.dfe.winston-appinsights');
-
-const logLevel =
-  config && config.loggerSettings && config.loggerSettings.logLevel ? config.loggerSettings.logLevel : 'info';
-
+const WinstonSequelizeTransport = require('login.dfe.audit.winston-sequelize-transport');
 const customLevels = {
   levels: {
     audit: 0,
@@ -26,14 +21,14 @@ const customLevels = {
     audit: 'magenta',
   },
 };
-
 const loggerConfig = {
   levels: customLevels.levels,
   transports: [],
 };
-
-// loggerConfig.transports.push(new winston.transports.Console({ level: logLevel, colorize: true }));
-
+const sequelizeTransport = WinstonSequelizeTransport(config);
+if (sequelizeTransport) {
+  loggerConfig.transports.push(sequelizeTransport);
+}
 if (config && config.loggerSettings && config.loggerSettings.redis && config.loggerSettings.redis.enabled) {
   loggerConfig.transports.push(
     new winston.transports.Redis({
@@ -45,16 +40,12 @@ if (config && config.loggerSettings && config.loggerSettings.redis && config.log
     }),
   );
 }
-
-const opts = { application: config.loggerSettings.applicationName, level: 'audit' };
-const auditTransport = AuditTransporter(opts);
-
-if (auditTransport) {
-  loggerConfig.transports.push(auditTransport);
-}
-
 if (config.hostingEnvironment.applicationInsights) {
-  appInsights.setup(config.hostingEnvironment.applicationInsights).setAutoCollectConsole(false, false).start();
+  appInsights
+    .setup(config.hostingEnvironment.applicationInsights)
+    .setAutoCollectConsole(false, false)
+    .setSendLiveMetrics(config.loggerSettings.aiSendLiveMetrics || false)
+    .start();
   loggerConfig.transports.push(
     new AppInsightsTransport({
       client: appInsights.defaultClient,
@@ -64,12 +55,8 @@ if (config.hostingEnvironment.applicationInsights) {
     }),
   );
 }
-
 const logger = winston.createLogger(loggerConfig);
-
 process.on('unhandledRejection', (reason, p) => {
-  logger.error(`Unhandled Rejection at: ${JSON.stringify(p)}, reason: ${reason}`);
+  logger.error('Unhandled Rejection at: ', p, 'reason: ', reason);
 });
-
-
 module.exports = logger;
