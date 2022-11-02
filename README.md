@@ -29,4 +29,4 @@
 25. Add Oidc host name to keyvault with name `standaloneOidcHostName` - added
 26. Add help host name to keyvault with name `standaloneHelpHostName` - added
 27. Add Interactions host name to keyvault with name `standaloneInteractionsHostName` - added
-28. Add serviceI d to keyvault with name `serviceId` - added
+28. Add service Id to keyvault with name `serviceId` - added
