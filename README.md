@@ -17,7 +17,7 @@
 13. Add aad shd app id to keyvault with name `aadshdappid` - added
 14. Add cdn Host Name to keyvault with name `cdnHostName` - added
 15. Add cdn Assets Version to keyvault with name `cdnAssetsVersion` - added
-16. Add pirean Services to keyvault with name `pireanServices` - added
+16. Add pirean Services to keyvault with name `pireanServices` - added also in azure devops variable group
 17. Add Directories host name to keyvault with name `standaloneDirectoriesHostName` - added
 18. Add support host name to keyvault with name `standaloneSupportHostName` - added
 19. Add Devices host name to keyvault with name `standaloneDevicesHostName` - added
@@ -29,3 +29,4 @@
 25. Add Oidc host name to keyvault with name `standaloneOidcHostName` - added
 26. Add help host name to keyvault with name `standaloneHelpHostName` - added
 27. Add Interactions host name to keyvault with name `standaloneInteractionsHostName` - added
+28. Add serviceI d to keyvault with name `serviceId` - added
