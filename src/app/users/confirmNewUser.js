@@ -149,32 +149,8 @@ const post = async (req, res) => {
   };
   const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
 
-  if (invitationId) {
-    if (req.session.user.services) {
-      for (let i = 0; i < req.session.user.services.length; i++) {
-        const service = req.session.user.services[i];
-        const allServices = await checkCacheForAllServices(req.id);
-        const serviceDetails = allServices.services.find((x) => x.id === service.serviceId);
-        const allRolesOfService = await listRolesOfService(service.serviceId, req.id);
-        const roleDetails = allRolesOfService.filter((x) =>
-          service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
-        );
-
-        await addInvitationService(invitationId, service.serviceId, organisationId, service.roles, req.id);
-
-        await notificationClient.sendServiceRequestApproved(
-          req.session.user.email,
-          req.session.user.firstName,
-          req.session.user.lastName,
-          org,
-          serviceDetails.name,
-          roleDetails.map((i) => i.name),
-          mngUserOrgPermission,
-        );
-      }
-    }
-  } else {
-    // if existing user not in org
+  // if existing user not in org
+  if (!invitationId) {
     if (req.session.user.isInvite) {
       const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(uid, req.id);
       const requestForOrg = pendingOrgRequests.find((x) => x.org_id === organisationId);
@@ -191,28 +167,33 @@ const post = async (req, res) => {
         );
       }
     }
-    if (req.session.user.services) {
-      for (let i = 0; i < req.session.user.services.length; i++) {
-        const service = req.session.user.services[i];
-        const allServices = await checkCacheForAllServices(req.id);
-        const serviceDetails = allServices.services.find((x) => x.id === service.serviceId);
-        const allRolesOfService = await listRolesOfService(service.serviceId, req.id);
-        const roleDetails = allRolesOfService.filter((x) =>
-          service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
-        );
+  }
 
+  if (req.session.user.services) {
+    for (let i = 0; i < req.session.user.services.length; i++) {
+      const service = req.session.user.services[i];
+      const allServices = await checkCacheForAllServices(req.id);
+      const serviceDetails = allServices.services.find((x) => x.id === service.serviceId);
+      const allRolesOfService = await listRolesOfService(service.serviceId, req.id);
+      const roleDetails = allRolesOfService.filter((x) =>
+        service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
+      );
+
+      if (invitationId) {
+        await addInvitationService(invitationId, service.serviceId, organisationId, service.roles, req.id);
+      } else {
         await addUserService(uid, service.serviceId, organisationId, service.roles, req.id);
-
-        await notificationClient.sendServiceRequestApproved(
-          req.session.user.email,
-          req.session.user.firstName,
-          req.session.user.lastName,
-          org,
-          serviceDetails.name,
-          roleDetails.map((i) => i.name),
-          mngUserOrgPermission,
-        );
       }
+
+      await notificationClient.sendServiceRequestApproved(
+        req.session.user.email,
+        req.session.user.firstName,
+        req.session.user.lastName,
+        org,
+        serviceDetails.name,
+        roleDetails.map((i) => i.name),
+        mngUserOrgPermission,
+      );
     }
   }
 
