@@ -77,12 +77,10 @@ const post = async (req, res) => {
   const org = organisationDetails.organisation.name;
 
   const numericIdentifierAndtextIdentifier = {};
-  getAllUserDetails.organisations.map((org) => {
-    if (org['numericIdentifier'] && org['textIdentifier']) {
-      numericIdentifierAndtextIdentifier['numericIdentifier'] = org['numericIdentifier'];
-      numericIdentifierAndtextIdentifier['textIdentifier'] = org['textIdentifier'];
-    }
-  });
+  if (organisationDetails['numericIdentifier'] && organisationDetails['textIdentifier']) {
+    numericIdentifierAndtextIdentifier['numericIdentifier'] = organisationDetails['numericIdentifier'];
+    numericIdentifierAndtextIdentifier['textIdentifier'] = organisationDetails['textIdentifier'];
+  }
 
   logger.audit({
     type: 'approver',
