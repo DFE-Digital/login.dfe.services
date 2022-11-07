@@ -124,6 +124,15 @@ const post = async (req, res) => {
       isApprover,
     );
     uid = `inv-${invitationId}`;
+
+    if (invitationId) {
+      logger.audit({
+        type: 'approver',
+        subType: 'invite-created',
+        userId: req.user.sub,
+        message: `Invitation code is created. Id ${invitationId}`,
+      });
+    }
   }
 
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
