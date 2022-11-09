@@ -32,7 +32,7 @@ const loggerConfig = {
   transports: [],
 };
 
-// loggerConfig.transports.push(new winston.transports.Console({ level: logLevel, colorize: true }));
+loggerConfig.transports.push(new winston.transports.Console({ level: logLevel, colorize: true }));
 
 if (config && config.loggerSettings && config.loggerSettings.redis && config.loggerSettings.redis.enabled) {
   loggerConfig.transports.push(
