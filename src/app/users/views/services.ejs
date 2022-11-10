@@ -80,8 +80,14 @@
                 <li>Permission: <%= userOrg.role.name %></li>
                 <!-- Do not show the add services link if the user is managing its own account -->
                 <% if (!locals.isSelfManage) { %>
-                    <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/associate-services">Add services</a></li>
+                    <% if (locals.user.status.id === 1 || locals.user.status.id === -1) { %>
+                    <li>
+                        <a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/associate-services">Add services</a>
+                    </li>
+                    <% } %>
+
                     <% if (hasServices) { %>
+                        <% if (locals.user.status.id === 1 || locals.user.status.id === -1) { %>
                         <li>
                             <a href=<%= singleService ? 
                                     `/approvals/${organisation.id}/users/${locals.user.id}/services/${singleService.id}?manage_users=true` : 
@@ -92,6 +98,7 @@
                                 Edit services
                             </a>
                         </li>
+                        <% } %>
                         <li>
                             <a href=<%= singleService ? 
                                     `/approvals/${organisation.id}/users/${locals.user.id}/services/${singleService.id}/remove-service?manage_users=true` : 
@@ -105,7 +112,9 @@
                     <% } %>
                 <% } %>
                 <li><a class="govuk-link" href=""></a></li>
+                <% if (locals.user.status.id === 1 || locals.user.status.id === -1) { %>
                 <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/edit-permission"><%=userOrg.role.id === 10000 ? 'Remove approver access' : 'Make approver'%></a></li>
+                <% } %>
                 <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/remove-organisation">Remove from organisation</a></li>
                 <% if (locals.isInvitation) { %>
                     <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/resend-invitation">Resend invitation email</a></li>
