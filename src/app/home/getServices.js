@@ -221,9 +221,14 @@ const getServices = async (req, res) => {
 
   logger.audit({
     type: 'Sign-in',
-    userId: req.user.id,
-    application: 'Services',
+    userId: req.user.sub,
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
     message: `${req.user.email} logged in to services`,
+    meta: {
+      email: req.user.email,
+      client: config.loggerSettings.applicationName,
+    },
   });
 
   return res.render('home/views/services', {
