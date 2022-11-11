@@ -221,10 +221,11 @@ const getServices = async (req, res) => {
 
   logger.audit({
     type: 'Sign-in',
+    subType: 'services',
     userId: req.user.sub,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} logged in to services`,
+    message: `${req.user.email} has accessed services`,
     meta: {
       email: req.user.email,
       client: config.loggerSettings.applicationName,
