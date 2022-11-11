@@ -74,12 +74,13 @@ const post = async (req, res) => {
   await updateIndex(uid, updatedOrganisationDetails, null, null, req.id);
   await waitForIndexToUpdate(uid, (updated) => updated.organisations.length === updatedOrganisationDetails.length);
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
+  const deletedOrganisation = currentOrganisationDetails.filter((x) => x.id === organisationId)
   const org = organisationDetails.organisation.name;
 
   const numericIdentifierAndtextIdentifier = {};
-  if (organisationDetails['numericIdentifier'] && organisationDetails['textIdentifier']) {
-    numericIdentifierAndtextIdentifier['numericIdentifier'] = organisationDetails['numericIdentifier'];
-    numericIdentifierAndtextIdentifier['textIdentifier'] = organisationDetails['textIdentifier'];
+  if (deletedOrganisation[0]['numericIdentifier'] && deletedOrganisation[0]['textIdentifier']) {
+    numericIdentifierAndtextIdentifier['numericIdentifier'] = deletedOrganisation[0]['numericIdentifier'];
+    numericIdentifierAndtextIdentifier['textIdentifier'] = deletedOrganisation[0]['textIdentifier'];
   }
 
   logger.audit({
@@ -105,6 +106,7 @@ const post = async (req, res) => {
         ? 'null'
         : JSON.stringify(numericIdentifierAndtextIdentifier)
     })`,
+    ...(Object.keys(numericIdentifierAndtextIdentifier).length !== 0) && {...numericIdentifierAndtextIdentifier},
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
   });
