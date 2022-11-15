@@ -50,7 +50,6 @@
     "login.dfe.sanitization": "git+https://github.com/DFE-Digital/login.dfe.sanitization.git#v2.0.0",
     "login.dfe.validation": "git+https://github.com/DFE-Digital/login.dfe.validation.git",
     "login.dfe.winston-appinsights": "git+https://github.com/DFE-Digital/login.dfe.winston-appinsights.git#4.0",
-    "login.dfe.audit.winston-sequelize-transport": "github:DFE-Digital/login.dfe.audit.winston-sequelize-transport#v3.0.0",
     "moment": "^2.19.3",
     "node-cache": "^5.1.0",
     "openid-client": "^2.3.1",
