@@ -219,6 +219,19 @@ const getServices = async (req, res) => {
   //-3: "Unacknowledged" banner for changed password
   const passwordChangedBanner = await directories.fetchUserBanners(req.user.id, -3)
 
+  logger.audit({
+    type: 'Sign-in',
+    subType: 'services',
+    userId: req.user.sub,
+    application: config.loggerSettings.applicationName,
+    env: config.hostingEnvironment.env,
+    message: `${req.user.email} has accessed services`,
+    meta: {
+      email: req.user.email,
+      client: config.loggerSettings.applicationName,
+    },
+  });
+
   return res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
