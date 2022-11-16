@@ -17,7 +17,7 @@ const notificationClient = new NotificationClient({
 
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
-const { checkServiceRequestAndRedirect, updateServiceRequest } = require('./utils');
+const { getUserServiceRequestStatus, updateServiceRequest } = require('./utils');
 
 const validate = async (req) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
@@ -90,7 +90,16 @@ const get = async (req, res) => {
   const userServiceRequestId = req.query.reqId;
 
   if (userServiceRequestId) {
-    await checkServiceRequestAndRedirect(userServiceRequestId, res, viewModel);
+    const userServiceRequestStatus = await getUserServiceRequestStatus(userServiceRequestId);
+    if (userServiceRequestStatus === -1) {
+      viewModel.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyRejected', viewModel);
+    }
+
+    if (userServiceRequestStatus === 1) {
+      viewModel.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyApproved', viewModel);
+    }
   }
 
   const endUserService = await getServicesForUser(req.params.uid);
@@ -101,9 +110,9 @@ const get = async (req, res) => {
     );
     if (hasServiceAlreadyApproved && hasServiceAlreadyApproved.length > 0) {
       viewModel.validationMessages = {};
-      // if (userServiceRequestId) {
-      //   await updateServiceRequest(userServiceRequestId, res, 1, req.user.sub, viewModel);
-      // }
+      if (userServiceRequestId) {
+        await updateServiceRequest(userServiceRequestId, 1, req.user.sub);
+      }
       return res.render('requestService/views/serviceAlreadyApproved', viewModel);
     }
   }
@@ -179,8 +188,20 @@ const post = async (req, res) => {
   };
 
   const userServiceRequestId = req.query.reqId;
+
   if (userServiceRequestId) {
-    await updateServiceRequest(userServiceRequestId, res, 1, req.user.sub, viewModel);
+    const updateServiceReq = await updateServiceRequest(userServiceRequestId, 1, req.user.sub);
+    const resultStatus = updateServiceReq.serviceRequest.status;
+
+    if (updateServiceReq.success === false && resultStatus === -1) {
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyRejected', viewModel);
+    }
+
+    if (updateServiceReq.success === false && resultStatus === 1) {
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyApproved', viewModel);
+    }
   }
 
   await addUserService(req.params.uid, req.params.sid, req.params.orgId, roles, req.id);

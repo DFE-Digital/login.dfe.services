@@ -15,7 +15,7 @@ const notificationClient = new NotificationClient({
 
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
-const { checkServiceRequestAndRedirect, updateServiceRequest } = require('./utils.js');
+const { getUserServiceRequestStatus, updateServiceRequest } = require('./utils.js');
 const getViewModel = async (req) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const serviceId = req.params.sid;
@@ -64,7 +64,16 @@ const get = async (req, res) => {
   const userServiceRequestId = req.query.reqId;
 
   if (userServiceRequestId) {
-    await checkServiceRequestAndRedirect(userServiceRequestId, res, model);
+    const userServiceRequestStatus = await getUserServiceRequestStatus(userServiceRequestId);
+    if (userServiceRequestStatus === -1) {
+      viewModel.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyRejected', viewModel);
+    }
+
+    if (userServiceRequestStatus === 1) {
+      viewModel.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyApproved', viewModel);
+    }
   }
 
   const roleIds = JSON.parse(decodeURIComponent(req.params.rids))
@@ -121,10 +130,21 @@ const post = async (req, res) => {
   }
 
   const userServiceRequestId = req.query.reqId;
-  if (userServiceRequestId) {
-    await updateServiceRequest(userServiceRequestId, res, -1, req.user.sub, model, rejectReason);
-  }
 
+  if (userServiceRequestId) {
+    const updateServiceReq = await updateServiceRequest(userServiceRequestId, -1, req.user.sub, rejectReason);
+    const resStatus = updateServiceReq.serviceRequest.status;
+
+    if (updateServiceReq.success === false && resStatus === -1) {
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyRejected', model);
+    }
+
+    if (updateServiceReq.success === false && resStatus === 1) {
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyApproved', model);
+    }
+  }
   await notificationClient.sendServiceRequestRejected(
     req.session.user.email, 
     req.session.user.firstName, 
