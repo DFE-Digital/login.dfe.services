@@ -66,13 +66,13 @@ const get = async (req, res) => {
   if (userServiceRequestId) {
     const userServiceRequestStatus = await getUserServiceRequestStatus(userServiceRequestId);
     if (userServiceRequestStatus === -1) {
-      viewModel.validationMessages = {};
-      return res.render('requestService/views/serviceAlreadyRejected', viewModel);
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyRejected', model);
     }
 
     if (userServiceRequestStatus === 1) {
-      viewModel.validationMessages = {};
-      return res.render('requestService/views/serviceAlreadyApproved', viewModel);
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyApproved', model);
     }
   }
 

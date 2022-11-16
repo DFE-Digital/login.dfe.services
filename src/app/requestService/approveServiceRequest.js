@@ -191,14 +191,14 @@ const post = async (req, res) => {
 
   if (userServiceRequestId) {
     const updateServiceReq = await updateServiceRequest(userServiceRequestId, 1, req.user.sub);
-    const resultStatus = updateServiceReq.serviceRequest.status;
+    const resStatus = updateServiceReq.serviceRequest.status;
 
-    if (updateServiceReq.success === false && resultStatus === -1) {
+    if (updateServiceReq.success === false && resStatus === -1) {
       model.validationMessages = {};
       return res.render('requestService/views/serviceAlreadyRejected', viewModel);
     }
 
-    if (updateServiceReq.success === false && resultStatus === 1) {
+    if (updateServiceReq.success === false && resStatus === 1) {
       model.validationMessages = {};
       return res.render('requestService/views/serviceAlreadyApproved', viewModel);
     }
