@@ -13,6 +13,7 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
   }
+
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const servicesForUser = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
@@ -73,7 +74,14 @@ const post = async (req, res) => {
   await updateIndex(uid, updatedOrganisationDetails, null, null, req.id);
   await waitForIndexToUpdate(uid, (updated) => updated.organisations.length === updatedOrganisationDetails.length);
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
+  const deletedOrganisation = currentOrganisationDetails.filter((x) => x.id === organisationId)
   const org = organisationDetails.organisation.name;
+
+  const numericIdentifierAndtextIdentifier = {};
+  if (deletedOrganisation[0]['numericIdentifier'] && deletedOrganisation[0]['textIdentifier']) {
+    numericIdentifierAndtextIdentifier['numericIdentifier'] = deletedOrganisation[0]['numericIdentifier'];
+    numericIdentifierAndtextIdentifier['textIdentifier'] = deletedOrganisation[0]['textIdentifier'];
+  }
 
   logger.audit({
     type: 'approver',
@@ -91,7 +99,14 @@ const post = async (req, res) => {
       ],
       editedUser: uid,
     },
-    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
+    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${
+      req.session.user.email
+    } (id: ${uid}) numeric Identifier and textIdentifier(${
+      Object.keys(numericIdentifierAndtextIdentifier).length === 0
+        ? 'null'
+        : JSON.stringify(numericIdentifierAndtextIdentifier)
+    })`,
+    ...(Object.keys(numericIdentifierAndtextIdentifier).length !== 0) && {...numericIdentifierAndtextIdentifier},
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
   });
