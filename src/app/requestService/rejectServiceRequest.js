@@ -15,6 +15,7 @@ const notificationClient = new NotificationClient({
 
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
+const { getUserServiceRequestStatus, updateServiceRequest } = require('./utils.js');
 const getViewModel = async (req) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const serviceId = req.params.sid;
@@ -57,8 +58,24 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/my-services');
   }
-  
-  const model = await getViewModel(req)  
+
+  const model = await getViewModel(req);
+
+  const userServiceRequestId = req.query.reqId;
+
+  if (userServiceRequestId) {
+    const userServiceRequestStatus = await getUserServiceRequestStatus(userServiceRequestId);
+    if (userServiceRequestStatus === -1) {
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyRejected', model);
+    }
+
+    if (userServiceRequestStatus === 1) {
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyApproved', model);
+    }
+  }
+
   const roleIds = JSON.parse(decodeURIComponent(req.params.rids))
   const roles = roleIds || [];
 
@@ -112,6 +129,22 @@ const post = async (req, res) => {
     return res.render('requestService/views/rejectServiceRequest', model)
   }
 
+  const userServiceRequestId = req.query.reqId;
+
+  if (userServiceRequestId) {
+    const updateServiceReq = await updateServiceRequest(userServiceRequestId, -1, req.user.sub, rejectReason);
+    const resStatus = updateServiceReq.serviceRequest.status;
+
+    if (updateServiceReq.success === false && resStatus === -1) {
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyRejected', model);
+    }
+
+    if (updateServiceReq.success === false && resStatus === 1) {
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyApproved', model);
+    }
+  }
   await notificationClient.sendServiceRequestRejected(
     req.session.user.email, 
     req.session.user.firstName, 
@@ -129,7 +162,7 @@ const post = async (req, res) => {
     userEmail: req.user.email,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} (approverId: ${req.user.sub}) rejected service (serviceId: ${req.params.sid}), roles (roleIds: ${JSON.stringify(roles)}) and organisation (orgId: ${req.params.orgId}) for end user (endUserId: ${req.params.uid}). ${rejectReason ? `The reject reason is ${rejectReason}` : ''}`
+    message: `${req.user.email} (approverId: ${req.user.sub}) rejected service (serviceId: ${req.params.sid}), roles (roleIds: ${JSON.stringify(roles)}) and organisation (orgId: ${req.params.orgId}) for end user (endUserId: ${req.params.uid}). ${rejectReason ? `The reject reason is ${rejectReason}` : ''} - requestId (reqId: ${userServiceRequestId})`
   });
 
   res.flash('title', `Success`);
