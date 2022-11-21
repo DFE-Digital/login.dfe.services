@@ -83,6 +83,7 @@ const post = async (req, res) => {
     numericIdentifierAndtextIdentifier['textIdentifier'] = deletedOrganisation[0]['textIdentifier'];
   }
 
+
   logger.audit({
     type: 'approver',
     subType: 'user-org-deleted',
@@ -98,6 +99,7 @@ const post = async (req, res) => {
         },
       ],
       editedUser: uid,
+      ...(Object.keys(numericIdentifierAndtextIdentifier).length !== 0) && {...numericIdentifierAndtextIdentifier}
     },
     message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${
       req.session.user.email
