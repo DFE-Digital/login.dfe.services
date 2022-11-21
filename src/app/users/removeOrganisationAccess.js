@@ -5,7 +5,7 @@ const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
 const { getAllServicesForUserInOrg, waitForIndexToUpdate } = require('./utils');
-const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../../infrastructure/organisations');
+const { deleteUserOrganisation, deleteInvitationOrganisation, getOrganisationAndServiceForUser } = require('./../../infrastructure/organisations');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 const { getById, updateIndex } = require('./../../infrastructure/search');
 
@@ -45,6 +45,8 @@ const post = async (req, res) => {
   const currentOrganisationDetails = getAllUserDetails.organisations;
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
 
+  const userOrgs = await getOrganisationAndServiceForUser(uid);
+
   if (uid.startsWith('inv-')) {
     for (let i = 0; i < servicesForUser.length; i++) {
       const service = servicesForUser[i];
@@ -74,7 +76,7 @@ const post = async (req, res) => {
   await updateIndex(uid, updatedOrganisationDetails, null, null, req.id);
   await waitForIndexToUpdate(uid, (updated) => updated.organisations.length === updatedOrganisationDetails.length);
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
-  const deletedOrganisation = currentOrganisationDetails.filter((x) => x.id === organisationId)
+  const deletedOrganisation = userOrgs.filter((x) => x.organisation.id === organisationId)
   const org = organisationDetails.organisation.name;
 
   const numericIdentifierAndtextIdentifier = {};
