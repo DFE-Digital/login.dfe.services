@@ -5,7 +5,7 @@ const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
 const { getAllServicesForUserInOrg, waitForIndexToUpdate } = require('./utils');
-const { deleteUserOrganisation, deleteInvitationOrganisation, getOrganisationAndServiceForUser } = require('./../../infrastructure/organisations');
+const { deleteUserOrganisation, deleteInvitationOrganisation, getOrganisationAndServiceForUser, getOrganisationAndServiceForInvitation } = require('./../../infrastructure/organisations');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 const { getById, updateIndex } = require('./../../infrastructure/search');
 
@@ -38,22 +38,24 @@ const post = async (req, res) => {
   if (!req.session.user) {
     return res.redirect(`/approvals/users/${req.params.uid}`);
   }
+
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
   const servicesForUser = await getAllServicesForUserInOrg(uid, organisationId, req.id);
   const getAllUserDetails = await getById(uid, req.id);
   const currentOrganisationDetails = getAllUserDetails.organisations;
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
-
-  const userOrgs = await getOrganisationAndServiceForUser(uid);
+  var invitedUser = false;
 
   if (uid.startsWith('inv-')) {
+    invitedUser = true;
     for (let i = 0; i < servicesForUser.length; i++) {
       const service = servicesForUser[i];
       await removeServiceFromInvitation(uid.substr(4), service.id, organisationId, req.id);
     }
     await deleteInvitationOrganisation(uid.substr(4), organisationId, req.id);
   } else {
+    var userOrgs = await getOrganisationAndServiceForUser(uid);
     for (let i = 0; i < servicesForUser.length; i++) {
       const service = servicesForUser[i];
       await removeServiceFromUser(uid, service.id, organisationId, req.id);
@@ -76,15 +78,19 @@ const post = async (req, res) => {
   await updateIndex(uid, updatedOrganisationDetails, null, null, req.id);
   await waitForIndexToUpdate(uid, (updated) => updated.organisations.length === updatedOrganisationDetails.length);
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
-  const deletedOrganisation = userOrgs.filter((x) => x.organisation.id === organisationId)
-  const org = organisationDetails.organisation.name;
 
   const numericIdentifierAndtextIdentifier = {};
-  if (deletedOrganisation[0]['numericIdentifier'] && deletedOrganisation[0]['textIdentifier']) {
-    numericIdentifierAndtextIdentifier['numericIdentifier'] = deletedOrganisation[0]['numericIdentifier'];
-    numericIdentifierAndtextIdentifier['textIdentifier'] = deletedOrganisation[0]['textIdentifier'];
-  }
 
+  if (invitedUser) {
+    var orgName = organisationDetails.organisation.name;
+  } else {
+    const deletedOrganisation = userOrgs.filter((x) => x.organisation.id === organisationId)
+    var orgName = organisationDetails.organisation.name;
+    if (deletedOrganisation[0]?.['numericIdentifier'] && deletedOrganisation[0]?.['textIdentifier']) {
+      numericIdentifierAndtextIdentifier['numericIdentifier'] = deletedOrganisation[0]['numericIdentifier'];
+      numericIdentifierAndtextIdentifier['textIdentifier'] = deletedOrganisation[0]['textIdentifier'];
+    }
+  }
 
   logger.audit({
     type: 'approver',
@@ -103,7 +109,7 @@ const post = async (req, res) => {
       editedUser: uid,
       ...(Object.keys(numericIdentifierAndtextIdentifier).length !== 0) && {...numericIdentifierAndtextIdentifier}
     },
-    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${organisationId}) for user ${
+    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${orgName} (id: ${organisationId}) for user ${
       req.session.user.email
     } (id: ${uid}) numeric Identifier and textIdentifier(${
       Object.keys(numericIdentifierAndtextIdentifier).length === 0
@@ -116,7 +122,7 @@ const post = async (req, res) => {
   });
   res.flash('title', `Success`);
   res.flash('heading', `${req.session.user.firstName} ${req.session.user.lastName} removed from organisation`);
-  res.flash('message', `${req.session.user.firstName} ${req.session.user.lastName} no longer has access to ${org}`);
+  res.flash('message', `${req.session.user.firstName} ${req.session.user.lastName} no longer has access to ${orgName}`);
   return res.redirect(`/approvals/users`);
 };
 
