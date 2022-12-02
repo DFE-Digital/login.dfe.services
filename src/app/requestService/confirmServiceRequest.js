@@ -2,7 +2,8 @@
 const { listRolesOfService } = require('../../infrastructure/access');
 const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
-
+const { v4: uuid } = require('uuid');
+const { createServiceRequest } = require('./utils');
 const NotificationClient = require('login.dfe.notifications.client');
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,
@@ -85,11 +86,27 @@ const post = async (req, res) => {
   const senderEmail = req.session.user.email
 
   const baseUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`;
-  
-  const approveUrl = `${baseUrl}/request-service/${organisationDetails.organisation.id}/users/${req.session.user.uid}/services/${serviceDetails.id}/roles/${encodeURIComponent(JSON.stringify(rolesIds))}/approve`
-  const rejectUrl = `${baseUrl}/request-service/${organisationDetails.organisation.id}/users/${req.session.user.uid}/services/${serviceDetails.id}/roles/${encodeURIComponent(JSON.stringify(rolesIds))}/reject`
+
+  const serviceRequestId = uuid();
+
+  const approveUrl = `${baseUrl}/request-service/${organisationDetails.organisation.id}/users/${
+    req.session.user.uid
+  }/services/${serviceDetails.id}/roles/${encodeURIComponent(
+    JSON.stringify(rolesIds),
+  )}/approve?reqId=${serviceRequestId}`;
+  const rejectUrl = `${baseUrl}/request-service/${organisationDetails.organisation.id}/users/${
+    req.session.user.uid
+  }/services/${serviceDetails.id}/roles/${encodeURIComponent(
+    JSON.stringify(rolesIds),
+  )}/reject?reqId=${serviceRequestId}`;
 
   const helpUrl = `${config.hostingEnvironment.helpUrl}/requests/can-end-user-request-service`;
+
+  const organisationId = organisationDetails.organisation.id;
+  const serviceId = serviceDetails.id;
+  const userId = req.session.user.uid;
+
+  await createServiceRequest(serviceRequestId, userId, serviceId, rolesIds, organisationId, 0);
 
   await notificationClient.sendServiceRequestToApprovers(
     senderName,
@@ -110,7 +127,11 @@ const post = async (req, res) => {
     userEmail: senderEmail,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
-    message: `${senderEmail} (userId: ${req.session.user.uid}) requested service (serviceId: ${serviceDetails.id}) and roles (roleIds: ${JSON.stringify(rolesIds)}) for organisation (orgId: ${organisationDetails.organisation.id})`,
+    message: `${senderEmail} (userId: ${req.session.user.uid}) requested service (serviceId: ${
+      serviceDetails.id
+    }) and roles (roleIds: ${JSON.stringify(rolesIds)}) for organisation (orgId: ${
+      organisationDetails.organisation.id
+    }) - requestId (reqId: ${serviceRequestId})`,
   });
 
   res.flash('title', `Success`);

@@ -19,6 +19,7 @@ jest.mock('./../../../../src/infrastructure/access', () => ({
 
 jest.mock('./../../../../src/infrastructure/logger', () => ({
   info: jest.fn(),
+  audit: jest.fn()
 }));
 
 jest.mock('login.dfe.dao', () => {
