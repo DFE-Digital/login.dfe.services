@@ -56,7 +56,7 @@ describe('when entering a new users details', () => {
     req.body = {
       firstName: 'John',
       lastName: 'Doe',
-      email: 'johndoe@gmail.com',
+      email: 'johndoe@someschool.com',
     };
     res = mockResponse();
 
@@ -77,7 +77,7 @@ describe('when entering a new users details', () => {
     expect(req.session.user).not.toBeNull();
     expect(req.session.user.firstName).toBe('John');
     expect(req.session.user.lastName).toBe('Doe');
-    expect(req.session.user.email).toBe('johndoe@gmail.com');
+    expect(req.session.user.email).toBe('johndoe@someschool.com');
   });
 
   it('then it should render view if first name not entered', async () => {
@@ -91,7 +91,7 @@ describe('when entering a new users details', () => {
       csrfToken: 'token',
       firstName: '',
       lastName: 'Doe',
-      email: 'johndoe@gmail.com',
+      email: 'johndoe@someschool.com',
       backLink: backRedirect,
       currentPage: 'users',
       isDSIUser: false,
@@ -114,7 +114,7 @@ describe('when entering a new users details', () => {
       csrfToken: 'token',
       firstName: 'John',
       lastName: '',
-      email: 'johndoe@gmail.com',
+      email: 'johndoe@someschool.com',
       backLink: backRedirect,
       currentPage: 'users',
       isDSIUser: false,
@@ -172,6 +172,29 @@ describe('when entering a new users details', () => {
     });
   });
 
+  it('then it should render view if email is a blacklisted email', async () => {
+    req.body.email = 'blacklisted.domain@hotmail.com';
+
+    await postNewUserDetails(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('users/views/newUserDetails');
+    expect(res.render.mock.calls[0][1]).toEqual({
+      csrfToken: 'token',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'blacklisted.domain@hotmail.com',
+      backLink: backRedirect,
+      currentPage: 'users',
+      isDSIUser: false,
+      organisationId: 'org1',
+      uid: '',
+      validationMessages: {
+        email: 'This email address is not valid for this service. Enter an email address that is associated with your organisation.',
+      },
+    });
+  });
+
   it('then it should render view if email already associated to a user in this org', async () => {
     Account.getById.mockReturnValue({
       claims: {
@@ -200,7 +223,7 @@ describe('when entering a new users details', () => {
       csrfToken: 'token',
       firstName: 'John',
       lastName: 'Doe',
-      email: 'johndoe@gmail.com',
+      email: 'johndoe@someschool.com',
       backLink: backRedirect,
       currentPage: 'users',
       isDSIUser: false,
@@ -233,7 +256,7 @@ describe('when entering a new users details', () => {
       csrfToken: 'token',
       firstName: 'John',
       lastName: 'Doe',
-      email: 'johndoe@gmail.com',
+      email: 'johndoe@someschool.com',
       backLink: backRedirect,
       currentPage: 'users',
       isDSIUser: false,
