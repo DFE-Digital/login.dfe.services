@@ -8,22 +8,22 @@
         </div>
     </div>
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
 
-            <form method="post" id="form-new-user">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                
-                <fieldset class="govuk-fieldset">
+        <form method="post" id="form-new-user">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            
+            <fieldset class="govuk-fieldset">
+                <div class="govuk-grid-column-one-half">
                     <legend class="govuk-fieldset__legend govuk-visually-hidden">User details</legend>
 
                     <div class="govuk-form-group <%= (locals.validationMessages.firstName !== undefined) ? 'govuk-form-group--error' : '' %>">
-                        <label class="govuk-label" for="firstName">First name</label>
+                        <label class="govuk-label govuk-label--s" for="firstName">First name</label>
                         <% if (locals.validationMessages.firstName !== undefined) { %>
                             <span id="validation-firstName" class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.firstName %>
                             </span>
                         <% } %>
-                        <input class="govuk-input govuk-!-width-one-half" id="firstName" name="firstName" type="text"
+                        <input class="govuk-input" id="firstName" name="firstName" type="text"
                         <% if (locals.validationMessages.firstName !== undefined) { %>
                             aria-invalid="true" aria-describedby="validation-firstName"
                                 <% } %>
@@ -31,37 +31,46 @@
                     </div>
 
                     <div class="govuk-form-group <%= (locals.validationMessages.lastName !== undefined) ? 'govuk-form-group--error' : '' %>">
-                        <label class="govuk-label" for="lastName">Last name </label>
+                        <label class="govuk-label govuk-label--s" for="lastName">Last name </label>
                         <% if (locals.validationMessages.lastName !== undefined) { %>
                             <span id="validation-lastName" class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.lastName %>
                             </span>
                         <% } %>
-                        <input class="govuk-input govuk-!-width-one-half" id="lastName" name="lastName" type="text"
+                        <input class="govuk-input" id="lastName" name="lastName" type="text"
                             <% if (locals.validationMessages.lastName !== undefined) { %>aria-invalid="true" aria-describedby="validation-lastName"<% } %>
                             value="<%=locals.lastName%>">
                     </div>
-
+                </div>
+                <div class="govuk-grid-column-full">
+                    <div class="govuk-warning-text">
+                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                        <div class="govuk-warning-text__text govuk-!-font-weight-regular">
+                            <span class="govuk-warning-text__assistive">Warning</span>
+                            Do not use a generic email (e.g., headmaster@, admin@) as they compromise security. If you create an account with a generic email address you will not be able to access services nor other areas of DfE Sign-in.
+                        </div>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-one-half">
                     <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'govuk-form-group--error' : '' %>">
-                        <label class="govuk-label" for="email">Email address </label>
+                        <label class="govuk-label govuk-label--s" for="email">Email address </label>
                         <% if (locals.validationMessages.email !== undefined) { %>
                             <span id="validation-email" class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.email %>
                             </span>
                         <% } %>
-                        <input class="govuk-input govuk-!-width-one-half" id="email" name="email" type="email"
+                        <input class="govuk-input" id="email" name="email" type="email"
                             <% if (locals.validationMessages.email !== undefined) { %>aria-invalid="true" aria-describedby="validation-email"<% } %>
                             value="<%=locals.email%>">
                     </div>
-
-                </fieldset>
-
+                </div>
+            </fieldset>
+            <div class="govuk-grid-column-one-half">
                 <div class="govuk-button-group">
                     <button type="submit" class="govuk-button">Continue</button>
                     <a href="/approvals/users" class="govuk-button govuk-button--secondary">Cancel</a>
                 </div>
-
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
