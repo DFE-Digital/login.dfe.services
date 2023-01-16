@@ -6,6 +6,7 @@ const {
 } = require('./../../infrastructure/organisations');
 const { emailPolicy } = require('login.dfe.validation');
 const { actions } = require('../constans/actions');
+const config = require('../../infrastructure/config');
 
 const { getApproverOrgsFromReq } = require('./utils');
 
@@ -72,7 +73,7 @@ const validate = async (req) => {
     model.validationMessages.email = 'Please enter an email address';
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
     model.validationMessages.email = 'Please enter a valid email address';
-  } else if (emailPolicy.isBlacklistedEmail(model.email)) {
+  } else if (config.toggles.environmentName === 'pr' && emailPolicy.isBlacklistedEmail(model.email)) {
     model.validationMessages.email = 'This email address is not valid for this service. Enter an email address that is associated with your organisation.';
   } else {
     const existingUser = await Account.getByEmail(model.email);

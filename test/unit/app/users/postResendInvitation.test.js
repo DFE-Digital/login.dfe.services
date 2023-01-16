@@ -21,6 +21,7 @@ jest.mock('./../../../../src/app/users/utils');
 const Account = require('./../../../../src/infrastructure/account');
 const { updateIndex } = require('./../../../../src/infrastructure/search');
 const logger = require('./../../../../src/infrastructure/logger');
+const config = require('../../../../src/infrastructure/config');
 
 describe('when resending an invitation', () => {
   let req;
@@ -126,7 +127,7 @@ describe('when resending an invitation', () => {
     });
   });
 
-  it('then it should render view if email is a blacklisted email', async () => {
+  it('then it should render view if email is a blacklisted email and environment is Production', async () => {
     req.body.email = 'blacklisted.domain@hotmail.com';
 
     await postResendInvitation(req, res);
@@ -147,6 +148,15 @@ describe('when resending an invitation', () => {
         email: 'This email address is not valid for this service. Enter an email address that is associated with your organisation.',
       },
     });
+  });
+
+  it('then it should render view if email is a blacklisted email and environment is other than Production', async () => {
+    req.body.email = 'blacklisted.domain@hotmail.com';
+    config.toggles.environmentName = 'dev';
+
+    await postResendInvitation(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(0);
   });
 
   it('then it should render view if email already associated to a user', async () => {
