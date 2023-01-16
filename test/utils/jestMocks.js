@@ -30,6 +30,7 @@ const mockConfig = () => {
     },
     toggles: {
       useApproverJourney: true,
+      environmentName: 'pr',
     },
     database: {
       host: 'host',

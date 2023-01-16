@@ -13,6 +13,7 @@ const identifyingPartySchema = new SimpleSchema({
 const togglesSchema = new SimpleSchema({
   useApproverJourney: Boolean,
   generateUserOrgIdentifiers: Boolean,
+  environmentName: String,
 });
 
 const notificationsSchema = new SimpleSchema({

@@ -21,6 +21,7 @@ const {
   getOrganisationAndServiceForInvitation,
 } = require('./../../../../src/infrastructure/organisations');
 const Account = require('./../../../../src/infrastructure/account');
+const config = require('../../../../src/infrastructure/config');
 
 describe('when entering a new users details', () => {
   let req;
@@ -172,7 +173,7 @@ describe('when entering a new users details', () => {
     });
   });
 
-  it('then it should render view if email is a blacklisted email', async () => {
+  it('then it should render view if email is a blacklisted email and environment is Production', async () => {
     req.body.email = 'blacklisted.domain@hotmail.com';
 
     await postNewUserDetails(req, res);
@@ -193,6 +194,15 @@ describe('when entering a new users details', () => {
         email: 'This email address is not valid for this service. Enter an email address that is associated with your organisation.',
       },
     });
+  });
+
+  it('then it should render view if email is a blacklisted email and environment is other than Production', async () => {
+    req.body.email = 'blacklisted.domain@hotmail.com';
+    config.toggles.environmentName = 'dev';
+
+    await postNewUserDetails(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(0);
   });
 
   it('then it should render view if email already associated to a user in this org', async () => {
