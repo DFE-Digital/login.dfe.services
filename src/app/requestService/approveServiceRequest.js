@@ -17,6 +17,8 @@ const notificationClient = new NotificationClient({
 
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
+const { getUserServiceRequestStatus, updateServiceRequest } = require('./utils');
+
 const validate = async (req) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const endUser = await getUserDetails(req);
@@ -84,6 +86,22 @@ const get = async (req, res) => {
 
   const model = await validate(req);
   const viewModel = await getViewModel(req, model);
+
+  const userServiceRequestId = req.query.reqId;
+
+  if (userServiceRequestId) {
+    const userServiceRequestStatus = await getUserServiceRequestStatus(userServiceRequestId);
+    if (userServiceRequestStatus === -1) {
+      viewModel.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyRejected', viewModel);
+    }
+
+    if (userServiceRequestStatus === 1) {
+      viewModel.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyApproved', viewModel);
+    }
+  }
+
   const endUserService = await getServicesForUser(req.params.uid);
 
   if (endUserService) {
@@ -92,6 +110,9 @@ const get = async (req, res) => {
     );
     if (hasServiceAlreadyApproved && hasServiceAlreadyApproved.length > 0) {
       viewModel.validationMessages = {};
+      if (userServiceRequestId) {
+        await updateServiceRequest(userServiceRequestId, 1, req.user.sub);
+      }
       return res.render('requestService/views/serviceAlreadyApproved', viewModel);
     }
   }
@@ -166,6 +187,23 @@ const post = async (req, res) => {
     name: mngUserOrganisationDetails.role.name,
   };
 
+  const userServiceRequestId = req.query.reqId;
+
+  if (userServiceRequestId) {
+    const updateServiceReq = await updateServiceRequest(userServiceRequestId, 1, req.user.sub);
+    const resStatus = updateServiceReq.serviceRequest.status;
+
+    if (updateServiceReq.success === false && resStatus === -1) {
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyRejected', viewModel);
+    }
+
+    if (updateServiceReq.success === false && resStatus === 1) {
+      model.validationMessages = {};
+      return res.render('requestService/views/serviceAlreadyApproved', viewModel);
+    }
+  }
+
   await addUserService(req.params.uid, req.params.sid, req.params.orgId, roles, req.id);
 
   await notificationClient.sendServiceRequestApproved(
@@ -189,7 +227,7 @@ const post = async (req, res) => {
       req.params.sid
     }) and roles (roleIds: ${JSON.stringify(roles)}) and organisation (orgId: ${
       req.params.orgId
-    }) for end user (endUserId: ${req.params.uid})`,
+    }) for end user (endUserId: ${req.params.uid}) - requestId (reqId: ${userServiceRequestId})`,
   });
 
   res.flash('title', `Success`);

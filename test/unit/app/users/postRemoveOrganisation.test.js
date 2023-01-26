@@ -148,7 +148,7 @@ describe('when removing organisation access', () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      'user.one@unit.test (id: user1) removed organisation organisationName (id: org1) for user test@test.com (id: user1)',
+      'user.one@unit.test (id: user1) removed organisation organisationName (id: org1) for user test@test.com (id: user1) numeric Identifier and textIdentifier(null)',
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',

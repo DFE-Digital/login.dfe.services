@@ -124,6 +124,19 @@ const post = async (req, res) => {
       isApprover,
     );
     uid = `inv-${invitationId}`;
+
+    logger.audit({
+      type: 'approver',
+      subType: 'invite-created',
+      userId: req.user.sub,
+      application: config.loggerSettings.applicationName,
+      env: config.hostingEnvironment.env,
+      message: `Invitation code is created. Id ${invitationId}`,
+      meta: {
+        email: req.user.email,
+        client: config.loggerSettings.applicationName,
+      },
+    });
   }
 
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);

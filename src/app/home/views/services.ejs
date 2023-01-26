@@ -35,22 +35,21 @@
                         <% for (let j = 0; j < locals.pireanServices.length; j++) {
                             const userPireanServices = locals.pireanServices[j];
                         %>
-                            <% if(userServices.name.includes(userPireanServices)) { 
-                                const pireanWarningBanner = userPireanServices;  %> 
+                            <% if(userServices.name.includes(userPireanServices)) {
+                                const pireanWarningBanner = userPireanServices;  %>
                                 <div class="govuk-warning-text">
                                     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                                     <strong class="govuk-warning-text__text">
                                         <span class="govuk-warning-text__assistive">Warning</span>
                                         <p>
-                                            The  <%=pireanWarningBanner%> service is moving from IDAMS to DfE Sign-in. 
-                                            You can only access the services from this page once they have moved. 
-                                            Use your normal IDAMS username and password until then.                    
+                                            The  <%=pireanWarningBanner%> service is moving from IDAMS to DfE Sign-in.
+                                            You can only access the services from this page once they have moved.
                                         </p>
                                         <p>
-                                            We will have moved all services from IDAMS to DfE Sign-in by June 2023.
-                                        </p>   
+                                            All services will have moved from IDAMS to DfE Sign-in by June 2023. If the service is not listed below, visit the <a href="https://logon.fasst.org.uk/">IDAMS sign in page</a> to access it.
+                                        </p>
                                     </strong>
-                                </div> 
+                                </div>
                                 <% } %>
                             <% } %>
                         <% } %>
@@ -58,8 +57,8 @@
                     <% if(locals.showJobTitleBanner) { %>
                         <div id="notification-wrapper-missing-jobtitle"
                             class="govuk-notification-banner"
-                            role="region" 
-                            aria-labelledby="govuk-notification-banner-title" 
+                            role="region"
+                            aria-labelledby="govuk-notification-banner-title"
                             data-module="govuk-notification-banner">
                             <div class="govuk-notification-banner__header govuk-grid-row">
                                 <div class="govuk-grid-column-two-thirds">
@@ -88,8 +87,8 @@
                     <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
                         <div id="notification-wrapper-approver-request"
                             class="govuk-notification-banner"
-                            role="region" 
-                            aria-labelledby="govuk-notification-banner-title" 
+                            role="region"
+                            aria-labelledby="govuk-notification-banner-title"
                             data-module="govuk-notification-banner">
                             <div class="govuk-notification-banner__header govuk-grid-row">
                                 <div class="govuk-grid-column-two-thirds">
@@ -364,6 +363,9 @@
                     </thead>
                     <tbody class="govuk-table__body">
                         <%
+                            const p_services = locals.pireanServices.map(element => {
+                                return element.toLowerCase();
+                            });
                                 for (let s = 0; s < services.length; s++) {
                                     const service = services[s];
                                 %>
@@ -373,6 +375,8 @@
                                     <% if (service.disabled) { %>
                                     <span class="date">Available: <%=service.date%></span>
                                     <h3 class="govuk-heading-s"><%=service.name%></h3>
+                                <% } else if(p_services.includes(service.name.toLowerCase())){ %>
+                                <h3 class="govuk-heading-s"><%=service.name%></h3>
                                     <% } else { %>
                                     <a href="<%=service.serviceUrl%>" class="govuk-link-bold"
                                         target="_blank"><%=service.name%></a>
@@ -402,7 +406,7 @@
     })
     $('#close-password-change, .servicesv2, .govuk-link-bold, .govuk-footer__link, .govuk-header__link').on('click', () => {
         const item = $('#notification-wrapper-password-change')
-        if(item.length) { 
+        if(item.length) {
             $.ajax(`/close-password-change`).done(() => {
                 item.remove();
             });
