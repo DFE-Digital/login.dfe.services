@@ -112,8 +112,8 @@ stages:
             scriptType: pscore
             scriptLocation: inlineScript
             inlineScript: |
-              principalId=$(az identity show --resource-group s141d03-shd --name Registery --query principalId --output tsv)
-              registryId=$(az acr show --resource-group s141d01-shd --name codescantools --query id --output tsv)
+              $principalId=$(az identity show --resource-group s141d03-shd --name Registery --query principalId --output tsv)
+              $registryId=$(az acr show --resource-group s141d01-shd --name codescantools --query id --output tsv)
               az role assignment create --assignee $principalId --scope $registryId --role "AcrPull"
 
 
