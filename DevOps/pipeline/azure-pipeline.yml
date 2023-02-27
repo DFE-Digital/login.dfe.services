@@ -104,7 +104,6 @@ stages:
    displayName: "registery"
    jobs:
     - job:
-      pool: ubuntu-latest
       steps:
         - task: AzureCLI@2
           displayName: SEt Manage Identity
