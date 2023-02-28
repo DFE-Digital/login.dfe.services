@@ -103,6 +103,8 @@ stages:
 # Code Scans & Build the artifact for deployment
 - stage: scanBuildApp
   displayName: "Scan tools & Build"
+  variables:
+  - group: dsi-dev-kv
   jobs:
     # Code scaning tools
   - ${{ if eq(parameters.InfrDeploy, 'true') }}:
