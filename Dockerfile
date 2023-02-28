@@ -1,19 +1,32 @@
-FROM node:8
+FROM node:14.18.1
 
-EXPOSE 80
+ENV PORT 8080
+ENV settings /home/site/wwwroot/config/login.dfe.services.tran.json
+ENV PATH ${PATH}:/home/site/wwwroot
 
-ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
+WORKDIR /home/site/wwwroot
 
-RUN mkdir /app
-WORKDIR /app
+COPY process.json /home/site/wwwroot
+#ADD app_data ./home/site/wwwroot_data
+COPY node_modules /home/site/wwwroot/node_modules
+ADD config /home/site/wwwroot/config
+COPY src /home/site/wwwroot/src
+COPY package.json /home/site/wwwroot/
 
-RUN npm install -g nodemon
+RUN npm install pm2 -g
+ENV PM2HOME /pm2home
 
-COPY package*.json ./
+# enable SSH
+ENV SSH_PASSWD "root:Docker!"
+RUN apt-get update \
+        && mkdir -p /home/LogFiles \
+        && apt-get install -y --no-install-recommends dialog \
+        && apt-get update \
+	&& apt-get install -y --no-install-recommends openssh-server \
+	&& echo "$SSH_PASSWD" | chpasswd 
 
-RUN npm install
+COPY Docker/sshd_config.sh /etc/ssh/sshd_config.sh
 
-COPY . .
+EXPOSE 8080 2222
 
-CMD node src/index.js
+ENTRYPOINT ["pm2", "start", "/home/site/wwwroot/process.json", "--no-daemon"]
