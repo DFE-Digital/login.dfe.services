@@ -122,7 +122,37 @@
             "metadata": {
                 "description": "Add app settings to support the display of warning messages for pirean services"
             }
+        },
+        "currentImage": {
+            "type": "string",
+            "metadata": {
+                "description": "Current App service docker image name"
+            }
+        },
+        "newImage": {
+            "type": "string",
+            "metadata": {
+                "description": "App service New docker image name"
+            }
+        },
+       "acrUrl": {
+          "type": "string",
+          "metadata": {
+              "description": "Azure Container Registery URL"
+          }
+      },
+      "acrUsername": {
+         "type": "string",
+         "metadata": {
+             "description": "Azure Container Registery username"
+         }
+     },
+     "acrPassword": {
+        "type": "string",
+        "metadata": {
+            "description": "Azure Container Registery password"
         }
+    }
     },
     "variables": {
         "enableVirtualNetworkIntegration": "[and(not(empty(parameters('virtualNetworkResourceGroupName'))), not(empty(parameters('virtualNetworkName'))))]",
@@ -143,6 +173,12 @@
                 "parameters": {
                     "appServiceName": {
                         "value": "[parameters('appServiceName')]"
+                    },
+                    "currentImage": {
+                        "value": "[parameters('currentImage')]"
+                    },
+                    "newImage": {
+                        "value": "[parameters('newImage')]"
                     },
                     "appServicePlanName": {
                         "value": "[parameters('appServicePlanName')]"
@@ -168,7 +204,10 @@
                             "TOPIC_NAME": "[parameters('auditServiceBusTopicName')]",
                             "SUBSCRIPTION_NAME": "[parameters('auditServiceBusSubscriptionName')]",
                             "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
-                            "PIREAN_SERVICES": "[parameters('pireanServices')]"
+                            "PIREAN_SERVICES": "[parameters('pireanServices')]",
+                            "DOCKER_REGISTRY_SERVER_PASSWORD": "[parameters('acrPassword')]",
+                            "DOCKER_REGISTRY_SERVER_URL": "[parameters('acrUrl')]",
+                            "DOCKER_REGISTRY_SERVER_USERNAME": "[parameters('acrUsername')]"
                         }
                     },
                      "healthCheckPath": {
