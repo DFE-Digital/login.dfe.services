@@ -153,7 +153,7 @@ stages:
         - group: dsi-${{var.key}}-kv
         jobs:
         - ${{ if parameters.InfrDeploy }}:
-          - template: pipeline/appInfrastructure.yml@devopsTemplates
+          - template: pipeline/appDockerInfrastructure.yml@devopsTemplates
             parameters:
               ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
                 serviceConnection: $(devServiceConnection)
