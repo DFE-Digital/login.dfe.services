@@ -21,6 +21,7 @@ jest.mock('./../../../../src/app/users/utils');
 const Account = require('./../../../../src/infrastructure/account');
 const { updateIndex } = require('./../../../../src/infrastructure/search');
 const logger = require('./../../../../src/infrastructure/logger');
+const config = require('../../../../src/infrastructure/config');
 
 describe('when resending an invitation', () => {
   let req;
@@ -60,7 +61,7 @@ describe('when resending an invitation', () => {
       ],
     };
     req.body = {
-      email: 'johndoe@gmail.com',
+      email: 'johndoe@someschool.com',
     };
     res = mockResponse();
 
@@ -77,7 +78,7 @@ describe('when resending an invitation', () => {
     expect(req.session.user).not.toBeNull();
     expect(req.session.user.firstName).toBe('test');
     expect(req.session.user.lastName).toBe('name');
-    expect(req.session.user.email).toBe('johndoe@gmail.com');
+    expect(req.session.user.email).toBe('johndoe@someschool.com');
   });
 
   it('then it should render view if email not entered', async () => {
@@ -126,6 +127,38 @@ describe('when resending an invitation', () => {
     });
   });
 
+  it('then it should render view if email is a blacklisted email and environment is Production', async () => {
+    req.body.email = 'blacklisted.domain@hotmail.com';
+
+    await postResendInvitation(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('users/views/confirmResendInvitation');
+    expect(res.render.mock.calls[0][1]).toEqual({
+      csrfToken: 'token',
+      email: 'blacklisted.domain@hotmail.com',
+      user: {
+        name: 'test name',
+      },
+      backLink: true,
+      currentPage: 'users',
+      noChangedEmail: false,
+      uid: 'user1',
+      validationMessages: {
+        email: 'This email address is not valid for this service. Enter an email address that is associated with your organisation.',
+      },
+    });
+  });
+
+  it('then it should render view if email is a blacklisted email and environment is other than Production', async () => {
+    req.body.email = 'blacklisted.domain@hotmail.com';
+    config.toggles.environmentName = 'dev';
+
+    await postResendInvitation(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(0);
+  });
+
   it('then it should render view if email already associated to a user', async () => {
     Account.getById.mockReturnValue({
       claims: {
@@ -144,7 +177,7 @@ describe('when resending an invitation', () => {
     expect(res.render.mock.calls[0][0]).toBe('users/views/confirmResendInvitation');
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: 'token',
-      email: 'johndoe@gmail.com',
+      email: 'johndoe@someschool.com',
       user: {
         name: 'test name',
       },
@@ -169,7 +202,7 @@ describe('when resending an invitation', () => {
     expect(res.render.mock.calls[0][0]).toBe('users/views/confirmResendInvitation');
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: 'token',
-      email: 'johndoe@gmail.com',
+      email: 'johndoe@someschool.com',
       user: {
         name: 'test name',
       },
@@ -190,7 +223,7 @@ describe('when resending an invitation', () => {
 
     expect(Account.updateInvite.mock.calls).toHaveLength(1);
     expect(Account.updateInvite.mock.calls[0][0]).toBe('user1');
-    expect(Account.updateInvite.mock.calls[0][1]).toBe('johndoe@gmail.com');
+    expect(Account.updateInvite.mock.calls[0][1]).toBe('johndoe@someschool.com');
   });
 
   it('then it should update the search index with the new email if email changed', async () => {
@@ -198,7 +231,7 @@ describe('when resending an invitation', () => {
     expect(updateIndex.mock.calls).toHaveLength(1);
     expect(updateIndex.mock.calls[0][0]).toBe('user1');
     expect(updateIndex.mock.calls[0][1]).toEqual(null);
-    expect(updateIndex.mock.calls[0][2]).toEqual('johndoe@gmail.com');
+    expect(updateIndex.mock.calls[0][2]).toEqual('johndoe@someschool.com');
     expect(updateIndex.mock.calls[0][3]).toEqual(null);
     expect(updateIndex.mock.calls[0][4]).toEqual('correlationId');
   });
@@ -217,7 +250,7 @@ describe('when resending an invitation', () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      'user.one@unit.test (id: user1) resent invitation email to johndoe@gmail.com (id: userid)',
+      'user.one@unit.test (id: user1) resent invitation email to johndoe@someschool.com (id: userid)',
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: 'approver',
@@ -225,7 +258,7 @@ describe('when resending an invitation', () => {
       userId: 'user1',
       userEmail: 'user.one@unit.test',
       invitedUser: 'userid',
-      invitedUserEmail: 'johndoe@gmail.com',
+      invitedUserEmail: 'johndoe@someschool.com',
     });
   });
 
