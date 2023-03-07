@@ -232,6 +232,9 @@ const getServices = async (req, res) => {
     },
   });
 
+  const userPireanServices = services.filter(value => pireanServices.includes(value.name) );
+
+
   return res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
@@ -248,6 +251,7 @@ const getServices = async (req, res) => {
     passwordChangedBanner,
     showJobTitleBanner,
     pireanServices,
+    userPireanServices
   });
 };
 
