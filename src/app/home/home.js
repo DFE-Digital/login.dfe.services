@@ -23,9 +23,11 @@ const getAndMapExternalServices = async (correlationId) => {
 const displayEsfa = (externalServices) => {
   externalServices.map((service) => {
       if (service.name === 'Digital Forms service') {
+          console.log('Digital Forms service found')
           service.name = 'ESFA Digital Forms Service'
       }
       if (service.name === 'OPAFastForm') {
+        console.log('OPAFastForm service found')
           service.name = 'ESFA Digital Forms Service'
       }
   });
@@ -39,7 +41,9 @@ const home = async (req, res) => {
   let services = await getAndMapExternalServices(req.id);
   const sessionExpiryTime = config.hostingEnvironment.sessionCookieExpiryInMinutes || 20;
 
+  console.log('Before displayEsfa is invoked');
   services = displayEsfa(services);
+  console.logI('What is services', services);
 
   return res.render('home/views/landingPage', {
     title: 'DfE Sign-in',
