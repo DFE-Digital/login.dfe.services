@@ -43,7 +43,7 @@ const home = async (req, res) => {
 
   console.log('Before displayEsfa is invoked');
   services = displayEsfa(services);
-  console.logI('What is services', services);
+  console.log('What is services', services);
 
   return res.render('home/views/landingPage', {
     title: 'DfE Sign-in',
