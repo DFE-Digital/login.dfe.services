@@ -24,7 +24,7 @@ const getPassportStrategy = async () => {
       client,
       params: {
         redirect_uri: `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/auth/cb`,
-        scope: 'openid profile email',
+        scope: 'openid profile email organisation',
       },
     },
     (tokenset, authUserInfo, done) => {
