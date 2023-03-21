@@ -130,7 +130,11 @@
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <dl class="inline">
                                         <dt></dt>
-                                    <dd><%= organisation.status.name %></dd>
+                                        <dd>
+                                            <% if (organisation.status) { %>
+                                            <%= organisation.status.name %>
+                                            <%}%>
+                                        </dd>
                                         <dt></dt>
                                         <dd><%= organisation.pimsStatusName %></dd>
                                     </dl>
