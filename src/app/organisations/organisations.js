@@ -32,10 +32,10 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
       .filter((x) => x);
 
     const pimsStatusMap = [
-      { id:'5', name: 'Dissolved' },
-      { id:'6', name: 'In Liquidation' },
-      { id:'8', name: 'Locked Duplicate' },
-      { id:'10', name: 'Locked Restructure' }
+      { id:'3', name: 'Dissolved' },
+      { id:'4', name: 'In Liquidation' },
+      { id:'6', name: 'Locked Duplicate' },
+      { id:'7', name: 'Locked Restructure' }
     ];
     const pimsStatusName = pimsStatusMap.find(p => p.id === organisation.organisation.pimStatus);
     return {
