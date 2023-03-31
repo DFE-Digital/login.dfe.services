@@ -1,0 +1,58 @@
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h2 class="govuk-heading-m text-break">
+                <span class="govuk-caption-m"><%= locals.service.name%></span>
+                Review request
+            </h2>
+            <p class="govuk-body">Review these details before submitting your request.</p>
+            <p class="govuk-body">Your request will be sent to all approvers at your selected organisation</p>
+            <h2 class="govuk-heading-m">
+                Review summary
+            </h2>
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Organisation
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.organisationDetails.organisation.name%>
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.service.name%>
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Sub-service/role
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <% if (locals.roles.length > 0) { %>
+                            <%=locals.roles.name%>
+                            <% for (let i = 0; i < locals.roles.length; i++) { %>
+                                <% const role = locals.roles[i]; %>
+                                <%=role.name%> <br>
+                            <% } %>
+                        <% } else { %>
+                            No roles selected
+                        <% }%>
+                    </dd>
+                </div>
+            </dl>
+            <form method="post" class="prevent-form-double-submission">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Request sub-service changes</button>
+                    <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

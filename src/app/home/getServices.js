@@ -189,6 +189,7 @@ const getServices = async (req, res) => {
     editServicesRedirect = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
     removeServicesRedirect = `/approvals/select-organisation-service?action=${actions.REMOVE_SERVICE}`;
   } else {
+    editServicesRedirect = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
     const organisations = await getOrganisationAndServiceForUser(account.id, req.id);
     const orgLength = organisations.length;
 
