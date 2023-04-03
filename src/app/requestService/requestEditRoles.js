@@ -84,14 +84,12 @@ const post = async (req, res) => {
     let roles = {};
     model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
-    renderRequestEditRoles(res, model);
+    return renderRequestEditRoles(res, model);
+  } else {
+    saveRoleInSession(req, selectedRoles);
+
+    return res.redirect(`${req.params.sid}/confirm-edit-roles-request`);
   }
-
-  saveRoleInSession(req, selectedRoles);
-
-  let nexturl = `${req.params.sid}/confirm-edit-roles-request`;
-
-  return res.redirect(nexturl);
 };
 
 const saveRoleInSession = (req, selectedRoles) => {
