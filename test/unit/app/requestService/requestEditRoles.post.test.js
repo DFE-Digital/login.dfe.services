@@ -1,7 +1,7 @@
-jest.mock('./../../../../src/infrastructure/config', () => require('../../../utils/jestMocks').mockConfig());
+jest.mock('../../../../src/infrastructure/config', () => require('../../../utils/jestMocks').mockConfig());
 jest.mock('login.dfe.policy-engine');
-jest.mock('./../../../../src/app/users/utils');
-jest.mock('./../../../../src/infrastructure/applications', () => {
+jest.mock('../../../../src/app/users/utils');
+jest.mock('../../../../src/infrastructure/applications', () => {
   return {
     getApplication: jest.fn(),
   };
@@ -20,13 +20,14 @@ const application = {
 };
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
+  validate: jest.fn(),
 };
 
 describe('when displaying the request edit service view', () => {
   let req;
   let res;
 
-  let getRequestEditRoles;
+  let postRequestEditRoles;
 
   beforeEach(() => {
     req = mockRequest();
@@ -72,7 +73,7 @@ describe('when displaying the request edit service view', () => {
     ];
     getApplication.mockReset().mockReturnValue(application);
     res = mockResponse();
-
+    policyEngine.validate.mockReset().mockReturnValue([]);
     policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
       rolesAvailableToUser: [],
     });
@@ -86,58 +87,46 @@ describe('when displaying the request edit service view', () => {
       status: 'active',
     });
 
-    getRequestEditRoles = require('../../../../src/app/requestService/requestEditRoles').get;
+    postRequestEditRoles = require('../../../../src/app/requestService/requestEditRoles').post;
   });
 
   it('then it should redirect to Services dashboard if no user in the session', async () => {
     req.session.user = null;
-
-    await getRequestEditRoles(req, res);
+    await postRequestEditRoles(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe('/my-services');
   });
 
-  it('then it should get the selected user service', async () => {
-    await getRequestEditRoles(req, res);
+  it('then it should render `requestEditRoles` view with error if selection do not meet requirements of service', async () => {
+    policyEngine.validate.mockReturnValue([{ message: 'A maximum of 1 role can be selected' }]);
 
-    expect(getSingleServiceForUser.mock.calls).toHaveLength(1);
-    expect(getSingleServiceForUser.mock.calls[0][0]).toBe('user1');
-    expect(getSingleServiceForUser.mock.calls[0][1]).toBe('org1');
-    expect(getSingleServiceForUser.mock.calls[0][2]).toBe('service1');
-    expect(getSingleServiceForUser.mock.calls[0][3]).toBe('correlationId');
-  });
+    await postRequestEditRoles(req, res);
 
-  it('then it should render the requestEditRoles view', async () => {
-    await getRequestEditRoles(req, res);
-
-    expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('requestService/views/requestEditRoles');
-  });
-
-  it('then it should include csrf token', async () => {
-    await getRequestEditRoles(req, res);
-
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe(`requestService/views/requestEditRoles`);
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      csrfToken: 'token',
-    });
-  });
-
-  it('then it should include the organisation details', async () => {
-    await getRequestEditRoles(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      organisationDetails: req.organisationDetails,
-    });
-  });
-
-  it('then it should include the service details', async () => {
-    await getRequestEditRoles(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      service: {
-        name: 'service name',
+      validationMessages: {
+        roles: ['A maximum of 1 role can be selected'],
       },
     });
+  });
+
+  it('then it should save the selected roles in the session if selection meet requirements of service', async () => {
+    req.body = {
+      role: 'roleId1',
+    };
+    await postRequestEditRoles(req, res);
+
+    expect(req.session).toMatchObject({
+      service: { roles: ['roleId1'] },
+    });
+  });
+
+  it('then it should redirect to confirmEditRolesRequest page if selection meet requirements of service', async () => {
+    await postRequestEditRoles(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe(`service1/confirm-edit-roles-request`);
   });
 });

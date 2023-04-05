@@ -52,7 +52,7 @@ const getViewModel = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
+    return res.redirect('/my-services');
   }
 
   const model = await getViewModel(req);
@@ -63,7 +63,7 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
+    return res.redirect('/my-services');
   }
 
   let selectedRoles = req.body.role ? req.body.role : [];
@@ -98,12 +98,12 @@ const saveRoleInSession = (req, selectedRoles) => {
   };
 };
 
-const haveRolesNotBeenUpdated = (req, selectedRoles) => {
-  if (req.session.service && req.session.service.roles) {
-    return _.isEqual(req.session.service.roles.map((item) => item.id).sort(), selectedRoles.sort());
-  }
-  return true;
-};
+// const haveRolesNotBeenUpdated = (req, selectedRoles) => {
+//   if (req.session.service && req.session.service.roles) {
+//     return _.isEqual(req.session.service.roles.map((item) => item.id).sort(), selectedRoles.sort());
+//   }
+//   return true;
+// };
 
 module.exports = {
   get,
