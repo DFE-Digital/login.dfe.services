@@ -95,8 +95,8 @@
                             </div>
                         </div>
                     <% } %>
-                    <!-- Banner messages after completing an action (add service, edit service...) -->
-                    <% if(process.env.PIREAN_NOTICE && process.env.PIREAN_NOTICE == 1) { %>
+                    <!-- Banner message for PIREAN migration to all approvers  -->
+                    <% if(locals.isApprover && process.env.PIREAN_NOTICE && process.env.PIREAN_NOTICE == 1) { %>
                         <div id="notification-wrapper-missing-jobtitle"
                             class="govuk-notification-banner"
                             role="region"
