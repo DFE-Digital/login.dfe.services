@@ -82,7 +82,9 @@
 
                                 <% if(org.type || org.category) { %>
                                 <dt>Type</dt>
-                                <dd><%=(org.type ? org.type.name : org.category.name)%></dd>
+                                <dd><%=(org.type ? org.type.name : org.providerTypeName)%></dd>
+                                <dd> else { %> 
+                                <dd><%=organisation.category.name%></dd>
                                 <% } %>
 
                                 <% if (org.status && org.status.name) { %>
