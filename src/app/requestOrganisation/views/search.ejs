@@ -50,7 +50,7 @@
                 <ol class="govuk-list search-results">
 
                     <% if (organisations.length === 0) { %>
-                    <li><span class="empty-state">No organisations found</span></li>
+                        <li><span class="empty-state">No organisations found</span></li>
                     <% } %>
 
                     <% for (let i = 0; i < organisations.length; i++) { %>
@@ -66,30 +66,31 @@
                             </h2>
                             <dl class="inline">
                                 <% if(org.urn) { %>
-                                <dt>URN</dt>
-                                <dd><%=org.urn%></dd>
+                                    <dt>URN</dt>
+                                    <dd><%=org.urn%></dd>
                                 <% } %>
 
                                 <% if(org.uid) { %>
-                                <dt>UID</dt>
-                                <dd><%=org.uid%></dd>
+                                    <dt>UID</dt>
+                                    <dd><%=org.uid%></dd>
                                 <% } %>
 
                                 <% if (org.address) { %>
-                                <dt>Address</dt>
-                                <dd><%=org.address%></dd>
+                                    <dt>Address</dt>
+                                    <dd><%=org.address%></dd>
                                 <% } %>
-
-                                <% if(org.type || org.category) { %>
-                                <dt>Type</dt>
-                                <dd><%=(org.type ? org.type.name : org.providerTypeName)%></dd>
-                                <dd> else { %> 
-                                <dd><%=organisation.category.name%></dd>
+                                
+                                <% if(org.type || org.providerTypeName) { %>
+                                    <dt>Type</dt>
+                                    <dd><%=(org.type ? org.type.name : org.providerTypeName)%></dd>
+                                <% } else if (org.category) { %>
+                                    <dt>Type</dt>
+                                    <dd><%=org.category.name%></dd>
                                 <% } %>
 
                                 <% if (org.status && org.status.name) { %>
-                                <dt>Status</dt>
-                                <dd><%=org.status.name%></dd>
+                                    <dt>Status</dt>
+                                    <dd><%=org.status.name%></dd>
                                 <% } %>
                             </dl>
                         </article>
