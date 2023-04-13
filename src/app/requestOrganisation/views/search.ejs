@@ -80,11 +80,12 @@
                                 <dd><%=org.address%></dd>
                                 <% } %>
 
-                                <% if(org.type || org.category) { %>
+                                <% if (org.type || org.providerTypeName) { %>
                                 <dt>Type</dt>
                                 <dd><%=(org.type ? org.type.name : org.providerTypeName)%></dd>
-                                <dd> else { %> 
-                                <dd><%=organisation.category.name%></dd>
+                                <dd> else if (org.type || org.category) { %>
+                                <dt>Type</dt>{ %> 
+                                <dd><%=org.category.name%></dd>
                                 <% } %>
 
                                 <% if (org.status && org.status.name) { %>
