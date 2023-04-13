@@ -60,10 +60,10 @@ const get = async (req, res) => {
 
   renderConfirmEditRolesPage(res, model);
 };
-//TODO: UPDATE after completing NSA- 6856
+
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/users/${req.params.uid}`);
+    return res.redirect('/my-services');
   }
 
   const uid = req.params.uid;
@@ -76,7 +76,8 @@ const post = async (req, res) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
   const orgName = organisationDetails.organisation.name;
   const subServiceReqId = uuid();
-  const senderName = `${req.session.user.firstName} ${req.session.user.lastName}`;
+  const senderFirstName = req.session.user.firstName;
+  const senderLastName = req.session.user.lastName;
   const senderEmail = req.user.email;
   const roleNames = selectedRoles.rotails.map((i) => i.name);
 
@@ -96,9 +97,9 @@ const post = async (req, res) => {
 
   await createServiceRequest(subServiceReqId, uid, serviceId, selectedRoleIds, organisationId, 0, 'subService');
 
-  //TODO: update wiht the new method sendSubServiceRequestToApprovers after completing NSA-6856
-  await notificationClient.sendServiceRequestToApprovers(
-    senderName,
+  await notificationClient.sendSubServiceRequestToApprovers(
+    senderFirstName,
+    senderLastName,
     senderEmail,
     organisationDetails.organisation.id,
     organisationDetails.organisation.name,
