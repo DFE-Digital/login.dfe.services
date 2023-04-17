@@ -9,7 +9,7 @@ const logger = require('./../../infrastructure/logger');
 
 const servicePostLogoutStore = require('./../services/servicePostLogoutStore');
 
-const signUserOut = async (req, res) => {
+const signUserOut = async (req, res, next) => {
   if (req.user && req.user.id_token) {
     logger.audit({
       type: 'Sign-out',
@@ -42,28 +42,31 @@ const signUserOut = async (req, res) => {
       logger.info('service signout :: there is no redirect_uri and redirected');
       returnUrl = `${config.hostingEnvironment.profileUrl}/signout`;
     }
-    logout(req, res);
+    logout(req, res, next);
     if (skipIssuerSession && isValidRedirect) {
       logger.info('service signout :: there is skipIssuer and a valid redirect');
       res.redirect(returnUrl);
     } else {
       logger.info('service signout :: there is no skipIssuer and no valid redirect');
       const issuer = passport._strategies.oidc._issuer;
-      res.redirect(
-        url.format(
-          Object.assign(url.parse(issuer.end_session_endpoint), {
-            search: null,
-            query: {
-              id_token_hint: idToken,
-              post_logout_redirect_uri: returnUrl,
-            },
-          }),
-        ),
+      const uri = url.format(
+        Object.assign(url.parse(issuer.end_session_endpoint), {
+          search: null,
+          query: {
+            id_token_hint: idToken,
+            post_logout_redirect_uri: returnUrl,
+          },
+          params: {
+            id_token_hint: idToken,
+            post_logout_redirect_uri: returnUrl,
+          },
+        }),
       );
+      res.redirect(uri);
     }
   } else {
     let isValidRedirect;
-    logout(req, res);
+    logout(req, res, next);
     // Check for valid redirect URL
     if (req.query.redirect_uri) {
       isValidRedirect = await isValidRedirectUrl(req.query.redirect_uri);
@@ -77,8 +80,13 @@ const signUserOut = async (req, res) => {
   }
 };
 
-const logout = (req, res) => {
-  req.logout();
+const logout = (req, res, next) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    //res.redirect('/');
+  });
   req.session = null; // Needed to clear session and completely logout
 };
 
