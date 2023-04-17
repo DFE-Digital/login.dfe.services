@@ -34,7 +34,7 @@ const init = async () => {
   }
 
   const app = express();
-  
+
   if (config.hostingEnvironment.hstsMaxAge) {
     app.use(
       helmet({
@@ -45,8 +45,8 @@ const init = async () => {
         hsts: {
           maxAge: config.hostingEnvironment.hstsMaxAge,
           preload: true,
-        }
-      })
+        },
+      }),
     );
   } else {
     app.use(
@@ -101,12 +101,25 @@ const init = async () => {
       },
     }),
   );
+  // register regenerate & save after the cookieSession middleware initialization
+  app.use(function (request, response, next) {
+    if (request.session && !request.session.regenerate) {
+      request.session.regenerate = (cb) => {
+        cb();
+      };
+    }
+    if (request.session && !request.session.save) {
+      request.session.save = (cb) => {
+        cb();
+      };
+    }
+    next();
+  });
 
   app.use((req, res, next) => {
     req.session.now = Date.now();
     next();
   });
-
 
   app.use(flash());
 
@@ -174,9 +187,7 @@ const init = async () => {
 
     server.listen(config.hostingEnvironment.port, () => {
       logger.info(
-        `Dev server listening on https://${config.hostingEnvironment.host}:${
-          config.hostingEnvironment.port
-        } with config:\n${JSON.stringify(config)}`,
+        `Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`,
       );
     });
   } else if (config.hostingEnvironment.env === 'docker') {
