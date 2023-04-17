@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const config = require('../config');
-const { Strategy, Issuer } = require('openid-client');
+const { Strategy, Issuer, generators } = require('openid-client');
 const logger = require('../logger');
 const asyncRetry = require('login.dfe.async-retry');
 
@@ -19,12 +19,17 @@ const getPassportStrategy = async () => {
     client.CLOCK_TOLERANCE = config.identifyingParty.clockTolerance;
   }
 
+  const code_verifier = generators.codeVerifier();
+  const code_challenge = generators.codeChallenge(code_verifier);
+
   return new Strategy(
     {
       client,
       params: {
         redirect_uri: `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/auth/cb`,
         scope: 'openid profile email',
+        code_challenge,
+        code_challenge_method: 'S256',
       },
     },
     (tokenset, authUserInfo, done) => {
