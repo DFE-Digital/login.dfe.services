@@ -47,11 +47,11 @@
                         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                         <div class="govuk-warning-text__text govuk-!-font-weight-regular">
                             <span class="govuk-warning-text__assistive">Warning</span>
-                            Do not use a generic email (e.g., headmaster@, admin@) as they compromise security. If you create an account with a generic email address you will not be able to access services nor other areas of DfE Sign-in.
+                            Do not use a generic email name (e.g. headmaster@, admin@) or domain (e.g. @yahoo.co.uk, @gmail.co.uk) as they compromise security. <br>If you create an account with a generic email address you will not be able to access services nor other areas of DfE Sign-in.
                         </div>
                     </div>
                 </div>
-                <div class="govuk-grid-column-one-half">
+                <div class="govuk-grid-column-full">
                     <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'govuk-form-group--error' : '' %>">
                         <label class="govuk-label govuk-label--s" for="email">Email address </label>
                         <% if (locals.validationMessages.email !== undefined) { %>
@@ -59,9 +59,11 @@
                                 <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.email %>
                             </span>
                         <% } %>
-                        <input class="govuk-input" id="email" name="email" type="email"
+                        
+                        <input class="govuk-input govuk-!-width-one-half" id="email" name="email" type="email"
                             <% if (locals.validationMessages.email !== undefined) { %>aria-invalid="true" aria-describedby="validation-email"<% } %>
                             value="<%=locals.email%>">
+                    
                     </div>
                 </div>
             </fieldset>
