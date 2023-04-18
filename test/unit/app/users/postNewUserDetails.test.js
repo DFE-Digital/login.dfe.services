@@ -191,7 +191,7 @@ describe('when entering a new users details', () => {
       organisationId: 'org1',
       uid: '',
       validationMessages: {
-        email: 'This email address is not valid for this service. Enter an email address that is associated with your organisation.',
+        email: 'This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.',
       },
     });
   });
