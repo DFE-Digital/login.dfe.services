@@ -175,7 +175,7 @@ describe('when entering a new users details', () => {
 
   it('then it should render view if email is a blacklisted email and environment is Production', async () => {
     req.body.email = 'blacklisted.domain@hotmail.com';
-
+    config.toggles.environmentName = 'pr';
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
@@ -191,7 +191,7 @@ describe('when entering a new users details', () => {
       organisationId: 'org1',
       uid: '',
       validationMessages: {
-        email: 'This email address is not valid for this service. Enter an email address that is associated with your organisation.',
+        email: 'This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.',
       },
     });
   });
