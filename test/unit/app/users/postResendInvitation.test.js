@@ -145,7 +145,7 @@ describe('when resending an invitation', () => {
       noChangedEmail: false,
       uid: 'user1',
       validationMessages: {
-        email: 'This email address is not valid for this service.\r\n Generic email names (e.g. headmaster@, admin@) and domains (e.g. @yahoo.co.uk, @gmail.co.uk) compromise security.\r\n Enter an email address that is associated with your organisation.',
+        email: 'This email address is not valid for this service. Generic email names (e.g. headmaster@, admin@) and domains (e.g. @yahoo.co.uk, @gmail.co.uk) compromise security. Enter an email address that is associated with your organisation.',
       },
     });
   });

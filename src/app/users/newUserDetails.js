@@ -74,7 +74,7 @@ const validate = async (req) => {
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
     model.validationMessages.email = 'Please enter a valid email address';
   } else if (config.toggles.environmentName === 'pr' && emailPolicy.isBlacklistedEmail(model.email)) {
-    model.validationMessages.email = 'This email address is not valid for this service.\r\n Generic email names (e.g. headmaster@, admin@) and domains (e.g. @yahoo.co.uk, @gmail.co.uk) compromise security.\r\n Enter an email address that is associated with your organisation.';
+    model.validationMessages.email = 'This email address is not valid for this service. Generic email names (e.g. headmaster@, admin@) and domains (e.g. @yahoo.co.uk, @gmail.co.uk) compromise security. Enter an email address that is associated with your organisation.';
   } else {
     const existingUser = await Account.getByEmail(model.email);
     const existingInvitation = await Account.getInvitationByEmail(model.email);
