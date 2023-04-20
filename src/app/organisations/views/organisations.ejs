@@ -103,6 +103,9 @@
                                 URN
                             </th>
                             <th scope="col" class="govuk-table__header">
+                                UPIN
+                            </th>
+                            <th scope="col" class="govuk-table__header">
                                 UKPRN
                             </th>
                             <th scope="col" class="govuk-table__header">
@@ -126,6 +129,7 @@
                                     <p><%= organisation.name %></p>
                                 </th>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.urn %></td>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.upin %></td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.ukprn %></td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                             <% if (organisation.status) { %>
