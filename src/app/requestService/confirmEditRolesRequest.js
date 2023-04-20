@@ -88,10 +88,10 @@ const post = async (req, res) => {
   const baseUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`;
   const approveUrl = `${baseUrl}/request-service/${organisationId}/users/${uid}/services/${serviceId}/roles/${encodeURIComponent(
     JSON.stringify(selectedRoleIds),
-  )}/approve-roles-request?reqId=${subServiceReqId}`;
+  )}/${subServiceReqId}/approve-roles-request`;
   const rejectUrl = `${baseUrl}/request-service/${organisationId}/users/${uid}/services/${serviceId}/roles/${encodeURIComponent(
     JSON.stringify(selectedRoleIds),
-  )}/reject-roles-request?reqId=${subServiceReqId}`;
+  )}/${subServiceReqId}/reject-roles-request`;
 
   const helpUrl = `${config.hostingEnvironment.helpUrl}/requests/can-end-user-request-service`;
 

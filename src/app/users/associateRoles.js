@@ -129,8 +129,17 @@ const post = async (req, res) => {
     const nextService = currentService + 1;
     return res.redirect(`${req.session.user.services[nextService].serviceId}`);
   } else {
+// TODO: refactor this code block
     return req.session.user.uid
-      ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`)
+      ? req.query.action === 'request-sub-service' && req.session.subServiceReqId
+        ? res.redirect(
+            `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/request-service/${
+              req.params.orgId
+            }/users/${req.session.user.uid}/services/${req.params.sid}/roles/${encodeURIComponent(
+              JSON.stringify(selectedRoles),
+            )}/${req.session.subServiceReqId}/approve-roles-request`,
+          )
+        : res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`)
       : res.redirect(`/approvals/${req.params.orgId}/users/confirm-new-user`);
   }
 };

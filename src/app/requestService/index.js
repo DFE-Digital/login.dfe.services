@@ -14,8 +14,8 @@ const { get: getApproveServiceRequest, post: postApproveServiceRquest } = requir
 const { get: getRejectServiceRequest, post: postRejectServiceRquest } = require('./rejectServiceRequest');
 
 //TODO: update after completing NSA-6856
-// const { get: getApproveRolesRequest, post: postApproveRolesRquest } = require('./approveRolesRequest');
-// const { get: getRejectRolesRequest, post: postRejectRolesRquest } = require('./rejectRolesRequest');
+const { get: getApproveRolesRequest, post: postApproveRolesRquest } = require('./approveRolesRequest');
+const { get: getRejectRolesRequest, post: postRejectRolesRquest } = require('./rejectRolesRequest');
 
 const router = express.Router({ mergeParams: true });
 
@@ -58,11 +58,31 @@ const requestService = (csrf) => {
 
   //TODO: update after completing NSA-6856
 
-  // router.get('/:orgId/users/:uid/services/:sid/roles/:rids/approve-roles-request', csrf, isApprover, asyncWrapper(getApproveRolesRequest));
-  // router.get('/:orgId/users/:uid/services/:sid/roles/:rids/reject-roles-request', csrf, isApprover, asyncWrapper(getRejectRolesRequest));
+  router.get(
+    '/:orgId/users/:uid/services/:sid/roles/:rids/:reqID/approve-roles-request',
+    csrf,
+    isApprover,
+    asyncWrapper(getApproveRolesRequest),
+  );
+  router.get(
+    '/:orgId/users/:uid/services/:sid/roles/:rids/:reqID/reject-roles-request',
+    csrf,
+    isApprover,
+    asyncWrapper(getRejectRolesRequest),
+  );
 
-  // router.post('/:orgId/users/:uid/services/:sid/roles/:rids/approve-roles-request', csrf, isApprover, asyncWrapper(postApproveRolesRquest));
-  // router.post('/:orgId/users/:uid/services/:sid/roles/:rids/reject-roles-request', csrf, isApprover, asyncWrapper(postRejectRolesRquest));
+  router.post(
+    '/:orgId/users/:uid/services/:sid/roles/:rids/:reqID/approve-roles-request',
+    csrf,
+    isApprover,
+    asyncWrapper(postApproveRolesRquest),
+  );
+  router.post(
+    '/:orgId/users/:uid/services/:sid/roles/:rids/:reqID/reject-roles-request',
+    csrf,
+    isApprover,
+    asyncWrapper(postRejectRolesRquest),
+  );
   return router;
 };
 module.exports = requestService;
