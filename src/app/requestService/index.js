@@ -13,7 +13,6 @@ const { get: getConfirmServiceRequest, post: postConfirmServiceRquest } = requir
 const { get: getApproveServiceRequest, post: postApproveServiceRquest } = require('./approveServiceRequest');
 const { get: getRejectServiceRequest, post: postRejectServiceRquest } = require('./rejectServiceRequest');
 
-//TODO: update after completing NSA-6856
 const { get: getApproveRolesRequest, post: postApproveRolesRquest } = require('./approveRolesRequest');
 const { get: getRejectRolesRequest, post: postRejectRolesRquest } = require('./rejectRolesRequest');
 
@@ -55,8 +54,6 @@ const requestService = (csrf) => {
   
   router.post('/:orgId/users/:uid/services/:sid/roles/:rids/approve', csrf, isApprover, asyncWrapper(postApproveServiceRquest));
   router.post('/:orgId/users/:uid/services/:sid/roles/:rids/reject', csrf, isApprover, asyncWrapper(postRejectServiceRquest));
-
-  //TODO: update after completing NSA-6856
 
   router.get(
     '/:orgId/users/:uid/services/:sid/roles/:rids/:reqID/approve-roles-request',
