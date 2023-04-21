@@ -31,21 +31,14 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
       })
       .filter((x) => x);
 
-    const pimsStatusMap = [
-      { id:'5', name: 'Dissolved' },
-      { id:'6', name: 'In Liquidation' },
-      { id:'8', name: 'Locked Duplicate' },
-      { id:'10', name: 'Locked Restructure' }
-    ];
-    const pimsStatusName = pimsStatusMap.find(p => p.id === organisation.organisation.pimStatus);
     return {
       id: organisation.organisation.id,
       name: organisation.organisation.name,
       urn: organisation.organisation.urn,
       uid: organisation.organisation.uid,
+      upin: organisation.organisation.upin,
       ukprn: organisation.organisation.ukprn,
       status: organisation.organisation.status,
-      pimsStatusName: pimsStatusName? pimsStatusName.name : null,
       role: organisation.role,
       approvers,
     };
@@ -58,8 +51,9 @@ const getAndMapPendingRequests = async (account, correlationId) => {
     id: org.org_id,
     name: org.org_name,
     urn: org.urn,
-    ukprn: org.ukprn,
     uid: org.uid,
+    upin: org.upin,
+    ukprn: org.ukprn,
     status: org.org_status,
     requestDate: org.created_date,
     requestStatus: org.status.id,
