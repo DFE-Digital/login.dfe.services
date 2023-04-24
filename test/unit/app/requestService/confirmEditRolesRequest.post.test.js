@@ -33,10 +33,10 @@ describe('When confirming and submiting a sub-service request', () => {
   const helpUrl = 'https://localhost:3001/help/requests/can-end-user-request-service';
   const rejectUrl = `${baseUrl}/request-service/org1/users/user1/services/service1/roles/${encodeURIComponent(
     JSON.stringify(['role1']),
-  )}/reject-roles-request?reqId=new-uuid`;
+  )}/new-uuid/reject-roles-request`;
   let approveUrl = `${baseUrl}/request-service/org1/users/user1/services/service1/roles/${encodeURIComponent(
     JSON.stringify(['role1']),
-  )}/approve-roles-request?reqId=new-uuid`;
+  )}/new-uuid/approve-roles-request`;
   const loggerAuditMessage =
     'user.one@unit.test (userId: user1) requested service roles update for (serviceId: service1) and roles (roleIds: ["role1"]) for organisation (orgId: org1) - requestId (reqId: new-uuid)';
 
@@ -46,6 +46,7 @@ describe('When confirming and submiting a sub-service request', () => {
       uid: 'user1',
       orgId: 'org1',
       sid: 'service1',
+      reqID: 'reqID-1212',
     };
 
     req.session = {

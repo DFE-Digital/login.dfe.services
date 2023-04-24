@@ -68,12 +68,16 @@
                                     There are no available sub-services.
                                 </h2>
                             </legend> 
+                            <div class="govuk-inset-text govuk-!-margin-top-0 govuk-!-margin-bottom-0"> You can only submit a request if at least 1 subservice is available.</div>
                         <% } %>
 
                     </fieldset>
                 </div>
+                
                 <div class="govuk-button-group">
+                    <% if (locals.serviceRoles.length > 0) { %>
                     <button type="submit" class="govuk-button">Continue</button>
+                    <% } %>
                     <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
                 </div>
             </form>

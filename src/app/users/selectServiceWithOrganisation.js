@@ -17,7 +17,7 @@ const buildPageTitle = (req) => {
   if (isRemoveService(req)) {
     return 'Remove which service?';
   }
-  return 'View or Edit which service?';
+  return 'Which service do you want to review or edit?';
 };
 
 const renderSelectServiceWithOrganisationPage = (req, res, model) => {
@@ -41,13 +41,7 @@ const buildRedirectURL = (req, serviceOrgDetails) => {
 
 const get = async (req, res) => {
   // get visible service orgs for this user: checking isExternalService, hideApprover, user is approver at that org
-  //TODO: update after bumping DAO version
-  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(
-    req.user.sub,
-    undefined,
-    undefined,
-    false,
-  );
+  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(req.user.sub, false);
   buildAdditionalOrgDetails(serviceOrganisations);
   const model = {
     csrfToken: req.csrfToken(),
@@ -82,12 +76,7 @@ const validate = (req) => {
 
 const post = async (req, res) => {
   const model = validate(req);
-  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(
-    req.user.sub,
-    undefined,
-    undefined,
-    false,
-  );
+  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(req.user.sub, false);
   buildAdditionalOrgDetails(serviceOrganisations);
 
   // persist selected org in session

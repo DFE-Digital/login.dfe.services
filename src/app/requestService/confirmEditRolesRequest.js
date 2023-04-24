@@ -110,7 +110,6 @@ const post = async (req, res) => {
     helpUrl,
   );
 
-  //TODO: to doublecheck why the logger is not publishing to the Audit DB
   logger.audit({
     type: 'services',
     subType: 'sub-services-request',
