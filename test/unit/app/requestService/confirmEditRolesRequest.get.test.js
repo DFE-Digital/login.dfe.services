@@ -148,7 +148,7 @@ describe('when displaying the edit roles Review request view', () => {
     await getConfirmEditRolesRequest(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      cancelLink: `/approvals/users/${req.params.uid}`,
+      cancelLink: '/my-services',
     });
   });
 

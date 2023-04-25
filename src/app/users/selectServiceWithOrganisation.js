@@ -17,7 +17,7 @@ const buildPageTitle = (req) => {
   if (isRemoveService(req)) {
     return 'Remove which service?';
   }
-  return 'Which service do you want to review or edit?';
+  return 'Which service do you want to view or edit?';
 };
 
 const renderSelectServiceWithOrganisationPage = (req, res, model) => {

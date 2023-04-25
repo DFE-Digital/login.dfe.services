@@ -63,7 +63,7 @@ describe('when displaying the select service with organisation page', () => {
       currentPage: 'services',
       backLink: '/my-services',
       action: actions.EDIT_SERVICE,
-      title: 'Which service do you want to review or edit?',
+      title: 'Which service do you want to view or edit?',
     });
   });
 

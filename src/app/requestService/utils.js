@@ -41,7 +41,7 @@ const createServiceRequest = async (reqId, userId, serviceId, rolesIds, organisa
     organisation_id: organisationId,
     status: status.id,
     actioned_reason: status.description,
-    requet_type: requestType,
+    request_type: requestType,
   });
 };
 

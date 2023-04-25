@@ -87,6 +87,7 @@ const getViewModel = async (req) => {
     ? req.session.user.services.find((x) => x.serviceId === req.params.sid)
     : [];
 
+  const isRequestSubService = req.query.action === 'request-sub-service' && req.session.subServiceReqId ? true : false;
   return {
     csrfToken: req.csrfToken(),
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
@@ -100,6 +101,7 @@ const getViewModel = async (req) => {
     serviceRoles,
     currentService,
     totalNumberOfServices,
+    isRequestSubService,
   };
 };
 
