@@ -175,7 +175,7 @@ describe('when entering a new users details', () => {
 
   it('then it should render view if email is a blacklisted email and environment is Production', async () => {
     req.body.email = 'blacklisted.domain@hotmail.com';
-
+    config.toggles.environmentName = 'pr';
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);

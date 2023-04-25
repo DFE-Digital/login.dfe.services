@@ -51,7 +51,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="govuk-grid-column-one-half">
+                <div class="govuk-grid-column-full">
                     <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'govuk-form-group--error' : '' %>">
                         <label class="govuk-label govuk-label--s" for="email">Email address </label>
                         <% if (locals.validationMessages.email !== undefined) { %>
@@ -59,9 +59,11 @@
                                 <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.email %>
                             </span>
                         <% } %>
-                        <input class="govuk-input" id="email" name="email" type="email"
+                        
+                        <input class="govuk-input govuk-!-width-one-half" id="email" name="email" type="email"
                             <% if (locals.validationMessages.email !== undefined) { %>aria-invalid="true" aria-describedby="validation-email"<% } %>
                             value="<%=locals.email%>">
+                    
                     </div>
                 </div>
             </fieldset>

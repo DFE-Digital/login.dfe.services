@@ -68,7 +68,7 @@ const validate = async (req) => {
   } else if (!userRegex.test(model.lastName)) {
     model.validationMessages.lastName = 'Special characters cannot be used';
   }
-  
+
   if (!model.email) {
     model.validationMessages.email = 'Please enter an email address';
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
