@@ -72,6 +72,17 @@
                 </div>
                 <% } %>
 
+                <% if (locals.organisation.upin) { %>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            UPIN
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= locals.organisation.upin %>
+                        </dd>
+                    </div>
+                <% } %>
+    
                 <% if (locals.organisation.ukprn) { %>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
