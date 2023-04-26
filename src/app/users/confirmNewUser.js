@@ -196,17 +196,17 @@ const post = async (req, res) => {
         await addInvitationService(invitationId, service.serviceId, organisationId, service.roles, req.id);
       } else {
         await addUserService(uid, service.serviceId, organisationId, service.roles, req.id);
+        // Notification for service added not required while creating the user invitation
+        await notificationClient.sendServiceRequestApproved(
+            req.session.user.email,
+            req.session.user.firstName,
+            req.session.user.lastName,
+            org,
+            serviceDetails.name,
+            roleDetails.map((i) => i.name),
+            mngUserOrgPermission,
+        );
       }
-
-      await notificationClient.sendServiceRequestApproved(
-        req.session.user.email,
-        req.session.user.firstName,
-        req.session.user.lastName,
-        org,
-        serviceDetails.name,
-        roleDetails.map((i) => i.name),
-        mngUserOrgPermission,
-      );
     }
   }
 
