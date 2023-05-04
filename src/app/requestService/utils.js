@@ -31,7 +31,7 @@ const updateServiceRequest = async (reqId, statusId, approverId, reason) => {
   return result;
 };
 
-const createServiceRequest = async (reqId, userId, serviceId, rolesIds, organisationId, statusId) => {
+const createServiceRequest = async (reqId, userId, serviceId, rolesIds, organisationId, statusId, requestType) => {
   const status = mapUserServiceRequestStatus(statusId);
   return await services.putUserServiceRequest({
     id: reqId,
@@ -41,6 +41,7 @@ const createServiceRequest = async (reqId, userId, serviceId, rolesIds, organisa
     organisation_id: organisationId,
     status: status.id,
     actioned_reason: status.description,
+    request_type: requestType,
   });
 };
 

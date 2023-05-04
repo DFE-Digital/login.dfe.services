@@ -168,6 +168,14 @@ const getOrgNaturalIdentifiers = (org) => {
   return naturalIdentifiers;
 };
 
+const isOrgEndUser = (userOrganisations, orgId) => {
+  if (userOrganisations) {
+    const org = userOrganisations.filter((x) => x.organisation.id === orgId);
+    return org.filter((x) => x.role.id === 0).length > 0;
+  }
+  return false;
+};
+
 module.exports = {
   getUserDetails,
   getAllServicesForUserInOrg,
@@ -188,4 +196,5 @@ module.exports = {
   isAddService,
   isEditService,
   isRemoveService,
+  isOrgEndUser,
 };

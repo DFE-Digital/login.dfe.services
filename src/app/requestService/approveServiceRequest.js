@@ -93,12 +93,12 @@ const get = async (req, res) => {
     const userServiceRequestStatus = await getUserServiceRequestStatus(userServiceRequestId);
     if (userServiceRequestStatus === -1) {
       viewModel.validationMessages = {};
-      return res.render('requestService/views/serviceAlreadyRejected', viewModel);
+      return res.render('requestService/views/requestAlreadyRejected', viewModel);
     }
 
     if (userServiceRequestStatus === 1) {
       viewModel.validationMessages = {};
-      return res.render('requestService/views/serviceAlreadyApproved', viewModel);
+      return res.render('requestService/views/requestAlreadyApproved', viewModel);
     }
   }
 
@@ -113,7 +113,7 @@ const get = async (req, res) => {
       if (userServiceRequestId) {
         await updateServiceRequest(userServiceRequestId, 1, req.user.sub);
       }
-      return res.render('requestService/views/serviceAlreadyApproved', viewModel);
+      return res.render('requestService/views/requestAlreadyApproved', viewModel);
     }
   }
 
@@ -195,12 +195,12 @@ const post = async (req, res) => {
 
     if (updateServiceReq.success === false && resStatus === -1) {
       model.validationMessages = {};
-      return res.render('requestService/views/serviceAlreadyRejected', viewModel);
+      return res.render('requestService/views/requestAlreadyRejected', viewModel);
     }
 
     if (updateServiceReq.success === false && resStatus === 1) {
       model.validationMessages = {};
-      return res.render('requestService/views/serviceAlreadyApproved', viewModel);
+      return res.render('requestService/views/requestAlreadyApproved', viewModel);
     }
   }
 
