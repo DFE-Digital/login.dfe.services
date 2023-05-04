@@ -98,13 +98,6 @@ const saveRoleInSession = (req, selectedRoles) => {
   };
 };
 
-// const haveRolesNotBeenUpdated = (req, selectedRoles) => {
-//   if (req.session.service && req.session.service.roles) {
-//     return _.isEqual(req.session.service.roles.map((item) => item.id).sort(), selectedRoles.sort());
-//   }
-//   return true;
-// };
-
 module.exports = {
   get,
   post,

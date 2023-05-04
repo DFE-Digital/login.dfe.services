@@ -26,7 +26,7 @@ const renderSelectServiceWithOrganisationPage = (req, res, model) => {
 
 const buildRedirectURL = (req, serviceOrgDetails) => {
   const orgId = serviceOrgDetails.Organisation.id;
-  const isEndUser = isOrgEndUser(req, orgId);
+  const isEndUser = isOrgEndUser(req.userOrganisations, orgId);
   let redirectURL;
   if (isEndUser) {
     redirectURL = `/request-service/${orgId}/users/${req.user.sub}/edit-services/${serviceOrgDetails.Service.id}`;
