@@ -6,7 +6,7 @@ const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const router = express.Router({ mergeParams: true });
-const getOrganisationRequests = require('./getOrganisationRequests');
+const { get: getAllRequestsForApproval, post: postAllRequestsForApproval } = require('./getAllRequestsForApproval');
 const {
   get: getReviewOrganisationRequest,
   post: postReviewOrganisationRequest,
@@ -21,7 +21,6 @@ const action = (csrf, app) => {
   logger.info('Mounting accessRequest routes');
 
   router.use(isLoggedIn);
-  
   router.get(
     '/',
     asyncWrapper((req, res) => {
@@ -33,11 +32,22 @@ const action = (csrf, app) => {
     }),
   );
 
-  router.get('/requests', csrf, isApproverInSomeOrgs, asyncWrapper(getOrganisationRequests));
-  router.get('/requests/:rid', csrf, isApproverInSomeOrgs, asyncWrapper(getReviewOrganisationRequest));
-  router.post('/requests/:rid', csrf, isApproverInSomeOrgs, asyncWrapper(postReviewOrganisationRequest));
-  router.get('/requests/:rid/rejected', csrf, isApproverInSomeOrgs, asyncWrapper(getRejectOrganisationRequest));
-  router.post('/requests/:rid/rejected', csrf, isApproverInSomeOrgs, asyncWrapper(postRejectOrganisationRequest));
+  router.get('/requests', csrf, isApproverInSomeOrgs, asyncWrapper(getAllRequestsForApproval));
+  router.post('/requests', csrf, isApproverInSomeOrgs, asyncWrapper(postAllRequestsForApproval));
+  router.get('/organisation-requests/:rid', csrf, isApproverInSomeOrgs, asyncWrapper(getReviewOrganisationRequest));
+  router.post('/organisation-requests/:rid', csrf, isApproverInSomeOrgs, asyncWrapper(postReviewOrganisationRequest));
+  router.get(
+    '/organisation-requests/:rid/rejected',
+    csrf,
+    isApproverInSomeOrgs,
+    asyncWrapper(getRejectOrganisationRequest),
+  );
+  router.post(
+    '/organisation-requests/:rid/rejected',
+    csrf,
+    isApproverInSomeOrgs,
+    asyncWrapper(postRejectOrganisationRequest),
+  );
 
   return router;
 };

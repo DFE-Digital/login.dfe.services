@@ -96,7 +96,7 @@
                         </div>
                     <% } %>
                     <!-- If user is an approver, and there are requests pending, show this banner -->
-                    <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
+                    <% if (locals.totalNumberOfAccessRequests && locals.totalNumberOfAccessRequests > 0) { %>
                         <div id="notification-wrapper-approver-request"
                             class="govuk-notification-banner"
                             role="region"

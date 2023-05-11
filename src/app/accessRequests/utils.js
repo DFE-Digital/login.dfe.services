@@ -1,5 +1,7 @@
 const { getRequestById } = require('./../../infrastructure/organisations');
 const Account = require('./../../infrastructure/account');
+const flatten = require('lodash/flatten');
+const uniq = require('lodash/uniq');
 
 const getAndMapOrgRequest = async (req) => {
   const request = await getRequestById(req.params.rid, req.id);
@@ -16,6 +18,16 @@ const getAndMapOrgRequest = async (req) => {
   return mappedRequest;
 };
 
+const getUserDetails = async (usersForApproval) => {
+  const allUserId = flatten(usersForApproval.map((user) => user.user_id));
+  if (allUserId.length === 0) {
+    return [];
+  }
+  const distinctUserIds = uniq(allUserId);
+  return await Account.getUsersById(distinctUserIds);
+};
+
 module.exports = {
   getAndMapOrgRequest,
+  getUserDetails,
 };

@@ -103,7 +103,7 @@ describe('when rejecting an organisation request', () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/rejectOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: "/access-requests/requests/1",
+      backLink: '/access-requests/organisation-requests/1',
       cancelLink: '/access-requests/requests',
       csrfToken: 'token',
       request: {
@@ -143,7 +143,7 @@ describe('when rejecting an organisation request', () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/rejectOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: "/access-requests/requests/1",
+      backLink: '/access-requests/organisation-requests/1',
       cancelLink: '/access-requests/requests',
       csrfToken: 'token',
       request: {

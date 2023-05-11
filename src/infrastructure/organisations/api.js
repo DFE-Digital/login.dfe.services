@@ -113,6 +113,14 @@ const getRequestsForOrganisations = async (organisationIds, correlationId) => {
   return callApi('GET', `/organisations/${organisationIds}/requests/all`, correlationId);
 };
 
+const getAllRequestsTypesForApprover = async (uid, pageSize, pageNumber, correlationId) => {
+  return callApi(
+    'GET',
+    `/organisations/org-service-subService-requests-for-approval/${uid}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    correlationId,
+  );
+};
+
 const getRequestById = async (...args) => {
   const { dataValues, ...request } = await organisation.getUserOrganisationRequest(...args);
   return { ...dataValues, ...request, org_id: dataValues.organisation_id, org_name: dataValues.Organisation.name };
@@ -176,4 +184,5 @@ module.exports = {
   getApproversForOrganisation,
   getLatestRequestAssociatedWithUser,
   getCategories,
+  getAllRequestsTypesForApprover,
 };
