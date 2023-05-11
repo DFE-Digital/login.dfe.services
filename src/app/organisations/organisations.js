@@ -3,6 +3,7 @@
 const {
   getOrganisationAndServiceForUser,
   getPendingRequestsAssociatedWithUser,
+  getAllRequestsTypesForApprover,
 } = require('./../../infrastructure/organisations');
 const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
@@ -80,6 +81,8 @@ const organisations = async (req, res) => {
   const sortedOrgs = sortBy(allOrgs, 'name');
   const approverRequests = req.organisationRequests || [];
   const disableReqOrgLink = await disableRequestOrgLink(organisationRequests, organisations);
+  const { totalNumberOfRecords } = await getAllRequestsTypesForApprover(req.user.sub, req.id);
+  const totalNumberOfAccessRequests = totalNumberOfRecords;
 
   return res.render('organisations/views/organisations', {
     title: 'Organisations',
@@ -88,6 +91,7 @@ const organisations = async (req, res) => {
     currentPage: 'organisations',
     approverRequests,
     disableReqOrgLink,
+    totalNumberOfAccessRequests,
   });
 };
 
