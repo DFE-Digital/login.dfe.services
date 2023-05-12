@@ -122,9 +122,15 @@
                                     <%= request.status.name %>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                                    <a class="govuk-link" href="<%= request.request_type.id %>-requests/<%= request.id %>">
+                                    <% if(request.request_type.id  === 'service') { %>
+                                    <a class="govuk-link" href="<%= request.request_type.id %>-requests/<%= request.id %>/<%=request.org_id %>/users/<%= request.user_id  %>/services/<%= request.service_id %>/roles/<%=encodeURIComponent(request.role_ids) %>">
                                         Review
                                     </a>
+                                    <% } else { %>
+                                        <a class="govuk-link" href="<%= request.request_type.id %>-requests/<%= request.id %>">
+                                            Review
+                                        </a>
+                                    <% } %>
                                 </td>
                             </tr>
                     <% } %>
