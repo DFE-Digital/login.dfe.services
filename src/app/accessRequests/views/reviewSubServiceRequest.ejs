@@ -1,0 +1,126 @@
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                Review request
+            </h1>
+            <p class="govuk-body-l">Review these details before adding <%= locals.userName %>
+                to <%= locals.Role_name %>.</p>
+
+            <h2 class="govuk-heading-m">
+                Request details
+            </h2>
+
+            <dl class="govuk-summary-list">
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.userName %>
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Email Address
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.usersEmail %>
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Date
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.moment(locals.created_date).format('DD MMM YYYY') %>
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Organisation
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.org_name %>
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.Service_name %>
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Sub-Service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.Role_name %>
+                    </dd><a >Amend</a>
+                </div>
+
+                <% if (locals.reason) { %>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Reason
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.reason %>
+                    </dd>
+                </div>
+                <% } %>
+
+            </dl>
+
+            <form method="post" class="prevent-form-double-submission">
+                
+                <div class="govuk-form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'govuk-form-group--error' : '' %>">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                    
+                    <fieldset class="govuk-fieldset">
+
+                        <% if (locals.validationMessages.selectedResponse !== undefined) { %>
+                            <span id="validation-selected-organisation" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.selectedResponse %>
+                            </span>
+                        <% } %>
+
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                            <h2 class="govuk-fieldset__legend__heading">Your response</h2>
+                        </legend>
+
+                        <div class="govuk-radios govuk-radios--inline">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="approve" name="selectedResponse" type="radio" value="approve">
+                                <label class="govuk-label govuk-radios__label" for="approve">
+                                Approve
+                                </label>
+                            </div>
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="reject" name="selectedResponse" type="radio" value="reject">
+                                <label class="govuk-label govuk-radios__label" for="reject">
+                                Reject
+                                </label>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Confirm</button>
+                    <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
