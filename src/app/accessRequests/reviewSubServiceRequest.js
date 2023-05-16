@@ -2,7 +2,7 @@ const { getAllRequestsTypesForApprover ,getApproversForOrganisation} = require('
 const { listRolesOfService } = require('../../infrastructure/access');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { getUserDetails } = require('./utils');
-
+const { actions } = require('../constans/actions');
 const getAllRequestsForApproval = async (req) => {
   const pageSize = 5;
   const paramsSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
@@ -37,7 +37,7 @@ const getAllRequestsForApproval = async (req) => {
 const validate = async (req) => {
   const buildmodel = await buildModel(req);
   const viewModel = await extractVieModel(buildmodel, req.params.rid, req.id);
-
+  viewModel.selectedResponse = req.body.selectedResponse;
   const model = {
     title: 'Review request - DfE Sign-in',
     backLink: `/access-requests/requests`,
@@ -49,7 +49,7 @@ const validate = async (req) => {
   };
   if (model.selectedResponse === undefined || model.selectedResponse === null) {
     model.validationMessages.selectedResponse = 'Approve or Reject must be selected';
-    model.viewModel.selectedResponse =  'Approve or Reject must be selected';
+    model.viewModel.validationMessages.selectedResponse =  'Approve or Reject must be selected';
   } else if (model.viewModel.approverEmail) {
     model.validationMessages.selectedResponse = `Request already actioned by ${model.viewModel.approverEmail}`;
     model.viewModel.validationMessages.selectedResponse = `Request already actioned by ${model.viewModel.approverEmail}`;
@@ -98,8 +98,14 @@ viewModel = await getRoleAndServiceNames(viewModel, requestId);
 const get = async (req, res) => {
   const model = await buildModel(req);
   const viewModel = await extractVieModel(model, req.params.rid, req.id);
-
+ // viewModel.backLink = model.backLink;
+  viewModel.backLink =  `/access-requests/requests`;
+  req.session.rid = req.params.rid;
+//approvals/3DE9D503-6609-4239-BA55-14F8EBD69F56/users/A76A1DC8-0A38-459B-B2B2-E07767C6438B/services/DF2AE7F3-917A-4489-8A62-8B9B536A71CC
+  viewModel.subServiceAmendUrl = `/approvals/${viewModel.org_id}/users/${viewModel.user_id}/services/${viewModel.service_id}?actions=${actions.REVIEW_SUBSERVICE_REQUEST}`;
+ 
   if (viewModel.approverEmail) {
+    //question this information to be displayed without approvers email
     res.flash('warn', `Request already actioned by ${viewModel.approverEmail}`);
     return res.redirect(`/access-requests/requests`);
   }
@@ -169,29 +175,29 @@ const post = async (req, res) => {
     null,
   );
 
-  //audit organisation approved
+  //audit sub service approved
   logger.audit({
     type: 'approver',
-    subType: 'approved-org',
+    subType: 'approved-SubSevice',
     userId: req.user.sub,
     meta: {
       editedFields: [
         {
-          name: 'new_organisation',
+          name: 'Sub Service',
           oldValue: undefined,
-          newValue: model.org_id,
+          newValue: model.role_id,
         },
       ],
       editedUser: model.user_id,
     },
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.org_id})`,
+    message: `${req.user.email} (id: ${req.user.sub}) approved sub services request for ${model.org_id})`,
   });
 
   res.flash('title', `Success`);
   res.flash('heading', `Request approved: Sub Service access`);
-  res.flash('message', `${model.usersName} has been added to your organisation.`);
+  res.flash('message', `${model.usersName} has been added to your Sub Service.`);
 
   return res.redirect(`/access-requests/requests`);
 };

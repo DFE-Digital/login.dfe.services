@@ -63,8 +63,11 @@
                         Sub-Service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        <%= locals.Role_name %>
-                    </dd><a >Amend</a>
+                        <%= locals.Role_name %>&nbsp;&nbsp;
+                        <a class="govuk-link" href="<%=locals.subServiceAmendUrl %>">
+                            Amend
+                        </a>
+                    </dd>
                 </div>
 
                 <% if (locals.reason) { %>
