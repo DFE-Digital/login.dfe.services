@@ -11,16 +11,27 @@ const users = require('./app/users');
 const requestOrganisation = require('./app/requestOrganisation');
 const version = require('../package.json').version;
 const requestService = require('./app/requestService');
+const getPassportStrategy = require('./infrastructure/oidc');
 
 const routes = (app, csrf) => {
   // auth callbacks
-  app.get('/auth', passport.authenticate('oidc'));
-  app.get('/auth/cb', (req, res, next) => {
+  app.get('/auth', (req, res, next) => {
+    console.log(req.url);
+    passport.authenticate('oidc', (err, user) => {
+      console.log(err, user);
+      return next();
+    })(req, res, next);
+  });
+
+  app.get('/auth/cb', async (req, res, next) => {
     const defaultLoggedInPath = '/my-services';
+
+    console.log(req.url);
 
     if (req.query.error === 'sessionexpired') {
       return res.redirect(defaultLoggedInPath);
     }
+    passport.use('oidc', await getPassportStrategy());
     passport.authenticate('oidc', (err, user) => {
       let redirectUrl = defaultLoggedInPath;
 
@@ -47,14 +58,14 @@ const routes = (app, csrf) => {
           return next(loginErr);
         }
         if (redirectUrl.endsWith('signout/complete')) redirectUrl = '/';
-        if(!req.session.user) {
+        if (!req.session.user) {
           req.session.user = {
             uid: user.sub,
             firstName: user.given_name,
             lastName: user.family_name,
             email: user.email,
             services: [],
-            orgCount: 0
+            orgCount: 0,
           };
         }
         return res.redirect(redirectUrl);

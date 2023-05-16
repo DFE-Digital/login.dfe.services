@@ -90,17 +90,17 @@ const init = async () => {
   app.set('layout', 'layouts/layout');
   app.use(
     session({
-      resave: true,
+      resave: false,
       saveUninitialized: true,
       secret: config.hostingEnvironment.sessionSecret,
       maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
       cookie: {
         httpOnly: true,
-        secure: true,
         maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
       },
     }),
   );
+
   // register regenerate & save after the cookieSession middleware initialization
   app.use(function (request, response, next) {
     if (request.session && !request.session.regenerate) {

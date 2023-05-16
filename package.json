@@ -50,6 +50,7 @@
     "login.dfe.sanitization": "git+https://github.com/DFE-Digital/login.dfe.sanitization.git#v2.0.0",
     "login.dfe.validation": "github:DFE-Digital/login.dfe.validation.git#v1.3.2",
     "login.dfe.winston-appinsights": "git+https://github.com/DFE-Digital/login.dfe.winston-appinsights.git#4.0",
+    "memorystore": "^1.6.7",
     "moment": "^2.19.3",
     "node-cache": "^5.1.0",
     "openid-client": "^5.4.0",
