@@ -74,9 +74,15 @@ const get = async (req, res) => {
   }
 
   const model = await getViewModel(req);
+  
   model.service.roles = model.userService.roles;
+  if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
+    let roles = [];
+    roles.push(req.session.role);
+    model.service.roles = roles;
+    
+  }
   saveRoleInSession(req, model.service.roles);
-
   renderEditServicePage(req, res, model);
 };
 
@@ -89,7 +95,7 @@ const post = async (req, res) => {
   if (!(selectedRoles instanceof Array)) {
     selectedRoles = [req.body.role];
   }
-
+ 
   const policyValidationResult = await policyEngine.validate(
     req.params.uid.startsWith('inv-') ? undefined : req.params.uid,
     req.params.orgId,
@@ -105,18 +111,23 @@ const post = async (req, res) => {
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
     renderEditServicePage(req, res, model);
   }
-
+ 
   saveRoleInSession(req, selectedRoles);
 
   let nexturl = `${req.params.sid}/confirm-edit-service`;
-  if (isUserManagement(req)) {
-    nexturl += '?manage_users=true';
-  }
+ 
+    if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
+      req.session.roleId = selectedRoles[0];
+      nexturl = `/access-requests/subService-requests/${req.session.rid}`;
+    }else if(isUserManagement(req)){
+     nexturl += '?manage_users=true';
+    }
 
   return res.redirect(nexturl);
 };
 
 const saveRoleInSession = (req, selectedRoles) => {
+
   req.session.service = {
     roles: selectedRoles,
   };
