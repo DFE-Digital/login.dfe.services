@@ -23,9 +23,23 @@ const buildBackLink = (req) => {
   if(isEditServiceUrl) {
     return `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.EDIT_SERVICE}`
   } else if (!isUserManagement(req)) {
-    return `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
-  } else {
+      if (req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST) {
+        return `/access-requests/subService-requests/${req.session.rid}`;
+      }else
+      return `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
+  }  else {
     return `/approvals/users/${req.params.uid}`;
+  }
+};
+
+const BuildCencelLick= (req) =>{
+  if (!isUserManagement(req)) {
+    if (req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST) {
+      return `/access-requests/subService-requests/${req.session.rid}`;
+    }else
+    return `/approvals/users/${req.params.uid}`;
+  }else{
+    return  `/my-services`;
   }
 };
 
@@ -44,7 +58,7 @@ const getViewModel = async (req) => {
   const application = await getApplication(req.params.sid, req.id);
   return {
     backLink: buildBackLink(req),
-    cancelLink: isManage ? `/approvals/users/${req.params.uid}` : `/my-services`,
+    cancelLink: BuildCencelLick(req),
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisationDetails,

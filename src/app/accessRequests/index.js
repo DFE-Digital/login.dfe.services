@@ -12,6 +12,10 @@ const {
   post: postReviewOrganisationRequest,
 } = require('./reviewOrganisationRequest');
 const {
+  get: getReviewSubServiceRequest,
+  post: postReviewSubServiceRequest,
+} = require('./reviewSubServiceRequest');
+const {
   get: getRejectOrganisationRequest,
   post: postRejectOrganisationRequest,
 } = require('./rejectOrganisationRequest');
