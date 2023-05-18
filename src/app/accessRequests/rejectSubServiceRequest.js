@@ -1,5 +1,6 @@
-const { updateRequestById } = require('./../../infrastructure/organisations');
-const { getAllRequestsTypesForApprover, updateSubServiceRequestById} = require('../../infrastructure/organisations');
+const {updateServiceRequest} = require('../requestService/utils');
+const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
+const { getAllRequestsTypesForApprover} = require('../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { listRolesOfService} = require('../../infrastructure/access');
 const logger = require('./../../infrastructure/logger');
@@ -7,9 +8,6 @@ const { getUserDetails } = require('./utils');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
 const getRoleAndServiceNames = async(subModel, requestId, req) => {
     let serviceId = subModel.service_id;
     let roleIds = subModel.role_ids;
@@ -127,36 +125,62 @@ const post = async (req, res) => {
 
   // patch request with rejection
   const actionedDate = Date.now();
-  const updateServiceReq =  await updateSubServiceRequestById(req.user.sub, model.viewModel.service_id, model.viewModel.org_id, model.viewModel.role_ids, req.id);
-  //await updateRequestById(req.params.rid, -1, req.user.sub, model.reason, actionedDate, req.id);
-
+  //reqId, statusId, approverId, reason
+  const request = await updateServiceRequest(req.params.rid,-1,req.user.sub,model.reason);
+ if(request.success)
+ {
   //send rejected email
-  await notificationClient.sendAccessRequest(
-    model.viewModel.usersEmail,
-    model.viewModel.usersName,
-    model.viewModel.org_name,
-    false,
-    model.reason,
-  );
+  const isEmailAllowed = await isServiceEmailNotificationAllowed();
+  if (!isEmailAllowed) {
+    const notificationClient = new NotificationClient({
+      connectionString: config.notifications.connectionString,
+    });
+    let namearry = model.viewModel.userName.split(' ');
 
-  //audit organisation rejected
+    await notificationClient.sendServiceRequestRejected(
+      model.viewModel.usersEmail,
+      namearry[0],
+      namearry[1],
+      model.viewModel.org_name,
+      model.viewModel.Service_name,
+      model.viewModel.Role_name,
+      model.reason,
+    );
+  }
   logger.audit({
-    type: 'approver',
-    subType: 'rejected-org',
+    type: 'services',
+    subType: 'sub-service-request',
     userId: req.user.sub,
-    editedUser: model.viewModel.user_id,
-    reason: model.reason,
-    currentPage: 'requests',
+    userEmail: req.user.email,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.viewModel.org_id})`,
+    message: `${req.user.email} (approverId: ${
+      req.user.sub
+    }) rejected sub-service request for (serviceId: ${model.viewModel.service_id}) and sub-services (roleIds: ${JSON.stringify(
+      model.viewModel.role_ids,
+    )}) for organisation (orgId: ${model.viewModel.org_id}) for end user (endUserId: ${model.viewModel.user_id}). ${
+      model.reason ? `The reject reason is ${model.reason}` : ''
+    } - requestId (reqId: ${req.params.rid})`,
   });
 
-  res.flash('title', `Success`);
-  res.flash('heading', `Request rejected: Organisation access`);
-  res.flash('message', `${model.viewModel.userName} cannot access your organisation.`);
+  res.flash('title', 'Success');
+  res.flash('heading', 'Sub-service request rejected');
+  res.flash(
+    'message',
+    'The user who raised the request will receive an email to tell them their sub-service access request has been rejected',
+  );
 
   return res.redirect(`/access-requests/requests`);
+ }else
+ {
+  res.flash('title', 'Failed');
+  res.flash('heading', 'Sub-service request rejected');
+  res.flash(
+    'message',
+    'The user who raised the request will not receive an email to tell them their sub-service access request has been rejected becuase the action failed',
+  );
+ }
+  return res.redirect(`/access-requests/subService-requests/${req.params.rid}/rejected`);
 };
 
 module.exports = {

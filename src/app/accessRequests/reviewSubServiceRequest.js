@@ -1,5 +1,6 @@
 const { getAllRequestsTypesForApprover ,getApproversForOrganisation} = require('../../infrastructure/organisations');
-const { listRolesOfService, updateUserService, updateServiceRequest} = require('../../infrastructure/access');
+const { listRolesOfService, updateUserService} = require('../../infrastructure/access');
+const {updateServiceRequest} = require('../requestService/utils');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { getUserDetails } = require('./utils');
 const { actions } = require('../constans/actions');
@@ -103,7 +104,6 @@ viewModel = await getRoleAndServiceNames(viewModel, requestId, req);
 const get = async (req, res) => {
   const model = await buildModel(req);
   const viewModel = await extractVieModel(model, req.params.rid, req.id, req);
- // viewModel.backLink = model.backLink;
   viewModel.backLink =  `/access-requests/requests`;
   req.session.rid = req.params.rid;
   if(req.session.roleId != undefined && req.session.roleId  !== viewModel.role_ids)
@@ -114,9 +114,7 @@ const get = async (req, res) => {
     viewModel.Role_name = roleDetails.name;
     req.session.roleId =  undefined;
   }
-//approvals/3DE9D503-6609-4239-BA55-14F8EBD69F56/users/A76A1DC8-0A38-459B-B2B2-E07767C6438B/services/DF2AE7F3-917A-4489-8A62-8B9B536A71CC
   viewModel.subServiceAmendUrl = `/approvals/${viewModel.org_id}/users/${viewModel.user_id}/services/${viewModel.service_id}?actions=${actions.REVIEW_SUBSERVICE_REQUEST}`;
- 
   if (viewModel.approverEmail) {
     //question this information to be displayed without approvers email
     res.flash('warn', `Request already actioned by ${viewModel.approverEmail}`);
@@ -139,40 +137,51 @@ const post = async (req, res) => {
     model.viewModel.validationMessages={};
     return res.redirect(`/access-requests/subService-requests/${req.params.rid}/rejected`);
   }
-
+  else if(model.selectedResponse === 'Approved'){
   const actionedDate = Date.now();
   const aprover = await getApproversForOrganisation(viewModel.org_id);
   //update the request check this 
-  const updateServiceReq = await updateServiceRequest( req.params.rid, 1, aprover);
-  // update user serviuce with new roleid
-  await updateUserService(viewModel.user_id, viewModel.service_id, viewModel.org_id, viewModel.role_ids, req.id);
-
-  logger.audit({
-    type: 'approver',
-    subType: 'user-Subservice-updated',
-    userId: req.user.sub,
-    userEmail: req.user.email,
-    meta: {
-      editedFields: [
-        {
-          name: 'update_Subservice',
-          newValue: viewModel.role_ids,
+  const request = await updateServiceRequest(req.params.rid,1,req.user.sub,model.reason);
+  if (request.success){
+      // update user serviuce with new roleid
+      //await updateUserService(viewModel.user_id, viewModel.service_id, viewModel.org_id, viewModel.role_ids, req.id);
+    ///move audit from reject sub servuce
+      logger.audit({
+        type: 'approver',
+        subType: 'user-Subservice-updated',
+        userId: req.user.sub,
+        userEmail: req.user.email,
+        meta: {
+          editedFields: [
+            {
+              name: 'update_Subservice',
+              newValue: viewModel.role_ids,
+            },
+          ],
+          editedUser: uid,
         },
-      ],
-      editedUser: uid,
-    },
-    application: config.loggerSettings.applicationName,
-    env: config.hostingEnvironment.env,
-    message: `${req.user.email} (id: ${req.user.sub}) updated sub service ${viewModel.Role_name} for organisation ${viewModel.org_name} (id: ${viewModel.org_id}) for user ${req.session.user.email} (id: ${viewModel.user_id})`,
-  });
+        application: config.loggerSettings.applicationName,
+        env: config.hostingEnvironment.env,
+        message: `${req.user.email} (id: ${req.user.sub}) updated sub service ${viewModel.Role_name} for organisation ${viewModel.org_name} (id: ${viewModel.org_id}) for user ${req.session.user.email} (id: ${viewModel.user_id})`,
+      });
 
-  res.flash('title', `Success`);
-  res.flash('heading', `Sub Service amended: ${viewModel.Role_name}`);
-  res.flash('message', `The user can now access its edited functions and features.`);
-    //return res.redirect(`/approvals/users/${uid}`);
-  
-
-  return res.redirect(`/access-requests/requests`);
+      res.flash('title', `Success`);
+      res.flash('heading', `Sub Service amended: ${viewModel.Role_name}`);
+      res.flash('message', `The user can now access its edited functions and features.`);
+      return res.redirect(`/access-requests/requests`);
+    }else{
+      //model.csrfToken = req.csrfToken();
+    model.viewModel.csrfToken = req.csrfToken();
+    model.viewModel.validationMessages = 'Ooops something went wrong!'
+    return res.render('accessRequests/views/reviewSubServiceRequest', model.viewModel);
+    }
+  }
+  else{
+    
+    model.viewModel.csrfToken = req.csrfToken();
+    model.viewModel.validationMessages = 'Ooops something went wrong!'
+    return res.render('accessRequests/views/reviewSubServiceRequest', model.viewModel);
+  }
 };
 
 module.exports = {

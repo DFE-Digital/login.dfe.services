@@ -126,11 +126,6 @@ const getRequestById = async (...args) => {
   return { ...dataValues, ...request, org_id: dataValues.organisation_id, org_name: dataValues.Organisation.name };
 };
 
-const getSubServiceRequestById = async(...args) => {
-  //const {...result}  = await services.geto
-  return {...result};
-};
-
 const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt) => {
   const body = {};
   if (status) {
@@ -149,24 +144,7 @@ const updateRequestById = async (requestId, status, actionedBy, actionedReason, 
   const rowsUpdated = await organisation.updateUserOrganisationRequest(requestId, body);
   if (rowsUpdated === 0) throw new Error('ENOTFOUND');
 };
-const updateSubServiceRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt) => {
-  const body = {};
-  if (status) {
-    body.status = status;
-  }
-  if (actionedBy) {
-    body.actioned_by = actionedBy;
-  }
-  if (actionedReason) {
-    body.actioned_reason = actionedReason;
-  }
-  if (actionedAt) {
-    body.actioned_at = actionedAt;
-  }
 
-  const rowsUpdated = await services.updateSubServiceRequestById(requestId, body);
-  if (rowsUpdated === 0) throw new Error('ENOTFOUND');
-};
 const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
   const pendingRequests = await organisation.getPendingUserOrganisationRequestsForUser(userId);
   return pendingRequests;
@@ -207,6 +185,4 @@ module.exports = {
   getLatestRequestAssociatedWithUser,
   getCategories,
   getAllRequestsTypesForApprover,
-  getSubServiceRequestById,
-  updateSubServiceRequestById,
 };
