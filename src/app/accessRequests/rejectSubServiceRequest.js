@@ -131,12 +131,11 @@ const post = async (req, res) => {
  {
   //send rejected email
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
-  if (!isEmailAllowed) {
+  if (isEmailAllowed) {
     const notificationClient = new NotificationClient({
       connectionString: config.notifications.connectionString,
     });
     let namearry = model.viewModel.userName.split(' ');
-
     await notificationClient.sendServiceRequestRejected(
       model.viewModel.usersEmail,
       namearry[0],
