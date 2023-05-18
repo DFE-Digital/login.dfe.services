@@ -4,6 +4,9 @@ const {updateServiceRequest} = require('../requestService/utils');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { getUserDetails } = require('./utils');
 const { actions } = require('../constans/actions');
+const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
 const getAllRequestsForApproval = async (req) => {
   const pageSize = 5;
   const paramsSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
@@ -95,9 +98,7 @@ const extractVieModel= async (model, rid, requestId, req) => {
   viewModel.selectedResponse= null;
   viewModel.validationMessages= {};
   viewModel.currentPage= 'requests';
-//get approver for org based of orgid
-
-viewModel = await getRoleAndServiceNames(viewModel, requestId, req);
+  viewModel = await getRoleAndServiceNames(viewModel, requestId, req);
   return viewModel;
 };
 
@@ -137,49 +138,58 @@ const post = async (req, res) => {
     model.viewModel.validationMessages={};
     return res.redirect(`/access-requests/subService-requests/${req.params.rid}/rejected`);
   }
-  else if(model.selectedResponse === 'Approved'){
-  const actionedDate = Date.now();
-  const aprover = await getApproversForOrganisation(viewModel.org_id);
-  //update the request check this 
-  const request = await updateServiceRequest(req.params.rid,1,req.user.sub,model.reason);
-  if (request.success){
-      // update user serviuce with new roleid
-      //await updateUserService(viewModel.user_id, viewModel.service_id, viewModel.org_id, viewModel.role_ids, req.id);
-    ///move audit from reject sub servuce
-      logger.audit({
-        type: 'approver',
-        subType: 'user-Subservice-updated',
-        userId: req.user.sub,
-        userEmail: req.user.email,
-        meta: {
-          editedFields: [
-            {
-              name: 'update_Subservice',
-              newValue: viewModel.role_ids,
-            },
-          ],
-          editedUser: uid,
-        },
-        application: config.loggerSettings.applicationName,
-        env: config.hostingEnvironment.env,
-        message: `${req.user.email} (id: ${req.user.sub}) updated sub service ${viewModel.Role_name} for organisation ${viewModel.org_name} (id: ${viewModel.org_id}) for user ${req.session.user.email} (id: ${viewModel.user_id})`,
-      });
+  else if(model.selectedResponse === 'approve'){
+    const request = await updateServiceRequest(req.params.rid,1,req.user.sub,model.reason);
+    if (request.success){
+      const isEmailAllowed = await isServiceEmailNotificationAllowed();
+      if (isEmailAllowed) {
+        const notificationClient = new NotificationClient({
+          connectionString: config.notifications.connectionString,
+        });
+        let namearry = model.viewModel.userName.split(' ');
+        await notificationClient.sendServiceRequestApproved(
+          model.viewModel.usersEmail,
+          namearry[0],
+          namearry[1],
+          model.viewModel.org_name,
+          model.viewModel.Service_name,
+          model.viewModel.Role_name,
+          model.reason,
+        );
+      }
+        logger.audit({
+          type: 'approver',
+          subType: 'user-Subservice-updated',
+          userId: req.user.sub,
+          userEmail: req.user.email,
+          meta: {
+            editedFields: [
+              {
+                name: 'update_Subservice',
+                newValue: model.viewModel.role_ids,
+              },
+            ],
+            editedUser: req.user.sub,
+          },
+          application: config.loggerSettings.applicationName,
+          env: config.hostingEnvironment.env,
+          message: `${req.user.email} (id: ${req.user.sub}) updated sub service ${model.viewModel.Role_name} for organisation ${model.viewModel.org_name} (id: ${model.viewModel.org_id}) for user ${req.session.user.email} (id: ${model.viewModel.user_id})`,
+        });
 
-      res.flash('title', `Success`);
-      res.flash('heading', `Sub Service amended: ${viewModel.Role_name}`);
-      res.flash('message', `The user can now access its edited functions and features.`);
-      return res.redirect(`/access-requests/requests`);
+        res.flash('title', `Success`);
+        res.flash('heading', `Sub Service amended: ${model.viewModel.Role_name}`);
+        res.flash('message', `The user can now access its edited functions and features.`);
+        return res.redirect(`/access-requests/requests`);
     }else{
-      //model.csrfToken = req.csrfToken();
     model.viewModel.csrfToken = req.csrfToken();
-    model.viewModel.validationMessages = 'Ooops something went wrong!'
+    model.viewModel.validationMessages.selectedResponse = 'Ooops something went wrong!'
     return res.render('accessRequests/views/reviewSubServiceRequest', model.viewModel);
     }
   }
   else{
     
     model.viewModel.csrfToken = req.csrfToken();
-    model.viewModel.validationMessages = 'Ooops something went wrong!'
+    model.viewModel.validationMessages.selectedResponse = 'Ooops something went wrong!'
     return res.render('accessRequests/views/reviewSubServiceRequest', model.viewModel);
   }
 };
