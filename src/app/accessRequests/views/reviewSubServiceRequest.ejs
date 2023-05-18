@@ -63,14 +63,15 @@
                         Sub-Service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        
+                        <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0 govuk-!-padding-top-0">
                         <%= locals.Role_name %>
+                    </div>
+                    <div class="govuk-grid-column-one-third">
                             <a class="govuk-link" href="<%=locals.subServiceAmendUrl %>">
                                 Amend
                             </a>
-                        
+                        </div>
                    </dd>
-                    
                 </div>
 
                 <% if (locals.reason) { %>

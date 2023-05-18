@@ -142,7 +142,7 @@ const post = async (req, res) => {
     const request = await updateServiceRequest(req.params.rid,1,req.user.sub,model.reason);
     if (request.success){
       const isEmailAllowed = await isServiceEmailNotificationAllowed();
-      if (isEmailAllowed) {
+      if (isEmailAllowed && config.hostingEnvironment.env !== 'dev') {
         const notificationClient = new NotificationClient({
           connectionString: config.notifications.connectionString,
         });
@@ -178,7 +178,7 @@ const post = async (req, res) => {
 
         res.flash('title', `Success`);
         res.flash('heading', `Sub Service amended: ${model.viewModel.Role_name}`);
-        res.flash('message', `The user can now access its edited functions and features.`);
+        res.flash('message', `The user who raised the request will receive an email to tell them their sub-service access request has been approved`);
         return res.redirect(`/access-requests/requests`);
     }else{
     model.viewModel.csrfToken = req.csrfToken();

@@ -131,7 +131,7 @@ const post = async (req, res) => {
  {
   //send rejected email
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
-  if (isEmailAllowed) {
+  if (isEmailAllowed && config.hostingEnvironment.env !== 'dev') {
     const notificationClient = new NotificationClient({
       connectionString: config.notifications.connectionString,
     });
