@@ -1,26 +1,14 @@
 const {updateServiceRequest} = require('../requestService/utils');
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
-const { getAllRequestsForApproval, getSubServiceRequestVieModel } = require('./utils');
+const { getSubServiceRequestVieModel } = require('./utils');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 
-const getEveryPendingRequest = async (req) => {
-    const pagedRequests = await getAllRequestsForApproval(req);
-    return {
-      csrfToken: req.csrfToken(),
-      title: 'Requests - DfE Sign-in',
-      currentPage: 'requests',
-      requests: pagedRequests.requests,
-      page: pagedRequests.pageNumber,
-      numberOfPages: pagedRequests.numberOfPages,
-      totalNumberOfResults: pagedRequests.totalNumberOfResults,
-    };
-}; 
 
 const validate = async (req) => {
-  const buildmodel = await getEveryPendingRequest(req);
-  const viewModel = await getSubServiceRequestVieModel(buildmodel, req.params.rid, req.id);
+  const buildmodel = await getAndMapServiceRequest(req.params.rid); 
+  const viewModel = await getSubServiceRequestVieModel(buildmodel, req.id, req);
   viewModel.selectedResponse = req.body.selectedResponse;
 const model = {
   title: 'Reason for rejection - DfE Sign-in',
@@ -38,8 +26,8 @@ if (model.reason.length > 1000) {
 return model;
 };
 const get = async (req, res) => {
-    const model = await getEveryPendingRequest(req);
-    const viewModel = await getSubServiceRequestVieModel(model, req.params.rid, req.id, req);
+    const model = await getAndMapServiceRequest(req.params.rid); 
+    const viewModel = await getSubServiceRequestVieModel(model, req.id, req);
     viewModel.backLink =  `/access-requests/requests`;
   return res.render('accessRequests/views/rejectSubServiceRequest', {
     csrfToken: req.csrfToken(),

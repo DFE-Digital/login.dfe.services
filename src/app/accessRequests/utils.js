@@ -1,4 +1,4 @@
-const { getRequestById} = require('./../../infrastructure/organisations');
+
 const { listRolesOfService } = require('../../infrastructure/access');
 const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
@@ -7,18 +7,27 @@ const { checkCacheForAllServices } = require('../../infrastructure/helpers/allSe
 const { getNonPagedRequestsTypesForApprover } = require('../../infrastructure/organisations/api');
 const {
   getRequestById,
-  getOrganisationById,
-  getSubServiceRequestById,
+  getOrganisationById
 } = require('./../../infrastructure/organisations');
 
-const Account = require('./../../infrastructure/account');
-const flatten = require('lodash/flatten');
-const uniq = require('lodash/uniq');
 const { services } = require('login.dfe.dao');
 
-const getSubServiceRequestVieModel= async (model, rid, requestId, req) => {
-  let viewModel = model.requests.find(x => x.id === rid);
-  viewModel.csrfToken = model.csrfToken;
+const getSubServiceRequestVieModel= async (model,requestId, req) => {
+  let viewModel = {};
+  viewModel.endUser = model.endUser;
+  viewModel.endUsersEmail = model.endUsersEmail;
+  viewModel.endUsersFamilyName = model.endUsersFamilyName;
+  viewModel.endUsersGivenName = model.endUsersGivenName;
+  viewModel.org_name = model.organisation.name;
+  viewModel.org_id = model.organisation.id;
+  viewModel.user_id = model.dataValues.user_id;
+  viewModel.role_ids = model.dataValues.role_ids;
+  viewModel.service_id = model.dataValues.service_id;
+  viewModel.status = model.dataValues.status;
+  viewModel.actioned_reason = model.dataValues.actioned_reason;
+  viewModel.action_by = model.dataValues.actioned_by;
+  viewModel.reason = model.dataValues.reason;
+  viewModel.csrfToken = null;
   viewModel.selectedResponse= null;
   viewModel.validationMessages= {};
   viewModel.currentPage= 'requests';
@@ -47,28 +56,6 @@ const getRoleAndServiceNames = async(subModel, requestId, req) => {
   return subModel;
   }
 
-const getAllRequestsForApproval = async (req) => {
-  const allRequestsForApprover = await getNonPagedRequestsTypesForApprover(req.user.sub, req.id);
-  let { requests } = allRequestsForApprover;
-  if (requests) {
-    const userList = (await getUserDetails(requests)) || [];
-    requests = requests.map((user) => {
-      const userFound = userList.find((c) => c.claims.sub.toLowerCase() === user.user_id.toLowerCase());
-      const usersEmail = userFound ? userFound.claims.email : '';
-      const userName = userFound ? `${userFound.claims.given_name} ${userFound.claims.family_name}` : '';
-      return Object.assign({ usersEmail, userName }, user);
-    });
-  }
-
-  return {
-    csrfToken: req.csrfToken(),
-    title: 'Requests - DfE Sign-in',
-    currentPage: 'requests',
-    requests,
-    numberOfPages: allRequestsForApprover.totalNumberOfPages,
-    totalNumberOfResults: allRequestsForApprover.totalNumberOfRecords,
-  };
-};
 const getAndMapOrgRequest = async (req) => {
   const request = await getRequestById(req.params.rid, req.id);
   let mappedRequest;
@@ -83,10 +70,7 @@ const getAndMapOrgRequest = async (req) => {
   }
   return mappedRequest;
 };
-const getAndMapSubServiceRequest = async (req) => {
-  const result = await getSubServiceRequestById(req.params.rid, req.id);
-  return result;
-};
+
 const getUserDetails = async (usersForApproval) => {
   const allUserId = flatten(usersForApproval.map((user) => user.user_id));
   if (allUserId.length === 0) {
@@ -120,10 +104,8 @@ const getAndMapServiceRequest = async (serviceReqId) => {
 module.exports = {
   getAndMapOrgRequest,
   getUserDetails,
-  getAllRequestsForApproval,
   getRoleAndServiceNames,
   getNewRoleDetails,
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
-  getAndMapSubServiceRequest,
 };

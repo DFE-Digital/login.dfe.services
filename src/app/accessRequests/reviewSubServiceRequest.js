@@ -1,14 +1,13 @@
 const {updateServiceRequest} = require('../requestService/utils');
-const { getAllRequestsForApproval,getNewRoleDetails, getSubServiceRequestVieModel } = require('./utils');
+const { getNewRoleDetails, getSubServiceRequestVieModel, getAndMapServiceRequest } = require('./utils');
 const { actions } = require('../constans/actions');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 
-
 const validate = async (req) => {
-  const buildmodel = await getEveryPendingRequest(req);
-  const viewModel = await getSubServiceRequestVieModel(buildmodel, req.params.rid, req.id);
+  const buildmodel = await getAndMapServiceRequest(req.params.rid); 
+  const viewModel = await getSubServiceRequestVieModel(buildmodel, req.id);
   viewModel.selectedResponse = req.body.selectedResponse;
   const model = {
     title: 'Review request - DfE Sign-in',
@@ -28,22 +27,10 @@ const validate = async (req) => {
   }
   return model;
 };
-const getEveryPendingRequest = async (req) => {
-  const pagedRequests = await getAllRequestsForApproval(req);
-  return {
-    csrfToken: req.csrfToken(),
-    title: 'Requests - DfE Sign-in',
-    currentPage: 'requests',
-    requests: pagedRequests.requests,
-    page: pagedRequests.pageNumber,
-    numberOfPages: pagedRequests.numberOfPages,
-    totalNumberOfResults: pagedRequests.totalNumberOfResults,
-  };
-};
 
 const get = async (req, res) => {
-  const model = await getEveryPendingRequest(req);
-  const viewModel = await getSubServiceRequestVieModel(model, req.params.rid, req.id, req);
+  const model = await getAndMapServiceRequest(req.params.rid); 
+  const viewModel = await getSubServiceRequestVieModel(model, req.id, req);
   viewModel.backLink =  `/access-requests/requests`;
   req.session.rid = req.params.rid;
   if(req.session.roleId != undefined && req.session.roleId  !== viewModel.role_ids)
