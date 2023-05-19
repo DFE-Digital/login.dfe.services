@@ -1,4 +1,9 @@
-const { getRequestById, getOrganisationById } = require('./../../infrastructure/organisations');
+const {
+  getRequestById,
+  getOrganisationById,
+  getSubServiceRequestById,
+} = require('./../../infrastructure/organisations');
+
 const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
@@ -18,7 +23,10 @@ const getAndMapOrgRequest = async (req) => {
   }
   return mappedRequest;
 };
-
+const getAndMapSubServiceRequest = async (req) => {
+  const result = await getSubServiceRequestById(req.params.rid, req.id);
+  return result;
+};
 const getUserDetails = async (usersForApproval) => {
   const allUserId = flatten(usersForApproval.map((user) => user.user_id));
   if (allUserId.length === 0) {
@@ -53,4 +61,5 @@ module.exports = {
   getAndMapOrgRequest,
   getUserDetails,
   getAndMapServiceRequest,
+  getAndMapSubServiceRequest,
 };

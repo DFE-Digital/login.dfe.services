@@ -9,6 +9,7 @@ const actions = {
   MANAGE_SERVICE: 'manage-service',
   ORG_INVITE: 'organisation-invite',
   VIEW_ORG_REQUESTS: 'view-organisation-requests',
+  REVIEW_SUBSERVICE_REQUEST: 'review-subservice-request',
 };
 
 module.exports = {

@@ -12,6 +12,10 @@ const {
   post: postReviewOrganisationRequest,
 } = require('./reviewOrganisationRequest');
 const {
+  get: getReviewSubServiceRequest,
+  post: postReviewSubServiceRequest,
+} = require('./reviewSubServiceRequest');
+const {
   get: getRejectOrganisationRequest,
   post: postRejectOrganisationRequest,
 } = require('./rejectOrganisationRequest');
@@ -35,7 +39,8 @@ const action = (csrf, app) => {
       return res.redirect(`/access-requests/requests`);
     }),
   );
-
+  router.get('/subService-requests/:rid', csrf, isApproverInSomeOrgs, asyncWrapper(getReviewSubServiceRequest));
+  router.post('/subService-requests/:rid', csrf, isApproverInSomeOrgs, asyncWrapper(postReviewSubServiceRequest));
   router.get('/requests', csrf, isApproverInSomeOrgs, asyncWrapper(getAllRequestsForApproval));
   router.post('/requests', csrf, isApproverInSomeOrgs, asyncWrapper(postAllRequestsForApproval));
   router.get('/organisation-requests/:rid', csrf, isApproverInSomeOrgs, asyncWrapper(getReviewOrganisationRequest));
