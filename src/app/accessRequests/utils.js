@@ -1,9 +1,10 @@
-const { getRequestById, getAllRequestsTypesForApprover} = require('./../../infrastructure/organisations');
+const { getRequestById} = require('./../../infrastructure/organisations');
 const { listRolesOfService } = require('../../infrastructure/access');
 const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+const { getNonPagedRequestsTypesForApprover } = require('../../infrastructure/organisations/api');
 
 const getSubServiceRequestVieModel= async (model, rid, requestId, req) => {
   let viewModel = model.requests.find(x => x.id === rid);
@@ -37,13 +38,7 @@ const getRoleAndServiceNames = async(subModel, requestId, req) => {
   }
 
 const getAllRequestsForApproval = async (req) => {
-  const pageSize = 5;
-  const paramsSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
-  let pageNumber = parseInt(paramsSource.page, 10) || 1;
-  if (isNaN(pageNumber)) {
-    pageNumber = 1;
-  }
-  const allRequestsForApprover = await getAllRequestsTypesForApprover(req.user.sub, pageSize, pageNumber, req.id);
+  const allRequestsForApprover = await getNonPagedRequestsTypesForApprover(req.user.sub, req.id);
   let { requests } = allRequestsForApprover;
   if (requests) {
     const userList = (await getUserDetails(requests)) || [];
@@ -60,7 +55,6 @@ const getAllRequestsForApproval = async (req) => {
     title: 'Requests - DfE Sign-in',
     currentPage: 'requests',
     requests,
-    pageNumber,
     numberOfPages: allRequestsForApprover.totalNumberOfPages,
     totalNumberOfResults: allRequestsForApprover.totalNumberOfRecords,
   };
