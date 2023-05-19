@@ -1,6 +1,15 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { getAllServicesForUserInOrg, isSelfManagement, isRequestService, isRemoveService, isRequestServiceInSession, isManageUserService, isEditService } = require('./utils');
+const {
+  getAllServicesForUserInOrg,
+  isSelfManagement,
+  isRequestService,
+  isRemoveService,
+  isRequestServiceInSession,
+  isManageUserService,
+  isEditService,
+  isReviewServiceReqAmendService,
+} = require('./utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
@@ -21,11 +30,16 @@ const buildBackLink = (req) => {
 
   const isRequestServiceUrl = isRequestService(req) || isRequestServiceInSession(req)
   const isManageUserServiceUrl = isManageUserService(req)
-  
+
+  const isReviewServiceReqAmendServiceUrl = isReviewServiceReqAmendService(req);
+  const baseUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`;
   if(isManageUserServiceUrl) {
-    backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`
-  }
-  else if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
+    backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`;
+  } else if (isReviewServiceReqAmendServiceUrl) {
+    const { serviceReqId, serviceId, selectedRoleIds } = req.session.reviewServiceRequest;
+    const rolesIds = encodeURIComponent(selectedRoleIds);
+    backRedirect = `${baseUrl}/access-requests/service-requests/${serviceReqId}/${req.params.orgId}/users/${req.params.uid}/services/${serviceId}/roles/${rolesIds}`;
+  } else if (isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
     const sid = req.session.user.serviceId
     const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds))
     backRedirect = `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${sid}/roles/${roleIds}/approve`
@@ -113,6 +127,8 @@ const get = async (req, res) => {
           `This service will be added to the user’s account, assigned to organisation`
       );
 
+  const isReviewServiceReqAmend =
+    req.query.action === actions.REVIEW_SERVICE_REQ_ROLE || actions.REVIEW_SERVICE_REQ_SERVICE ? true : false;
   const model = {
     csrfToken: req.csrfToken(),
     name,
@@ -126,6 +142,7 @@ const get = async (req, res) => {
     services: externalServices,
     selectedServices: req.session.user.services || [],
     isInvite: req.session.user.isInvite,
+    isReviewServiceReqAmend,
   };
 
   renderAssociateServicesPage(req, res, model);
@@ -222,12 +239,15 @@ const post = async (req, res) => {
   const service = req.session.user.services[0].serviceId;
   const isEditServiceUrl = isEditService(req);
   const isRemoveUserServiceUrl = isRemoveService(req)
+  const isReviewServiceReqAmendServiceUrl = isReviewServiceReqAmendService(req);
 
   if(isRemoveUserServiceUrl) {
     return res.redirect(`services/${service}/remove-service?manage_users=true&action=${actions.REMOVE_SERVICE}`);
   }
   else if(isEditServiceUrl) {
     return res.redirect(`services/${service}?manage_users=true&action=${actions.EDIT_SERVICE}`);
+  } else if (isReviewServiceReqAmendServiceUrl) {
+    return res.redirect(`associate-services/${service}?action=${actions.REVIEW_SERVICE_REQ_SERVICE}`);
   }
   return res.redirect(`associate-services/${service}`);
 };

@@ -5,6 +5,16 @@ const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { getNonPagedRequestsTypesForApprover } = require('../../infrastructure/organisations/api');
+const {
+  getRequestById,
+  getOrganisationById,
+  getSubServiceRequestById,
+} = require('./../../infrastructure/organisations');
+
+const Account = require('./../../infrastructure/account');
+const flatten = require('lodash/flatten');
+const uniq = require('lodash/uniq');
+const { services } = require('login.dfe.dao');
 
 const getSubServiceRequestVieModel= async (model, rid, requestId, req) => {
   let viewModel = model.requests.find(x => x.id === rid);
@@ -73,6 +83,10 @@ const getAndMapOrgRequest = async (req) => {
   }
   return mappedRequest;
 };
+const getAndMapSubServiceRequest = async (req) => {
+  const result = await getSubServiceRequestById(req.params.rid, req.id);
+  return result;
+};
 const getUserDetails = async (usersForApproval) => {
   const allUserId = flatten(usersForApproval.map((user) => user.user_id));
   if (allUserId.length === 0) {
@@ -82,6 +96,27 @@ const getUserDetails = async (usersForApproval) => {
   return await Account.getUsersById(distinctUserIds);
 };
 
+const getAndMapServiceRequest = async (serviceReqId) => {
+  const userServiceRequest = await services.getUserServiceRequest(serviceReqId);
+  let mappedServiceRequest;
+  if (userServiceRequest) {
+    const approver = userServiceRequest.actioned_by ? await Account.getById(userServiceRequest.actioned_by) : null;
+    const endUser = await Account.getById(userServiceRequest.user_id);
+    const endUsersGivenName = endUser ? `${endUser.claims.given_name}` : '';
+    const endUsersFamilyName = endUser ? `${endUser.claims.family_name}` : '';
+    const endUsersEmail = endUser ? endUser.claims.email : '';
+    const approverName = approver ? `${approver.given_name} ${approver.family_name}` : '';
+    const approverEmail = approver ? approver.email : '';
+    const organisation = await getOrganisationById(userServiceRequest.organisation_id, serviceReqId);
+    mappedServiceRequest = Object.assign(
+      { endUsersGivenName, endUsersFamilyName, endUsersEmail, approverName, approverEmail },
+      { organisation },
+      userServiceRequest,
+    );
+  }
+  return mappedServiceRequest;
+};
+
 module.exports = {
   getAndMapOrgRequest,
   getUserDetails,
@@ -89,4 +124,6 @@ module.exports = {
   getRoleAndServiceNames,
   getNewRoleDetails,
   getSubServiceRequestVieModel,
+  getAndMapServiceRequest,
+  getAndMapSubServiceRequest,
 };

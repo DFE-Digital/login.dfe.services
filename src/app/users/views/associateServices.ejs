@@ -140,7 +140,11 @@
     
                         <div class="govuk-button-group auto-scroll-dest">
                             <button type="submit" class="govuk-button">Continue</button>
+                            <% if (locals.isReviewServiceReqAmend){ %> 
+                                <a href="<%=locals.backLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+                            <% }else { %>
                             <a href="/approvals/users/<%=locals.user.uid%>" class="govuk-button govuk-button--secondary">Cancel</a>
+                            <% } %>
                         </div>
                     </form>
                 <% } else { %>
