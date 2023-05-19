@@ -15,6 +15,10 @@ const {
   get: getRejectOrganisationRequest,
   post: postRejectOrganisationRequest,
 } = require('./rejectOrganisationRequest');
+
+const { get: getReviewServiceRequest, post: postReviewServiceRequest } = require('./reviewServiceRequest');
+const { get: getRejectServiceRequest, post: postRejectServiceRequest } = require('./rejectServiceRequest');
+
 const { getApproverOrgsFromReq } = require('../users/utils');
 
 const action = (csrf, app) => {
@@ -47,6 +51,32 @@ const action = (csrf, app) => {
     csrf,
     isApproverInSomeOrgs,
     asyncWrapper(postRejectOrganisationRequest),
+  );
+
+  router.get(
+    '/service-requests/:rid/:orgId/users/:uid/services/:sid/roles/:rolesIds?',
+    csrf,
+    isApproverInSomeOrgs,
+    asyncWrapper(getReviewServiceRequest),
+  );
+  router.post(
+    '/service-requests/:rid/:orgId/users/:uid/services/:sid/roles/:rolesIds?',
+    csrf,
+    isApproverInSomeOrgs,
+    asyncWrapper(postReviewServiceRequest),
+  );
+
+  router.get(
+    '/service-requests/:rid/:orgId/users/:uid/services/:sid/roles/:rolesIds?/rejected',
+    csrf,
+    isApproverInSomeOrgs,
+    asyncWrapper(getRejectServiceRequest),
+  );
+  router.post(
+    '/service-requests/:rid/:orgId/users/:uid/services/:sid/roles/:rolesIds?/rejected',
+    csrf,
+    isApproverInSomeOrgs,
+    asyncWrapper(postRejectServiceRequest),
   );
 
   return router;
