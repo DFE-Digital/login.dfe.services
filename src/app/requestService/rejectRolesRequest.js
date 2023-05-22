@@ -154,8 +154,8 @@ const post = async (req, res) => {
     );
   }
   logger.audit({
-    type: 'services',
-    subType: 'sub-service-request',
+    type: 'sub-service',
+    subType: 'sub-service request Rejected',
     userId: approverDetails.sub,
     userEmail: approverDetails.email,
     application: config.loggerSettings.applicationName,
@@ -173,7 +173,7 @@ const post = async (req, res) => {
   res.flash('heading', 'Sub-service request rejected');
   res.flash(
     'message',
-    'The user who raised the request will receive an email to tell them their sub-service access request has been rejected',
+    'The user who raised the request will receive an email to tell them their sub-service access request has been rejected.',
   );
 
   res.redirect('/my-services');

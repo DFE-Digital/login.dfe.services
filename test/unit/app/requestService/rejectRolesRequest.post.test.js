@@ -258,8 +258,8 @@ describe('When approving a sub service request', () => {
       'approver.one@unit.test (approverId: approver1) rejected sub-service request for (serviceId: service1) and sub-services (roleIds: ["role1"]) for organisation (orgId: organisationId) for end user (endUserId: endUser1).  - requestId (reqId: sub-service-req-ID)',
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
-      type: 'services',
-      subType: 'sub-service-request',
+      type: 'sub-service',
+      subType: 'sub-service request Rejected',
       userId: 'approver1',
       userEmail: 'approver.one@unit.test',
     });
@@ -275,7 +275,7 @@ describe('When approving a sub service request', () => {
     expect(res.flash.mock.calls[1][1]).toBe('Sub-service request rejected');
     expect(res.flash.mock.calls[2][0]).toBe('message');
     expect(res.flash.mock.calls[2][1]).toBe(
-      'The user who raised the request will receive an email to tell them their sub-service access request has been rejected',
+      'The user who raised the request will receive an email to tell them their sub-service access request has been rejected.',
     );
   });
 
