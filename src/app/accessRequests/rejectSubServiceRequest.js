@@ -1,6 +1,6 @@
 const {updateServiceRequest} = require('../requestService/utils');
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
-const { getSubServiceRequestVieModel } = require('./utils');
+const { getSubServiceRequestVieModel, getAndMapServiceRequest } = require('./utils');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');

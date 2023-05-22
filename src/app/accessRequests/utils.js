@@ -114,21 +114,21 @@ const isReqAlreadyActioned = (
   const capitalisedGivenName = endUsersGivenName[0].toUpperCase() + endUsersGivenName.substring(1);
   const capitalisedFamilyName = endUsersFamilyName[0].toUpperCase() + endUsersFamilyName.substring(1);
 
-  res.flash('notificationTitle', 'Important');
+  res.flash('title', 'Important');
   if (requestStatus === 1) {
-    res.flash('notificationHeading', `${capitalisedReqType} request already approved: ${orgOrServName}`);
+    res.flash('heading', `${capitalisedReqType} request already approved: ${orgOrServName}`);
     res.flash(
-      'notificationMessage',
+      'message',
       `${approverEmail} has already responded to the ${requestType} request.<br>${capitalisedGivenName} ${capitalisedFamilyName} has received an email to tell them their request has been approved. No further action is needed.`,
     );
   } else if (requestStatus === -1) {
-    res.flash('notificationHeading', `${capitalisedReqType} request already rejected: ${orgOrServName}`);
+    res.flash('heading', `${capitalisedReqType} request already rejected: ${orgOrServName}`);
     res.flash(
-      'notificationMessage',
+      'message',
       `${approverEmail} has already responded to the ${requestType} request.<br>${capitalisedGivenName} ${capitalisedFamilyName} has received an email to tell them their request has been rejected. No further action is needed.`,
     );
   }
-  return res.redirect('/access-requests/requests');
+  return  res.redirect(`/access-requests/requests`);
 };
 
 module.exports = {

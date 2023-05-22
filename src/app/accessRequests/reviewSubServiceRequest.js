@@ -1,5 +1,7 @@
+const Account = require('./../../infrastructure/account');
 const {updateServiceRequest} = require('../requestService/utils');
-const { getNewRoleDetails, getSubServiceRequestVieModel, getAndMapServiceRequest } = require('./utils');
+const { getNewRoleDetails, getSubServiceRequestVieModel, getAndMapServiceRequest, isReqAlreadyActioned } = require('./utils');
+const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
 const { actions } = require('../constans/actions');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
@@ -41,13 +43,13 @@ const get = async (req, res) => {
     viewModel.Role_name = roleDetails.name;
     req.session.roleId =  undefined;
   }
+  model.csrfToken = req.csrfToken();
+  viewModel.csrfToken = req.csrfToken();
+
   viewModel.subServiceAmendUrl = `/approvals/${viewModel.org_id}/users/${viewModel.user_id}/services/${viewModel.service_id}?actions=${actions.REVIEW_SUBSERVICE_REQUEST}`;
   if (viewModel.actioned_by && (viewModel.status === -1 || 1 )) {
-    //question this information to be displayed without approvers email
-    res.flash('title', `Important`);
-    res.flash('heading', `Sub Service amended: ${viewModel.Role_name}`);
-    res.flash('message', `Request already actioned by ${viewModel.actioned_by}`);
-    return res.redirect(`/access-requests/requests`);
+    const user = await Account.getById(viewModel.actioned_by);
+    return isReqAlreadyActioned("sub-Service", viewModel.status,user.claims.email,viewModel.endUsersGivenName,viewModel.endUsersFamilyName, viewModel.Role_name, res);
   }
   return res.render('accessRequests/views/reviewSubServiceRequest', viewModel);
 };
@@ -55,18 +57,16 @@ const get = async (req, res) => {
 const post = async (req, res) => {
   const model = await validate(req);
   //check request for already actioned
-  const request = await updateServiceRequest(req.params.rid,1,req.user.sub,model.reason);
+ /*
   if(!request.success && (request.serviceRquest.status === -1 || 1)){
     const refreshRequest = await getAndMapServiceRequest(req.params.rid);
     const alreadyActioned = await getSubServiceRequestVieModel(refreshRequest, req.id, req);
     if (alreadyActioned.viewModel.actioned_by) {
       model.viewModel.validationMessages.alreadyActioned = `Request already actioned by ${alreadyActioned.viewModel.actioned_by}`;
-      res.flash('title', `Important`);
-      res.flash('heading', `Sub Service amended: ${viewModel.Role_name}`);
-      res.flash('message', `Request already actioned by ${viewModel.actioned_by}`);
-      return res.render('accessRequests/views/reviewSubServiceRequest', model.viewModel);
+      const user = await Account.getById(viewModel.actioned_by);
+    return isReqAlreadyActioned("sub-Service", viewModel.status,viewModel.endUsersGivenName, user.claims.email,viewModel.endUsersFamilyName, viewModel.Role_name, res);
     }
-  }
+  }*/
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
@@ -75,12 +75,14 @@ const post = async (req, res) => {
   }
 
   if (model.selectedResponse === 'reject') {
+    model.csrfToken = req.csrfToken();
+    model.viewModel.csrfToken = req.csrfToken();
     model.validationMessages = {};
     model.viewModel.validationMessages={};
     return res.redirect(`/access-requests/subService-requests/${req.params.rid}/rejected`);
   }
   else if(model.selectedResponse === 'approve'){
-  
+    const request = await updateServiceRequest(req.params.rid,1,req.user.sub,model.reason);
     if (request.success){
       const isEmailAllowed = await isServiceEmailNotificationAllowed();
       if (isEmailAllowed && config.hostingEnvironment.env !== 'dev') {

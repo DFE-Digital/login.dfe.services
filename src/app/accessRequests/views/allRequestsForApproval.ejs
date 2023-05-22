@@ -17,34 +17,8 @@
     <div class="govuk-grid-row govuk-!-margin-bottom-3">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
             <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-
-                <% if (locals.flash.notificationTitle && locals.flash.notificationHeading && locals.flash.notificationMessage) { %>
-                    <div id="notification-wrapper" class="govuk-notification-banner"
-                        role="alert" aria-labelledby="govuk-notification-banner-title"
-                        data-module="govuk-notification-banner">
-                        <div class="govuk-notification-banner__header govuk-grid-row">
-                            <div class="govuk-grid-column-two-thirds">
-                                <h2 class="govuk-notification-banner__title" id="notification-title">
-                                    <%= locals.flash.notificationTitle %>
-                                </h2>
-                            </div>
-                            <div class="govuk-grid-column-one-third">
-                                <span class="close-button pull-right" id="close">x</span>
-                            </div>
-                        </div>
-                        <div class="govuk-notification-banner__content" id="notification-content">
-                            <h3 class="govuk-notification-banner__heading">
-                                <%= locals.flash.notificationHeading %>
-                            </h3>
-                            <p class="govuk-body">
-                                <%- locals.flash.notificationMessage %>
-                            </p>
-                        </div>
-                    </div>
-                <% } %>
-
                 <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
-                    <% if(locals.flash.title !== 'Success') {%>
+                    <% if(locals.flash.title[0] !== 'Success') {%>
                     <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner"
                         role="alert" aria-labelledby="govuk-notification-banner-title"
                         data-module="govuk-notification-banner">
