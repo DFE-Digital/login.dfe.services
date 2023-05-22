@@ -4,7 +4,7 @@ const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
-const { getNonPagedRequestsTypesForApprover } = require('../../infrastructure/organisations/api');
+
 const {
   getRequestById,
   getOrganisationById
@@ -25,7 +25,7 @@ const getSubServiceRequestVieModel= async (model,requestId, req) => {
   viewModel.service_id = model.dataValues.service_id;
   viewModel.status = model.dataValues.status;
   viewModel.actioned_reason = model.dataValues.actioned_reason;
-  viewModel.action_by = model.dataValues.actioned_by;
+  viewModel.actioned_by = model.dataValues.actioned_by;
   viewModel.reason = model.dataValues.reason;
   viewModel.csrfToken = null;
   viewModel.selectedResponse= null;
