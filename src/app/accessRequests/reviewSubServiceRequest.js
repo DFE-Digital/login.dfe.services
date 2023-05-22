@@ -57,16 +57,16 @@ const get = async (req, res) => {
 const post = async (req, res) => {
   const model = await validate(req);
   //check request for already actioned
- /*
-  if(!request.success && (request.serviceRquest.status === -1 || 1)){
-    const refreshRequest = await getAndMapServiceRequest(req.params.rid);
-    const alreadyActioned = await getSubServiceRequestVieModel(refreshRequest, req.id, req);
-    if (alreadyActioned.viewModel.actioned_by) {
-      model.viewModel.validationMessages.alreadyActioned = `Request already actioned by ${alreadyActioned.viewModel.actioned_by}`;
-      const user = await Account.getById(viewModel.actioned_by);
-    return isReqAlreadyActioned("sub-Service", viewModel.status,viewModel.endUsersGivenName, user.claims.email,viewModel.endUsersFamilyName, viewModel.Role_name, res);
+ 
+  const request = await getAndMapServiceRequest(req.params.rid); 
+  if(request.dataValues.status === -1 || 1){  
+    const alreadyActioned = await getSubServiceRequestVieModel(request, req.id, req);
+    if (alreadyActioned.actioned_by) {
+      model.viewModel.validationMessages.alreadyActioned = `Request already actioned by ${alreadyActioned.actioned_by}`;
+      const user = await Account.getById(alreadyActioned.actioned_by);
+    return isReqAlreadyActioned("sub-Service", request.dataValues.status ,alreadyActioned.endUsersGivenName, user.claims.email,alreadyActioned.endUsersFamilyName, alreadyActioned.Role_name, res);
     }
-  }*/
+  }
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
