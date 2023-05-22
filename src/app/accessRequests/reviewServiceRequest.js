@@ -2,7 +2,7 @@ const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
 const { listRolesOfService, addUserService } = require('../../../src/infrastructure/access');
 const { updateServiceRequest } = require('../requestService/utils');
-const { getAndMapServiceRequest } = require('./utils');
+const { getAndMapServiceRequest, isReqAlreadyActioned } = require('./utils');
 const { services: daoServices } = require('login.dfe.dao');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
@@ -51,24 +51,32 @@ const getViewModel = async (req) => {
   return model;
 };
 
-const validateModel = async (model, reqParams) => {
-  const { requestedRolesIds } = model;
+const validateModel = async (model, reqParams, res) => {
+  const { requestedRolesIds, request, service } = model;
   const { rid, sid, orgId, uid } = reqParams;
   const policyValidationResult = await policyEngine.validate(uid, orgId, sid, requestedRolesIds, rid);
 
   if (model.selectedResponse === undefined || model.selectedResponse === null) {
     model.validationMessages.selectedResponse = 'Approve or Reject must be selected';
-  } else if (model.request.approverEmail) {
-    model.validationMessages.alreadyActioned = `Request already actioned by ${model.request.approverEmail}`;
   } else if (policyValidationResult.length > 0) {
     model.validationMessages.policyValidation = policyValidationResult.map((x) => x.message);
+  } else if (model.request.approverEmail) {
+    return isReqAlreadyActioned(
+      'service',
+      request.dataValues.status,
+      request.approverEmail,
+      request.endUsersGivenName,
+      request.endUsersFamilyName,
+      service.name,
+      res,
+    );
   }
   return model;
 };
 
 const get = async (req, res) => {
   const model = await getViewModel(req);
-  const { request, action, requestedRolesIds } = model;
+  const { request, action, requestedRolesIds, service } = model;
   const { rid, sid, rolesIds, uid } = req.params;
   req.session = {
     ...req.session,
@@ -94,14 +102,26 @@ const get = async (req, res) => {
   };
 
   if (request.approverEmail) {
-    model.validationMessages.alreadyActioned = `Request already actioned by ${model.request.approverEmail}`;
+    const reqStatus = request.dataValues.status;
+    const { approverEmail, endUsersGivenName, endUsersFamilyName } = request;
+    const serviceName = service.name;
+
+    return isReqAlreadyActioned(
+      'service',
+      reqStatus,
+      approverEmail,
+      endUsersGivenName,
+      endUsersFamilyName,
+      serviceName,
+      res,
+    );
   }
   return res.render('accessRequests/views/reviewServiceRequest', model);
 };
 
 const post = async (req, res) => {
   let model = await getViewModel(req);
-  model = await validateModel(model, req.params);
+  model = await validateModel(model, req.params, res);
 
   const { requestedRolesIds, service, selectedRoles } = model;
   const { rid, sid, orgId, uid, rolesIds } = req.params;
@@ -125,9 +145,17 @@ const post = async (req, res) => {
 
   if (updateServiceReq.success === false && (resStatus === -1 || 1)) {
     const request = await getAndMapServiceRequest(rid);
+    const serviceName = model.service.name;
     if (request.approverEmail) {
-      model.validationMessages.alreadyActioned = `Request already actioned by ${request.approverEmail}`;
-      return res.render('accessRequests/views/reviewServiceRequest', model);
+      return isReqAlreadyActioned(
+        'service',
+        request.dataValues.status,
+        request.approverEmail,
+        request.endUsersGivenName,
+        request.endUsersFamilyName,
+        serviceName,
+        res,
+      );
     }
   }
 
