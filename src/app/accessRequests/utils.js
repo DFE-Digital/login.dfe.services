@@ -138,6 +138,5 @@ module.exports = {
   getNewRoleDetails,
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
-  getAndMapSubServiceRequest,
   isReqAlreadyActioned,
 };
