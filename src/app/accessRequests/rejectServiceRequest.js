@@ -1,8 +1,8 @@
-const { getAndMapServiceRequest } = require('./utils');
+const { getAndMapServiceRequest, isReqAlreadyActioned } = require('./utils');
 const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
-const { getUserServiceRequestStatus, updateServiceRequest } = require('../requestService/utils');
+const { updateServiceRequest } = require('../requestService/utils');
 const { listRolesOfService } = require('../../../src/infrastructure/access');
 const { services: daoServices } = require('login.dfe.dao');
 
@@ -34,8 +34,6 @@ const validate = async (req) => {
   console.log(model);
   if (model.reason.length > 1000) {
     model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
-  } else if (model.request.approverEmail) {
-    model.validationMessages.alreadyActioned = `Request already actioned by ${model.request.approverEmail}`;
   }
   return model;
 };
@@ -73,8 +71,15 @@ const post = async (req, res) => {
   if (updateServiceReq.success === false && (resStatus === -1 || 1)) {
     const request = await getAndMapServiceRequest(rid);
     if (request.approverEmail) {
-      model.validationMessages.alreadyActioned = `Request already actioned by ${request.approverEmail}`;
-      return res.render('accessRequests/views/rejectServiceRequest', model);
+      return isReqAlreadyActioned(
+        'service',
+        request.dataValues.status,
+        request.approverEmail,
+        request.endUsersGivenName,
+        request.endUsersFamilyName,
+        service.name,
+        res,
+      );
     }
   }
 

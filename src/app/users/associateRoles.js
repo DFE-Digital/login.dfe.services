@@ -72,8 +72,8 @@ const buildNextLink = (req, selectedRoles) => {
       }/approve-roles-request`;
     } else if (
       (req.query.action === actions.REVIEW_SERVICE_REQ_ROLE || actions.REVIEW_SERVICE_REQ_SERVICE) &&
-      req.session.reviewServiceRequest.serviceReqId &&
-      req.session.reviewServiceRequest.serviceId
+      req.session?.reviewServiceRequest?.serviceReqId &&
+      req.session?.reviewServiceRequest?.serviceId
     ) {
       const { serviceReqId } = req.session.reviewServiceRequest;
       const rolesList = selectedRoles.length > 0 ? encodeURIComponent(selectedRoles) : 'null';
