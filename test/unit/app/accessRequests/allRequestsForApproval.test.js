@@ -1,7 +1,8 @@
 const { mockRequest, mockResponse } = require('../../../utils/jestMocks');
-jest.mock('./../../../../src/infrastructure/config', () => require('../../../utils/jestMocks').mockConfig());
+jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('login.dfe.dao', () => require('./../../../utils/jestMocks').mockDao());
-
+const { get, post } = require('../../../../src/app/accessRequests/getAllRequestsForApproval');
 jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
   getUsersById: jest.fn(),
@@ -115,7 +116,8 @@ describe('when displaying the pending access requests for approver ', () => {
         { claims: { sub: 'user-id-2', given_name: 'User', family_name: 'Two', email: 'user.two@unit.tests' } },
       ]);
 
-    const { get, post } = require('./../../../../src/app/accessRequests/getAllRequestsForApproval');
+    //const { get, post } = require('./../../../../src/app/accessRequests/getAllRequestsForApproval');
+    const { get, post } = require('../../../../src/app/accessRequests/getAllRequestsForApproval');
 
     getAllRequestsForApproval = get;
     postAllRequestsForApproval = post;
