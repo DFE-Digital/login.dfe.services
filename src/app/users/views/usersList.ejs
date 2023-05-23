@@ -55,7 +55,33 @@
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
                 <input type="hidden" name="page" value="1" />
                 <input type="hidden" name="isFilterToggle" value="<%= locals.showFilter %>"/>
-
+                
+                <!-- Banner message for PIREAN migration to all approvers  -->
+                <% if (locals.isApprover ) { %>
+                    <div id="notification-wrapper-approver-request"
+                        class="govuk-notification-banner"
+                        role="region"
+                        aria-labelledby="govuk-notification-banner-title"
+                        data-module="govuk-notification-banner">
+                        <div class="govuk-notification-banner__header govuk-grid-row">
+                            <div class="govuk-grid-column-two-thirds">
+                                <h2 class="govuk-notification-banner__title" id="notification-title">
+                                Important
+                                </h2>
+                            </div>
+                            <div class="govuk-grid-column-one-third">
+                                <span class="close-button pull-right" id="close-missing-jobtitle">x</span>
+                            </div>
+                        </div>
+                        <div class="govuk-notification-banner__content" id="notification-content">
+                            <h3 class="govuk-heading-s">
+                                We are adding new services to DfE Sign-in until the end of 2023. 
+                                New end users may be added to your organisation. End users may become approvers for organisations. 
+                                If you have concerns, <a class="govuk-link-bold" href="<%=locals.urls.help%>/services">contact DfE Sign-in</a>
+                            </h3>
+                        </div>
+                    </div>
+                <% } %>
                 <!--Search users-->
                 <div class="govuk-form-group">
                     <h2 class="govuk-heading-m govuk-!-margin-top-9 govuk-!-margin-bottom-0">
@@ -81,7 +107,6 @@
                         </div>
                     </div>
                 </div>
-
                 <% if (locals.approverOrgs && locals.approverOrgs.length > 1) {%>
                     <!--Filter by Orgs-->
                     <div class="govuk-!-margin-top-4">

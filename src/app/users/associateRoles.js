@@ -15,16 +15,21 @@ const renderAssociateRolesPage = (req, res, model) => {
 };
 
 const buildBackLink = (req, currentServiceIndex) => {
-  const isRequestServiceUrl = isRequestService(req)
-  const isManageUserServiceUrl = isManageUserService(req)
-
-  if(isManageUserServiceUrl) {
-    return `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`
-  }
-  else if(isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
-    const sid = req.session.user.serviceId
-    const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds))
-    return `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${sid}/roles/${roleIds}/approve`
+  const isRequestServiceUrl = isRequestService(req);
+  const isManageUserServiceUrl = isManageUserService(req);
+  const baseUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`;
+  if (isManageUserServiceUrl) {
+    return `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`;
+  } else if (isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
+    const sid = req.session.user.serviceId;
+    const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds));
+    return `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${sid}/roles/${roleIds}/approve`;
+  } else if (req.query.action === 'request-sub-service' && req.session.subServiceReqId && req.session) {
+    return `${baseUrl}/request-service/${req.params.orgId}/users/${req.session.user.uid}/services/${
+      req.params.sid
+    }/roles/${encodeURIComponent(JSON.stringify(req.session.user.roleIds))}/${
+      req.session.subServiceReqId
+    }/approve-roles-request`;
   }
 
   let backRedirect = `/approvals/${req.params.orgId}/users`;
@@ -37,6 +42,23 @@ const buildBackLink = (req, currentServiceIndex) => {
     backRedirect += `/${req.session.user.services[currentServiceIndex - 1].serviceId}`;
   }
   return backRedirect;
+};
+
+const buildNextLink = (req, selectedRoles) => {
+  const baseUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`;
+  if (req.session.user.uid) {
+    if (req.query.action === 'request-sub-service' && req.session.subServiceReqId) {
+      return `${baseUrl}/request-service/${req.params.orgId}/users/${req.session.user.uid}/services/${
+        req.params.sid
+      }/roles/${encodeURIComponent(JSON.stringify(selectedRoles))}/${
+        req.session.subServiceReqId
+      }/approve-roles-request`;
+    } else {
+      return `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`;
+    }
+  } else {
+    return `/approvals/${req.params.orgId}/users/confirm-new-user`;
+  }
 };
 
 const getViewModel = async (req) => {
@@ -65,6 +87,7 @@ const getViewModel = async (req) => {
     ? req.session.user.services.find((x) => x.serviceId === req.params.sid)
     : [];
 
+  const isRequestSubService = req.query.action === 'request-sub-service' && req.session.subServiceReqId ? true : false;
   return {
     csrfToken: req.csrfToken(),
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
@@ -78,6 +101,7 @@ const getViewModel = async (req) => {
     serviceRoles,
     currentService,
     totalNumberOfServices,
+    isRequestSubService,
   };
 };
 
@@ -129,9 +153,8 @@ const post = async (req, res) => {
     const nextService = currentService + 1;
     return res.redirect(`${req.session.user.services[nextService].serviceId}`);
   } else {
-    return req.session.user.uid
-      ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`)
-      : res.redirect(`/approvals/${req.params.orgId}/users/confirm-new-user`);
+    const nextLink = buildNextLink(req, selectedRoles);
+    return res.redirect(`${nextLink}`);
   }
 };
 

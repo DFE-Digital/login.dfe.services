@@ -106,7 +106,7 @@ const post = async (req, res) => {
   const serviceId = serviceDetails.id;
   const userId = req.session.user.uid;
 
-  await createServiceRequest(serviceRequestId, userId, serviceId, rolesIds, organisationId, 0);
+  await createServiceRequest(serviceRequestId, userId, serviceId, rolesIds, organisationId, 0, 'service');
 
   await notificationClient.sendServiceRequestToApprovers(
     senderName,

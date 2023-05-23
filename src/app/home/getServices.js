@@ -189,6 +189,7 @@ const getServices = async (req, res) => {
     editServicesRedirect = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
     removeServicesRedirect = `/approvals/select-organisation-service?action=${actions.REMOVE_SERVICE}`;
   } else {
+    editServicesRedirect = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
     const organisations = await getOrganisationAndServiceForUser(account.id, req.id);
     const orgLength = organisations.length;
 
@@ -232,6 +233,9 @@ const getServices = async (req, res) => {
     },
   });
 
+  const userPireanServices = services.filter(value => pireanServices.includes(value.name) );
+
+
   return res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
@@ -248,6 +252,7 @@ const getServices = async (req, res) => {
     passwordChangedBanner,
     showJobTitleBanner,
     pireanServices,
+    userPireanServices
   });
 };
 

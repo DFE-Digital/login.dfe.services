@@ -5,6 +5,9 @@ const mockConfig = () => {
     hostingEnvironment: {
       env: 'test-run',
       serviceId: '28388aeb-431b-49bc-9480-8db1b0bdd6e1',
+      host: 'localhost',
+      port: '3000',
+      helpUrl: 'https://localhost:3001/help',
     },
     loggerSettings: {},
     organisations: {
@@ -150,10 +153,37 @@ const mockResponse = () => {
   };
 };
 
+const mockDao = () => {
+  return {
+    services: {
+      list: async (pageNumber, pageSize) => {
+        return {
+          count: 10,
+          rows: [
+            {
+              id: 'service1',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service One',
+            },
+            {
+              id: 'service2',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service two',
+            },
+          ],
+        };
+      },
+    },
+  };
+};
+
 module.exports = {
   mockRequest,
   mockResponse,
   mockConfig,
   mockAdapterConfig,
   mockLogger,
+  mockDao,
 };
