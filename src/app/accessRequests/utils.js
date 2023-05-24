@@ -14,7 +14,6 @@ const { services } = require('login.dfe.dao');
 
 const getSubServiceRequestVieModel= async (model,requestId, req) => {
   let viewModel = {};
-  viewModel.endUser = model.endUser;
   viewModel.endUsersEmail = model.endUsersEmail;
   viewModel.endUsersFamilyName = model.endUsersFamilyName;
   viewModel.endUsersGivenName = model.endUsersGivenName;
@@ -31,6 +30,7 @@ const getSubServiceRequestVieModel= async (model,requestId, req) => {
   viewModel.selectedResponse= null;
   viewModel.validationMessages= {};
   viewModel.currentPage= 'requests';
+  viewModel.backLink =  `/access-requests/requests`;
   viewModel = await getRoleAndServiceNames(viewModel, requestId, req);
   return viewModel;
 };
@@ -98,6 +98,7 @@ const getAndMapServiceRequest = async (serviceReqId) => {
       userServiceRequest,
     );
   }
+  console.log(mappedServiceRequest);
   return mappedServiceRequest;
 };
 

@@ -33,7 +33,7 @@ const validate = async (req) => {
 const get = async (req, res) => {
   const model = await getAndMapServiceRequest(req.params.rid); 
   const viewModel = await getSubServiceRequestVieModel(model, req.id, req);
-  viewModel.backLink =  `/access-requests/requests`;
+  
   req.session.rid = req.params.rid;
   if(req.session.roleId != undefined && req.session.roleId  !== viewModel.role_ids)
   {
@@ -43,7 +43,7 @@ const get = async (req, res) => {
     viewModel.Role_name = roleDetails.name;
     req.session.roleId =  undefined;
   }
-  model.csrfToken = req.csrfToken();
+  
   viewModel.csrfToken = req.csrfToken();
 
   viewModel.subServiceAmendUrl = `/approvals/${viewModel.org_id}/users/${viewModel.user_id}/services/${viewModel.service_id}?actions=${actions.REVIEW_SUBSERVICE_REQUEST}`;
