@@ -1,4 +1,4 @@
-const { getAndMapServiceRequest, isReqAlreadyActioned } = require('./utils');
+const { getAndMapServiceRequest, generateFlashMessages } = require('./utils');
 const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
@@ -71,7 +71,7 @@ const post = async (req, res) => {
   if (updateServiceReq.success === false && (resStatus === -1 || 1)) {
     const request = await getAndMapServiceRequest(rid);
     if (request.approverEmail) {
-      return isReqAlreadyActioned(
+      const { title, heading, message } = generateFlashMessages(
         'service',
         request.dataValues.status,
         request.approverEmail,
@@ -80,6 +80,10 @@ const post = async (req, res) => {
         service.name,
         res,
       );
+      res.flash('title', `${title}`);
+      res.flash('heading', `${heading}`);
+      res.flash('message', `${message}`);
+      return res.redirect(`/access-requests/requests`);
     }
   }
 
