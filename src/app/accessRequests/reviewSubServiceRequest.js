@@ -89,11 +89,11 @@ const post = async (req, res) => {
         const notificationClient = new NotificationClient({
           connectionString: config.notifications.connectionString,
         });
-        let namearry = model.viewModel.userName.split(' ');
+        
         await notificationClient.sendServiceRequestApproved(
-          model.viewModel.usersEmail,
-          namearry[0],
-          namearry[1],
+          model.viewModel.endUsersEmail,
+          model.viewModel.endUsersGivenName,
+          model.endUsersFamilyName,
           model.viewModel.org_name,
           model.viewModel.Service_name,
           model.viewModel.Role_name,

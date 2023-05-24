@@ -71,12 +71,11 @@ describe('When reviewing a sub-service request for approving', () => {
   let getSubServiceRequest;
 
   beforeEach(() => {
-    req = mockRequest();
-    (req.params = {
-      
+    req = mockRequest({
+      params : {
       rid: 'sub-service-req-ID',
-    }),
-      (req.viewModel = 
+    },
+    viewModel : 
       {
         endUsersEmail : 'b@b.gov.uk',
         endUsersFamilyName :'b',
@@ -96,7 +95,7 @@ describe('When reviewing a sub-service request for approving', () => {
         currentPage: 'requests',
         Role_name: 'role  one',
         service_name: 'service one',
-      });
+      }});
     
    
     res = mockResponse();
