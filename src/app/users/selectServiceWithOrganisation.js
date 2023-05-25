@@ -93,6 +93,9 @@ const post = async (req, res) => {
   const serviceOrgDetails = serviceOrganisations.find((serviceOrg) => {
     return serviceOrg.id === req.body.selectedServiceOrganisation;
   });
+  if (req.session?.service?.roles) {
+    req.session.service.roles = undefined;
+  }
 
   return res.redirect(buildRedirectURL(req, serviceOrgDetails));
 };
