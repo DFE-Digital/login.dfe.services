@@ -31,7 +31,6 @@ const validate = async (req) => {
   let model = getViewModel(req);
   model.request = await getAndMapServiceRequest(req.params.rid);
   model.reason = req.body.reason;
-  console.log(model);
   if (model.reason.length > 1000) {
     model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
   }
@@ -65,7 +64,7 @@ const post = async (req, res) => {
     return res.render('accessRequests/views/rejectServiceRequest', model);
   }
 
-  const updateServiceReq = await updateServiceRequest(rid, -1, req.user.sub);
+  const updateServiceReq = await updateServiceRequest(rid, -1, req.user.sub, reason);
   const resStatus = updateServiceReq.serviceRequest.status;
 
   if (updateServiceReq.success === false && (resStatus === -1 || 1)) {

@@ -175,6 +175,12 @@ const mockDao = () => {
           ],
         };
       },
+      getById: async (sid) => {
+        return {
+          id: 'service-id',
+          name: 'Test Service',
+        };
+      },
     },
   };
 };

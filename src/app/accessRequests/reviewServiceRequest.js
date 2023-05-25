@@ -73,7 +73,7 @@ const validateModel = async (model, reqParams, res) => {
     res.flash('heading', `${heading}`);
     res.flash('message', `${message}`);
     return res.redirect(`/access-requests/requests`);
-  } else if (policyValidationResult.length > 0) {
+  } else if (policyValidationResult?.length > 0) {
     model.validationMessages.policyValidation = policyValidationResult.map((x) => x.message);
   }
   return model;
