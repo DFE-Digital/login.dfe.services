@@ -59,10 +59,11 @@ describe('when reviewing a service request', () => {
     });
   });
 
-  it('then it should include the back link', async () => {
+  it('then it should include the back and cancel links', async () => {
     await get(req, res);
     expect(res.render.mock.calls[0][1]).toMatchObject({
       cancelLink: '/access-requests/requests',
+      backLink: '/access-requests/service-requests/request-id/services/service-id/roles/role-id-1',
     });
   });
 

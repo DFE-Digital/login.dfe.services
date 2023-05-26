@@ -217,7 +217,7 @@ describe('when reviewing a service request', () => {
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe(
-      '/access-requests/service-requests/request-id/organisation-id/users/end-user-id/services/service-id/roles/role-id-1/rejected',
+      '/access-requests/service-requests/request-id/services/service-id/roles/role-id-1/rejected',
     );
   });
 
