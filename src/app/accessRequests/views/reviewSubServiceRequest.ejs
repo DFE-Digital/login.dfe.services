@@ -20,6 +20,8 @@
                     <dd class="govuk-summary-list__value">
                         <%= locals.endUsersGivenName %> <%=locals.endUsersFamilyName %>
                     </dd>
+                    <dd class="govuk-summary-list__actions">
+                    </dd>
                 </div>
 
                 <div class="govuk-summary-list__row">
@@ -28,6 +30,8 @@
                     </dt>
                     <dd class="govuk-summary-list__value">
                         <%= locals.endUsersEmail %>
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
                     </dd>
                 </div>
 
@@ -38,6 +42,8 @@
                     <dd class="govuk-summary-list__value">
                         <%= locals.moment(locals.created_date).format('DD MMM YYYY') %>
                     </dd>
+                    <dd class="govuk-summary-list__actions">
+                    </dd>
                 </div>
 
                 <div class="govuk-summary-list__row">
@@ -46,6 +52,8 @@
                     </dt>
                     <dd class="govuk-summary-list__value">
                         <%= locals.org_name %>
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
                     </dd>
                 </div>
 
@@ -56,6 +64,8 @@
                     <dd class="govuk-summary-list__value">
                         <%= locals.Service_name %>
                     </dd>
+                    <dd class="govuk-summary-list__actions">
+                    </dd>
                 </div>
 
                 <div class="govuk-summary-list__row">
@@ -63,14 +73,13 @@
                         Sub-Service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0 govuk-!-padding-top-0">
+                       
                         <%= locals.Role_name %>
-                    </div>
-                    <div class="govuk-grid-column-one-third">
-                            <a class="govuk-link" href="<%=locals.subServiceAmendUrl %>">
-                                Amend
-                            </a>
-                        </div>
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        <a class="govuk-link" href="<%=locals.subServiceAmendUrl %>">
+                            Amend
+                        </a>
                    </dd>
                 </div>
 
