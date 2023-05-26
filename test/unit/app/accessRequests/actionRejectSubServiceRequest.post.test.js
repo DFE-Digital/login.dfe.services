@@ -2,20 +2,26 @@ const { mockRequest, mockResponse, mockAdapterConfig } = require('../../../utils
 const { getSubServiceRequestVieModel, getAndMapServiceRequest } = require('../../../../src/app/accessRequests/utils');
 const {updateServiceRequest} = require('../../../../src/app/requestService/utils');
 const {post } = require('../../../../src/app/accessRequests/rejectSubServiceRequest');
-const NotificationClient = require('login.dfe.notifications.client');
-const sendAccessRequest = jest.fn();
+//const { checkCacheForAllServices } = require('../../../../src/infrastructure/helpers/allServicesAppCache');
+//const NotificationClient = require('login.dfe.notifications.client');
+
 
 const Account = require('../../../../src/infrastructure/account');
-jest.mock('login.dfe.policy-engine');
+//jest.mock('login.dfe.policy-engine');
 jest.mock('../../../../src/infrastructure/config', () => {
   return mockAdapterConfig()
 });
+const sendAccessRequest = jest.fn();
 jest.mock('../../../../src/infrastructure/logger', () => require('../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
   getById: jest.fn(),
 }));
-
+/*jest.mock('../../../../src/infrastructure/helpers/allServicesAppCache', () => {
+  return {
+    checkCacheForAllServices: jest.fn(),
+  };
+});*/
 jest.mock('../../../../src/app/accessRequests/utils', () => {
   return {
     getAndMapServiceRequest: jest.fn(),
@@ -29,9 +35,6 @@ jest.mock('../../../../src/app/requestService/utils', () => {
     };
   });
 
-jest.mock('../../../../src/infrastructure/config', () => {
-  return mockAdapterConfig();
-});
 jest.mock('login.dfe.dao', () => {
   return {
     services: {
@@ -40,6 +43,7 @@ jest.mock('login.dfe.dao', () => {
     },
   };
 });
+jest.mock('../../../../src/app/users/utils');
 const viewModel = {
   endUsersEmail : 'b@b.gov.uk',
   endUsersFamilyName :'b',
@@ -54,7 +58,7 @@ const viewModel = {
   actioned_by : null,
   reason : 'Pending',
   csrfToken : null,
-  selectedResponse: '',
+  selectedResponse: 'reject',
   validationMessages: {},
   currentPage: 'requests',
   Role_name: 'role  one',
@@ -82,14 +86,12 @@ const buildModel = {
   isNewRecord: false,
   organisation:{id: 'org1', name: 'accademic organisatioon'}
 };
-jest.mock('../../../../src/app/users/utils');
+
 
 
 describe('When actioning a sub-service request for rejection', () => {
   let req;
   let res;
-
-
   beforeEach(() => {
     req = mockRequest({
         params : {
@@ -151,16 +153,15 @@ describe('When actioning a sub-service request for rejection', () => {
           service_name: 'service one',
         }});
       
-   
+     
     res = mockResponse();
     sendAccessRequest.mockReset();
     
     Account.getById
     .mockReset()
-    .mockReturnValue([
-      { claims: { sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests' } },
-      { claims: { sub: 'user2', given_name: 'User', family_name: 'Two', email: 'user.two@unit.tests' } },
-    ]);
+    .mockReturnValue(
+      { claims: { sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests' } }
+    );
 
     updateServiceRequest.mockReset();
     updateServiceRequest.mockReturnValue(request = {success : true});

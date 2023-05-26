@@ -8,7 +8,7 @@ jest.mock('../../../../src/infrastructure/config', () => {
 jest.mock('../../../../src/infrastructure/config', () => {
   return mockConfig();
 });
-jest.mock('../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
+jest.mock('../../../../src/infrastructure/logger', () => require('../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
   getById: jest.fn(),
