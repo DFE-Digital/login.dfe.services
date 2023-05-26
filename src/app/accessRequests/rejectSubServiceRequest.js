@@ -46,16 +46,13 @@ const post = async (req, res) => {
     model.viewModel.csrfToken = req.csrfToken();
     return res.render('accessRequests/views/rejectSubServiceRequest', model.viewModel);
   }
-
-  // patch request with rejection
-  const actionedDate = Date.now();
   //reqId, statusId, approverId, reason
   const request = await updateServiceRequest(req.params.rid,-1,req.user.sub,model.reason);
  if(request.success)
  {
   //send rejected email
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
-  if (isEmailAllowed && config.hostingEnvironment.env !== 'dev') {
+  if (isEmailAllowed) {
     const notificationClient = new NotificationClient({
       connectionString: config.notifications.connectionString,
     });
