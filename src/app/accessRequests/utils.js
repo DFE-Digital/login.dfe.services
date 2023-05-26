@@ -27,7 +27,7 @@ const getSubServiceRequestVieModel= async (model,requestId, req) => {
   viewModel.actioned_by = model.dataValues.actioned_by;
   viewModel.reason = model.dataValues.reason;
   viewModel.csrfToken = null;
-  viewModel.selectedResponse= null;
+  viewModel.selectedResponse= ' ';
   viewModel.validationMessages= {};
   viewModel.currentPage= 'requests';
   viewModel.backLink =  `/access-requests/requests`;
@@ -102,34 +102,34 @@ const getAndMapServiceRequest = async (serviceReqId) => {
   return mappedServiceRequest;
 };
 
-const isReqAlreadyActioned = (
+const generateFlashMessages = (
   requestType,
   requestStatus,
   approverEmail,
   endUsersGivenName,
   endUsersFamilyName,
   orgOrServName,
-  res,
 ) => {
   const capitalisedReqType = requestType[0].toUpperCase() + requestType.substring(1);
   const capitalisedGivenName = endUsersGivenName[0].toUpperCase() + endUsersGivenName.substring(1);
   const capitalisedFamilyName = endUsersFamilyName[0].toUpperCase() + endUsersFamilyName.substring(1);
+  let action;
 
-  res.flash('title', 'Important');
-  if (requestStatus === 1) {
-    res.flash('heading', `${capitalisedReqType} request already approved: ${orgOrServName}`);
-    res.flash(
-      'message',
-      `${approverEmail} has already responded to the ${requestType} request.<br>${capitalisedGivenName} ${capitalisedFamilyName} has received an email to tell them their request has been approved. No further action is needed.`,
-    );
-  } else if (requestStatus === -1) {
-    res.flash('heading', `${capitalisedReqType} request already rejected: ${orgOrServName}`);
-    res.flash(
-      'message',
-      `${approverEmail} has already responded to the ${requestType} request.<br>${capitalisedGivenName} ${capitalisedFamilyName} has received an email to tell them their request has been rejected. No further action is needed.`,
-    );
+  switch (requestStatus) {
+    case 1:
+      action = 'approved';
+      break;
+    case -1:
+      action = 'rejected';
+      break;
   }
-  return  res.redirect(`/access-requests/requests`);
+  const flashMessages = {
+    title: 'Important',
+    heading: `${capitalisedReqType} request already ${action}: ${orgOrServName}`,
+    message: `${approverEmail} has already responded to the ${requestType} request.<br>${capitalisedGivenName} ${capitalisedFamilyName} has received an email to tell them their request has been ${action}. No further action is needed.`,
+  };
+  console.log(flashMessages);
+  return flashMessages;
 };
 
 module.exports = {
@@ -139,5 +139,5 @@ module.exports = {
   getNewRoleDetails,
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
-  isReqAlreadyActioned,
+  generateFlashMessages,
 };

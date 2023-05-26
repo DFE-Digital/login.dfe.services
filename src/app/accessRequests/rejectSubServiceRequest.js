@@ -59,15 +59,14 @@ const post = async (req, res) => {
     const notificationClient = new NotificationClient({
       connectionString: config.notifications.connectionString,
     });
-    let namearry = model.viewModel.userName.split(' ');
     await notificationClient.sendServiceRequestRejected(
-      model.viewModel.usersEmail,
-      namearry[0],
-      namearry[1],
-      model.viewModel.org_name,
-      model.viewModel.Service_name,
-      model.viewModel.Role_name,
-      model.reason,
+      model.viewModel.endUsersEmail,
+          model.viewModel.endUsersGivenName,
+          model.endUsersFamilyName,
+          model.viewModel.org_name,
+          model.viewModel.Service_name,
+          model.viewModel.Role_name,
+          model.reason,
     );
   }
   logger.audit({
@@ -94,16 +93,7 @@ const post = async (req, res) => {
   );
 
   return res.redirect(`/access-requests/requests`);
- }else
- {
-  res.flash('title', 'Failed');
-  res.flash('heading', 'Sub-service request rejected');
-  res.flash(
-    'message',
-    'The user who raised the request will not receive an email to tell them their sub-service access request has been rejected becuase the action failed',
-  );
  }
-  return res.redirect(`/access-requests/subService-requests/${req.params.rid}/rejected`);
 };
 module.exports = {
   get,

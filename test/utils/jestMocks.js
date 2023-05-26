@@ -76,7 +76,7 @@ const mockAdapterConfig = () => {
     toggles: {
       useApproverJourney: true,
     },
-    hostingEnvironment: {env: 'dev'},
+    hostingEnvironment: {},
     loggerSettings: {},
     notifications: {},
     adapter: {

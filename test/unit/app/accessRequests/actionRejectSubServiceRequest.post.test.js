@@ -1,7 +1,7 @@
 const { mockRequest, mockResponse, mockAdapterConfig } = require('../../../utils/jestMocks');
 const { getSubServiceRequestVieModel, getAndMapServiceRequest } = require('../../../../src/app/accessRequests/utils');
 const {updateServiceRequest} = require('../../../../src/app/requestService/utils');
-const {post } = require('../../../../src/app/accessRequests/reviewSubServiceRequest');
+const {post } = require('../../../../src/app/accessRequests/rejectSubServiceRequest');
 const NotificationClient = require('login.dfe.notifications.client');
 const sendAccessRequest = jest.fn();
 
@@ -54,19 +54,28 @@ const viewModel = {
   actioned_by : null,
   reason : 'Pending',
   csrfToken : null,
-  selectedResponse: null,
-  validationMessages:{selectedResponse: 'Approve or Reject must be selected'},
+  selectedResponse: '',
+  validationMessages: {},
   currentPage: 'requests',
   Role_name: 'role  one',
   service_name: 'service one',
 };
 const model = {
+    csrfToken: 'abcde',
+    title: 'Reason for rejection - DfE Sign-in',
+    backLink: `/access-requests/subService-requests/request1`,
+    cancelLink: `/access-requests/requests`,
+    reason: 'not needed',
+    validationMessages: {},
+    currentPage: 'requests',
+}
+const buildModel = {
   _changed: 0,
   _options: null,
   _previousDataValues: null,
   approverEmail: '',
   approverName:'',
-  dataValues : {id: 'request1', actioned_by: null, actioned_at: null,actioned_reason:'Pending', createdAt: new Date(),organisation_id:'org1', reason:'',role_ids: 'role1', service_id: 'service1', status: 0, updatedAt: new Date(),user_id:'endUser1'},
+  dataValues : {id: 'request1', actioned_by: null, actioned_at: null,actioned_reason:'Pending', createdAt: new Date(),organisation_id:'org1', reason:'not needed',role_ids: 'role1', service_id: 'service1', status: 0, updatedAt: new Date(),user_id:'endUser1'},
   endUsersEmail: 'b@b.gov.uk', 
   endUsersFamilyName: 'b', 
   endUsersGvenName:'b',
@@ -76,11 +85,10 @@ const model = {
 jest.mock('../../../../src/app/users/utils');
 
 
-describe('When reviewing a sub-service request for approving', () => {
+describe('When actioning a sub-service request for rejection', () => {
   let req;
   let res;
 
-  let postSubServiceRequest;
 
   beforeEach(() => {
     req = mockRequest({
@@ -96,20 +104,30 @@ describe('When reviewing a sub-service request for approving', () => {
         email: 'email@email.com',
       },
       body: {
-        selectedResponse: 'approve',
+        selectedResponse: 'reject',
+        reason: 'not needed',
       },
-      model : {
+      buildmodel : {
         _changed: 0,
         _options: null,
         _previousDataValues: null,
         approverEmail: '',
         approverName:'',
-        dataValues : {id: 'request1', actioned_by: null, actioned_at: null,actioned_reason:'Pending', createdAt: new Date(),organisation_id:'org1', reason:'',role_ids: 'role1', service_id: 'service1', status: 0, updatedAt: new Date(),user_id:'endUser1'},
+        dataValues : {id: 'request1', actioned_by: null, actioned_at: null,actioned_reason:'Pending', createdAt: new Date(),organisation_id:'org1', reason:'not needed',role_ids: 'role1', service_id: 'service1', status: 0, updatedAt: new Date(),user_id:'endUser1'},
         endUsersEmail: 'b@b.gov.uk', 
         endUsersFamilyName: 'b', 
         endUsersGvenName:'b',
         isNewRecord: false,
         organisation:{id: 'org1', name: 'accademic organisatioon'}
+      },
+      model: {
+        csrfToken: 'abcde',
+        title: 'Reason for rejection - DfE Sign-in',
+        backLink: `/access-requests/subService-requests/request1`,
+        cancelLink: `/access-requests/requests`,
+        reason: 'not needed',
+        validationMessages: {},
+        currentPage: 'requests',
       },
       viewModel : 
         {
@@ -124,10 +142,10 @@ describe('When reviewing a sub-service request for approving', () => {
           status : 0,
           actioned_reason : 'Pending',
           actioned_by : null,
-          reason : 'Pending',
+          reason : 'not needed',
           csrfToken : null,
-          selectedResponse: null,
-          validationMessages: {selectedResponse: 'Approve or Reject must be selected'},
+          selectedResponse: 'reject',
+          validationMessages: {},
           currentPage: 'requests',
           Role_name: 'role  one',
           service_name: 'service one',
@@ -141,33 +159,33 @@ describe('When reviewing a sub-service request for approving', () => {
     .mockReset()
     .mockReturnValue([
       { claims: { sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests' } },
-     
+      { claims: { sub: 'user2', given_name: 'User', family_name: 'Two', email: 'user.two@unit.tests' } },
     ]);
 
     updateServiceRequest.mockReset();
     updateServiceRequest.mockReturnValue(request = {success : true});
 
     getAndMapServiceRequest.mockReset();
-    getAndMapServiceRequest.mockReturnValue(model);
+    getAndMapServiceRequest.mockReturnValue(buildModel);
 
     getSubServiceRequestVieModel.mockReset();
     getSubServiceRequestVieModel.mockReturnValue(viewModel);
 
-    postSubServiceRequest = require('../../../../src/app/accessRequests/reviewSubServiceRequest').post;
+    
   });
 
-  it('then it should render Success when its approved correctly', async () => {
+  it('then it should redirect to summary request view', async () => {
     await post(req, res);
-    expect(res.flash.mock.calls).toHaveLength(3);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe('/access-requests/requests');  
     expect(res.flash.mock.calls[0][0]).toBe('title');
     expect(res.flash.mock.calls[0][1]).toBe('Success');
+    expect(res.flash.mock.calls[1][0]).toBe('heading');
+    expect(res.flash.mock.calls[1][1]).toBe('Sub-service request rejected');
+    expect(res.flash.mock.calls[2][0]).toBe('message');
+    expect(res.flash.mock.calls[2][1]).toBe('The user who raised the request will receive an email to tell them their sub-service access request has been rejected');
   });
 
-  it('then it should render an error if the selectedResponse is missing', async () => {
-    req.body.selectedResponse = null;
-    await post(req, res);
-    expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/reviewSubServiceRequest');
-   
-  });
 
+  
 });

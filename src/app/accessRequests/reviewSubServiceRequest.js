@@ -1,6 +1,6 @@
 const Account = require('./../../infrastructure/account');
 const {updateServiceRequest} = require('../requestService/utils');
-const { getNewRoleDetails, getSubServiceRequestVieModel, getAndMapServiceRequest, isReqAlreadyActioned } = require('./utils');
+const { getNewRoleDetails, getSubServiceRequestVieModel, getAndMapServiceRequest, generateFlashMessages } = require('./utils');
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
 const { actions } = require('../constans/actions');
 const logger = require('./../../infrastructure/logger');
@@ -49,7 +49,15 @@ const get = async (req, res) => {
   viewModel.subServiceAmendUrl = `/approvals/${viewModel.org_id}/users/${viewModel.user_id}/services/${viewModel.service_id}?actions=${actions.REVIEW_SUBSERVICE_REQUEST}`;
   if (viewModel.actioned_by && (viewModel.status === -1 || 1 )) {
     const user = await Account.getById(viewModel.actioned_by);
-    return isReqAlreadyActioned("sub-Service", viewModel.status,user.claims.email,viewModel.endUsersGivenName,viewModel.endUsersFamilyName, viewModel.Role_name, res);
+    const { title, heading, message } = generateFlashMessages(
+      'service',
+      viewModel.status,user.claims.email,viewModel.endUsersGivenName,viewModel.endUsersFamilyName, viewModel.Role_name,
+      res,
+    );
+    res.flash('title', `${title}`);
+    res.flash('heading', `${heading}`);
+    res.flash('message', `${message}`);
+    return res.redirect(`/access-requests/requests`);
   }
   return res.render('accessRequests/views/reviewSubServiceRequest', viewModel);
 };
@@ -64,7 +72,15 @@ const post = async (req, res) => {
     if (alreadyActioned.actioned_by) {
       model.viewModel.validationMessages.alreadyActioned = `Request already actioned by ${alreadyActioned.actioned_by}`;
       const user = await Account.getById(alreadyActioned.actioned_by);
-    return isReqAlreadyActioned("sub-Service", request.dataValues.status ,alreadyActioned.endUsersGivenName, user.claims.email,alreadyActioned.endUsersFamilyName, alreadyActioned.Role_name, res);
+      const { title, heading, message } = generateFlashMessages(
+        'service',
+        request.dataValues.status ,alreadyActioned.endUsersGivenName, user.claims.email,alreadyActioned.endUsersFamilyName, alreadyActioned.Role_name,
+        res,
+      );
+      res.flash('title', `${title}`);
+      res.flash('heading', `${heading}`);
+      res.flash('message', `${message}`);
+      return res.redirect(`/access-requests/requests`);
     }
   }
 
@@ -123,17 +139,7 @@ const post = async (req, res) => {
         res.flash('heading', `Sub Service amended: ${model.viewModel.Role_name}`);
         res.flash('message', `The user who raised the request will receive an email to tell them their sub-service access request has been approved`);
         return res.redirect(`/access-requests/requests`);
-    }else{
-    model.viewModel.csrfToken = req.csrfToken();
-    model.viewModel.validationMessages.selectedResponse = 'Ooops something went wrong!'
-    return res.render('accessRequests/views/reviewSubServiceRequest', model.viewModel);
     }
-  }
-  else{
-    
-    model.viewModel.csrfToken = req.csrfToken();
-    model.viewModel.validationMessages.selectedResponse = 'Ooops something went wrong!'
-    return res.render('accessRequests/views/reviewSubServiceRequest', model.viewModel);
   }
 };
 
