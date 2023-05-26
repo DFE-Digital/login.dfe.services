@@ -43,18 +43,18 @@ const action = (csrf, app) => {
       return res.redirect(`/access-requests/requests`);
     }),
   );
-  router.get('/subService-requests/:rid', csrf, isApproverInSomeOrgs, asyncWrapper(getReviewSubServiceRequest));
-  router.post('/subService-requests/:rid', csrf, isApproverInSomeOrgs, asyncWrapper(postReviewSubServiceRequest));
+  router.get('/subService-requests/:rid', csrf, isAllowedToApproveReq, asyncWrapper(getReviewSubServiceRequest));
+  router.post('/subService-requests/:rid', csrf, isAllowedToApproveReq, asyncWrapper(postReviewSubServiceRequest));
   router.get(
     '/subService-requests/:rid/rejected',
     csrf,
-    isApproverInSomeOrgs,
+    isAllowedToApproveReq,
     asyncWrapper(getRejectSubServiceRequest),
   );
   router.post(
     '/subService-requests/:rid/rejected',
     csrf,
-    isApproverInSomeOrgs,
+    isAllowedToApproveReq,
     asyncWrapper(postRejectSubServiceRequest),
   );
   router.get('/requests', csrf, isApproverInSomeOrgs, asyncWrapper(getAllRequestsForApproval));

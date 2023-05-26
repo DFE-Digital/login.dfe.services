@@ -116,15 +116,16 @@ const post = async (req, res) => {
           model.reason,
         );
       }
+      const approver = await Account.getById(model.viewModel.actioned_by);
         logger.audit({
-          type: 'approver',
-          subType: 'user-Subservice-updated',
+          type: 'sub-service',
+          subType: 'sub-service request Approved',
           userId: req.user.sub,
           userEmail: req.user.email,
           meta: {
             editedFields: [
               {
-                name: 'update_Subservice',
+                name: 'Approved_Subservice',
                 newValue: model.viewModel.role_ids,
               },
             ],
@@ -132,7 +133,11 @@ const post = async (req, res) => {
           },
           application: config.loggerSettings.applicationName,
           env: config.hostingEnvironment.env,
-          message: `${req.user.email} (id: ${req.user.sub}) updated sub service ${model.viewModel.Role_name} for organisation ${model.viewModel.org_name} (id: ${model.viewModel.org_id}) for user ${req.session.user.email} (id: ${model.viewModel.user_id})`,
+          message:  `${approver.email} (approverId: ${
+            approver.sub
+          }) approved sub-service request for (serviceId: ${model.viewModel.service_id}) and sub-services (roleIds: ${JSON.stringify(
+            model.viewModel.role_ids,
+          )}) and organisation (orgId: ${model.viewModel.org_id}) for end user (endUserId: ${model.viewModel.user_id}) - requestId (reqId: ${req.params.rid})`,
         });
 
         res.flash('title', `Success`);
