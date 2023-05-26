@@ -190,24 +190,22 @@ const post = async (req, res) => {
     );
 
     logger.audit({
-      type: 'services',
-      subType: 'access-request-approved',
+      type: 'sub-service',
+      subType: 'sub-service request Approved',
       userId: approver.sub,
       userEmail: approver.email,
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `${approver.email} (approverId: ${
+      message:`${approver.email} (approverId: ${
         approver.sub
-      }) approved service (serviceId: ${sid}) and roles (roleIds: ${JSON.stringify(
+      }) approved sub-service request for (serviceId: ${sid}) and sub-services (roleIds: ${JSON.stringify(
         requestedRolesIds,
-      )}) and organisation (orgId: ${
-        organisation.id
-      }) for end user (endUserId: ${endUserId}) - requestId (reqId: ${rid})`,
+      )}) and organisation (orgId: ${organisation.id}) for end user (endUserId: ${endUserId}) - requestId (reqId: ${rid})`,
     });
 
     res.flash('title', `Success`);
     res.flash('heading', `Service access request approved`);
-    res.flash('message', `${endUsersGivenName} ${endUsersFamilyName} has been added to ${service.name}.`);
+    res.flash('message', 'The user who raised the request will receive an email to tell them their sub-service access request was approved.');
 
     return res.redirect(`/access-requests/requests`);
   }

@@ -287,11 +287,11 @@ describe('when reviewing a service request', () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      'jane.doe@education (approverId: approver-user-id) approved service (serviceId: service-id) and roles (roleIds: ["role-id-1"]) and organisation (orgId: organisation-id) for end user (endUserId: end-user-id) - requestId (reqId: request-id)',
+      'jane.doe@education (approverId: approver-user-id) approved sub-service request for (serviceId: service-id) and sub-services (roleIds: [\"role-id-1\"]) and organisation (orgId: organisation-id) for end user (endUserId: end-user-id) - requestId (reqId: request-id)',
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
-      subType: 'access-request-approved',
-      type: 'services',
+      subType: "sub-service request Approved",
+      type: "sub-service",
       userEmail: 'jane.doe@education',
       userId: 'approver-user-id',
     });
@@ -307,7 +307,7 @@ describe('when reviewing a service request', () => {
     expect(res.flash.mock.calls[1][0]).toBe('heading');
     expect(res.flash.mock.calls[1][1]).toBe('Service access request approved');
     expect(res.flash.mock.calls[2][0]).toBe('message');
-    expect(res.flash.mock.calls[2][1]).toBe('John Doe has been added to Test Service.');
+    expect(res.flash.mock.calls[2][1]).toBe('The user who raised the request will receive an email to tell them their sub-service access request was approved.');
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe('/access-requests/requests');
