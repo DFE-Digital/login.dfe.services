@@ -4,7 +4,7 @@ const express = require('express');
 const { isLoggedIn, isApproverInSomeOrgs } = require('../../infrastructure/utils');
 const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
-
+const { isAllowedToApproveReq } = require('./utils.js');
 const router = express.Router({ mergeParams: true });
 const { get: getAllRequestsForApproval, post: postAllRequestsForApproval } = require('./getAllRequestsForApproval');
 const {
@@ -77,26 +77,26 @@ const action = (csrf, app) => {
   router.get(
     '/service-requests/:rid/services/:sid/roles/:rolesIds?',
     csrf,
-    isApproverInSomeOrgs,
+    isAllowedToApproveReq,
     asyncWrapper(getReviewServiceRequest),
   );
   router.post(
     '/service-requests/:rid/services/:sid/roles/:rolesIds?',
     csrf,
-    isApproverInSomeOrgs,
+    isAllowedToApproveReq,
     asyncWrapper(postReviewServiceRequest),
   );
 
   router.get(
     '/service-requests/:rid/services/:sid/roles/:rolesIds?/rejected',
     csrf,
-    isApproverInSomeOrgs,
+    isAllowedToApproveReq,
     asyncWrapper(getRejectServiceRequest),
   );
   router.post(
     '/service-requests/:rid/services/:sid/roles/:rolesIds?/rejected',
     csrf,
-    isApproverInSomeOrgs,
+    isAllowedToApproveReq,
     asyncWrapper(postRejectServiceRequest),
   );
 
