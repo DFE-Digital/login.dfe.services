@@ -128,7 +128,6 @@ const generateFlashMessages = (
     heading: `${capitalisedReqType} request already ${action}: ${orgOrServName}`,
     message: `${approverEmail} has already responded to the ${requestType} request.<br>${capitalisedGivenName} ${capitalisedFamilyName} has received an email to tell them their request has been ${action}. No further action is needed.`,
   };
-  console.log(flashMessages);
   return flashMessages;
 };
 

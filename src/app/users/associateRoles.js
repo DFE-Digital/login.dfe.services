@@ -37,7 +37,7 @@ const buildBackLink = (req, currentServiceIndex) => {
   } else if (isReviewServiceReqAmendRoleUrl) {
     const { serviceReqId, serviceId, selectedRoleIds } = req.session.reviewServiceRequest;
     const rolesIds = encodeURIComponent(selectedRoleIds);
-    return `${baseUrl}/access-requests/service-requests/${serviceReqId}/${req.params.orgId}/users/${req.params.uid}/services/${serviceId}/roles/${rolesIds}`;
+    return `${baseUrl}/access-requests/service-requests/${serviceReqId}/services/${serviceId}/roles/${rolesIds}`;
   } else if (isReviewServiceReqAmendServiceUrl) {
     const action = actions.REVIEW_SERVICE_REQ_SERVICE;
     return `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${action}`;
@@ -77,7 +77,7 @@ const buildNextLink = (req, selectedRoles) => {
     ) {
       const { serviceReqId } = req.session.reviewServiceRequest;
       const rolesList = selectedRoles.length > 0 ? encodeURIComponent(selectedRoles) : 'null';
-      return `${baseUrl}/access-requests/service-requests/${serviceReqId}/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}/roles/${rolesList}`;
+      return `${baseUrl}/access-requests/service-requests/${serviceReqId}/services/${req.params.sid}/roles/${rolesList}`;
     } else {
       return `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`;
     }
@@ -94,7 +94,7 @@ const buildCancelLink = (req) => {
   if (isReviewServiceReqAmendRoleUrl || isReviewServiceReqAmendServiceUrl) {
     const { serviceReqId, serviceId, selectedRoleIds } = req.session.reviewServiceRequest;
     const rolesIds = encodeURIComponent(selectedRoleIds);
-    return `${baseUrl}/access-requests/service-requests/${serviceReqId}/${req.params.orgId}/users/${req.params.uid}/services/${serviceId}/roles/${rolesIds}`;
+    return `${baseUrl}/access-requests/service-requests/${serviceReqId}/services/${serviceId}/roles/${rolesIds}`;
   } else {
     return `/approvals/users/${req.session.user.id}`;
   }

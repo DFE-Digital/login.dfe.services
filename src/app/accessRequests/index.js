@@ -75,26 +75,26 @@ const action = (csrf, app) => {
   );
 
   router.get(
-    '/service-requests/:rid/:orgId/users/:uid/services/:sid/roles/:rolesIds?',
+    '/service-requests/:rid/services/:sid/roles/:rolesIds?',
     csrf,
     isApproverInSomeOrgs,
     asyncWrapper(getReviewServiceRequest),
   );
   router.post(
-    '/service-requests/:rid/:orgId/users/:uid/services/:sid/roles/:rolesIds?',
+    '/service-requests/:rid/services/:sid/roles/:rolesIds?',
     csrf,
     isApproverInSomeOrgs,
     asyncWrapper(postReviewServiceRequest),
   );
 
   router.get(
-    '/service-requests/:rid/:orgId/users/:uid/services/:sid/roles/:rolesIds?/rejected',
+    '/service-requests/:rid/services/:sid/roles/:rolesIds?/rejected',
     csrf,
     isApproverInSomeOrgs,
     asyncWrapper(getRejectServiceRequest),
   );
   router.post(
-    '/service-requests/:rid/:orgId/users/:uid/services/:sid/roles/:rolesIds?/rejected',
+    '/service-requests/:rid/services/:sid/roles/:rolesIds?/rejected',
     csrf,
     isApproverInSomeOrgs,
     asyncWrapper(postRejectServiceRequest),

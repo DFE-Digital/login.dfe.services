@@ -17,7 +17,7 @@ const getViewModel = async (req) => {
   const request = await getAndMapServiceRequest(req.params.rid);
   const service = await daoServices.getById(req.params.sid);
   const roleIds = req.params.rolesIds ? decodeURIComponent(req.params.rolesIds) : undefined;
-  const endUserId = req.params.uid;
+  const endUserId = request.dataValues.user_id;
 
   const requestedRolesIds = roleIds && roleIds !== 'null' ? roleIds.split(',') : [];
   const allRolesOfService = await listRolesOfService(req.params.sid, req.id);
@@ -41,6 +41,7 @@ const getViewModel = async (req) => {
     request,
     service,
     action,
+    endUserId,
     requestedRolesIds,
     selectedRoles,
     serviceAmendUrl,
@@ -53,9 +54,15 @@ const getViewModel = async (req) => {
 };
 
 const validateModel = async (model, reqParams, res) => {
-  const { requestedRolesIds, request, service } = model;
-  const { rid, sid, orgId, uid } = reqParams;
-  const policyValidationResult = await policyEngine.validate(uid, orgId, sid, requestedRolesIds, rid);
+  const { requestedRolesIds, request, service, endUserId } = model;
+  const { rid, sid } = reqParams;
+  const policyValidationResult = await policyEngine.validate(
+    endUserId,
+    request.organisation.id,
+    sid,
+    requestedRolesIds,
+    rid,
+  );
 
   if (model.selectedResponse === undefined || model.selectedResponse === null) {
     model.validationMessages.selectedResponse = 'Approve or Reject must be selected';
@@ -81,8 +88,8 @@ const validateModel = async (model, reqParams, res) => {
 
 const get = async (req, res) => {
   const model = await getViewModel(req);
-  const { request, action, requestedRolesIds, service } = model;
-  const { rid, sid, rolesIds, uid } = req.params;
+  const { request, action, requestedRolesIds, service, endUserId } = model;
+  const { rid, sid, rolesIds } = req.params;
   req.session = {
     ...req.session,
     action: action,
@@ -93,7 +100,7 @@ const get = async (req, res) => {
     },
     user: {
       ...req.session.user,
-      uid: uid,
+      uid: endUserId,
       firstName: request.endUsersGivenName,
       lastName: request.endUsersFamilyName,
       email: request.endUsersEmail,
@@ -131,8 +138,8 @@ const post = async (req, res) => {
   let model = await getViewModel(req);
   model = await validateModel(model, req.params, res);
   if (model) {
-    const { requestedRolesIds, service, selectedRoles } = model;
-    const { rid, sid, orgId, uid, rolesIds } = req.params;
+    const { requestedRolesIds, service, selectedRoles, endUserId } = model;
+    const { rid, sid, rolesIds } = req.params;
     const { organisation, endUsersEmail, endUsersFamilyName, endUsersGivenName } = model.request;
     const approver = req.user;
 
@@ -144,7 +151,7 @@ const post = async (req, res) => {
     if (model.selectedResponse === 'reject') {
       model.validationMessages = {};
       const encodedRids = encodeURIComponent(rolesIds);
-      const rejectLink = `/access-requests/service-requests/${rid}/${orgId}/users/${uid}/services/${sid}/roles/${encodedRids}/rejected`;
+      const rejectLink = `/access-requests/service-requests/${rid}/services/${sid}/roles/${encodedRids}/rejected`;
       return res.redirect(`${rejectLink}`);
     }
 
@@ -171,7 +178,7 @@ const post = async (req, res) => {
       }
     }
 
-    await addUserService(uid, sid, orgId, requestedRolesIds, rid);
+    await addUserService(endUserId, sid, organisation.id, requestedRolesIds, rid);
 
     await notificationClient.sendServiceRequestApproved(
       endUsersEmail,
@@ -193,7 +200,9 @@ const post = async (req, res) => {
         approver.sub
       }) approved service (serviceId: ${sid}) and roles (roleIds: ${JSON.stringify(
         requestedRolesIds,
-      )}) and organisation (orgId: ${orgId}) for end user (endUserId: ${uid}) - requestId (reqId: ${rid})`,
+      )}) and organisation (orgId: ${
+        organisation.id
+      }) for end user (endUserId: ${endUserId}) - requestId (reqId: ${rid})`,
     });
 
     res.flash('title', `Success`);

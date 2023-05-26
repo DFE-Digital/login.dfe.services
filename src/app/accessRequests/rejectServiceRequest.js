@@ -11,9 +11,9 @@ const notificationClient = new NotificationClient({
 });
 
 const getViewModel = (req) => {
-  const { rid, sid, orgId, uid, rolesIds } = req.params;
+  const { rid, sid, rolesIds } = req.params;
   const encodedRids = encodeURIComponent(rolesIds);
-  const backLink = `/access-requests/service-requests/${rid}/${orgId}/users/${uid}/services/${sid}/roles/${encodedRids}`;
+  const backLink = `/access-requests/service-requests/${rid}/services/${sid}/roles/${encodedRids}`;
   const model = {
     csrfToken: req.csrfToken(),
     title: 'Reason for rejection - DfE Sign-in',

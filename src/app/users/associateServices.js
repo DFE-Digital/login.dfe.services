@@ -38,7 +38,7 @@ const buildBackLink = (req) => {
   } else if (isReviewServiceReqAmendServiceUrl) {
     const { serviceReqId, serviceId, selectedRoleIds } = req.session.reviewServiceRequest;
     const rolesIds = encodeURIComponent(selectedRoleIds);
-    backRedirect = `${baseUrl}/access-requests/service-requests/${serviceReqId}/${req.params.orgId}/users/${req.params.uid}/services/${serviceId}/roles/${rolesIds}`;
+    backRedirect = `${baseUrl}/access-requests/service-requests/${serviceReqId}/services/${serviceId}/roles/${rolesIds}`;
   } else if (isRequestServiceUrl && req.session.user && req.session.user.serviceId && req.session.user.roleIds) {
     const sid = req.session.user.serviceId
     const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds))
