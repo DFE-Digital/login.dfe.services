@@ -178,8 +178,8 @@ describe('When confirming and submiting a sub-service request', () => {
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(loggerAuditMessage);
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
-      type: 'services',
-      subType: 'sub-services-request',
+      type: 'sub-service',
+      subType: 'sub-service request',
       userId: 'user1',
       userEmail: 'user.one@unit.test',
       env: 'test-run',

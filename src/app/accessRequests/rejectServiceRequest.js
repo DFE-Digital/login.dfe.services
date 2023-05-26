@@ -1,4 +1,4 @@
-const { getAndMapServiceRequest, isReqAlreadyActioned } = require('./utils');
+const { getAndMapServiceRequest, generateFlashMessages } = require('./utils');
 const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
@@ -31,7 +31,6 @@ const validate = async (req) => {
   let model = getViewModel(req);
   model.request = await getAndMapServiceRequest(req.params.rid);
   model.reason = req.body.reason;
-  console.log(model);
   if (model.reason.length > 1000) {
     model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
   }
@@ -65,13 +64,13 @@ const post = async (req, res) => {
     return res.render('accessRequests/views/rejectServiceRequest', model);
   }
 
-  const updateServiceReq = await updateServiceRequest(rid, -1, req.user.sub);
+  const updateServiceReq = await updateServiceRequest(rid, -1, req.user.sub, reason);
   const resStatus = updateServiceReq.serviceRequest.status;
 
   if (updateServiceReq.success === false && (resStatus === -1 || 1)) {
     const request = await getAndMapServiceRequest(rid);
     if (request.approverEmail) {
-      return isReqAlreadyActioned(
+      const { title, heading, message } = generateFlashMessages(
         'service',
         request.dataValues.status,
         request.approverEmail,
@@ -80,6 +79,10 @@ const post = async (req, res) => {
         service.name,
         res,
       );
+      res.flash('title', `${title}`);
+      res.flash('heading', `${heading}`);
+      res.flash('message', `${message}`);
+      return res.redirect(`/access-requests/requests`);
     }
   }
 

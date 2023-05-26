@@ -56,7 +56,13 @@ const get = async (req, res) => {
   }
 
   const model = await getViewModel(req);
-  model.service.roles = model.userService.roles;
+  if (req.session?.service?.roles) {
+    const sessionRoles = req.session.service.roles;
+    model.service.roles = sessionRoles.map((x) => ({ id: x }));
+  } else {
+    model.service.roles = model.userService.roles;
+  }
+
   saveRoleInSession(req, model.service.roles);
   renderRequestEditRoles(res, model);
 };

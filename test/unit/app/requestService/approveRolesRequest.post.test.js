@@ -253,8 +253,8 @@ describe('When approving a sub service request', () => {
       'approver.one@unit.test (approverId: approver1) approved sub-service request for (serviceId: service1) and sub-services (roleIds: ["role1"]) and organisation (orgId: organisationId) for end user (endUserId: endUser1) - requestId (reqId: sub-service-req-ID)',
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
-      type: 'services',
-      subType: 'sub-service-request',
+      type: 'sub-service',
+      subType: 'sub-service request Approved',
       userId: 'approver1',
       userEmail: 'approver.one@unit.test',
     });
