@@ -101,19 +101,18 @@ const post = async (req, res) => {
     const request = await updateServiceRequest(req.params.rid,1,req.user.sub,model.reason);
     if (request.success){
       const isEmailAllowed = await isServiceEmailNotificationAllowed();
-      if (isEmailAllowed && config.hostingEnvironment.env !== 'dev') {
+      if (isEmailAllowed) {
         const notificationClient = new NotificationClient({
           connectionString: config.notifications.connectionString,
         });
         
-        await notificationClient.sendServiceRequestApproved(
+        await notificationClient.sendSubServiceRequestApproved(
           model.viewModel.endUsersEmail,
           model.viewModel.endUsersGivenName,
-          model.endUsersFamilyName,
+          model.viewModel.endUsersFamilyName,
           model.viewModel.org_name,
           model.viewModel.Service_name,
-          model.viewModel.Role_name,
-          model.reason,
+          model.viewModel.Role_name
         );
       }
       const approver = await Account.getById(model.viewModel.actioned_by);
@@ -133,7 +132,7 @@ const post = async (req, res) => {
           },
           application: config.loggerSettings.applicationName,
           env: config.hostingEnvironment.env,
-          message:  `${approver.email} (approverId: ${
+          message:  `${req.user.email} (approverId: ${
             approver.sub
           }) approved sub-service request for (serviceId: ${model.viewModel.service_id}) and sub-services (roleIds: ${JSON.stringify(
             model.viewModel.role_ids,

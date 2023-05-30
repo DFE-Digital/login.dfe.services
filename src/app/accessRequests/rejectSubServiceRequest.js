@@ -56,10 +56,10 @@ const post = async (req, res) => {
     const notificationClient = new NotificationClient({
       connectionString: config.notifications.connectionString,
     });
-    await notificationClient.sendServiceRequestRejected(
+    await notificationClient.sendSubServiceRequestRejected(
       model.viewModel.endUsersEmail,
           model.viewModel.endUsersGivenName,
-          model.endUsersFamilyName,
+          model.viewModel.endUsersFamilyName,
           model.viewModel.org_name,
           model.viewModel.Service_name,
           model.viewModel.Role_name,
