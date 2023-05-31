@@ -86,7 +86,7 @@ const post = async (req, res) => {
   res.flash('heading', 'Sub-service request rejected');
   res.flash(
     'message',
-    'The user who raised the request will receive an email to tell them their sub-service access request has been rejected',
+    'The user who raised the request will receive an email to tell them their sub-service access request has been rejected.',
   );
 
   return res.redirect(`/access-requests/requests`);

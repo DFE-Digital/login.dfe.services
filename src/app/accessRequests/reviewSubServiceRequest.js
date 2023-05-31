@@ -141,7 +141,7 @@ const post = async (req, res) => {
 
         res.flash('title', `Success`);
         res.flash('heading', `Sub Service amended: ${model.viewModel.Role_name}`);
-        res.flash('message', `The user who raised the request will receive an email to tell them their sub-service access request has been approved`);
+        res.flash('message', `The user who raised the request will receive an email to tell them their sub-service access request has been approved.`);
         return res.redirect(`/access-requests/requests`);
     }
   }
