@@ -125,9 +125,9 @@ const post = async (req, res) => {
   }
   else if(model.selectedResponse === 'approve'){
     const request = await updateServiceRequest(req.params.rid,1,req.user.sub ,model.reason);
-    const roleArray = new Array();
+    let roleArray = [];
     roleArray.push(model.viewModel.role_ids);
-    await updateUserService(req.user.sub, model.viewModel.service_id, model.viewModel.org_id, roleArray, req.params.rid);
+    await updateUserService(model.viewModel.user_id, model.viewModel.service_id, model.viewModel.org_id, roleArray, req.params.rid);
     if (request.success){
       const isEmailAllowed = await isServiceEmailNotificationAllowed();
       if (isEmailAllowed) {
