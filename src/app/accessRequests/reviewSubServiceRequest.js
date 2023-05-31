@@ -121,6 +121,8 @@ const post = async (req, res) => {
     model.viewModel.csrfToken = req.csrfToken();
     model.validationMessages = {};
     model.viewModel.validationMessages={};
+    req.session.role = [];
+    req.session.roleId;
     return res.redirect(`/access-requests/subService-requests/${req.params.rid}/rejected`);
   }
   else if(model.selectedResponse === 'approve'){
@@ -129,6 +131,8 @@ const post = async (req, res) => {
     roleArray.push(model.viewModel.role_ids);
     await updateUserService(model.viewModel.user_id, model.viewModel.service_id, model.viewModel.org_id, roleArray, req.params.rid);
     if (request.success){
+      req.session.role = [];
+      req.session.roleId;
       const isEmailAllowed = await isServiceEmailNotificationAllowed();
       if (isEmailAllowed) {
         const notificationClient = new NotificationClient({
