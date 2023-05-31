@@ -32,7 +32,7 @@ const buildBackLink = (req) => {
   }
 };
 
-const BuildCencelLick= (req) =>{
+const buildCancelLink= (req) =>{
   if (!isUserManagement(req)) {
     if (req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST) {
       return `/access-requests/subService-requests/${req.session.rid}`;
@@ -58,7 +58,7 @@ const getViewModel = async (req) => {
   const application = await getApplication(req.params.sid, req.id);
   return {
     backLink: buildBackLink(req),
-    cancelLink: BuildCencelLick(req),
+    cancelLink: buildCancelLink(req),
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisationDetails,
