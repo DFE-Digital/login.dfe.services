@@ -54,8 +54,8 @@ const viewModel = {
 };
 const flashMessages = {
   title: 'Important',
-  heading: `Sub-Service request already Approved: accademic organisatioon`,
-  message: `user.one@unit.tests has already responded to the Sub-Service request.<br>User One has received an email to tell them their request has been Approved. No further action is needed.`,
+  heading: `Sub-service request already Approved: accademic organisatioon`,
+  message: `user.one@unit.tests has already responded to the Sub-service request.<br>User One has received an email to tell them their request has been Approved. No further action is needed.`,
 };
 const model = {
   _changed: 0,
@@ -152,9 +152,9 @@ describe('When reviewing a sub-service request for approving', () => {
     expect(res.flash.mock.calls[0][0]).toBe('title');
     expect(res.flash.mock.calls[0][1]).toBe('Important');
     expect(res.flash.mock.calls[1][0]).toBe('heading');
-    expect(res.flash.mock.calls[1][1]).toBe('Sub-Service request already Approved: accademic organisatioon');
+    expect(res.flash.mock.calls[1][1]).toBe('Sub-service request already Approved: accademic organisatioon');
     expect(res.flash.mock.calls[2][0]).toBe('message');
-    expect(res.flash.mock.calls[2][1]).toBe('user.one@unit.tests has already responded to the Sub-Service request.<br>User One has received an email to tell them their request has been Approved. No further action is needed.');
+    expect(res.flash.mock.calls[2][1]).toBe('user.one@unit.tests has already responded to the Sub-service request.<br>User One has received an email to tell them their request has been Approved. No further action is needed.');
 
     
    
@@ -168,9 +168,9 @@ describe('When reviewing a sub-service request for approving', () => {
     expect(res.flash.mock.calls[0][0]).toBe('title');
     expect(res.flash.mock.calls[0][1]).toBe('Important');
     expect(res.flash.mock.calls[1][0]).toBe('heading');
-    expect(res.flash.mock.calls[1][1]).toBe('Sub-Service request already Approved: accademic organisatioon');
+    expect(res.flash.mock.calls[1][1]).toBe('Sub-service request already Approved: accademic organisatioon');
     expect(res.flash.mock.calls[2][0]).toBe('message');
-    expect(res.flash.mock.calls[2][1]).toBe('user.one@unit.tests has already responded to the Sub-Service request.<br>User One has received an email to tell them their request has been Approved. No further action is needed.');
+    expect(res.flash.mock.calls[2][1]).toBe('user.one@unit.tests has already responded to the Sub-service request.<br>User One has received an email to tell them their request has been Approved. No further action is needed.');
 
     
    

@@ -1,4 +1,5 @@
 const Account = require('./../../infrastructure/account');
+const { updateUserService } = require('../../infrastructure/access');
 const {updateServiceRequest} = require('../requestService/utils');
 const { getNewRoleDetails, getSubServiceRequestVieModel, getAndMapServiceRequest, generateFlashMessages } = require('./utils');
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
@@ -11,6 +12,23 @@ const validate = async (req) => {
   const buildmodel = await getAndMapServiceRequest(req.params.rid); 
   const viewModel = await getSubServiceRequestVieModel(buildmodel, req.id);
   viewModel.selectedResponse = req.body.selectedResponse;
+  
+  if(req.session.roleId != undefined && req.session.roleId  !== viewModel.role_ids)
+  {
+    let allServiceRole = await getNewRoleDetails(viewModel.service_id, req.session.roleId);
+    let roleDetails = allServiceRole.find(x => x.id === req.session.roleId);
+    viewModel.role_ids = req.session.roleId;
+    viewModel.Role_name = roleDetails.name;
+    let role =[];
+    role.push(roleDetails);
+    req.session.role = roleDetails;
+    req.session.roleId =  viewModel.role_ids;
+    req.session.roleId =  viewModel.role_ids;
+  }else{
+    let allServiceRole = await getNewRoleDetails(viewModel.service_id, viewModel.role_ids);
+    let roleDetails = allServiceRole.find(x => x.id === viewModel.role_ids);
+    req.session.role = roleDetails;
+  }
   const model = {
     title: 'Review request - DfE Sign-in',
     backLink: `/access-requests/requests`,
@@ -33,7 +51,8 @@ const validate = async (req) => {
 const get = async (req, res) => {
   const model = await getAndMapServiceRequest(req.params.rid); 
   const viewModel = await getSubServiceRequestVieModel(model, req.id, req);
-  
+
+ 
   req.session.rid = req.params.rid;
   if(req.session.roleId != undefined && req.session.roleId  !== viewModel.role_ids)
   {
@@ -41,7 +60,14 @@ const get = async (req, res) => {
     let roleDetails = allServiceRole.find(x => x.id === req.session.roleId);
     viewModel.role_ids = req.session.roleId;
     viewModel.Role_name = roleDetails.name;
-    req.session.roleId =  undefined;
+    let role =[];
+    role.push(roleDetails);
+    req.session.role = roleDetails;
+    req.session.roleId =  viewModel.role_ids;
+  }else{
+    let allServiceRole = await getNewRoleDetails(viewModel.service_id, viewModel.role_ids);
+    let roleDetails = allServiceRole.find(x => x.id === viewModel.role_ids);
+    req.session.role = roleDetails
   }
   
   viewModel.csrfToken = req.csrfToken();
@@ -65,7 +91,7 @@ const get = async (req, res) => {
 const post = async (req, res) => {
   const model = await validate(req);
   //check request for already actioned
- 
+
   const request = await getAndMapServiceRequest(req.params.rid); 
   if(request.dataValues.status === -1 || 1){  
     const alreadyActioned = await getSubServiceRequestVieModel(request, req.id, req);
@@ -98,7 +124,10 @@ const post = async (req, res) => {
     return res.redirect(`/access-requests/subService-requests/${req.params.rid}/rejected`);
   }
   else if(model.selectedResponse === 'approve'){
-    const request = await updateServiceRequest(req.params.rid,1,req.user.sub,model.reason);
+    const request = await updateServiceRequest(req.params.rid,1,req.user.sub ,model.reason);
+    const roleArray = new Array();
+    roleArray.push(model.viewModel.role_ids);
+    await updateUserService(req.user.sub, model.viewModel.service_id, model.viewModel.org_id, roleArray, req.params.rid);
     if (request.success){
       const isEmailAllowed = await isServiceEmailNotificationAllowed();
       if (isEmailAllowed) {

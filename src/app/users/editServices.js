@@ -91,9 +91,9 @@ const get = async (req, res) => {
   
   model.service.roles = model.userService.roles;
   if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
-    let roles = [];
-    roles.push(req.session.role);
-    model.service.roles = roles;
+   let role = [];
+   role.push(req.session.role);
+    model.service.roles = role;
     
   }
   saveRoleInSession(req, model.service.roles);
@@ -132,6 +132,7 @@ const post = async (req, res) => {
  
     if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
       req.session.roleId = selectedRoles[0];
+      
       nexturl = `/access-requests/subService-requests/${req.session.rid}`;
     }else if(isUserManagement(req)){
      nexturl += '?manage_users=true';
