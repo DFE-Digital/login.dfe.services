@@ -1,5 +1,5 @@
 const { mockRequest, mockResponse, mockAdapterConfig } = require('../../../utils/jestMocks');
-const { getSubServiceRequestVieModel, getAndMapServiceRequest } = require('../../../../src/app/accessRequests/utils');
+const { getSubServiceRequestVieModel, getAndMapServiceRequest, getNewRoleDetails } = require('../../../../src/app/accessRequests/utils');
 const {updateServiceRequest} = require('../../../../src/app/requestService/utils');
 const {post } = require('../../../../src/app/accessRequests/rejectSubServiceRequest');
 //const { checkCacheForAllServices } = require('../../../../src/infrastructure/helpers/allServicesAppCache');
@@ -26,6 +26,7 @@ jest.mock('../../../../src/app/accessRequests/utils', () => {
   return {
     getAndMapServiceRequest: jest.fn(),
     getSubServiceRequestVieModel: jest.fn(),
+    getNewRoleDetails: jest.fn(),
   };
 });
 
@@ -44,6 +45,22 @@ jest.mock('login.dfe.dao', () => {
   };
 });
 jest.mock('../../../../src/app/users/utils');
+const listRoles = [{
+  code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+  name: 'ASP School Anon',
+  numericId: '124'},{
+    code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+    name: 'ASP School Anon',
+    numericId: '124'},{
+      code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+      name: 'ASP School Anon',
+      numericId: '124'},{
+        code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+        name: 'ASP School Anon',
+        numericId: '124'},{
+          code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+          name: 'ASP School Anon',
+          numericId: '124'}];
 const viewModel = {
   endUsersEmail : 'b@b.gov.uk',
   endUsersFamilyName :'b',
@@ -172,7 +189,8 @@ describe('When actioning a sub-service request for rejection', () => {
     getSubServiceRequestVieModel.mockReset();
     getSubServiceRequestVieModel.mockReturnValue(viewModel);
 
-    
+    getNewRoleDetails.mockReset();
+    getNewRoleDetails.mockReturnValue(listRoles);
   });
 
   it('then it should redirect to summary request view', async () => {
@@ -184,7 +202,7 @@ describe('When actioning a sub-service request for rejection', () => {
     expect(res.flash.mock.calls[1][0]).toBe('heading');
     expect(res.flash.mock.calls[1][1]).toBe('Sub-service request rejected');
     expect(res.flash.mock.calls[2][0]).toBe('message');
-    expect(res.flash.mock.calls[2][1]).toBe('The user who raised the request will receive an email to tell them their sub-service access request has been rejected');
+    expect(res.flash.mock.calls[2][1]).toBe('The user who raised the request will receive an email to tell them their sub-service access request has been rejected.');
   });
 
 

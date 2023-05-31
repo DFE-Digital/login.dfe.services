@@ -1,5 +1,5 @@
 const { mockRequest, mockResponse, mockAdapterConfig } = require('../../../utils/jestMocks');
-const { getSubServiceRequestVieModel, getAndMapServiceRequest } = require('../../../../src/app/accessRequests/utils');
+const { getSubServiceRequestVieModel, getAndMapServiceRequest, getNewRoleDetails } = require('../../../../src/app/accessRequests/utils');
 const Account = require('../../../../src/infrastructure/account');
 jest.mock('login.dfe.policy-engine');
 jest.mock('../../../../src/infrastructure/config', () => {
@@ -15,6 +15,7 @@ jest.mock('../../../../src/app/accessRequests/utils', () => {
   return {
     getAndMapServiceRequest: jest.fn(),
     getSubServiceRequestVieModel: jest.fn(),
+    getNewRoleDetails: jest.fn(),
   };
 });
 
@@ -48,6 +49,22 @@ const viewModel = {
   Role_name: 'role  one',
   service_name: 'service one',
 };
+const listRoles = [{
+  code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+  name: 'ASP School Anon',
+  numericId: '124'},{
+    code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+    name: 'ASP School Anon',
+    numericId: '124'},{
+      code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+      name: 'ASP School Anon',
+      numericId: '124'},{
+        code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+        name: 'ASP School Anon',
+        numericId: '124'},{
+          code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+          name: 'ASP School Anon',
+          numericId: '124'}]
 const model = {
   _changed: 0,
   _options: null,
@@ -113,6 +130,9 @@ describe('When reviewing a sub-service request for approving', () => {
 
     getSubServiceRequestVieModel.mockReset();
     getSubServiceRequestVieModel.mockReturnValue(viewModel);
+
+    getNewRoleDetails.mockReset();
+    getNewRoleDetails.mockReturnValue(listRoles);
 
     getSubServiceRequest = require('../../../../src/app/accessRequests/reviewSubServiceRequest').get;
   });

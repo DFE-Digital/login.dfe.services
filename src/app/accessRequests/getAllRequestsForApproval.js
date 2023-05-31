@@ -47,6 +47,15 @@ const buildModel = async (req) => {
 };
 
 const get = async (req, res) => {
+  if(req.session.role !== undefined )
+  {
+    req.session.role = undefined;
+    
+  }
+  if(req.session.roleId !== undefined)
+  {
+    req.session.roleId = undefined;
+  }
   const model = await buildModel(req);
   return res.render('accessRequests/views/allRequestsForApproval', model);
 };

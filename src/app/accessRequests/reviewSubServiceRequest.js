@@ -13,8 +13,10 @@ const validate = async (req) => {
   const viewModel = await getSubServiceRequestVieModel(buildmodel, req.id);
   viewModel.selectedResponse = req.body.selectedResponse;
   
-  if(req.session.roleId != undefined && req.session.roleId  !== viewModel.role_ids)
+  if(req.session.roleId != undefined)
   {
+    if( req.session.roleId  !== viewModel.role_ids)
+    {
     let allServiceRole = await getNewRoleDetails(viewModel.service_id, req.session.roleId);
     let roleDetails = allServiceRole.find(x => x.id === req.session.roleId);
     viewModel.role_ids = req.session.roleId;
@@ -24,6 +26,7 @@ const validate = async (req) => {
     req.session.role = roleDetails;
     req.session.roleId =  viewModel.role_ids;
     req.session.roleId =  viewModel.role_ids;
+    }
   }else{
     let allServiceRole = await getNewRoleDetails(viewModel.service_id, viewModel.role_ids);
     let roleDetails = allServiceRole.find(x => x.id === viewModel.role_ids);
@@ -51,19 +54,20 @@ const validate = async (req) => {
 const get = async (req, res) => {
   const model = await getAndMapServiceRequest(req.params.rid); 
   const viewModel = await getSubServiceRequestVieModel(model, req.id, req);
-
- 
   req.session.rid = req.params.rid;
-  if(req.session.roleId != undefined && req.session.roleId  !== viewModel.role_ids)
+  if(req.session.roleId !== undefined && req.session.roleId !== '')
   {
-    let allServiceRole = await getNewRoleDetails(viewModel.service_id, req.session.roleId);
-    let roleDetails = allServiceRole.find(x => x.id === req.session.roleId);
-    viewModel.role_ids = req.session.roleId;
-    viewModel.Role_name = roleDetails.name;
-    let role =[];
-    role.push(roleDetails);
-    req.session.role = roleDetails;
-    req.session.roleId =  viewModel.role_ids;
+    if(req.session.roleId !== viewModel.role_ids)
+    {
+      let allServiceRole = await getNewRoleDetails(viewModel.service_id, req.session.roleId);
+      let roleDetails = allServiceRole.find(x => x.id === req.session.roleId);
+      viewModel.role_ids = req.session.roleId;
+      viewModel.Role_name = roleDetails.name;
+      let role =[];
+      role.push(roleDetails);
+      req.session.role = roleDetails;
+      req.session.roleId =  viewModel.role_ids;
+    }
   }else{
     let allServiceRole = await getNewRoleDetails(viewModel.service_id, viewModel.role_ids);
     let roleDetails = allServiceRole.find(x => x.id === viewModel.role_ids);
@@ -166,7 +170,7 @@ const post = async (req, res) => {
           application: config.loggerSettings.applicationName,
           env: config.hostingEnvironment.env,
           message:  `${req.user.email} (approverId: ${
-            approver.sub
+            req.user.sub
           }) approved sub-service request for (serviceId: ${model.viewModel.service_id}) and sub-services (roleIds: ${JSON.stringify(
             model.viewModel.role_ids,
           )}) and organisation (orgId: ${model.viewModel.org_id}) for end user (endUserId: ${model.viewModel.user_id}) - requestId (reqId: ${req.params.rid})`,

@@ -1,5 +1,5 @@
 const { mockRequest, mockResponse, mockAdapterConfig, mockConfig } = require('../../../utils/jestMocks');
-const { getSubServiceRequestVieModel, getAndMapServiceRequest, generateFlashMessages } = require('../../../../src/app/accessRequests/utils');
+const { getSubServiceRequestVieModel, getAndMapServiceRequest, generateFlashMessages, getNewRoleDetails } = require('../../../../src/app/accessRequests/utils');
 const Account = require('../../../../src/infrastructure/account');
 jest.mock('login.dfe.policy-engine');
 jest.mock('../../../../src/infrastructure/config', () => {
@@ -19,6 +19,7 @@ jest.mock('../../../../src/app/accessRequests/utils', () => {
     getAndMapServiceRequest: jest.fn(),
     getSubServiceRequestVieModel: jest.fn(),
     generateFlashMessages: jest.fn(),
+    getNewRoleDetails: jest.fn(),
   };
 });
 
@@ -83,6 +84,22 @@ const request = {
   isNewRecord: false,
   organisation:{id: 'org1', name: 'accademic organisatioon'}
 };
+const listRoles = [{
+  code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+  name: 'ASP School Anon',
+  numericId: '124'},{
+    code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+    name: 'ASP School Anon',
+    numericId: '124'},{
+      code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+      name: 'ASP School Anon',
+      numericId: '124'},{
+        code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+        name: 'ASP School Anon',
+        numericId: '124'},{
+          code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+          name: 'ASP School Anon',
+          numericId: '124'}];
 jest.mock('../../../../src/app/users/utils');
 
 
@@ -139,8 +156,11 @@ describe('When reviewing a sub-service request for approving', () => {
     generateFlashMessages.mockReset();
     generateFlashMessages.mockReturnValue(flashMessages);
 
+    getNewRoleDetails.mockReset();
+    getNewRoleDetails.mockReturnValue(listRoles);
+
     getSubServiceRequest = require('../../../../src/app/accessRequests/reviewSubServiceRequest').get;
-    postSubServiceRequest  = require('../../../../src/app/accessRequests/reviewSubServiceRequest').post
+    postSubServiceRequest  = require('../../../../src/app/accessRequests/reviewSubServiceRequest').post;
   });
 
   it('then it should redirect to to request page and display a message', async () => {
