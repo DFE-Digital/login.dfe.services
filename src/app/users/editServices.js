@@ -91,9 +91,7 @@ const get = async (req, res) => {
   
   model.service.roles = model.userService.roles;
   if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
-   let role = [];
-   role.push(req.session.role);
-    model.service.roles = role;
+    model.service.roles = req.session.roles;
     
   }
   saveRoleInSession(req, model.service.roles);
@@ -131,8 +129,12 @@ const post = async (req, res) => {
   let nexturl = `${req.params.sid}/confirm-edit-service`;
  
     if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
-      req.session.roleId = selectedRoles[0];
-      
+      const model = await getViewModel(req);
+    let roles = {};
+    model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
+      //loop through and add the ones selected and remove the ones not selected
+      req.session.role = selectedRoles;
+      req.session.roleIds = model.service.roles;
       nexturl = `/access-requests/subService-requests/${req.session.rid}`;
     }else if(isUserManagement(req)){
      nexturl += '?manage_users=true';

@@ -11,16 +11,31 @@ const {
 } = require('./../../infrastructure/organisations');
 
 const { services } = require('login.dfe.dao');
+const { contains } = require('lodash/fp');
 
 const getSubServiceRequestVieModel= async (model,requestId, req) => {
   let viewModel = {};
+  viewModel.role_ids = [];
+  viewModel.roles = [];
   viewModel.endUsersEmail = model.endUsersEmail;
   viewModel.endUsersFamilyName = model.endUsersFamilyName;
   viewModel.endUsersGivenName = model.endUsersGivenName;
   viewModel.org_name = model.organisation.name;
   viewModel.org_id = model.organisation.id;
   viewModel.user_id = model.dataValues.user_id;
-  viewModel.role_ids = model.dataValues.role_ids;
+  if(model.dataValues.role_ids.includes(','))
+  {
+    let tempArry = model.dataValues.role_ids.split(',');
+    tempArry.forEach(item => {
+      viewModel.role_ids.push(item);
+    });
+  }
+  else
+  {
+    viewModel.role_ids.push(model.dataValues.role_ids);
+  }
+  let roles = {};
+  viewModel.role_ids = viewModel.role_ids.map((x) => (roles[x] = { id: x }))
   viewModel.service_id = model.dataValues.service_id;
   viewModel.status = model.dataValues.status;
   viewModel.actioned_reason = model.dataValues.actioned_reason;
@@ -44,15 +59,19 @@ const getRoleAndServiceNames = async(subModel, requestId, req) => {
   let roleIds = subModel.role_ids;
   const allServices = await checkCacheForAllServices(requestId);
   const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-  const allRolesOfService = await getNewRoleDetails(serviceId, subModel.role_ids);
-  let roleDetails = allRolesOfService.find(x => x.id === roleIds);
-  if(req !== undefined){
-    req.session.role = roleDetails;
-  }
-  if(roleDetails.name)
-  subModel.Role_name = roleDetails.name;
+  const allRolesOfService = await listRolesOfService(serviceId, subModel.role_ids);
+  subModel.roles=[];
   if(serviceDetails.name)
-  subModel.Service_name = serviceDetails.name;
+    subModel.Service_name = serviceDetails.name;
+    req.session.roles = [];
+  ////add loop here to populate role and session role
+  subModel.role_ids.forEach(item => {
+   
+    let roleDetails = allRolesOfService.find(x => x.id === item.id);
+      req.session.roles.push(roleDetails);
+    subModel.roles.push(roleDetails);
+  });
+ 
   return subModel;
   }
 
