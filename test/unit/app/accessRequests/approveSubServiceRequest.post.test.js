@@ -41,26 +41,6 @@ jest.mock('login.dfe.dao', () => {
     },
   };
 });
-const viewModel = {
-  endUsersEmail : 'b@b.gov.uk',
-  endUsersFamilyName :'b',
-  endUsersGivenName : 'b',
-  org_name :'org1',
-  org_id : 'org1',
-  user_id : 'endUser1',
-  role_ids : 'role1',
-  service_id :'service1',
-  status : 0,
-  actioned_reason : 'Pending',
-  actioned_by : null,
-  reason : 'Pending',
-  csrfToken : null,
-  selectedResponse: null,
-  validationMessages:{selectedResponse: 'Approve or Reject must be selected'},
-  currentPage: 'requests',
-  Role_name: 'role  one',
-  service_name: 'service one',
-};
 const listRoles = [{
   code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
   name: 'ASP School Anon',
@@ -76,14 +56,36 @@ const listRoles = [{
         numericId: '124'},{
           code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
           name: 'ASP School Anon',
-          numericId: '124'}]
+          numericId: '124'}];
+const viewModel = {
+  endUsersEmail : 'b@b.gov.uk',
+  endUsersFamilyName :'b',
+  endUsersGivenName : 'b',
+  org_name :'org1',
+  org_id : 'org1',
+  user_id : 'endUser1',
+  role_ids :['role1'],
+  service_id :'service1',
+  status : 0,
+  actioned_reason : 'Pending',
+  actioned_by : null,
+  reason : 'Pending',
+  csrfToken : null,
+  selectedResponse: null,
+  validationMessages:{selectedResponse: 'Approve or Reject must be selected'},
+  currentPage: 'requests',
+  Role_name: 'role  one',
+  service_name: 'service one',
+  roles: listRoles
+};
+
 const model = {
   _changed: 0,
   _options: null,
   _previousDataValues: null,
   approverEmail: '',
   approverName:'',
-  dataValues : {id: 'request1', actioned_by: null, actioned_at: null,actioned_reason:'Pending', createdAt: new Date(),organisation_id:'org1', reason:'',role_ids: 'role1', service_id: 'service1', status: 0, updatedAt: new Date(),user_id:'endUser1'},
+  dataValues : {id: 'request1', actioned_by: null, actioned_at: null,actioned_reason:'Pending', createdAt: new Date(),organisation_id:'org1', reason:'',role_ids: ['role1'], service_id: 'service1', status: 0, updatedAt: new Date(),user_id:'endUser1'},
   endUsersEmail: 'b@b.gov.uk', 
   endUsersFamilyName: 'b', 
   endUsersGvenName:'b',

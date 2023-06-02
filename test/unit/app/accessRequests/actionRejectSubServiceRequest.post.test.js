@@ -68,7 +68,7 @@ const viewModel = {
   org_name :'org1',
   org_id : 'org1',
   user_id : 'endUser1',
-  role_ids : 'role1',
+  role_ids : ['role1'],
   service_id :'service1',
   status : 0,
   actioned_reason : 'Pending',
@@ -80,6 +80,7 @@ const viewModel = {
   currentPage: 'requests',
   Role_name: 'role  one',
   service_name: 'service one',
+  roles: listRoles,
 };
 const model = {
     csrfToken: 'abcde',
@@ -96,7 +97,7 @@ const buildModel = {
   _previousDataValues: null,
   approverEmail: '',
   approverName:'',
-  dataValues : {id: 'request1', actioned_by: null, actioned_at: null,actioned_reason:'Pending', createdAt: new Date(),organisation_id:'org1', reason:'not needed',role_ids: 'role1', service_id: 'service1', status: 0, updatedAt: new Date(),user_id:'endUser1'},
+  dataValues : {id: 'request1', actioned_by: null, actioned_at: null,actioned_reason:'Pending', createdAt: new Date(),organisation_id:'org1', reason:'not needed',role_ids: ['role1'], service_id: 'service1', status: 0, updatedAt: new Date(),user_id:'endUser1'},
   endUsersEmail: 'b@b.gov.uk', 
   endUsersFamilyName: 'b', 
   endUsersGvenName:'b',
@@ -132,7 +133,7 @@ describe('When actioning a sub-service request for rejection', () => {
         _previousDataValues: null,
         approverEmail: '',
         approverName:'',
-        dataValues : {id: 'request1', actioned_by: null, actioned_at: null,actioned_reason:'Pending', createdAt: new Date(),organisation_id:'org1', reason:'not needed',role_ids: 'role1', service_id: 'service1', status: 0, updatedAt: new Date(),user_id:'endUser1'},
+        dataValues : {id: 'request1', actioned_by: null, actioned_at: null,actioned_reason:'Pending', createdAt: new Date(),organisation_id:'org1', reason:'not needed',role_ids: ['role1'], service_id: 'service1', status: 0, updatedAt: new Date(),user_id:'endUser1'},
         endUsersEmail: 'b@b.gov.uk', 
         endUsersFamilyName: 'b', 
         endUsersGvenName:'b',
@@ -156,7 +157,7 @@ describe('When actioning a sub-service request for rejection', () => {
           org_name :'org1',
           org_id : 'org1',
           user_id : 'endUser1',
-          role_ids : 'role1',
+          role_ids : ['role1'],
           service_id :'service1',
           status : 0,
           actioned_reason : 'Pending',
@@ -168,6 +169,7 @@ describe('When actioning a sub-service request for rejection', () => {
           currentPage: 'requests',
           Role_name: 'role  one',
           service_name: 'service one',
+          roles: listRoles,
         }});
       
      
