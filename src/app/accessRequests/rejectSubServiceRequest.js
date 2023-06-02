@@ -10,14 +10,21 @@ const validate = async (req) => {
   const buildmodel = await getAndMapServiceRequest(req.params.rid); 
   const viewModel = await getSubServiceRequestVieModel(buildmodel, req.id, req);
   viewModel.selectedResponse = req.body.selectedResponse;
-  if(req.session.roleId != undefined && req.session.roleId  !== viewModel.role_ids)
+  if( req.session.roleIds !== undefined)
   {
-    let allServiceRole = await getNewRoleDetails(viewModel.service_id, req.session.roleId);
-    let roleDetails = allServiceRole.find(x => x.id === req.session.roleId);
-    viewModel.role_ids = req.session.roleId;
-    viewModel.Role_name = roleDetails.name;
-    req.session.roleId =  undefined;
-  }
+    if( req.session.roleIds !== viewModel.role_ids)
+    {
+    viewModel.role_ids = req.session.roleIds;
+     let submodel =  await getRoleAndServiceNames(viewModel, req.param.rid, req);
+     viewModel.roles = submodel.roles.filter(x => x !== undefined);
+     req.session.roleIds = undefined;
+     req.session.roles = viewModel.roles;
+    }else{
+      req.session.roleIds = undefined;
+      req.session.roles = viewModel.roles;
+    }
+}
+  
 const model = {
   title: 'Reason for rejection - DfE Sign-in',
   backLink: `/access-requests/subService-requests/${req.params.rid}`,
@@ -37,14 +44,21 @@ const get = async (req, res) => {
     const model = await getAndMapServiceRequest(req.params.rid); 
     const viewModel = await getSubServiceRequestVieModel(model, req.id, req);
     req.session.rid = req.params.rid;
-    if(req.session.roleId != undefined && req.session.roleId  !== viewModel.role_ids)
+    if( req.session.roleIds !== undefined)
+  {
+    if( req.session.roleIds !== viewModel.role_ids)
     {
-      let allServiceRole = await getNewRoleDetails(viewModel.service_id, req.session.roleId);
-      let roleDetails = allServiceRole.find(x => x.id === req.session.roleId);
-      viewModel.role_ids = req.session.roleId;
-      viewModel.Role_name = roleDetails.name;
-      req.session.roleId =  viewModel.role_ids;
+    viewModel.role_ids = req.session.roleIds;
+     let submodel =  await getRoleAndServiceNames(viewModel, req.param.rid, req);
+     viewModel.roles = submodel.roles.filter(x => x !== undefined);
+     //req.session.roleIds = undefined;
+     req.session.roles = viewModel.roles;
+    }else{
+      //req.session.roleIds = undefined;
+      req.session.roles = viewModel.roles;
     }
+}
+  
     viewModel.backLink =  `/access-requests/requests`;
   return res.render('accessRequests/views/rejectSubServiceRequest', {
     csrfToken: req.csrfToken(),
@@ -79,7 +93,7 @@ const post = async (req, res) => {
           model.viewModel.endUsersFamilyName,
           model.viewModel.org_name,
           model.viewModel.Service_name,
-          model.viewModel.Role_name,
+          model.viewModel.roles.map((i) => i.name),
           model.reason,
     );
   }

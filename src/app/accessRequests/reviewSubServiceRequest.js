@@ -10,19 +10,23 @@ const NotificationClient = require('login.dfe.notifications.client');
 
 const validate = async (req) => {
   const buildmodel = await getAndMapServiceRequest(req.params.rid); 
-  const viewModel = await getSubServiceRequestVieModel(buildmodel, req.id);
+  const viewModel = await getSubServiceRequestVieModel(buildmodel, req);
   viewModel.selectedResponse = req.body.selectedResponse;
   
-  if(req.session.roles !== viewModel.roles)
+  if( req.session.roleIds !== undefined)
   {
-    let allServiceRole = await getNewRoleDetails(viewModel.service_id, req.session.roleId);
-    let roleDetails = allServiceRole.find(x => x.id === req.session.roles);
-    viewModel.roles = roleDetails;
-    req.session.roles = roleDetails;
-  }else{
-   
-    req.session.role = viewModel.roles;
-  }
+    if( req.session.roleIds !== viewModel.role_ids)
+    {
+    viewModel.role_ids = req.session.roleIds;
+     let submodel =  await getRoleAndServiceNames(viewModel, req.param.rid, req);
+     viewModel.roles = submodel.roles.filter(x => x !== undefined);
+     //req.session.roleIds = undefined;
+     req.session.roles = viewModel.roles;
+    }else{
+     // req.session.roleIds = undefined;
+      req.session.roles = viewModel.roles;
+    }
+}
   const model = {
     title: 'Review request - DfE Sign-in',
     backLink: `/access-requests/requests`,
@@ -53,10 +57,10 @@ const get = async (req, res) => {
     viewModel.role_ids = req.session.roleIds;
      let submodel =  await getRoleAndServiceNames(viewModel, req.param.rid, req);
      viewModel.roles = submodel.roles.filter(x => x !== undefined);
-     req.session.roleIds = undefined;
+     //req.session.roleIds = undefined;
      req.session.roles = viewModel.roles;
     }else{
-      req.session.roleIds = undefined;
+     // req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     }
 }
@@ -112,18 +116,18 @@ const post = async (req, res) => {
     model.viewModel.csrfToken = req.csrfToken();
     model.validationMessages = {};
     model.viewModel.validationMessages={};
-    req.session.role = [];
-    req.session.roleId;
+   
     return res.redirect(`/access-requests/subService-requests/${req.params.rid}/rejected`);
   }
   else if(model.selectedResponse === 'approve'){
     const request = await updateServiceRequest(req.params.rid,1,req.user.sub ,model.reason);
-    let roleArray = [];
-    roleArray.push(model.viewModel.role_ids);
-    await updateUserService(model.viewModel.user_id, model.viewModel.service_id, model.viewModel.org_id, roleArray, req.params.rid);
+    requestedIds = [];
+    model.viewModel.role_ids.forEach(element => {
+      requestedIds.push(element.id);
+    });
+    await updateUserService(model.viewModel.user_id, model.viewModel.service_id, model.viewModel.org_id, requestedIds, req.params.rid);
     if (request.success){
-      req.session.role = [];
-      req.session.roleId;
+     
       const isEmailAllowed = await isServiceEmailNotificationAllowed();
       if (isEmailAllowed) {
         const notificationClient = new NotificationClient({
@@ -136,10 +140,10 @@ const post = async (req, res) => {
           model.viewModel.endUsersFamilyName,
           model.viewModel.org_name,
           model.viewModel.Service_name,
-          model.viewModel.Role_name
+          model.viewModel.roles.map((i) => i.name)
         );
       }
-      const approver = await Account.getById(model.viewModel.actioned_by);
+      
         logger.audit({
           type: 'sub-service',
           subType: 'sub-service request Approved',
@@ -162,9 +166,8 @@ const post = async (req, res) => {
             model.viewModel.role_ids,
           )}) and organisation (orgId: ${model.viewModel.org_id}) for end user (endUserId: ${model.viewModel.user_id}) - requestId (reqId: ${req.params.rid})`,
         });
-
         res.flash('title', `Success`);
-        res.flash('heading', `Sub Service amended: ${model.viewModel.Role_name}`);
+        res.flash('heading', `Sub Service amended: ${ model.viewModel.roles.map((i) => i.name)}`);
         res.flash('message', `The user who raised the request will receive an email to tell them their sub-service access request has been approved.`);
         return res.redirect(`/access-requests/requests`);
     }
