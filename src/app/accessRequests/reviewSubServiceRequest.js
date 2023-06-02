@@ -72,7 +72,7 @@ const get = async (req, res) => {
     const user = await Account.getById(viewModel.actioned_by);
     const { title, heading, message } = generateFlashMessages(
       'service',
-      viewModel.status,user.claims.email,viewModel.endUsersGivenName,viewModel.endUsersFamilyName, viewModel.Role_name,
+      viewModel.status,user.claims.email,viewModel.endUsersGivenName,viewModel.endUsersFamilyName, viewModel.roles.map((i) => i.name),
       res,
     );
     res.flash('title', `${title}`);
@@ -95,7 +95,7 @@ const post = async (req, res) => {
       const user = await Account.getById(alreadyActioned.actioned_by);
       const { title, heading, message } = generateFlashMessages(
         'service',
-        request.dataValues.status ,alreadyActioned.endUsersGivenName, user.claims.email,alreadyActioned.endUsersFamilyName, alreadyActioned.Role_name,
+        request.dataValues.status ,alreadyActioned.endUsersGivenName, user.claims.email,alreadyActioned.endUsersFamilyName, alreadyActioned.roles.map((i) => i.name),
         res,
       );
       res.flash('title', `${title}`);

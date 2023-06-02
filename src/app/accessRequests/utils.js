@@ -21,6 +21,7 @@ const getSubServiceRequestVieModel= async (model,requestId, req) => {
   viewModel.endUsersFamilyName = model.endUsersFamilyName;
   viewModel.endUsersGivenName = model.endUsersGivenName;
   viewModel.org_name = model.organisation.name;
+  viewModel.created_date = model.dataValues.createdAt;
   viewModel.org_id = model.organisation.id;
   viewModel.user_id = model.dataValues.user_id;
   if(model.dataValues.role_ids.includes(','))

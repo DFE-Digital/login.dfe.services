@@ -33,6 +33,22 @@ jest.mock('login.dfe.dao', () => {
     },
   };
 });
+const listRoles = [{
+  code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+  name: 'ASP School Anon',
+  numericId: '124'},{
+    code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+    name: 'ASP School Anon',
+    numericId: '124'},{
+      code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+      name: 'ASP School Anon',
+      numericId: '124'},{
+        code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+        name: 'ASP School Anon',
+        numericId: '124'},{
+          code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
+          name: 'ASP School Anon',
+          numericId: '124'}];
 const viewModel = {
   endUsersEmail : 'b@b.gov.uk',
   endUsersFamilyName :'b',
@@ -40,7 +56,7 @@ const viewModel = {
   org_name :'org1',
   org_id : 'org1',
   user_id : 'endUser1',
-  role_ids : 'role1',
+  role_ids : ['role1'],
   service_id :'service1',
   status : 1,
   actioned_reason : 'Approved',
@@ -52,6 +68,7 @@ const viewModel = {
   currentPage: 'requests',
   Role_name: 'role  one',
   service_name: 'service one',
+  roles: listRoles,
 };
 const flashMessages = {
   title: 'Important',
@@ -84,22 +101,7 @@ const request = {
   isNewRecord: false,
   organisation:{id: 'org1', name: 'accademic organisatioon'}
 };
-const listRoles = [{
-  code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
-  name: 'ASP School Anon',
-  numericId: '124'},{
-    code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
-    name: 'ASP School Anon',
-    numericId: '124'},{
-      code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
-      name: 'ASP School Anon',
-      numericId: '124'},{
-        code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
-        name: 'ASP School Anon',
-        numericId: '124'},{
-          code:'ASP_School_Anon', id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
-          name: 'ASP School Anon',
-          numericId: '124'}];
+
 jest.mock('../../../../src/app/users/utils');
 
 
