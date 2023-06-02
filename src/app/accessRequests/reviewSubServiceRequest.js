@@ -1,43 +1,32 @@
-const { getAllRequestsTypesForApprover ,getApproversForOrganisation} = require('../../infrastructure/organisations');
-const { listRolesOfService } = require('../../infrastructure/access');
-const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
-const { getUserDetails } = require('./utils');
+const Account = require('./../../infrastructure/account');
+const { updateUserService } = require('../../infrastructure/access');
+const {updateServiceRequest} = require('../requestService/utils');
+const { getNewRoleDetails, getSubServiceRequestVieModel, getAndMapServiceRequest, generateFlashMessages, getRoleAndServiceNames } = require('./utils');
+const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
 const { actions } = require('../constans/actions');
-const getAllRequestsForApproval = async (req) => {
-  const pageSize = 5;
-  const paramsSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
-  let pageNumber = parseInt(paramsSource.page, 10) || 1;
-  if (isNaN(pageNumber)) {
-    pageNumber = 1;
-  }
+const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
 
-  const allRequestsForApprover = await getAllRequestsTypesForApprover(req.user.sub, pageSize, pageNumber, req.id);
-  let { requests } = allRequestsForApprover;
-  if (requests) {
-    const userList = (await getUserDetails(requests)) || [];
-
-    requests = requests.map((user) => {
-      const userFound = userList.find((c) => c.claims.sub.toLowerCase() === user.user_id.toLowerCase());
-      const usersEmail = userFound ? userFound.claims.email : '';
-      const userName = userFound ? `${userFound.claims.given_name} ${userFound.claims.family_name}` : '';
-      return Object.assign({ usersEmail, userName }, user);
-    });
-  }
-
-  return {
-    csrfToken: req.csrfToken(),
-    title: 'Requests - DfE Sign-in',
-    currentPage: 'requests',
-    requests,
-    pageNumber,
-    numberOfPages: allRequestsForApprover.totalNumberOfPages,
-    totalNumberOfResults: allRequestsForApprover.totalNumberOfRecords,
-  };
-};
 const validate = async (req) => {
-  const buildmodel = await buildModel(req);
-  const viewModel = await extractVieModel(buildmodel, req.params.rid, req.id);
+  const buildmodel = await getAndMapServiceRequest(req.params.rid); 
+  const viewModel = await getSubServiceRequestVieModel(buildmodel, req);
   viewModel.selectedResponse = req.body.selectedResponse;
+  
+  if( req.session.roleIds !== undefined)
+  {
+    if( req.session.roleIds !== viewModel.role_ids)
+    {
+    viewModel.role_ids = req.session.roleIds;
+     let submodel =  await getRoleAndServiceNames(viewModel, req.param.rid, req);
+     viewModel.roles = submodel.roles.filter(x => x !== undefined);
+     //req.session.roleIds = undefined;
+     req.session.roles = viewModel.roles;
+    }else{
+     // req.session.roleIds = undefined;
+      req.session.roles = viewModel.roles;
+    }
+}
   const model = {
     title: 'Review request - DfE Sign-in',
     backLink: `/access-requests/requests`,
@@ -56,57 +45,39 @@ const validate = async (req) => {
   }
   return model;
 };
-const buildModel = async (req) => {
-  const pagedRequests = await getAllRequestsForApproval(req);
-  return {
-    csrfToken: req.csrfToken(),
-    title: 'Requests - DfE Sign-in',
-    currentPage: 'requests',
-    requests: pagedRequests.requests,
-    page: pagedRequests.pageNumber,
-    numberOfPages: pagedRequests.numberOfPages,
-    totalNumberOfResults: pagedRequests.totalNumberOfResults,
-  };
-};
-const getRoleAndServiceNames = async(subModel, requestId) => {
-let serviceId = subModel.service_id;
-let roleIds = subModel.role_ids;
-const allServices = await checkCacheForAllServices(requestId);
-const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-const allRolesOfService = await listRolesOfService(serviceId, subModel.role_ids);
-let roleDetails = allRolesOfService.find(x => x.id === roleIds);
-if(roleDetails.name)
-subModel.Role_name = roleDetails.name;
-if(serviceDetails.name)
-subModel.Service_name = serviceDetails.name;
-return subModel;
-}
-
-const extractVieModel= async (model, rid, requestId) => {
-  let viewModel = model.requests.find(x => x.id === rid);
-  viewModel.csrfToken = model.csrfToken;
-  viewModel.selectedResponse= null;
-  viewModel.validationMessages= {};
-  viewModel.currentPage= 'requests';
-//get approver for org based of orgid
-const aprover = await getApproversForOrganisation(viewModel.org_id);
-console.log(aprover);
-viewModel = await getRoleAndServiceNames(viewModel, requestId);
-  return viewModel;
-};
 
 const get = async (req, res) => {
-  const model = await buildModel(req);
-  const viewModel = await extractVieModel(model, req.params.rid, req.id);
- // viewModel.backLink = model.backLink;
-  viewModel.backLink =  `/access-requests/requests`;
+  const model = await getAndMapServiceRequest(req.params.rid); 
+  const viewModel = await getSubServiceRequestVieModel(model, req.id, req);
   req.session.rid = req.params.rid;
-//approvals/3DE9D503-6609-4239-BA55-14F8EBD69F56/users/A76A1DC8-0A38-459B-B2B2-E07767C6438B/services/DF2AE7F3-917A-4489-8A62-8B9B536A71CC
+  if( req.session.roleIds !== undefined)
+  {
+    if( req.session.roleIds !== viewModel.role_ids)
+    {
+    viewModel.role_ids = req.session.roleIds;
+     let submodel =  await getRoleAndServiceNames(viewModel, req.param.rid, req);
+     viewModel.roles = submodel.roles.filter(x => x !== undefined);
+     //req.session.roleIds = undefined;
+     req.session.roles = viewModel.roles;
+    }else{
+     // req.session.roleIds = undefined;
+      req.session.roles = viewModel.roles;
+    }
+}
+  
+  viewModel.csrfToken = req.csrfToken();
+ // req.session.roles = viewModel.roles;
   viewModel.subServiceAmendUrl = `/approvals/${viewModel.org_id}/users/${viewModel.user_id}/services/${viewModel.service_id}?actions=${actions.REVIEW_SUBSERVICE_REQUEST}`;
- 
-  if (viewModel.approverEmail) {
-    //question this information to be displayed without approvers email
-    res.flash('warn', `Request already actioned by ${viewModel.approverEmail}`);
+  if (viewModel.actioned_by && (viewModel.status === -1 || 1 )) {
+    const user = await Account.getById(viewModel.actioned_by);
+    const { title, heading, message } = generateFlashMessages(
+      'service',
+      viewModel.status,user.claims.email,viewModel.endUsersGivenName,viewModel.endUsersFamilyName, viewModel.roles.map((i) => i.name),
+      res,
+    );
+    res.flash('title', `${title}`);
+    res.flash('heading', `${heading}`);
+    res.flash('message', `${message}`);
     return res.redirect(`/access-requests/requests`);
   }
   return res.render('accessRequests/views/reviewSubServiceRequest', viewModel);
@@ -114,6 +85,25 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   const model = await validate(req);
+  //check request for already actioned
+
+  const request = await getAndMapServiceRequest(req.params.rid); 
+  if(request.dataValues.status === -1 || 1){  
+    const alreadyActioned = await getSubServiceRequestVieModel(request, req.id, req);
+    if (alreadyActioned.actioned_by) {
+      model.viewModel.validationMessages.alreadyActioned = `Request already actioned by ${alreadyActioned.actioned_by}`;
+      const user = await Account.getById(alreadyActioned.actioned_by);
+      const { title, heading, message } = generateFlashMessages(
+        'service',
+        request.dataValues.status ,alreadyActioned.endUsersGivenName, user.claims.email,alreadyActioned.endUsersFamilyName, alreadyActioned.roles.map((i) => i.name),
+        res,
+      );
+      res.flash('title', `${title}`);
+      res.flash('heading', `${heading}`);
+      res.flash('message', `${message}`);
+      return res.redirect(`/access-requests/requests`);
+    }
+  }
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
@@ -122,84 +112,66 @@ const post = async (req, res) => {
   }
 
   if (model.selectedResponse === 'reject') {
+    model.csrfToken = req.csrfToken();
+    model.viewModel.csrfToken = req.csrfToken();
     model.validationMessages = {};
     model.viewModel.validationMessages={};
-    return res.redirect(`${model.id}/rejected`);
+   
+    return res.redirect(`/access-requests/subService-requests/${req.params.rid}/rejected`);
   }
-
-  const actionedDate = Date.now();
-  //user in org put user in sub service
-  //await putUserInOrganisation(model.user_id, model.org_id, 0, null, req.id);
-
-  //update the request check this 
-  await updateRequestById(model.id, 1, req.user.sub, null, actionedDate, req.id);
-
-  // patch search index with organisation added to user
-  const getAllUserDetails = await getById(model.user_id, req.id);
-  const organisation = await getOrganisationById(model.org_id, req.id);
-  if (!getAllUserDetails) {
-    logger.error(`Failed to find user ${model.user_id} when confirming change of organisations`, {
-      correlationId: req.id,
+  else if(model.selectedResponse === 'approve'){
+    const request = await updateServiceRequest(req.params.rid,1,req.user.sub ,model.reason);
+    requestedIds = [];
+    model.viewModel.role_ids.forEach(element => {
+      requestedIds.push(element.id);
     });
-  } else if (!organisation) {
-    logger.error(`Failed to find organisation ${model.org_id} when confirming change of organisations`, {
-      correlationId: req.id,
-    });
-  } else {
-    const currentOrganisationDetails = getAllUserDetails.organisations;
-    const newOrgDetails = {
-      id: organisation.id,
-      name: organisation.name,
-      urn: organisation.urn || undefined,
-      uid: organisation.uid || undefined,
-      establishmentNumber: organisation.establishmentNumber || undefined,
-      laNumber: organisation.localAuthority ? organisation.localAuthority.code : undefined,
-      categoryId: organisation.category.id,
-      statusId: organisation.status.id,
-      roleId: 0,
-    };
-    currentOrganisationDetails.push(newOrgDetails);
-    await updateIndex(model.user_id, currentOrganisationDetails, null, req.id);
-    await waitForIndexToUpdate(
-      model.user_id,
-      (updated) => updated.organisations.length === currentOrganisationDetails.length,
-    );
+    await updateUserService(model.viewModel.user_id, model.viewModel.service_id, model.viewModel.org_id, requestedIds, req.params.rid);
+    if (request.success){
+     
+      const isEmailAllowed = await isServiceEmailNotificationAllowed();
+      if (isEmailAllowed) {
+        const notificationClient = new NotificationClient({
+          connectionString: config.notifications.connectionString,
+        });
+        
+        await notificationClient.sendSubServiceRequestApproved(
+          model.viewModel.endUsersEmail,
+          model.viewModel.endUsersGivenName,
+          model.viewModel.endUsersFamilyName,
+          model.viewModel.org_name,
+          model.viewModel.Service_name,
+          model.viewModel.roles.map((i) => i.name)
+        );
+      }
+      
+        logger.audit({
+          type: 'sub-service',
+          subType: 'sub-service request Approved',
+          userId: req.user.sub,
+          userEmail: req.user.email,
+          meta: {
+            editedFields: [
+              {
+                name: 'Approved_Subservice',
+                newValue: model.viewModel.role_ids,
+              },
+            ],
+            editedUser: req.user.sub,
+          },
+          application: config.loggerSettings.applicationName,
+          env: config.hostingEnvironment.env,
+          message:  `${req.user.email} (approverId: ${
+            req.user.sub
+          }) approved sub-service request for (serviceId: ${model.viewModel.service_id}) and sub-services (roleIds: ${JSON.stringify(
+            model.viewModel.role_ids,
+          )}) and organisation (orgId: ${model.viewModel.org_id}) for end user (endUserId: ${model.viewModel.user_id}) - requestId (reqId: ${req.params.rid})`,
+        });
+        res.flash('title', `Success`);
+        res.flash('heading', `Sub Service amended: ${ model.viewModel.roles.map((i) => i.name)}`);
+        res.flash('message', `The user who raised the request will receive an email to tell them their sub-service access request has been approved.`);
+        return res.redirect(`/access-requests/requests`);
+    }
   }
-
-  //send approved email
-  await notificationClient.sendAccessRequest(
-    model.usersEmail,
-    model.usersName,
-    organisation.name,
-    true,
-    null,
-  );
-
-  //audit sub service approved
-  logger.audit({
-    type: 'approver',
-    subType: 'approved-SubSevice',
-    userId: req.user.sub,
-    meta: {
-      editedFields: [
-        {
-          name: 'Sub Service',
-          oldValue: undefined,
-          newValue: model.role_id,
-        },
-      ],
-      editedUser: model.user_id,
-    },
-    application: config.loggerSettings.applicationName,
-    env: config.hostingEnvironment.env,
-    message: `${req.user.email} (id: ${req.user.sub}) approved sub services request for ${model.org_id})`,
-  });
-
-  res.flash('title', `Success`);
-  res.flash('heading', `Request approved: Sub Service access`);
-  res.flash('message', `${model.usersName} has been added to your Sub Service.`);
-
-  return res.redirect(`/access-requests/requests`);
 };
 
 module.exports = {

@@ -4,9 +4,21 @@
             <h1 class="govuk-heading-xl">
                 Review request
             </h1>
-            <p class="govuk-body-l">Review these details before adding <%= locals.userName %>
-                to <%= locals.Role_name %>.</p>
-
+            <p class="govuk-body-l">Review these details before adding  <%= locals.endUsersGivenName %> <%= locals.endUsersFamilyName %> to 
+            <% if (locals.roles.length > 1) { %>
+                <% for (let x=0; x < locals.roles.length; x++) { %>
+                    <% const role=locals.roles[x]; %>
+                        <% if(x === (locals.roles.length - 1)){ %>
+                           <%= role.name %>
+                           <%}else{%>
+                            <%= role.name %>,
+                            <%}%>
+                <% }%>
+            <%} else if(locals.roles.length === 1){ %>
+                <%= locals.roles[0].name; %>
+             <% } else { %>
+                No roles selected
+                <% }%>.</p>
             <h2 class="govuk-heading-m">
                 Request details
             </h2>
@@ -18,16 +30,20 @@
                         Name
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        <%= locals.userName %>
+                        <%= locals.endUsersGivenName %> <%=locals.endUsersFamilyName %>
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
                     </dd>
                 </div>
 
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
-                        Email Address
+                        Email address
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        <%= locals.usersEmail %>
+                        <%= locals.endUsersEmail %>
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
                     </dd>
                 </div>
 
@@ -38,6 +54,8 @@
                     <dd class="govuk-summary-list__value">
                         <%= locals.moment(locals.created_date).format('DD MMM YYYY') %>
                     </dd>
+                    <dd class="govuk-summary-list__actions">
+                    </dd>
                 </div>
 
                 <div class="govuk-summary-list__row">
@@ -46,6 +64,8 @@
                     </dt>
                     <dd class="govuk-summary-list__value">
                         <%= locals.org_name %>
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
                     </dd>
                 </div>
 
@@ -56,16 +76,27 @@
                     <dd class="govuk-summary-list__value">
                         <%= locals.Service_name %>
                     </dd>
+                    <dd class="govuk-summary-list__actions">
+                    </dd>
                 </div>
 
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
-                        Sub-Service
+                        Sub-service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        <%= locals.Role_name %>&nbsp;&nbsp;
+                        <% if (locals.roles.length> 0) { %>
+                            <% for (let x=0; x < locals.roles.length; x++) { %>
+                                <% const role=locals.roles[x]; %>
+                                    <%= role.name %> <br>
+                                        <% } %>
+                                            <% } else { %>
+                                                No roles selected
+                                                <% } %>
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
                         <a class="govuk-link" href="<%=locals.subServiceAmendUrl %>">
-                            Amend
+                            Change
                         </a>
                     </dd>
                 </div>

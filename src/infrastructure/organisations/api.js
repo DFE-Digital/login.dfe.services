@@ -120,16 +120,19 @@ const getAllRequestsTypesForApprover = async (uid, pageSize, pageNumber, correla
     correlationId,
   );
 };
-
+const getNonPagedRequestsTypesForApprover = async (uid, correlationId) => {
+  return callApi(
+    'GET',
+    `/organisations/org-service-subService-requests-for-approval/${uid}`,
+    correlationId,
+  );
+};
 const getRequestById = async (...args) => {
   const { dataValues, ...request } = await organisation.getUserOrganisationRequest(...args);
   return { ...dataValues, ...request, org_id: dataValues.organisation_id, org_name: dataValues.Organisation.name };
 };
 
-const getSubServiceRequestById = async(...args) => {
-  //const {...result}  = await services.geto
-  return {...result};
-};
+
 
 const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt) => {
   const body = {};
@@ -181,6 +184,7 @@ module.exports = {
   searchOrganisations,
   createUserOrganisationRequest,
   getAllRequestsForApprover,
+  getNonPagedRequestsTypesForApprover,
   getRequestsForOrganisation,
   getRequestsForOrganisations,
   getRequestById,
@@ -190,5 +194,4 @@ module.exports = {
   getLatestRequestAssociatedWithUser,
   getCategories,
   getAllRequestsTypesForApprover,
-  getSubServiceRequestById,
 };

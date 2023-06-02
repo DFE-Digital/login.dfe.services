@@ -1,13 +1,86 @@
-const {
-  getRequestById,
-  getOrganisationById,
-  getSubServiceRequestById,
-} = require('./../../infrastructure/organisations');
 
+const { listRolesOfService } = require('../../infrastructure/access');
 const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
+const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+
+const {
+  getRequestById,
+  getOrganisationById
+} = require('./../../infrastructure/organisations');
+
 const { services } = require('login.dfe.dao');
+const { contains } = require('lodash/fp');
+
+const getSubServiceRequestVieModel= async (model,requestId, req) => {
+  let viewModel = {};
+  viewModel.role_ids = [];
+  viewModel.roles = [];
+  viewModel.endUsersEmail = model.endUsersEmail;
+  viewModel.endUsersFamilyName = model.endUsersFamilyName;
+  viewModel.endUsersGivenName = model.endUsersGivenName;
+  viewModel.org_name = model.organisation.name;
+  viewModel.created_date = model.dataValues.createdAt;
+  viewModel.org_id = model.organisation.id;
+  viewModel.user_id = model.dataValues.user_id;
+  if(model.dataValues.role_ids.includes(','))
+  {
+    let tempArry = model.dataValues.role_ids.split(',');
+    tempArry.forEach(item => {
+      viewModel.role_ids.push(item);
+    });
+  }
+  else
+  {
+    viewModel.role_ids.push(model.dataValues.role_ids);
+  }
+  let roles = {};
+  viewModel.role_ids = viewModel.role_ids.map((x) => (roles[x] = { id: x }))
+  viewModel.service_id = model.dataValues.service_id;
+  viewModel.status = model.dataValues.status;
+  viewModel.actioned_reason = model.dataValues.actioned_reason;
+  viewModel.actioned_by = model.dataValues.actioned_by;
+  viewModel.reason = model.dataValues.reason;
+  viewModel.csrfToken = null;
+  viewModel.selectedResponse= ' ';
+  viewModel.validationMessages= {};
+  viewModel.currentPage= 'requests';
+  viewModel.backLink =  `/access-requests/requests`;
+  viewModel = await getRoleAndServiceNames(viewModel, requestId, req);
+  return viewModel;
+};
+
+const getNewRoleDetails = async (serviceId, roleId) => {
+  return await listRolesOfService(serviceId, roleId);
+};
+
+const getRoleAndServiceNames = async(subModel, requestId, req) => {
+  let serviceId = subModel.service_id;
+  let roleIds = subModel.role_ids;
+  const allServices = await checkCacheForAllServices(requestId);
+  const serviceDetails = allServices.services.find((x) => x.id === serviceId);
+  const allRolesOfService = await listRolesOfService(serviceId, subModel.role_ids);
+  subModel.roles=[];
+  if(serviceDetails.name)
+    subModel.Service_name = serviceDetails.name;
+    if(req !== undefined)
+    {
+    req.session.roles = [];
+    }
+  ////add loop here to populate role and session role
+  subModel.role_ids.forEach(item => {
+   
+    let roleDetails = allRolesOfService.find(x => x.id === item.id);
+    if(req !== undefined)
+    {
+      req.session.roles.push(roleDetails);
+    }
+    subModel.roles.push(roleDetails);
+  });
+ 
+  return subModel;
+  }
 
 const getAndMapOrgRequest = async (req) => {
   const request = await getRequestById(req.params.rid, req.id);
@@ -23,10 +96,7 @@ const getAndMapOrgRequest = async (req) => {
   }
   return mappedRequest;
 };
-const getAndMapSubServiceRequest = async (req) => {
-  const result = await getSubServiceRequestById(req.params.rid, req.id);
-  return result;
-};
+
 const getUserDetails = async (usersForApproval) => {
   const allUserId = flatten(usersForApproval.map((user) => user.user_id));
   if (allUserId.length === 0) {
@@ -54,6 +124,7 @@ const getAndMapServiceRequest = async (serviceReqId) => {
       userServiceRequest,
     );
   }
+  console.log(mappedServiceRequest);
   return mappedServiceRequest;
 };
 
@@ -101,8 +172,10 @@ const isAllowedToApproveReq = async (req, res, next) => {
 module.exports = {
   getAndMapOrgRequest,
   getUserDetails,
+  getRoleAndServiceNames,
+  getNewRoleDetails,
+  getSubServiceRequestVieModel,
   getAndMapServiceRequest,
-  getAndMapSubServiceRequest,
   generateFlashMessages,
   isAllowedToApproveReq,
 };
