@@ -1,5 +1,6 @@
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
+jest.mock('login.dfe.dao', () => require('./../../../utils/jestMocks').mockDao());
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { get } = require('./../../../../src/app/accessRequests/rejectOrganisationRequest');
@@ -41,7 +42,7 @@ describe('when rejecting an organisation request', () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      backLink: "/access-requests/requests/1",
+      backLink: '/access-requests/organisation-requests/1',
     });
   });
 

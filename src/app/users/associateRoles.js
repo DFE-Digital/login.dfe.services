@@ -1,10 +1,17 @@
 'use strict';
 const config = require('./../../infrastructure/config');
-const { isSelfManagement, isRequestService, isManageUserService } = require('./utils');
+const {
+  isSelfManagement,
+  isRequestService,
+  isManageUserService,
+  isReviewServiceReqAmendRole,
+  isReviewServiceReqAmendService,
+} = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
+const { actions } = require('../constans/actions');
 
 const renderAssociateRolesPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
@@ -17,6 +24,9 @@ const renderAssociateRolesPage = (req, res, model) => {
 const buildBackLink = (req, currentServiceIndex) => {
   const isRequestServiceUrl = isRequestService(req);
   const isManageUserServiceUrl = isManageUserService(req);
+  const isReviewServiceReqAmendRoleUrl = isReviewServiceReqAmendRole(req);
+  const isReviewServiceReqAmendServiceUrl = isReviewServiceReqAmendService(req);
+
   const baseUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`;
   if (isManageUserServiceUrl) {
     return `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`;
@@ -24,6 +34,13 @@ const buildBackLink = (req, currentServiceIndex) => {
     const sid = req.session.user.serviceId;
     const roleIds = encodeURIComponent(JSON.stringify(req.session.user.roleIds));
     return `/request-service/${req.params.orgId}/users/${req.params.uid}/services/${sid}/roles/${roleIds}/approve`;
+  } else if (isReviewServiceReqAmendRoleUrl) {
+    const { serviceReqId, serviceId, selectedRoleIds } = req.session.reviewServiceRequest;
+    const rolesIds = encodeURIComponent(selectedRoleIds);
+    return `${baseUrl}/access-requests/service-requests/${serviceReqId}/services/${serviceId}/roles/${rolesIds}`;
+  } else if (isReviewServiceReqAmendServiceUrl) {
+    const action = actions.REVIEW_SERVICE_REQ_SERVICE;
+    return `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${action}`;
   } else if (req.query.action === 'request-sub-service' && req.session.subServiceReqId && req.session) {
     return `${baseUrl}/request-service/${req.params.orgId}/users/${req.session.user.uid}/services/${
       req.params.sid
@@ -53,11 +70,33 @@ const buildNextLink = (req, selectedRoles) => {
       }/roles/${encodeURIComponent(JSON.stringify(selectedRoles))}/${
         req.session.subServiceReqId
       }/approve-roles-request`;
+    } else if (
+      (req.query.action === actions.REVIEW_SERVICE_REQ_ROLE || actions.REVIEW_SERVICE_REQ_SERVICE) &&
+      req.session?.reviewServiceRequest?.serviceReqId &&
+      req.session?.reviewServiceRequest?.serviceId
+    ) {
+      const { serviceReqId } = req.session.reviewServiceRequest;
+      const rolesList = selectedRoles.length > 0 ? encodeURIComponent(selectedRoles) : 'null';
+      return `${baseUrl}/access-requests/service-requests/${serviceReqId}/services/${req.params.sid}/roles/${rolesList}`;
     } else {
       return `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`;
     }
   } else {
     return `/approvals/${req.params.orgId}/users/confirm-new-user`;
+  }
+};
+
+const buildCancelLink = (req) => {
+  const isReviewServiceReqAmendRoleUrl = isReviewServiceReqAmendRole(req);
+  const isReviewServiceReqAmendServiceUrl = isReviewServiceReqAmendService(req);
+  const baseUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`;
+
+  if (isReviewServiceReqAmendRoleUrl || isReviewServiceReqAmendServiceUrl) {
+    const { serviceReqId, serviceId, selectedRoleIds } = req.session.reviewServiceRequest;
+    const rolesIds = encodeURIComponent(selectedRoleIds);
+    return `${baseUrl}/access-requests/service-requests/${serviceReqId}/services/${serviceId}/roles/${rolesIds}`;
+  } else {
+    return `/approvals/users/${req.session.user.id}`;
   }
 };
 
@@ -94,6 +133,7 @@ const getViewModel = async (req) => {
     user: req.session.user,
     validationMessages: {},
     backLink: buildBackLink(req, currentServiceIndex),
+    cancelLink: buildCancelLink(req),
     currentPage: 'users',
     organisationDetails,
     selectedRoles,
