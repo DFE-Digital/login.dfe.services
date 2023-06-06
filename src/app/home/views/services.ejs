@@ -123,9 +123,15 @@
                         </div>
                     <% } %>
                     <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
-                        <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
-                            role="alert" aria-labelledby="govuk-notification-banner-title"
-                            data-module="govuk-notification-banner">
+                        <% if(locals.flash.title[0] !== 'Success') {%>
+                            <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner"
+                                role="alert" aria-labelledby="govuk-notification-banner-title"
+                                data-module="govuk-notification-banner">
+                                <% } else{ %>
+                                    <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
+                                    role="alert" aria-labelledby="govuk-notification-banner-title"
+                                    data-module="govuk-notification-banner">
+                                    <%}%>
                             <div class="govuk-notification-banner__header govuk-grid-row">
                                 <div class="govuk-grid-column-two-thirds">
                                     <h2 class="govuk-notification-banner__title" id="notification-title">

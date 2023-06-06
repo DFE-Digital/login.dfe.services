@@ -95,4 +95,4 @@ const organisations = async (req, res) => {
   });
 };
 
-module.exports = organisations;
+module.exports = {organisations, getAndMapPendingRequests};
