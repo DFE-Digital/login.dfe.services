@@ -5,20 +5,7 @@
                 Review request
             </h1>
             <p class="govuk-body-l">Review these details before adding  <%= locals.endUsersGivenName %> <%= locals.endUsersFamilyName %> to 
-            <% if (locals.roles.length > 1) { %>
-                <% for (let x=0; x < locals.roles.length; x++) { %>
-                    <% const role=locals.roles[x]; %>
-                        <% if(x === (locals.roles.length - 1)){ %>
-                           <%= role.name %>
-                           <%}else{%>
-                            <%= role.name %>,
-                            <%}%>
-                <% }%>
-            <%} else if(locals.roles.length === 1){ %>
-                <%= locals.roles[0].name; %>
-             <% } else { %>
-                No roles selected
-                <% }%>.</p>
+                <%= locals.Service_name %>.</p>
             <h2 class="govuk-heading-m">
                 Request details
             </h2>
