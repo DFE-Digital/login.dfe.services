@@ -11,18 +11,12 @@ const {
   get: getReviewOrganisationRequest,
   post: postReviewOrganisationRequest,
 } = require('./reviewOrganisationRequest');
-const {
-  get: getReviewSubServiceRequest,
-  post: postReviewSubServiceRequest,
-} = require('./reviewSubServiceRequest');
+const { get: getReviewSubServiceRequest, post: postReviewSubServiceRequest } = require('./reviewSubServiceRequest');
 const {
   get: getRejectOrganisationRequest,
   post: postRejectOrganisationRequest,
 } = require('./rejectOrganisationRequest');
-const {
-  get: getRejectSubServiceRequest,
-  post: postRejectSubServiceRequest,
-} = require('./rejectSubServiceRequest');
+const { get: getRejectSubServiceRequest, post: postRejectSubServiceRequest } = require('./rejectSubServiceRequest');
 
 const { get: getReviewServiceRequest, post: postReviewServiceRequest } = require('./reviewServiceRequest');
 const { get: getRejectServiceRequest, post: postRejectServiceRequest } = require('./rejectServiceRequest');
