@@ -1,4 +1,5 @@
 const { updateServiceRequest } = require('../requestService/utils');
+const Account = require('./../../infrastructure/account');
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
 const {
   getSubServiceRequestVieModel,
@@ -19,8 +20,10 @@ const validate = async (req) => {
       viewModel.role_ids = req.session.roleIds;
       let submodel = await getRoleAndServiceNames(viewModel, req.params.rid, req);
       viewModel.roles = submodel.roles.filter((x) => x !== undefined);
+      //req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     } else {
+      // req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     }
   }
@@ -65,8 +68,10 @@ const get = async (req, res) => {
       viewModel.role_ids = req.session.roleIds;
       let submodel = await getRoleAndServiceNames(viewModel, req.params.rid, req);
       viewModel.roles = submodel.roles.filter((x) => x !== undefined);
+      //req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     } else {
+      //req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     }
   }

@@ -2,7 +2,6 @@ const Account = require('./../../infrastructure/account');
 const { updateUserService } = require('../../infrastructure/access');
 const { updateServiceRequest } = require('../requestService/utils');
 const {
-  getNewRoleDetails,
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
   generateFlashMessages,
@@ -22,7 +21,7 @@ const validate = async (req) => {
   if (req.session.roleIds !== undefined) {
     if (req.session.roleIds !== viewModel.role_ids) {
       viewModel.role_ids = req.session.roleIds;
-      let submodel = await getRoleAndServiceNames(viewModel, req.param.rid, req);
+      let submodel = await getRoleAndServiceNames(viewModel, req.params.rid, req);
       viewModel.roles = submodel.roles.filter((x) => x !== undefined);
       //req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
@@ -59,13 +58,16 @@ const get = async (req, res) => {
       viewModel.role_ids = req.session.roleIds;
       let submodel = await getRoleAndServiceNames(viewModel, req.params.rid, req);
       viewModel.roles = submodel.roles.filter((x) => x !== undefined);
+      //req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     } else {
+      // req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     }
   }
 
   viewModel.csrfToken = req.csrfToken();
+  // req.session.roles = viewModel.roles;
   viewModel.subServiceAmendUrl = `/approvals/${viewModel.org_id}/users/${viewModel.user_id}/services/${viewModel.service_id}?actions=${actions.REVIEW_SUBSERVICE_REQUEST}`;
   if (viewModel.actioned_by && (viewModel.status === -1 || 1)) {
     const user = await Account.getById(viewModel.actioned_by);
