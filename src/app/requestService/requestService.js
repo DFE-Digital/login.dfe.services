@@ -3,8 +3,11 @@ const config = require('../../infrastructure/config');
 const { getAllServicesForUserInOrg } = require('../users/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const Account = require('./../../infrastructure/account');
-const {getAndMapPendingRequests} = require('../organisations/organisations');
-const { getOrganisationAndServiceForUserV2, getNonPagedRequestsTypesForApprover } = require('../../infrastructure/organisations');
+const { getAndMapPendingRequests } = require('../organisations/organisations');
+const {
+  getOrganisationAndServiceForUserV2,
+  getNonPagedRequestsTypesForApprover,
+} = require('../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common');
 const { actions } = require('../constans/actions');
@@ -89,14 +92,12 @@ const get = async (req, res) => {
 
 const validate = async (req) => {
   const organisationDetails = req.session.organisationDetails;
-  if(organisationDetails === undefined)
-  {
+  if (organisationDetails === undefined) {
     organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   }
   const externalServices = await getAllAvailableServices(req);
- //collect the service id and the userid and the organisation id and check the request for existence of a request
- 
- 
+  //collect the service id and the userid and the organisation id and check the request for existence of a request
+
   // TODO make selectedServices non array (selectedService) and refactor all code related to array in this file and in the EJS template
   let selectedServices = [];
   if (req.body.service && req.body.service instanceof Array) {
@@ -104,7 +105,7 @@ const validate = async (req) => {
   } else if (req.body.service) {
     selectedServices = [req.body.service];
   }
- 
+
   const model = {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
@@ -116,19 +117,7 @@ const validate = async (req) => {
     isInvite: req.session.user.isInvite,
     validationMessages: {},
   };
-  const approvers = organisationDetails.approvers;
-  const approverId = approvers[0];
-  const account = await Account.getById(approverId.user_id);
-  const requestservices = await getNonPagedRequestsTypesForApprover(account.id, req.id);
-  if(requestservices !== undefined)
-  {
-    req.session.serviceName = model.services.filter((t) => t.id === selectedServices[0]);
-  const inRequest = requestservices.requests.filter((x) => x.service_id === selectedServices[0] && x.org_id === req.params.orgId && x.user_id === req.session.user.uid );
-  if(inRequest !== undefined){
-    model.validationMessages.services = 'you already have a request in flight';
-  }
-  }
-  
+
   if (model.selectedServices.length < 1) {
     model.validationMessages.services = 'Select a service to continue';
   }
@@ -142,13 +131,31 @@ const validate = async (req) => {
   return model;
 };
 
+///method to get request
+const isRequested = async (organisationDetails, selectServiceID, req) => {
+  const approvers = organisationDetails.approvers;
+  const approverId = approvers[0];
+  const account = await Account.getById(approverId.user_id);
+  const requestservices = await getNonPagedRequestsTypesForApprover(account.id, req.id);
+  if (requestservices !== undefined) {
+    const inRequest = requestservices.requests.filter(
+      (x) => x.service_id === selectServiceID && x.org_id === req.params.orgId && x.user_id === req.session.user.uid,
+    );
+    if (inRequest !== undefined) {
+      return true;
+    }
+  }
+  return false;
+};
 const post = async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/my-services');
   }
 
   const model = await validate(req);
-
+  let selectServiceID = model.selectedServices[0];
+  let isRequests = await isRequested(model.organisationDetails, selectServiceID, req);
+  req.session.serviceName = model.services.filter((t) => t.id === selectServiceID);
   // persist current selection in session
   req.session.user.services = model.selectedServices.map((serviceId) => {
     const existingServiceSelections = req.session.user.services
@@ -161,22 +168,20 @@ const post = async (req, res) => {
   });
 
   if (Object.keys(model.validationMessages).length > 0) {
-    if(model.validationMessages.services === 'you already have a request in flight')
-    {
-      const serviceName = req.session.serviceName[0];;
-      res.flash('title', `Important`);
-      res.flash('heading', `Service already requested: ${req.session.serviceName[0].name}`);
-      res.flash('message', `Your request has been sent to Approvers at ${model.organisationDetails.organisation.name} on ${model.services.requestDate}.`);
-      return res.redirect(`/my-services`);
-    }
-    else
-    {
     model.csrfToken = req.csrfToken();
     return renderAssociateServicesPage(req, res, model);
-    }
-    
   }
-
+  if (isRequests) {
+    const serviceName = req.session.serviceName[0];
+    res.csrfToken = req.csrfToken();
+    res.flash('title', `Important`);
+    res.flash('heading', `Service already requested: ${serviceName.name}`);
+    res.flash(
+      'message',
+      `Your request has been sent to Approvers at ${model.organisationDetails.organisation.name} on ${model.services.requestDate}.`,
+    );
+    return res.redirect('/my-services');
+  }
   const service = req.session.user.services[0].serviceId;
   return res.redirect(`/request-service/${req.session.user.organisation}/users/${req.user.sub}/services/${service}`);
 };

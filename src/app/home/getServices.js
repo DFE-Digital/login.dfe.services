@@ -212,13 +212,13 @@ const getServices = async (req, res) => {
 
   isRequestServiceAllowed = !!requestServicesRedirect;
 
-  const { jobTitle } = await Account.getById(req.user.id)
+  const { jobTitle } = await Account.getById(req.user.id);
   //2: "job title" notification banner
-  const useJobTitleBanner = await directories.fetchUserBanners(req.user.id, 2)
-  const showJobTitleBanner = !useJobTitleBanner && !jobTitle
+  const useJobTitleBanner = await directories.fetchUserBanners(req.user.id, 2);
+  const showJobTitleBanner = !useJobTitleBanner && !jobTitle;
 
   //-3: "Unacknowledged" banner for changed password
-  const passwordChangedBanner = await directories.fetchUserBanners(req.user.id, -3)
+  const passwordChangedBanner = await directories.fetchUserBanners(req.user.id, -3);
 
   logger.audit({
     type: 'Sign-in',
@@ -233,8 +233,7 @@ const getServices = async (req, res) => {
     },
   });
 
-  const userPireanServices = services.filter(value => pireanServices.includes(value.name) );
-
+  const userPireanServices = services.filter((value) => pireanServices.includes(value.name));
 
   return res.render('home/views/services', {
     title: 'Access DfE services',
@@ -252,7 +251,7 @@ const getServices = async (req, res) => {
     passwordChangedBanner,
     showJobTitleBanner,
     pireanServices,
-    userPireanServices
+    userPireanServices,
   });
 };
 

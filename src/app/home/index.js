@@ -15,10 +15,9 @@ const home = (csrf, app) => {
   logger.info('Mounting home routes');
 
   router.get('/', asyncWrapper(getIndex));
-  router.get('/my-services', isLoggedIn, asyncWrapper(getServices));
+  router.get('/my-services', csrf, isLoggedIn, asyncWrapper(getServices));
   router.get('/close-missing-jobtitle', isLoggedIn, asyncWrapper(jobTitleBannerHandler));
   router.get('/close-password-change', isLoggedIn, asyncWrapper(passwordChangeBannerHandler));
-  
   return router;
 };
 
