@@ -4,14 +4,11 @@ const { getAllServicesForUserInOrg } = require('../users/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const Account = require('./../../infrastructure/account');
 const { getAndMapPendingRequests } = require('../organisations/organisations');
-const {
-  getOrganisationAndServiceForUserV2,
-  getNonPagedRequestsTypesForApprover,
-} = require('../../infrastructure/organisations');
+const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common');
 const { actions } = require('../constans/actions');
-
+const { checkForActiveRequests } = require('./utils');
 const policyEngine = new PolicyEngine(config);
 
 const renderAssociateServicesPage = (_req, res, model) => {
@@ -64,7 +61,7 @@ const getAllAvailableServices = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/my-services`);
+    res.redirect(`/my-services`);
   }
   const account = Account.fromContext(req.user);
   //Recording request-a-service banner acknowledgement by end-user
@@ -131,31 +128,35 @@ const validate = async (req) => {
   return model;
 };
 
-///method to get request
-const isRequested = async (organisationDetails, selectServiceID, req) => {
-  const approvers = organisationDetails.approvers;
-  const approverId = approvers[0];
-  const account = await Account.getById(approverId.user_id);
-  const requestservices = await getNonPagedRequestsTypesForApprover(account.id, req.id);
-  if (requestservices !== undefined) {
-    const inRequest = requestservices.requests.filter(
-      (x) => x.service_id === selectServiceID && x.org_id === req.params.orgId && x.user_id === req.session.user.uid,
-    );
-    if (inRequest !== undefined) {
-      return true;
-    }
-  }
-  return false;
-};
 const post = async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/my-services');
   }
-
+  let selectServiceID = req.body.service;
+  let orgdetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
+  let isRequests = await checkForActiveRequests(
+    orgdetails,
+    selectServiceID,
+    req.params.orgId,
+    req.session.user.uid,
+    req.id,
+  );
+  if (isRequests !== undefined) {
+    const allServices = await checkCacheForAllServices(req.id);
+    const serviceDetails = allServices.services.find((x) => x.id === selectServiceID);
+    const place = config.hostingEnvironment.helpUrl;
+    res.csrfToken = req.csrfToken();
+    res.flash('title', `Important`);
+    res.flash('heading', `Service already requested: ${serviceDetails.name}`);
+    res.flash(
+      'message',
+      `Your request has been sent to Approvers at ${orgdetails.organisation.name} on ${new Date(
+        isRequests,
+      ).toLocaleDateString()} <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+    );
+    return res.redirect('/my-services');
+  }
   const model = await validate(req);
-  let selectServiceID = model.selectedServices[0];
-  let isRequests = await isRequested(model.organisationDetails, selectServiceID, req);
-  req.session.serviceName = model.services.filter((t) => t.id === selectServiceID);
   // persist current selection in session
   req.session.user.services = model.selectedServices.map((serviceId) => {
     const existingServiceSelections = req.session.user.services
@@ -169,20 +170,9 @@ const post = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return renderAssociateServicesPage(req, res, model);
+    renderAssociateServicesPage(req, res, model);
   }
-  if (isRequests) {
-    const serviceName = req.session.serviceName[0];
-    res.csrfToken = req.csrfToken();
-    res.flash('title', `Important`);
-    res.flash('heading', `Service already requested: ${serviceName.name}`);
-    res.flash(
-      'message',
-      `Your request has been sent to Approvers at ${model.organisationDetails.organisation.name} on ${model.services.requestDate}.`,
-    );
-    return res.redirect('/my-services');
-  }
-  const service = req.session.user.services[0].serviceId;
+  const service = selectServiceID;
   return res.redirect(`/request-service/${req.session.user.organisation}/users/${req.user.sub}/services/${service}`);
 };
 

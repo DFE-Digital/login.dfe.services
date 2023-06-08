@@ -1,5 +1,5 @@
 const { services } = require('login.dfe.dao');
-
+const { getNonPagedRequestsTypesForApprover } = require('../../infrastructure/organisations');
 const mapUserServiceRequestStatus = (status) => {
   if (status === 0) {
     return { id: 0, description: 'Pending' };
@@ -16,7 +16,21 @@ const getUserServiceRequestStatus = async (reqId) => {
   const userServiceRequest = await services.getUserServiceRequest(reqId);
   return userServiceRequest.status;
 };
-
+///method to get request
+const checkForActiveRequests = async (organisationDetails, selectServiceID, orgId, uid, reqId) => {
+  const approvers = organisationDetails.approvers;
+  const approverId = approvers[0];
+  const requestservices = await getNonPagedRequestsTypesForApprover(approverId.user_id, reqId);
+  if (requestservices !== undefined) {
+    const inRequest = requestservices.requests.filter(
+      (x) => x.service_id === selectServiceID && x.org_id === orgId && x.user_id === uid,
+    );
+    if (inRequest !== undefined && inRequest.length > 0) {
+      return inRequest[0].created_date;
+    }
+  }
+  return undefined;
+};
 const updateServiceRequest = async (reqId, statusId, approverId, reason) => {
   const status = mapUserServiceRequestStatus(statusId);
 
@@ -45,4 +59,4 @@ const createServiceRequest = async (reqId, userId, serviceId, rolesIds, organisa
   });
 };
 
-module.exports = { getUserServiceRequestStatus, updateServiceRequest, createServiceRequest };
+module.exports = { getUserServiceRequestStatus, updateServiceRequest, createServiceRequest, checkForActiveRequests };
