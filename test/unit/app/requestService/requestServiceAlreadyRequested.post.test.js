@@ -1,6 +1,6 @@
 jest.mock('login.dfe.policy-engine');
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
+jest.mock('./../../../../src/infrastructure/config', () => require('../../../utils/jestMocks').mockConfig());
+jest.mock('./../../../../src/infrastructure/logger', () => require('../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/app/users/utils');
 jest.mock('./../../../../src/infrastructure/organisations');
 jest.mock('login.dfe.dao', () => {
@@ -37,8 +37,8 @@ jest.mock('login.dfe.dao', () => {
   };
 });
 
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-const { getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
+const { mockRequest, mockResponse } = require('../../../utils/jestMocks');
+const { getAllServicesForUserInOrg } = require('../../../../src/app/users/utils');
 const { checkForActiveRequests } = require('../../../../src/app/requestService/utils');
 const {
   getOrganisationAndServiceForUserV2,
@@ -108,7 +108,6 @@ describe('when posting service and the request has already been requested', () =
         },
       ],
       user: {
-        organisation: 'organisationId',
         email: 'test@test.com',
         firstName: 'test',
         lastName: 'name',
@@ -188,7 +187,7 @@ describe('when posting service and the request has already been requested', () =
     getNonPagedRequestsTypesForApprover.mockReset();
     getNonPagedRequestsTypesForApprover.mockReturnValue(requestservices);
     checkForActiveRequests.mockReset();
-    checkForActiveRequests.mockReturnValue(undefined);
+    checkForActiveRequests.mockReturnValue([new Date()]);
 
     getAllServicesForUserInOrg.mockReset();
     getAllServicesForUserInOrg.mockReturnValue([
@@ -208,13 +207,13 @@ describe('when posting service and the request has already been requested', () =
     });
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
-    post = require('./../../../../src/app/requestService/requestService').post;
+    post = require('../../../../src/app/requestService/requestService').post;
   });
 
-  it('then it should display the select service page', async () => {
+  it('then it should display the my service page', async () => {
     await post(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/request-service/organisationId/users/user1/services/service1');
+    expect(res.redirect.mock.calls[0][0]).toBe('/my-services');
   });
 });
