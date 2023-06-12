@@ -3,7 +3,6 @@ const config = require('../../infrastructure/config');
 const { getAllServicesForUserInOrg } = require('../users/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const Account = require('./../../infrastructure/account');
-const { getAndMapPendingRequests } = require('../organisations/organisations');
 const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common');
