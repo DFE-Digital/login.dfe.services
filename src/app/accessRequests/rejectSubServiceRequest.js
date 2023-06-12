@@ -20,10 +20,8 @@ const validate = async (req) => {
       viewModel.role_ids = req.session.roleIds;
       let submodel = await getRoleAndServiceNames(viewModel, req.params.rid, req);
       viewModel.roles = submodel.roles.filter((x) => x !== undefined);
-      //req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     } else {
-      // req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     }
   }

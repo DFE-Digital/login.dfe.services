@@ -23,10 +23,8 @@ const validate = async (req) => {
       viewModel.role_ids = req.session.roleIds;
       let submodel = await getRoleAndServiceNames(viewModel, req.params.rid, req);
       viewModel.roles = submodel.roles.filter((x) => x !== undefined);
-      //req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     } else {
-      // req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     }
   }
@@ -58,16 +56,13 @@ const get = async (req, res) => {
       viewModel.role_ids = req.session.roleIds;
       let submodel = await getRoleAndServiceNames(viewModel, req.params.rid, req);
       viewModel.roles = submodel.roles.filter((x) => x !== undefined);
-      //req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     } else {
-      // req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     }
   }
 
   viewModel.csrfToken = req.csrfToken();
-  // req.session.roles = viewModel.roles;
   viewModel.subServiceAmendUrl = `/approvals/${viewModel.org_id}/users/${viewModel.user_id}/services/${viewModel.service_id}?actions=${actions.REVIEW_SUBSERVICE_REQUEST}`;
   if (viewModel.actioned_by && (viewModel.status === -1 || 1)) {
     const user = await Account.getById(viewModel.actioned_by);
@@ -90,8 +85,6 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   const model = await validate(req);
-  //check request for already actioned
-
   const request = await getAndMapServiceRequest(req.params.rid);
   if (request.dataValues.status === -1 || 1) {
     const alreadyActioned = await getSubServiceRequestVieModel(request, req.id, req);

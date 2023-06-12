@@ -139,7 +139,9 @@ const post = async (req, res) => {
     req.params.orgId,
     req.session.user.uid,
     req.id,
-  );
+  ).catch((err) => {
+    logger.error('error checking for active Requests', err);
+  });
   if (isRequests !== undefined) {
     const allServices = await checkCacheForAllServices(req.id);
     const serviceDetails = allServices.services.find((x) => x.id === selectServiceID);
