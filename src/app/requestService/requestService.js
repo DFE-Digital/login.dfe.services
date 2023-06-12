@@ -144,7 +144,7 @@ const post = async (req, res) => {
     const allServices = await checkCacheForAllServices(req.id);
     const serviceDetails = allServices.services.find((x) => x.id === selectServiceID);
     const place = config.hostingEnvironment.helpUrl;
-    if (isRequests instanceof Date) {
+    if (!Array.isArray(isRequests)) {
       res.csrfToken = req.csrfToken();
       res.flash('title', `Important`);
       res.flash('heading', `Service already requested: ${serviceDetails.name}`);
