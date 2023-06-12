@@ -19,17 +19,22 @@ const getUserServiceRequestStatus = async (reqId) => {
 ///method to get request
 const checkForActiveRequests = async (organisationDetails, selectServiceID, orgId, uid, reqId) => {
   const approvers = organisationDetails.approvers;
-  const approverId = approvers[0];
-  const requestservices = await getNonPagedRequestsTypesForApprover(approverId.user_id, reqId);
-  if (requestservices !== undefined) {
-    const inRequest = requestservices.requests.filter(
-      (x) => x.service_id === selectServiceID && x.org_id === orgId && x.user_id === uid,
-    );
-    if (inRequest !== undefined && inRequest.length > 0) {
-      return inRequest[0].created_date;
+  if (approvers !== undefined && approvers.length > 0) {
+    const approverId = approvers[0];
+    const requestservices = await getNonPagedRequestsTypesForApprover(approverId.user_id, reqId);
+    if (requestservices !== undefined) {
+      const inRequest = requestservices.requests.filter(
+        (x) => x.service_id === selectServiceID && x.org_id === orgId && x.user_id === uid,
+      );
+      if (inRequest !== undefined && inRequest.length > 0) {
+        return inRequest[0].created_date;
+      }
     }
+
+    return undefined;
+  } else {
+    return approvers;
   }
-  return undefined;
 };
 const updateServiceRequest = async (reqId, statusId, approverId, reason) => {
   const status = mapUserServiceRequestStatus(statusId);
