@@ -2,7 +2,6 @@
 const config = require('../../infrastructure/config');
 const { getAllServicesForUserInOrg } = require('../users/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
-const Account = require('./../../infrastructure/account');
 const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common');
@@ -62,7 +61,6 @@ const get = async (req, res) => {
   if (!req.session.user) {
     res.redirect(`/my-services`);
   }
-  const account = Account.fromContext(req.user);
   //Recording request-a-service banner acknowledgement by end-user
   await recordRequestServiceBannerAck(req.session.user.uid);
 
