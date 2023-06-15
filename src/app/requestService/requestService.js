@@ -7,6 +7,7 @@ const { checkCacheForAllServices } = require('../../infrastructure/helpers/allSe
 const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common');
 const { actions } = require('../constans/actions');
 const { checkForActiveRequests } = require('./utils');
+
 const policyEngine = new PolicyEngine(config);
 
 const renderAssociateServicesPage = (_req, res, model) => {
@@ -59,13 +60,14 @@ const getAllAvailableServices = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    res.redirect(`/my-services`);
+    return res.redirect(`/my-services`);
   }
+
   //Recording request-a-service banner acknowledgement by end-user
   await recordRequestServiceBannerAck(req.session.user.uid);
 
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
-  req.session.organisationDetails = organisationDetails;
+
   const externalServices = await getAllAvailableServices(req);
 
   const model = {
@@ -85,13 +87,8 @@ const get = async (req, res) => {
 };
 
 const validate = async (req) => {
-  const organisationDetails = req.session.organisationDetails;
-  if (organisationDetails === undefined) {
-    organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
-  }
+  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
-  //collect the service id and the userid and the organisation id and check the request for existence of a request
-
   // TODO make selectedServices non array (selectedService) and refactor all code related to array in this file and in the EJS template
   let selectedServices = [];
   if (req.body.service && req.body.service instanceof Array) {
@@ -99,7 +96,6 @@ const validate = async (req) => {
   } else if (req.body.service) {
     selectedServices = [req.body.service];
   }
-
   const model = {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
@@ -111,7 +107,6 @@ const validate = async (req) => {
     isInvite: req.session.user.isInvite,
     validationMessages: {},
   };
-
   if (model.selectedServices.length < 1) {
     model.validationMessages.services = 'Select a service to continue';
   }
@@ -129,6 +124,7 @@ const post = async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/my-services');
   }
+
   let selectServiceID = req.body.service;
   let orgdetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   let isRequests = await checkForActiveRequests(
@@ -161,6 +157,7 @@ const post = async (req, res) => {
     return res.redirect('/my-services');
   }
   const model = await validate(req);
+
   // persist current selection in session
   req.session.user.services = model.selectedServices.map((serviceId) => {
     const existingServiceSelections = req.session.user.services
@@ -174,9 +171,10 @@ const post = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    renderAssociateServicesPage(req, res, model);
+    return renderAssociateServicesPage(req, res, model);
   }
-  const service = selectServiceID;
+
+  const service = req.session.user.services[0].serviceId;
   return res.redirect(`/request-service/${req.session.user.organisation}/users/${req.user.sub}/services/${service}`);
 };
 
