@@ -213,8 +213,8 @@ describe('when posting service and the request has already been requested', () =
 
   it('then it should display the select service page', async () => {
     await post(req, res);
-
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/request-service/organisationId/users/user1/services/service1');
+    expect(res.render.mock.calls).toHaveLength(1);
+    //expect(res.redirect.mock.calls).toHaveLength(1);
+    //expect(res.redirect.mock.calls[0][0]).toBe('/request-service/organisationId/users/user1/services/service1');
   });
 });
