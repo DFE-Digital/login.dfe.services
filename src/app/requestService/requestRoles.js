@@ -100,7 +100,7 @@ const post = async (req, res) => {
     renderAssociateRolesPage(req, res, model);
   }
 
-  return res.redirect(`/request-service/${req.session.user.organisation}/users/${req.user.sub}/confirm-request`);
+  return res.redirect(`/request-service/${req.params.orgId}/users/${req.user.sub}/confirm-request`);
 };
 
 module.exports = {
