@@ -28,9 +28,10 @@ const getAndMapServices = async (account, correlationId) => {
   const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
   let services = serviceAccess.map((sa) => ({
     id: sa.serviceId,
-    name: '',
+    name: sa.name,
     serviceUrl: '',
     roles: sa.roles,
+    accessGrantedOn: sa.accessGrantedOn,
   }));
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
@@ -234,6 +235,17 @@ const getServices = async (req, res) => {
   });
 
   const userPireanServices = services.filter((value) => pireanServices.includes(value.name));
+  ///testing here for new services use sortby accessGranted to get the latest one
+  const checklastestaddition = services.filter((x) => {
+    return new Date(x.accessGrantedOn) >= account.claims.last_login && new Date(x.accessGrantedOn) <= new Date();
+  });
+  if (checklastestaddition.length > 0) {
+    res.csrfToken = req.csrfToken();
+    res.flash('title', `Success`);
+    res.flash('heading', `New service added: ${checklastestaddition[0].name}`);
+    res.flash('message', `Select the service from the list below to access its functions and features.`);
+  }
+  console.log(checklastestaddition);
 
   return res.render('home/views/services', {
     title: 'Access DfE services',

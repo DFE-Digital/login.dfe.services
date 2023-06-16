@@ -146,7 +146,9 @@ const post = async (req, res) => {
         'message',
         `Your request has been sent to Approvers at ${orgdetails.organisation.name} on ${new Date(
           isRequests,
-        ).toLocaleDateString()} <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+        ).toLocaleDateString(
+          'EN-GB',
+        )} <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
       );
     } else {
       res.csrfToken = req.csrfToken();
