@@ -21,9 +21,10 @@ const { getApproverOrgsFromReq, isUserEndUser } = require('../users/utils');
 const { actions } = require('../constans/actions');
 
 const pireanServices = process.env.PIREAN_SERVICES ? process.env.PIREAN_SERVICES.split(',') : [];
-
+let last_login = undefined;
 const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
+  last_login = user.claims.last_login;
   const isMigrated = user && user.claims ? user.claims.isMigrated : false;
   const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
   let services = serviceAccess.map((sa) => ({
@@ -236,18 +237,20 @@ const getServices = async (req, res) => {
 
   const userPireanServices = services.filter((value) => pireanServices.includes(value.name));
   ///testing here for new services use sortby accessGranted to get the latest one
+  let nowDate = new Date().getDate();
   const checklastestaddition = services.filter((x) => {
-    return new Date(x.accessGrantedOn) >= account.claims.last_login && new Date(x.accessGrantedOn) <= new Date();
+    return (
+      new Date(x.accessGrantedOn).getDate() >= new Date(last_login).getDate() &&
+      new Date(x.accessGrantedOn).getDate() <= nowDate
+    );
   });
   if (checklastestaddition.length > 0) {
-    res.csrfToken = req.csrfToken();
-    res.flash('title', `Success`);
-    res.flash('heading', `New service added: ${checklastestaddition[0].name}`);
-    res.flash('message', `Select the service from the list below to access its functions and features.`);
+    res.locals.flash.title = [`Success`];
+    res.locals.flash.heading = `New service added: ${checklastestaddition[0].name}`;
+    res.locals.flash.message = `Select the service from the list below to access its functions and features.`;
   }
-  console.log(checklastestaddition);
 
-  return res.render('home/views/services', {
+  res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
     services,
@@ -265,6 +268,8 @@ const getServices = async (req, res) => {
     pireanServices,
     userPireanServices,
   });
+
+  return res;
 };
 
 module.exports = getServices;
