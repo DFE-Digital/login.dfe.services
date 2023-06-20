@@ -19,6 +19,7 @@ const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 const { getApproverOrgsFromReq, isUserEndUser } = require('../users/utils');
 const { actions } = require('../constans/actions');
+const flash = require('express-flash-2');
 
 const pireanServices = process.env.PIREAN_SERVICES ? process.env.PIREAN_SERVICES.split(',') : [];
 let last_login = undefined;
@@ -250,7 +251,7 @@ const getServices = async (req, res) => {
     res.locals.flash.message = `Select the service from the list below to access its functions and features.`;
   }
 
-  res.render('home/views/services', {
+  return res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
     services,
@@ -268,8 +269,6 @@ const getServices = async (req, res) => {
     pireanServices,
     userPireanServices,
   });
-
-  return res;
 };
 
 module.exports = getServices;
