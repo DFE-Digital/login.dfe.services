@@ -43,7 +43,7 @@
                     </div>
                 <% } %>
                 <!-- If user is an approver, and there are requests pending, show this banner -->
-                <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
+                <% if (locals.totalNumberOfAccessRequests && locals.totalNumberOfAccessRequests > 0) { %>
                     <div id="notification-wrapper-approver-request"
                         class="govuk-notification-banner"
                         role="region"
@@ -99,6 +99,9 @@
                             <th scope="col" class="govuk-table__header width-40">
                                 Organisation
                             </th>
+                            <th scope="col" class="govuk-table__header width-40">
+                                Legal name
+                            </th>
                             <th scope="col" class="govuk-table__header">
                                 URN
                             </th>
@@ -128,6 +131,7 @@
                                 <th scope="row" class="govuk-table__header">
                                     <p><%= organisation.name %></p>
                                 </th>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.LegalName %></td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.urn %></td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.upin %></td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.ukprn %></td>

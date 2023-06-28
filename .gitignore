@@ -72,4 +72,5 @@ access.log
 \.idea/markdown-navigator/profiles_settings\.xml
 
 .vscode
+.npmrc
 local-config/

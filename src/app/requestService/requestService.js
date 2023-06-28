@@ -6,6 +6,7 @@ const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/org
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common');
 const { actions } = require('../constans/actions');
+const { checkForActiveRequests } = require('./utils');
 
 const policyEngine = new PolicyEngine(config);
 
@@ -124,6 +125,39 @@ const post = async (req, res) => {
     return res.redirect('/my-services');
   }
 
+  let selectServiceID = req.body.service;
+  let orgdetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
+  let isRequests = await checkForActiveRequests(
+    orgdetails,
+    selectServiceID,
+    req.params.orgId,
+    req.session.user.uid,
+    req.id,
+  );
+  if (isRequests !== undefined) {
+    const allServices = await checkCacheForAllServices(req.id);
+    const serviceDetails = allServices.services.find((x) => x.id === selectServiceID);
+    const place = config.hostingEnvironment.helpUrl;
+    if (!Array.isArray(isRequests)) {
+      res.csrfToken = req.csrfToken();
+      res.flash('title', `Important`);
+      res.flash('heading', `Service already requested: ${serviceDetails.name}`);
+      res.flash(
+        'message',
+        `Your request has been sent to Approvers at ${orgdetails.organisation.name} on ${new Date(
+          isRequests,
+        ).toLocaleDateString(
+          'EN-GB',
+        )} <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+      );
+    } else {
+      res.csrfToken = req.csrfToken();
+      res.flash('title', `Important`);
+      res.flash('heading', `Your request cannot be completed as you have no approvers at this oranisation`);
+      res.flash('message', `Please <a href='${place}/contact-us'>Contact us</a> for help.`);
+    }
+    return res.redirect('/my-services');
+  }
   const model = await validate(req);
 
   // persist current selection in session

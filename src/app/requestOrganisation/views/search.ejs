@@ -65,29 +65,9 @@
                                 </form>
                             </h2>
                             <dl class="inline">
-                                <% if(org.urn) { %>
-                                    <dt>URN</dt>
-                                    <dd><%=org.urn%></dd>
-                                <% } %>
-
-                                <% if(org.uid) { %>
-                                    <dt>UID</dt>
-                                    <dd><%=org.uid%></dd>
-                                <% } %>
-                                
-                                <% if(org.upin) { %>
-                                    <dt>UPIN</dt>
-                                    <dd><%=org.upin%></dd>
-                                <% } %>
-
-                                <% if(org.ukprn) { %>
-                                    <dt>UKPRN</dt>
-                                    <dd><%=org.ukprn%></dd>
-                                <% } %>
-
-                                <% if (org.address) { %>
-                                    <dt>Address</dt>
-                                    <dd><%=org.address%></dd>
+                                <% if(org.LegalName) { %>
+                                    <dt>Legal name</dt>
+                                    <dd><%=org.LegalName%></dd>
                                 <% } %>
                                 
                                 <% if (org.type || org.providerTypeName) { %>
@@ -96,6 +76,31 @@
                                 <% } else if (org.category) { %>
                                     <dt>Category</dt>
                                     <dd><%=org.category.name%></dd>
+                                <% } %>
+
+                                <% if (org.address) { %>
+                                    <dt>Address</dt>
+                                    <dd><%=org.address%></dd>
+                                <% } %>
+
+                                <% if (org.urn) { %>
+                                    <dt>URN</dt>
+                                    <dd><%=org.urn%></dd>
+                                <% } %>
+
+                                <% if (org.uid) { %>
+                                    <dt>UID</dt>
+                                    <dd><%=org.uid%></dd>
+                                <% } %>
+                                
+                                <% if (org.ukprn) { %>
+                                    <dt>UKPRN</dt>
+                                    <dd><%=org.ukprn%></dd>
+                                <% } %>
+
+                                <% if (org.upin) { %>
+                                    <dt>UPIN</dt>
+                                    <dd><%=org.upin%></dd>
                                 <% } %>
 
                                 <% if (org.status && org.status.name) { %>
