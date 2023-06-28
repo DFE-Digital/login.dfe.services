@@ -8,16 +8,16 @@
         </div>
     </div>
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
+        <div class="govuk-grid-column-two-thirds">
             <form method="post">
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
                 <input type="hidden" name="page" value="1" />
 
                 <div class="govuk-form-group search-field">
                     <fieldset class="govuk-fieldset">
-                        <label for="criteria" class="vh">Search by name, URN, UPIN or UKPRN</label>
+                        <label for="criteria" class="vh">Search by name, Legal name, URN, UPIN or UKPRN</label>
                         <input type="text" id="criteria" name="criteria" value="<%=criteria%>" class="govuk-input"
-                            placeholder="Search by name, URN, UPIN or UKPRN ">
+                            placeholder="Search by name, Legal name, URN, UPIN or UKPRN ">
                     </fieldset>
                     <fieldset class="govuk-fieldset search-submit">
                         <button type="submit" class="search-button">Search</button>
