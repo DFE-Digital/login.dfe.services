@@ -3,6 +3,7 @@ const logger = require('../../../src/infrastructure/logger');
 const { getSingleServiceForUser } = require('../../../src/app/users/utils');
 const { createServiceRequest } = require('./utils');
 const { listRolesOfService } = require('./../../infrastructure/access');
+const { checkForActiveRequests } = require('./utils');
 const config = require('../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
@@ -80,6 +81,37 @@ const post = async (req, res) => {
   const senderLastName = req.session.user.lastName;
   const senderEmail = req.user.email;
   const roleNames = selectedRoles.rotails.map((i) => i.name);
+
+  let isRequests = await checkForActiveRequests(
+    organisationDetails,
+    req.params.sid,
+    req.params.orgId,
+    req.session.user.uid,
+    req.id,
+    'subService',
+  );
+  if (isRequests !== undefined) {
+    const place = config.hostingEnvironment.helpUrl;
+    if (!Array.isArray(isRequests)) {
+      res.csrfToken = req.csrfToken();
+      res.flash('title', `Important`);
+      res.flash('heading', `Sub-service already requested: ${service.name}`);
+      res.flash(
+        'message',
+        `Your request has been sent to Approvers at ${organisationDetails.organisation.name} on ${new Date(
+          isRequests,
+        ).toLocaleDateString(
+          'EN-GB',
+        )}. <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+      );
+    } else {
+      res.csrfToken = req.csrfToken();
+      res.flash('title', `Important`);
+      res.flash('heading', `Your request cannot be completed as you have no approvers at this oranisation`);
+      res.flash('message', `Please <a href='${place}/contact-us'>Contact us</a> for help.`);
+    }
+    return res.redirect('/my-services');
+  }
 
   const notificationClient = new NotificationClient({
     connectionString: config.notifications.connectionString,

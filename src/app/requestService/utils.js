@@ -17,7 +17,7 @@ const getUserServiceRequestStatus = async (reqId) => {
   return userServiceRequest.status;
 };
 ///method to get request
-const checkForActiveRequests = async (organisationDetails, selectServiceID, orgId, uid, reqId) => {
+const checkForActiveRequests = async (organisationDetails, selectServiceID, orgId, uid, reqId, requestType) => {
   const approvers = organisationDetails.approvers;
   if (approvers !== undefined && approvers.length > 0) {
     const approverId = approvers[0];
