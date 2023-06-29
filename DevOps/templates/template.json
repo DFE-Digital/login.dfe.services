@@ -3,8 +3,20 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "templatesBaseUri": {
+            "type": "string"
+        },
+        "AccessToken": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/DFE-Digital/login.dfe.infrastructure/master/"
+            "metadata": {
+                "description": "Token that will acces the private repo from the logic app"
+            }
+        },
+        "branch": {
+            "type": "string",
+            "defaultValue": "main",
+            "metadata": {
+                "description": "Branch that use for the ARM templateLinks"
+            }
         },
         "appServiceName": {
             "type": "string",
@@ -18,12 +30,6 @@
                 "description": "The sku of the App Service"
             }
         },
-        "appServicePlanSku": {
-            "type": "object",
-            "metadata": {
-                "description": "The sku of the App Service Plan"
-            }
-        },
         "appServicePlanRG": {
             "type": "string",
             "metadata": {
@@ -32,7 +38,7 @@
         },
         "nodeVersion": {
             "type": "string",
-            "defaultValue": "10.16.0",
+            "defaultValue": "NODE|14-lts",
             "metadata": {
                 "description": "The default NodeJS version that the App Service will run"
             }
@@ -55,25 +61,6 @@
             "type": "string",
             "metadata": {
                 "description": "JSON string containing app config"
-            }
-        },
-        "customHostName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "certificateName": {
-            "type": "string"
-        },
-        "keyVaultName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Key Vault that stores application certificates"
-            }
-        },
-        "keyVaultResourceGroup": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Resource Group that contains the Key Vault"
             }
         },
         "auditServiceBusConnectionString": {
@@ -122,6 +109,13 @@
                 "description": "Add app settings to support virtual network private endpoints"
             }
         },
+        "includeDeploymentSlot": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Whether or not to include a staging deployment slot"
+            }
+        },
          "pireanServices": {
             "type": "string",
             "defaultValue": "",
@@ -132,61 +126,10 @@
     },
     "variables": {
         "enableVirtualNetworkIntegration": "[and(not(empty(parameters('virtualNetworkResourceGroupName'))), not(empty(parameters('virtualNetworkName'))))]",
-        "serviceSubnetResourceId": "[if(variables('enableVirtualNetworkIntegration'), resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix'))), '')]"
+        "serviceSubnetResourceId": "[if(variables('enableVirtualNetworkIntegration'), resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix'))), '')]",
+        "gatewaySubnetId": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'gateway')]"
     },
     "resources": [
-        {
-            "apiVersion": "2017-05-10",
-            "name": "[parameters('appServicePlanName')]",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-plan.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "appServicePlanName": {
-                        "value": "[parameters('appServicePlanName')]"
-                    },
-                    "appServicePlanSku": {
-                        "value": "[parameters('appServicePlanSku')]"
-                    },
-                    "appServicePlanOS": {
-                        "value": "Linux"
-                    },
-                    "appServicePlanIsLinux": {
-                        "value": true
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "[concat(parameters('appServiceName'), '-certificate')]",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-certificate.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "keyVaultCertificateName": {
-                        "value": "[parameters('certificateName')]"
-                    },
-                    "keyVaultName": {
-                        "value": "[parameters('keyVaultName')]"
-                    },
-                    "keyVaultResourceGroup": {
-                        "value": "[parameters('keyVaultResourceGroup')]"
-                    },
-                    "serverFarmId": {
-                        "value": "[reference(parameters('appServicePlanName')).outputs.appServicePlanId.Value]"
-                    }
-                }
-            }
-        },
         {
             "apiVersion": "2017-05-10",
             "name": "[parameters('appServiceName')]",
@@ -194,7 +137,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('templatesBaseUri'),'Shared/app-service-azure-config.json')]",
+                    "uri": "[concat(parameters('templatesBaseUri'),'&repo=DFE-Digital/login.dfe.devops&ref=',parameters('branch'),'&token=', parameters('AccessToken'),'&file=templates/app-service-azure-config.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -219,12 +162,6 @@
                     "minTlsVersion": {
                         "value": "[parameters('minTlsVersion')]"
                     },
-                    "customHostName": {
-                        "value": "[parameters('customHostName')]"
-                    },
-                    "certificateThumbprint": {
-                        "value": "[reference(concat(parameters('appServiceName'), '-certificate')).outputs.certificateThumbprint.value]"
-                    },
                     "additionalAppSettings": {
                         "value": {
                             "QUEUE_CONNECTION_STRING": "[parameters('auditServiceBusConnectionString')]",
@@ -245,13 +182,24 @@
                     },
                     "http20Enabled": {
                         "value": true
+                    },
+                    "includeDeploymentSlot": {
+                        "value": "[parameters('includeDeploymentSlot')]"
+                    },
+                    "ipSecurityRestrictions": {
+                        "value": [
+                            {
+                                "vnetSubnetResourceId": "[variables('gatewaySubnetId')]",
+                                "action": "Allow",
+                                "tag": "Default",
+                                "name": "Gateway",
+                                "priority": 10
+                            }
+                        ]
                     }
 
                 }
-            },
-            "dependsOn": [
-                "[parameters('appServicePlanName')]"
-            ]
+            }
         }
     ]
 }
