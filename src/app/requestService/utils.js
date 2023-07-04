@@ -21,7 +21,24 @@ const getUserServiceRequestStatus = async (reqId) => {
 //extend the method to search for all instances of
 //a service request by the user_id and organisation_id that contains any role selected
 // overload a param called roleid's to empty list
-
+const getLastRequestDate = async (organisationDetails, selectServiceID, orgId, uid, reqId, requestType, roleIds) => {
+  const approvers = organisationDetails.approvers;
+  if (approvers !== undefined && approvers.length > 0) {
+    const approverId = approvers[0];
+    const requestservices = await getNonPagedRequestsTypesForApprover(approverId.user_id, reqId);
+    if (requestservices !== undefined) {
+      let inRequest = requestservices.requests.filter(
+        (x) => x.service_id === selectServiceID && x.org_id === orgId && x.user_id === uid,
+      );
+      if (inRequest !== undefined && inRequest.length > 0) {
+        inRequest = inRequest.sort(function (o) {
+          return new Date(o.date);
+        });
+        return inRequest[0].created_date;
+      } else return undefined;
+    }
+  }
+};
 ///method to get request
 const checkForActiveRequests = async (
   organisationDetails,
@@ -38,7 +55,7 @@ const checkForActiveRequests = async (
     const requestservices = await getNonPagedRequestsTypesForApprover(approverId.user_id, reqId);
     if (requestservices !== undefined) {
       if (requestType !== 'subservice') {
-        const inRequest = requestservices.requests.filter(
+        let inRequest = requestservices.requests.filter(
           (x) => x.service_id === selectServiceID && x.org_id === orgId && x.user_id === uid,
         );
         if (inRequest !== undefined && inRequest.length > 0) {
@@ -107,4 +124,10 @@ const createServiceRequest = async (reqId, userId, serviceId, rolesIds, organisa
   });
 };
 
-module.exports = { getUserServiceRequestStatus, updateServiceRequest, createServiceRequest, checkForActiveRequests };
+module.exports = {
+  getUserServiceRequestStatus,
+  updateServiceRequest,
+  createServiceRequest,
+  checkForActiveRequests,
+  getLastRequestDate,
+};

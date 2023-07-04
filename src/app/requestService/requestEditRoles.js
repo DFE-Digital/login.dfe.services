@@ -5,7 +5,7 @@ const { getApplication } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
-const { checkForActiveRequests } = require('./utils');
+const { checkForActiveRequests, getLastRequestDate } = require('./utils');
 const renderRequestEditRoles = (res, model) => {
   res.render('requestService/views/requestEditRoles', { ...model });
 };
@@ -106,13 +106,23 @@ const post = async (req, res) => {
           return renderRequestEditRoles(res, model);
         } else {
           res.csrfToken = req.csrfToken();
+          //get date for the last request here
+          let lastRequestDate = await getLastRequestDate(
+            orgdetails,
+            selectServiceID,
+            req.params.orgId,
+            req.session.user.uid,
+            req.id,
+            'subservice',
+            selectedRoles,
+          );
           const place = config.hostingEnvironment.helpUrl;
           res.flash('title', `Important`);
           res.flash('heading', `Sub-service already requested: ${model.service.name}`);
           res.flash(
             'message',
             `Your request has been sent to Approvers at ${model.organisationDetails.organisation.name} on ${new Date(
-              isRequests,
+              lastRequestDate,
             ).toLocaleDateString(
               'EN-GB',
             )}. <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
