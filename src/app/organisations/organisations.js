@@ -52,6 +52,7 @@ const getAndMapPendingRequests = async (account, correlationId) => {
   return pendingUserRequests.map((org) => ({
     id: org.org_id,
     name: org.org_name,
+    LegalName: org.LegalName,
     urn: org.urn,
     uid: org.uid,
     upin: org.upin,
