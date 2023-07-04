@@ -77,6 +77,7 @@ const post = async (req, res) => {
     selectedRoles = [req.body.role];
   }
   ///add the test method here
+  const model = await getViewModel(req);
   let selectServiceID = req.params.sid;
   let orgdetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   let isRequests = await checkForActiveRequests(
@@ -87,11 +88,11 @@ const post = async (req, res) => {
     req.id,
     'subservice',
     selectedRoles,
+    model.serviceRoles.length,
   );
   if (isRequests !== undefined) {
     if (Array.isArray(isRequests)) {
       if (isRequests.length > 0) {
-        const model = await getViewModel(req);
         let roles = {};
         model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
         let displayroles = [];

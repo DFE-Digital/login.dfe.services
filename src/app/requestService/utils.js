@@ -48,6 +48,7 @@ const checkForActiveRequests = async (
   reqId,
   requestType,
   roleIds,
+  totalServiceCount,
 ) => {
   const approvers = organisationDetails.approvers;
   if (approvers !== undefined && approvers.length > 0) {
@@ -76,18 +77,21 @@ const checkForActiveRequests = async (
                 checkList.push(numString);
               });
             } else {
-              checkList.push(roId);
+              checkList.push(item.role_ids);
             }
           });
-          checkList.forEach((chid) => {
-            roleIds.forEach((rid) => {
-              if (chid === rid) {
-                AlreadyRequestedRoles.push(chid);
-              }
+          checkList = checkList.filter((value, index, array) => array.indexOf(value) === index);
+          if (checkList.length !== totalServiceCount) {
+            checkList.forEach((chid) => {
+              roleIds.forEach((rid) => {
+                if (chid === rid) {
+                  AlreadyRequestedRoles.push(chid);
+                }
+              });
             });
-          });
-          //return unique items
-          return AlreadyRequestedRoles.filter((value, index, array) => array.indexOf(value) === index);
+            //return unique items
+            return AlreadyRequestedRoles.filter((value, index, array) => array.indexOf(value) === index);
+          } else return checkList;
         }
       }
     }
