@@ -101,9 +101,11 @@ const post = async (req, res) => {
             let name = model.serviceRoles.filter((x) => x.id === item);
             displayroles.push(name[0].name);
           });
-          model.validationMessages.roles = `you have selected ${displayroles.map(
+          model.validationMessages.roles = `you have selected [${displayroles.map(
             (x) => x,
-          )} which are currently awaiting approval. Deselect any Sub service which have already been reqeust to continue with your request`;
+          )}] which are currently awaiting approval. Deselect [${displayroles.map(
+            (x) => x,
+          )}] which have already been requested to continue with your request`;
           return renderRequestEditRoles(res, model);
         } else {
           res.csrfToken = req.csrfToken();
