@@ -124,11 +124,11 @@ const post = async (req, res) => {
     )}) for organisation (orgId: ${organisationDetails.organisation.id}) - requestId (reqId: ${subServiceReqId})`,
   });
 
-  res.flash('title', `Success`);
-  res.flash('heading', `Sub-service requested: ${service.name}`);
+  res.flash('title', 'Success');
+  res.flash('heading', 'Sub-service changes requested');
   res.flash(
     'message',
-    `Your request has been sent to all approvers at <b>${orgName}</b>. Requests should be approved or rejected within 5 days of being raised.`,
+    `Your request to change sub-service access has been sent to all approvers at ${orgName}.<br>Your request will be approved or rejected within 5 days.`,
   );
 
   return res.redirect('/my-services');

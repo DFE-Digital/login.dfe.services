@@ -193,10 +193,10 @@ describe('When confirming and submiting a sub-service request', () => {
     expect(res.flash.mock.calls[0][0]).toBe('title');
     expect(res.flash.mock.calls[0][1]).toBe('Success');
     expect(res.flash.mock.calls[1][0]).toBe('heading');
-    expect(res.flash.mock.calls[1][1]).toBe('Sub-service requested: service name');
+    expect(res.flash.mock.calls[1][1]).toBe('Sub-service changes requested');
     expect(res.flash.mock.calls[2][0]).toBe('message');
     expect(res.flash.mock.calls[2][1]).toBe(
-      'Your request has been sent to all approvers at <b>organisationName</b>. Requests should be approved or rejected within 5 days of being raised.',
+      'Your request to change sub-service access has been sent to all approvers at organisationName.<br>Your request will be approved or rejected within 5 days.',
     );
   });
 
