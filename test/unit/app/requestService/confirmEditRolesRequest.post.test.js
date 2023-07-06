@@ -5,6 +5,7 @@ const { createServiceRequest } = require('../../../../src/app/requestService/uti
 const { v4: uuid } = require('uuid');
 const notificationClient = require('login.dfe.notifications.client');
 const logger = require('../../../../src/infrastructure/logger');
+const { checkForActiveRequests } = require('../../../../src/app/requestService/utils');
 
 jest.mock('uuid');
 jest.mock('login.dfe.dao', () => require('../../../utils/jestMocks').mockDao());
@@ -17,6 +18,7 @@ jest.mock('../../../../src/infrastructure/access', () => {
 jest.mock('../../../../src/app/requestService/utils', () => {
   return {
     createServiceRequest: jest.fn(),
+    checkForActiveRequests: jest.fn(),
   };
 });
 
@@ -99,7 +101,8 @@ describe('When confirming and submiting a sub-service request', () => {
       name: 'service name',
       status: 'active',
     });
-
+    checkForActiveRequests.mockReset();
+    checkForActiveRequests.mockReturnValue(undefined);
     listRolesOfService.mockReset();
     listRolesOfService.mockReturnValue([
       {
@@ -122,6 +125,15 @@ describe('When confirming and submiting a sub-service request', () => {
     uuid.mockImplementation(() => {
       return 'new-uuid';
     });
+  });
+
+  it('then it should get the service already requested', async () => {
+    checkForActiveRequests.mockReset();
+    checkForActiveRequests.mockReturnValue([new Date()]);
+    await postConfirmEditRolesRequest(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe('/my-services');
   });
 
   it('then it should get the selected service details', async () => {

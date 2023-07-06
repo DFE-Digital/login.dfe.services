@@ -5,7 +5,7 @@ const { getApplication } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
-
+const { checkForActiveRequests, getLastRequestDate } = require('./utils');
 const renderRequestEditRoles = (res, model) => {
   res.render('requestService/views/requestEditRoles', { ...model });
 };
@@ -76,7 +76,63 @@ const post = async (req, res) => {
   if (!(selectedRoles instanceof Array)) {
     selectedRoles = [req.body.role];
   }
-
+  ///add the test method here
+  const model = await getViewModel(req);
+  let selectServiceID = req.params.sid;
+  let orgdetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
+  let isRequests = await checkForActiveRequests(
+    orgdetails,
+    selectServiceID,
+    req.params.orgId,
+    req.session.user.uid,
+    req.id,
+    'subservice',
+    selectedRoles,
+    model.serviceRoles.length,
+  );
+  if (isRequests !== undefined) {
+    if (Array.isArray(isRequests)) {
+      if (isRequests.length > 0) {
+        let roles = {};
+        model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
+        let displayroles = [];
+        if (model.serviceRoles.length !== isRequests.length) {
+          isRequests.forEach((item) => {
+            let name = model.serviceRoles.filter((x) => x.id === item);
+            displayroles.push(name[0].name);
+          });
+          model.validationMessages.roles = `you have selected ${displayroles.map(
+            (x) => x,
+          )} which are currently awaiting approval. Deselect any Sub service which have already been reqeust to continue with your request`;
+          return renderRequestEditRoles(res, model);
+        } else {
+          res.csrfToken = req.csrfToken();
+          //get date for the last request here
+          let lastRequestDate = await getLastRequestDate(
+            orgdetails,
+            selectServiceID,
+            req.params.orgId,
+            req.session.user.uid,
+            req.id,
+            'subservice',
+            selectedRoles,
+          );
+          const place = config.hostingEnvironment.helpUrl;
+          res.flash('title', `Important`);
+          res.flash('heading', `Sub-service already requested: ${model.service.name}`);
+          res.flash(
+            'message',
+            `Your request has been sent to Approvers at ${model.organisationDetails.organisation.name} on ${new Date(
+              lastRequestDate,
+            ).toLocaleDateString(
+              'EN-GB',
+            )}. <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+          );
+          return res.redirect('/my-services');
+        }
+      }
+    }
+  }
   const policyValidationResult = await policyEngine.validate(
     req.params.uid,
     req.params.orgId,

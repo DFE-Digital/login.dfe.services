@@ -3,6 +3,7 @@ const logger = require('../../../src/infrastructure/logger');
 const { getSingleServiceForUser } = require('../../../src/app/users/utils');
 const { createServiceRequest } = require('./utils');
 const { listRolesOfService } = require('./../../infrastructure/access');
+const { checkForActiveRequests } = require('./utils');
 const config = require('../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
@@ -80,7 +81,6 @@ const post = async (req, res) => {
   const senderLastName = req.session.user.lastName;
   const senderEmail = req.user.email;
   const roleNames = selectedRoles.rotails.map((i) => i.name);
-
   const notificationClient = new NotificationClient({
     connectionString: config.notifications.connectionString,
   });
