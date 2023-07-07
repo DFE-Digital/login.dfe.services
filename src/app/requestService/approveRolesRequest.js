@@ -190,10 +190,10 @@ const post = async (req, res) => {
   });
 
   res.flash('title', 'Success');
-  res.flash('heading', 'Sub-service request approved');
+  res.flash('heading', 'Sub-service changes approved');
   res.flash(
     'message',
-    'The user who raised the request will receive an email to tell them their sub-service access request was approved.',
+    `${endUserDetails.firstName} ${endUserDetails.lastName} will receive an email to tell them their sub-service access has changed.`,
   );
 
   res.redirect('/my-services');

@@ -113,7 +113,6 @@ const getAndMapServiceRequest = async (serviceReqId) => {
       userServiceRequest,
     );
   }
-  console.log(mappedServiceRequest);
   return mappedServiceRequest;
 };
 

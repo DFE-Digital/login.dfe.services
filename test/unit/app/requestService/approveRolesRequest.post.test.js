@@ -267,10 +267,10 @@ describe('When approving a sub service request', () => {
     expect(res.flash.mock.calls[0][0]).toBe('title');
     expect(res.flash.mock.calls[0][1]).toBe('Success');
     expect(res.flash.mock.calls[1][0]).toBe('heading');
-    expect(res.flash.mock.calls[1][1]).toBe('Sub-service request approved');
+    expect(res.flash.mock.calls[1][1]).toBe('Sub-service changes approved');
     expect(res.flash.mock.calls[2][0]).toBe('message');
     expect(res.flash.mock.calls[2][1]).toBe(
-      'The user who raised the request will receive an email to tell them their sub-service access request was approved.',
+      'John Doe will receive an email to tell them their sub-service access has changed.',
     );
   });
 

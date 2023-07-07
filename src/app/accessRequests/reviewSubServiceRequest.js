@@ -173,10 +173,10 @@ const post = async (req, res) => {
         }) for end user (endUserId: ${model.viewModel.user_id}) - requestId (reqId: ${req.params.rid})`,
       });
       res.flash('title', `Success`);
-      res.flash('heading', `Sub Service amended: ${model.viewModel.roles.map((i) => i.name)}`);
+      res.flash('heading', 'Sub-service changes approved');
       res.flash(
         'message',
-        `The user who raised the request will receive an email to tell them their sub-service access request has been approved.`,
+        `${model.viewModel.endUsersGivenName} ${model.viewModel.endUsersFamilyName} will receive an email to tell them their sub-service access has changed.`,
       );
       return res.redirect(`/access-requests/requests`);
     }

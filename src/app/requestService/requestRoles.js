@@ -4,7 +4,6 @@ const { getApplication } = require('../../infrastructure/applications');
 const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
-
 const renderAssociateRolesPage = (_req, res, model) => {
   res.render('requestService/views/requestRoles', model);
 };
@@ -90,8 +89,7 @@ const post = async (req, res) => {
     selectedRoles,
     req.id,
   );
-
-  // persist current selection in session
+   // persist current selection in session
   req.session.user.services[currentService].roles = selectedRoles;
 
   if (policyValidationResult.length > 0) {

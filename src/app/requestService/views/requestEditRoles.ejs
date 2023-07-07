@@ -61,7 +61,13 @@
                                     <% } %>
                                 </tbody>
                             </table>
-
+                            <div class="govuk-warning-text govuk-!-margin-bottom-0">
+                                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                                <p class="govuk-warning-text__text govuk-!-font-weight-regular">
+                                  <span class="govuk-warning-text__assistive">Warning</span>
+                                  If you deselect a role that you currently have access to and this request is approved, you will lose access to that sub-service.
+                                </p>
+                              </div>
                         <% } else { %>
                                 <p class="govuk-body">
                                     There are no sub-services available.
@@ -71,7 +77,7 @@
 
                     </fieldset>
                 </div>
-                
+              
                 <div class="govuk-button-group">
                     <% if (locals.serviceRoles.length > 0) { %>
                     <button type="submit" class="govuk-button">Continue</button>

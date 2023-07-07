@@ -133,6 +133,7 @@ const post = async (req, res) => {
     req.params.orgId,
     req.session.user.uid,
     req.id,
+    'service',
   );
   if (isRequests !== undefined) {
     const allServices = await checkCacheForAllServices(req.id);
@@ -148,7 +149,7 @@ const post = async (req, res) => {
           isRequests,
         ).toLocaleDateString(
           'EN-GB',
-        )} <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+        )}. <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
       );
     } else {
       res.csrfToken = req.csrfToken();
