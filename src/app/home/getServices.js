@@ -245,7 +245,7 @@ const getServices = async (req, res) => {
       new Date(x.accessGrantedOn).getDate() <= nowDate
     );
   });
-  if (checklastestaddition.length > 0 && res.locals.flash === undefined) {
+  if (checklastestaddition.length > 0 && (res.locals.flash === undefined || res.locals.flash !== '')) {
     res.locals.flash.title = [`Success`];
     res.locals.flash.heading = `New service added: ${checklastestaddition[0].name}`;
     res.locals.flash.message = `Select the service from the list below to access its functions and features.`;
