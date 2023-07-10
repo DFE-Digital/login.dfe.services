@@ -32,7 +32,7 @@
 
                         <% if (locals.serviceRoles.length > 0) { %>
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--xs">
-                                <p class="govuk-body">Some services ask you to select a sub-service, role, or form to better define how you will use them.
+                                <p class="govuk-body">Select 1 role. Any changes you make to sub-service selection will change access for <%= locals.user.firstName %> <%= locals.user.lastName %>
                                     <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceRoleMessage) { %>
                                         <%= locals.serviceDetails.relyingParty.params.serviceRoleMessage %>
                                     <% } %>

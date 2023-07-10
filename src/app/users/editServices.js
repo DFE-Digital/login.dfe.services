@@ -1,19 +1,21 @@
 'use strict';
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { isUserManagement, getSingleServiceForUser, isEditService } = require('./utils');
+const { isUserManagement, getSingleServiceForUser, isEditService, getUserDetails } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
-const renderEditServicePage = (req, res, model) => {
+const renderEditServicePage = async (req, res, model) => {
+  const userDetails = await getUserDetails(req);
   const isManage = isUserManagement(req);
   res.render(
     `users/views/editServices`,
     { 
       ...model, 
-      currentPage: isManage? "users" : "services"
+      currentPage: isManage? "users" : "services", 
+      user: userDetails
     }
   );
 };
