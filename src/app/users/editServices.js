@@ -10,6 +10,7 @@ const policyEngine = new PolicyEngine(config);
 const renderEditServicePage = async (req, res, model) => {
   const userDetails = await getUserDetails(req);
   const isManage = isUserManagement(req);
+
   res.render(
     `users/views/editServices`,
     { 
@@ -46,7 +47,7 @@ const buildCancelLink= (req) =>{
 };
 
 const getViewModel = async (req) => {
-  const isManage = isUserManagement(req);
+  const isManage = isUserManagement(req); // this variable is not being used!
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
