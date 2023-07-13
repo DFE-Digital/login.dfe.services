@@ -3,6 +3,7 @@ const { checkCacheForAllServices } = require('../../../../src/infrastructure/hel
 const { getUserDetails } = require('../../../../src/app/users/utils');
 const { listRolesOfService, updateUserService } = require('../../../../src/infrastructure/access');
 const { isServiceEmailNotificationAllowed } = require('../../../../src/infrastructure/applications');
+const { createSubServiceAddedBanners } = require('../../../../src/app/home/userBannersHandlers');
 const { getUserServiceRequestStatus, updateServiceRequest } = require('../../../../src/app/requestService/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const notificationClient = require('login.dfe.notifications.client');
@@ -17,6 +18,9 @@ jest.mock('../../../../src/infrastructure/access', () => {
     updateUserService: jest.fn(),
     listRolesOfService: jest.fn(),
   };
+});
+jest.mock('../../../../src/app/home/userBannersHandlers', () => {
+  return { createSubServiceAddedBanners: jest.fn() };
 });
 jest.mock('../../../../src/infrastructure/applications', () => {
   return { isServiceEmailNotificationAllowed: jest.fn() };
@@ -258,6 +262,15 @@ describe('When approving a sub service request', () => {
       userId: 'approver1',
       userEmail: 'approver.one@unit.test',
     });
+  });
+
+  it('then it should create "Sub-service added" banner', async () => {
+    await postApproveRolesRequest(req, res);
+
+    expect(createSubServiceAddedBanners.mock.calls).toHaveLength(1);
+    expect(createSubServiceAddedBanners.mock.calls[0][0]).toBe('endUser1');
+    expect(createSubServiceAddedBanners.mock.calls[0][1]).toBe('service name');
+    expect(createSubServiceAddedBanners.mock.calls[0][2]).toStrictEqual(['role_name']);
   });
 
   it('then a flash message is shown to the user', async () => {

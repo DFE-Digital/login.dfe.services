@@ -15,6 +15,7 @@ const {
   getPendingRequestsAssociatedWithUser,
   getLatestRequestAssociatedWithUser,
 } = require('./../../infrastructure/organisations');
+const { fetchSubServiceAddedBanners } = require('../home/userBannersHandlers');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 const { getApproverOrgsFromReq, isUserEndUser } = require('../users/utils');
@@ -223,6 +224,9 @@ const getServices = async (req, res) => {
   //-3: "Unacknowledged" banner for changed password
   const passwordChangedBanner = await directories.fetchUserBanners(req.user.id, -3);
 
+  // 4: "Sub-service added" banners fetch
+  const subServiceAddedBanners = req.user.id ? await fetchSubServiceAddedBanners(req.user.id) : null;
+
   logger.audit({
     type: 'Sign-in',
     subType: 'services',
@@ -268,6 +272,7 @@ const getServices = async (req, res) => {
     showJobTitleBanner,
     pireanServices,
     userPireanServices,
+    subServiceAddedBanners,
   });
 };
 

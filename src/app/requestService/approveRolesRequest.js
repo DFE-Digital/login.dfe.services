@@ -5,6 +5,7 @@ const { actions } = require('../constans/actions');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { getUserServiceRequestStatus, updateServiceRequest } = require('./utils');
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
+const { createSubServiceAddedBanners } = require('../home/userBannersHandlers');
 
 const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
@@ -162,6 +163,8 @@ const post = async (req, res) => {
   }
 
   await updateUserService(endUserId, serviceId, orgId, roles, reqId);
+
+  await createSubServiceAddedBanners(endUserId, service.name, rolesName);
 
   if (isEmailAllowed) {
     const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });

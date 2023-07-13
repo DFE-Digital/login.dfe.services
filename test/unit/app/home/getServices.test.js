@@ -22,6 +22,10 @@ jest.mock('./../../../../src/infrastructure/logger', () => ({
   audit: jest.fn()
 }));
 
+jest.mock('../../../../src/app/home/userBannersHandlers', () => {
+  return { fetchSubServiceAddedBanners: jest.fn() };
+});
+
 jest.mock('login.dfe.dao', () => {
   return {
     directories: {
@@ -39,6 +43,7 @@ const Account = require('./../../../../src/infrastructure/account');
 const { getServicesForUser } = require('./../../../../src/infrastructure/access');
 const { getApplication } = require('./../../../../src/infrastructure/applications');
 const getServices = require('./../../../../src/app/home/getServices');
+const { fetchSubServiceAddedBanners } = require('../../../../src/app/home/userBannersHandlers');
 
 const res = mockResponse();
 const userAccess = [{ serviceId: 'service1' }];
@@ -56,7 +61,7 @@ describe('when displaying the users services', () => {
   beforeEach(() => {
     req = mockRequest({
       user: {
-        sub: 'user1',
+        id: 'user1',
       },
     });
 
@@ -140,6 +145,20 @@ describe('when displaying the users services', () => {
     await getServices(req, res);
 
     expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe('http://service.one/login');
+  });
+
+  it('then it should fetch and display "Sub-service added" banners if there is a user in session and the banners exist', async () => {
+    await getServices(req, res);
+
+    expect(fetchSubServiceAddedBanners.mock.calls).toHaveLength(1);
+    expect(fetchSubServiceAddedBanners.mock.calls[0][0]).toBe('user1');
+  });
+
+  it('then it should not fetch and display "Sub-service added" banners if there is no user in session', async () => {
+    req.user.id = undefined;
+    await getServices(req, res);
+
+    expect(fetchSubServiceAddedBanners.mock.calls).toHaveLength(0);
   });
 
   it('then it should set serviceUrl to # if no service_home or redirects available', async () => {
