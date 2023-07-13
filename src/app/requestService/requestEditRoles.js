@@ -127,7 +127,7 @@ const post = async (req, res) => {
                 })
                 .join('')}</ul>`;
             } else {
-              model.validationMessages.roles = `You have selected a sub-service that is awaiting approval.</br>Deselect ${displayroles.map(
+              model.validationMessages.roles = `You have selected a sub-service that is currently awaiting approval.</br>Deselect ${displayroles.map(
                 (x) => x,
               )} which has already been requested.`;
             }
