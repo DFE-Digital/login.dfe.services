@@ -106,6 +106,7 @@ describe('when displaying the edit service view', () => {
     });
 
     getEditService = require('./../../../../src/app/users/editServices').get;
+    
   });
 
   it('then it should get the selected user service', async () => {
@@ -120,7 +121,6 @@ describe('when displaying the edit service view', () => {
 
   it('then it should return the edit service view', async () => {
     await getEditService(req, res);
-    console.log(res.mock);
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][0]).toBe('users/views/editServices');
   });

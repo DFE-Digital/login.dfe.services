@@ -156,7 +156,7 @@ const post = async (req, res) => {
     let roles = {};
     model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
-    renderEditServicePage(req, res, model);
+    await renderEditServicePage(req, res, model);
   }
  
   saveRoleInSession(req, selectedRoles);
