@@ -4,18 +4,35 @@ jest.mock('./../../../../src/app/users/utils');
 jest.mock('./../../../../src/infrastructure/applications', () => {
   return {
     getApplication: jest.fn(),
+    getService: jest.fn(),
   };
 });
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const PolicyEngine = require('login.dfe.policy-engine');
-const { getSingleServiceForUser } = require('./../../../../src/app/users/utils');
-const { getApplication } = require('./../../../../src/infrastructure/applications');
+const { getSingleServiceForUser, getUserDetails } = require('./../../../../src/app/users/utils');
+const { getApplication, getService } = require('./../../../../src/infrastructure/applications');
 const application = {
   name: 'Service One',
   relyingParty: {
     service_home: 'http://service.one/login',
     redirect_uris: ['http://service.one/login/cb'],
+  },
+};
+const user = {
+  email: 'test@test.com',
+  firstName: 'test',
+  lastName: 'name',
+};
+const service = {
+  name: 'Service One',
+  relyingParty: {
+    service_home: 'http://service.one/login',
+    redirect_uris: ['http://service.one/login/cb'],
+    params: {
+      maximumRolesAllowed: null,
+      minimumRolesRequired: null,
+    },
   },
 };
 const policyEngine = {
@@ -71,6 +88,8 @@ describe('when displaying the edit service view', () => {
       },
     ];
     getApplication.mockReset().mockReturnValue(application);
+    getService.mockReset().mockReturnValue(service);
+    getUserDetails.mockReset().mockReturnValue(user);
     res = mockResponse();
 
     policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
@@ -101,7 +120,7 @@ describe('when displaying the edit service view', () => {
 
   it('then it should return the edit service view', async () => {
     await getEditService(req, res);
-
+    console.log(res.mock);
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][0]).toBe('users/views/editServices');
   });
