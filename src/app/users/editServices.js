@@ -130,7 +130,7 @@ const get = async (req, res) => {
     
   }
   saveRoleInSession(req, model.service.roles);
-  renderEditServicePage(req, res, model);
+  await renderEditServicePage(req, res, model);
 };
 
 const post = async (req, res) => {
