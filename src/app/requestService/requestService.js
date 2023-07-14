@@ -133,6 +133,7 @@ const post = async (req, res) => {
     req.params.orgId,
     req.session.user.uid,
     req.id,
+    'service',
   );
   if (isRequests !== undefined) {
     const allServices = await checkCacheForAllServices(req.id);

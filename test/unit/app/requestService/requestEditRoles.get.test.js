@@ -6,7 +6,7 @@ jest.mock('./../../../../src/infrastructure/applications', () => {
     getApplication: jest.fn(),
   };
 });
-
+jest.mock('login.dfe.dao', () => require('../../../utils/jestMocks').mockDao());
 const { mockRequest, mockResponse } = require('../../../utils/jestMocks');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getSingleServiceForUser } = require('../../../../src/app/users/utils');
@@ -21,7 +21,13 @@ const application = {
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
 };
-
+jest.mock('../../../../src/app/requestService/utils', () => {
+  return {
+    createServiceRequest: jest.fn(),
+    checkForActiveRequests: jest.fn(),
+    getLastRequestDate: jest.fn(),
+  };
+});
 describe('when displaying the request edit service view', () => {
   let req;
   let res;
