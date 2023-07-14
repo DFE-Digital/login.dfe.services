@@ -7,6 +7,7 @@ const {
   generateFlashMessages,
   getRoleAndServiceNames,
 } = require('./utils');
+const { createSubServiceAddedBanners } = require('../home/userBannersHandlers');
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
 const { actions } = require('../constans/actions');
 const logger = require('./../../infrastructure/logger');
@@ -134,6 +135,12 @@ const post = async (req, res) => {
       req.params.rid,
     );
     if (request.success) {
+      const rolesName = model.viewModel.roles.map((i) => i.name);
+      const serviceName = model.viewModel.Service_name;
+      const endUserId = model.viewModel.user_id;
+
+      await createSubServiceAddedBanners(endUserId, serviceName, rolesName);
+
       const isEmailAllowed = await isServiceEmailNotificationAllowed();
       if (isEmailAllowed) {
         const notificationClient = new NotificationClient({
@@ -145,8 +152,8 @@ const post = async (req, res) => {
           model.viewModel.endUsersGivenName,
           model.viewModel.endUsersFamilyName,
           model.viewModel.org_name,
-          model.viewModel.Service_name,
-          model.viewModel.roles.map((i) => i.name),
+          serviceName,
+          rolesName,
         );
       }
 

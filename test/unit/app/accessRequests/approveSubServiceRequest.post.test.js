@@ -5,6 +5,7 @@ const {
   getNewRoleDetails,
 } = require('../../../../src/app/accessRequests/utils');
 const { updateServiceRequest } = require('../../../../src/app/requestService/utils');
+const { createSubServiceAddedBanners } = require('../../../../src/app/home/userBannersHandlers');
 const { post } = require('../../../../src/app/accessRequests/reviewSubServiceRequest');
 const NotificationClient = require('login.dfe.notifications.client');
 const sendAccessRequest = jest.fn();
@@ -19,7 +20,9 @@ jest.mock('./../../../../src/infrastructure/account', () => ({
   fromContext: jest.fn(),
   getById: jest.fn(),
 }));
-
+jest.mock('../../../../src/app/home/userBannersHandlers', () => {
+  return { createSubServiceAddedBanners: jest.fn() };
+});
 jest.mock('../../../../src/app/accessRequests/utils', () => {
   return {
     getAndMapServiceRequest: jest.fn(),
@@ -49,31 +52,31 @@ const listRoles = [
   {
     code: 'ASP_School_Anon',
     id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
-    name: 'ASP School Anon',
+    name: 'ASP School Anon 1',
     numericId: '124',
   },
   {
     code: 'ASP_School_Anon',
     id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
-    name: 'ASP School Anon',
+    name: 'ASP School Anon 2',
     numericId: '124',
   },
   {
     code: 'ASP_School_Anon',
     id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
-    name: 'ASP School Anon',
+    name: 'ASP School Anon 3',
     numericId: '124',
   },
   {
     code: 'ASP_School_Anon',
     id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
-    name: 'ASP School Anon',
+    name: 'ASP School Anon 4',
     numericId: '124',
   },
   {
     code: 'ASP_School_Anon',
     id: '01379D9F-A6DF-4810-A6C4-5468CBD41E42',
-    name: 'ASP School Anon',
+    name: 'ASP School Anon 5',
     numericId: '124',
   },
 ];
@@ -95,7 +98,7 @@ const viewModel = {
   validationMessages: { selectedResponse: 'Approve or Reject must be selected' },
   currentPage: 'requests',
   Role_name: 'role  one',
-  service_name: 'service one',
+  Service_name: 'service one',
   roles: listRoles,
 };
 
@@ -230,6 +233,21 @@ describe('When reviewing a sub-service request for approving', () => {
     expect(res.flash.mock.calls[2][1]).toBe(
       `${viewModel.endUsersGivenName} ${viewModel.endUsersFamilyName} will receive an email to tell them their sub-service access has changed.`,
     );
+  });
+
+  it('then it should create "Sub-service added" banner', async () => {
+    await post(req, res);
+
+    expect(createSubServiceAddedBanners.mock.calls).toHaveLength(1);
+    expect(createSubServiceAddedBanners.mock.calls[0][0]).toBe('endUser1');
+    expect(createSubServiceAddedBanners.mock.calls[0][1]).toBe('service one');
+    expect(createSubServiceAddedBanners.mock.calls[0][2]).toStrictEqual([
+      'ASP School Anon 1',
+      'ASP School Anon 2',
+      'ASP School Anon 3',
+      'ASP School Anon 4',
+      'ASP School Anon 5',
+    ]);
   });
 
   it('then it should render an error if the selectedResponse is missing', async () => {

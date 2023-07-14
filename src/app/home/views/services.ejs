@@ -109,7 +109,7 @@
                                         </h2>
                                     </div>
                                     <div class="govuk-grid-column-one-third">
-                                        <span class="close-button pull-right" id="close-missing-jobtitle">x</span>
+                                        <span class="close-button pull-right" id="close-requests-awaiting">x</span>
                                     </div>
                                 </div>
                                 <div class="govuk-notification-banner__content" id="notification-content">
@@ -176,7 +176,41 @@
                                 </div>
                             </div>
                         <% } %>
-    
+
+                        <% if (locals.subServiceAddedBanners && locals.subServiceAddedBanners.length) {
+                            const singleSubServiceAdded = (subServiceAddedBanner) => subServiceAddedBanner?.subServiceName?.length === 1;
+                          
+                            locals.subServiceAddedBanners.forEach((subServiceAddedBanner) => { %>
+                              <div id="notification-wrapper-sub-service-added" class="govuk-notification-banner" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                                <div class="govuk-notification-banner__header govuk-grid-row">
+                                  <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">Important</h2>
+                                  </div>
+                                  <div class="govuk-grid-column-one-third">
+                                    <span class="close-button pull-right close-sub-service-added-banner" id="<%= subServiceAddedBanner.id %>">x</span>
+                                  </div>
+                                </div>
+                                <div class="govuk-notification-banner__content" id="notification-content">
+                                  <h3 class="govuk-notification-banner__heading">
+                                    <% if (singleSubServiceAdded(subServiceAddedBanner)) { %>
+                                      Sub-service added: <%= subServiceAddedBanner.subServiceName[0] %>
+                                    <% } else { %>
+                                      Multiple sub-services added
+                                    <% } %>
+                                  </h3>
+                                  <p class="govuk-body">
+                                    Select <%= subServiceAddedBanner.serviceName %> from the list below to access
+                                    <% if (singleSubServiceAdded(subServiceAddedBanner)) { %>
+                                      the sub-service functions and features.
+                                    <% } else { %>
+                                      each sub-service's functions and features.
+                                    <% } %>
+                                  </p>
+                                </div>
+                              </div>
+                            <% });
+                          } %>
+
                         <%- include reviewUsers.ejs %>
                     </div>
                     <!-- Show Task List version if it is enabled in config and user has no services -->
@@ -424,7 +458,7 @@
                 item.remove();
             });
         })
-        $('#close-password-change, .servicesv2, .govuk-link-bold, .govuk-footer__link, .govuk-header__link').on('click', () => {
+        $('#close-password-change').on('click', () => {
             const item = $('#notification-wrapper-password-change')
             if(item.length) {
                 $.ajax(`/close-password-change`).done(() => {
@@ -432,5 +466,14 @@
                 });
             }
         })
+        $('.close-button.close-sub-service-added-banner').on('click', function() {
+        const itemId = $(this).attr('id');
+        if (itemId) {
+        $.ajax(`/close-sub-service-added/${itemId}`).done(() => {
+        $(this).remove();
+    });
+  }
+});
+
     </script>
     
