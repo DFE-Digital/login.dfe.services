@@ -5,7 +5,8 @@ const { getApplication } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
-const { checkForActiveRequests, getLastRequestDate } = require('./utils');
+const { checkForActiveRequests } = require('./utils');
+const { azureFunctionsTypes } = require('applicationinsights');
 const renderRequestEditRoles = (res, model) => {
   res.render('requestService/views/requestEditRoles', { ...model });
 };
@@ -43,6 +44,10 @@ const getViewModel = async (req) => {
     serviceRoles,
     serviceDetails: application,
     userService,
+    maxAllowedMessage:
+      application.relyingParty && application.relyingParty.params && application.relyingParty.params.maximumRolesAllowed
+        ? application.relyingParty.params.maximumRolesAllowed
+        : undefined,
     roleMessage:
       application.relyingParty && application.relyingParty.params && application.relyingParty.params.serviceRoleMessage
         ? application.relyingParty.params.serviceRoleMessage
@@ -76,65 +81,6 @@ const post = async (req, res) => {
   if (!(selectedRoles instanceof Array)) {
     selectedRoles = [req.body.role];
   }
-  ///add the test method here
-  const model = await getViewModel(req);
-  let selectServiceID = req.params.sid;
-  let orgdetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
-  let isRequests = await checkForActiveRequests(
-    orgdetails,
-    selectServiceID,
-    req.params.orgId,
-    req.session.user.uid,
-    req.id,
-    'subservice',
-    selectedRoles,
-    model.serviceRoles.length,
-  );
-  if (isRequests !== undefined) {
-    if (Array.isArray(isRequests)) {
-      if (isRequests.length > 0) {
-        let roles = {};
-        model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
-        let displayroles = [];
-        if (model.serviceRoles.length !== isRequests.length) {
-          isRequests.forEach((item) => {
-            let name = model.serviceRoles.filter((x) => x.id === item);
-            displayroles.push(name[0].name);
-          });
-          model.validationMessages.roles = `You have selected [${displayroles.map(
-            (x) => x,
-          )}] which are currently awaiting approval. Deselect [${displayroles.map(
-            (x) => x,
-          )}] which have already been requested to continue with your request`;
-          return renderRequestEditRoles(res, model);
-        } else {
-          res.csrfToken = req.csrfToken();
-          //get date for the last request here
-          let lastRequestDate = await getLastRequestDate(
-            orgdetails,
-            selectServiceID,
-            req.params.orgId,
-            req.session.user.uid,
-            req.id,
-            'subservice',
-            selectedRoles,
-          );
-          const place = config.hostingEnvironment.helpUrl;
-          res.flash('title', `Important`);
-          res.flash('heading', `Sub-service already requested: ${model.service.name}`);
-          res.flash(
-            'message',
-            `Your request has been sent to Approvers at ${model.organisationDetails.organisation.name} on ${new Date(
-              lastRequestDate,
-            ).toLocaleDateString(
-              'EN-GB',
-            )}. <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
-          );
-          return res.redirect('/my-services');
-        }
-      }
-    }
-  }
   const policyValidationResult = await policyEngine.validate(
     req.params.uid,
     req.params.orgId,
@@ -142,17 +88,87 @@ const post = async (req, res) => {
     selectedRoles,
     req.id,
   );
-
+  const model = await getViewModel(req);
   if (policyValidationResult.length > 0) {
-    const model = await getViewModel(req);
     let roles = {};
     model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
     return renderRequestEditRoles(res, model);
   } else {
-    saveRoleInSession(req, selectedRoles);
+    let selectServiceID = req.params.sid;
+    let orgdetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
+    let isRequests = await checkForActiveRequests(
+      orgdetails,
+      selectServiceID,
+      req.params.orgId,
+      req.session.user.uid,
+      req.id,
+      'subservice',
+      selectedRoles,
+      model.serviceRoles.length,
+    );
+    //need to check what services they currently
+    ///have and make sure they aren't re-requesting them
+    if (isRequests !== undefined) {
+      let displayroles = [];
+      if (Array.isArray(isRequests)) {
+        if (isRequests.length > 0) {
+          let roles = {};
+          model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
+          if (model.serviceRoles.length !== isRequests.length) {
+            isRequests.forEach((item) => {
+              let name = model.serviceRoles.filter((x) => x.id === item);
+              displayroles.push(name[0].name);
+            });
+            if (displayroles.length > 1) {
+              model.validationMessages.roles = `You have selected sub-services which are currently awaiting approval.</br> Deselect the following sub-services which have already been requested: <ul class="govuk-list--bullet">${displayroles
+                .map((x) => {
+                  return '<li>' + x + '</li>';
+                })
+                .join('')}</ul>`;
+            } else {
+              model.validationMessages.roles = `You have selected a sub-service that is currently awaiting approval.</br>Deselect ${displayroles.map(
+                (x) => x,
+              )} which has already been requested.`;
+            }
+            return renderRequestEditRoles(res, model);
+          } else {
+            res.csrfToken = req.csrfToken();
+            isRequests.forEach((item) => {
+              let name = model.serviceRoles.filter((x) => x.id === item);
+              displayroles.push(name[0].name);
+            });
+            const place = config.hostingEnvironment.helpUrl;
+            res.flash('title', `Important`);
+            res.flash('heading', `Sub-service already requested`);
+            if (displayroles.length > 0 && displayroles.length === 1) {
+              res.flash(
+                'message',
+                `You have already requested access to  ${displayroles.map((x) => {
+                  return x.toString();
+                })}.<br>You must wait for an approver at ${
+                  model.organisationDetails.organisation.name
+                } to respond to this request before you can send another request. <br><br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+              );
+            } else {
+              res.flash(
+                'message',
+                `You have already requested access to all sub-services you've selected for ${model.service.name}.<br>
+                 You must wait for an approver at ${model.organisationDetails.organisation.name} to respond to these requests before you can send another. <br><br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+              );
+            }
+            return res.redirect('/my-services');
+          }
+        } else {
+          saveRoleInSession(req, selectedRoles);
+          return res.redirect(`${req.params.sid}/confirm-edit-roles-request`);
+        }
+      }
+    } else {
+      saveRoleInSession(req, selectedRoles);
 
-    return res.redirect(`${req.params.sid}/confirm-edit-roles-request`);
+      return res.redirect(`${req.params.sid}/confirm-edit-roles-request`);
+    }
   }
 };
 
