@@ -25,7 +25,7 @@ RUN apt-get update \
 	&& apt-get install -y --no-install-recommends openssh-server \
 	&& echo "$SSH_PASSWD" | chpasswd 
 
-COPY Docker/sshd_config.sh /etc/ssh/sshd_config.sh
+COPY Docker/sshd_config /etc/ssh/sshd_config
 
 EXPOSE 8080 2222
 
