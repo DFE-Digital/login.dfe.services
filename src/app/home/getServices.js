@@ -15,22 +15,26 @@ const {
   getPendingRequestsAssociatedWithUser,
   getLatestRequestAssociatedWithUser,
 } = require('./../../infrastructure/organisations');
+const { fetchSubServiceAddedBanners } = require('../home/userBannersHandlers');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 const { getApproverOrgsFromReq, isUserEndUser } = require('../users/utils');
 const { actions } = require('../constans/actions');
+const flash = require('express-flash-2');
 
 const pireanServices = process.env.PIREAN_SERVICES ? process.env.PIREAN_SERVICES.split(',') : [];
-
+let last_login = undefined;
 const getAndMapServices = async (account, correlationId) => {
   const user = await Account.getById(account.id);
+  last_login = user.claims.last_login;
   const isMigrated = user && user.claims ? user.claims.isMigrated : false;
   const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
   let services = serviceAccess.map((sa) => ({
     id: sa.serviceId,
-    name: '',
+    name: sa.name,
     serviceUrl: '',
     roles: sa.roles,
+    accessGrantedOn: sa.accessGrantedOn,
   }));
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
@@ -189,6 +193,7 @@ const getServices = async (req, res) => {
     editServicesRedirect = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
     removeServicesRedirect = `/approvals/select-organisation-service?action=${actions.REMOVE_SERVICE}`;
   } else {
+    editServicesRedirect = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
     const organisations = await getOrganisationAndServiceForUser(account.id, req.id);
     const orgLength = organisations.length;
 
@@ -211,13 +216,16 @@ const getServices = async (req, res) => {
 
   isRequestServiceAllowed = !!requestServicesRedirect;
 
-  const { jobTitle } = await Account.getById(req.user.id)
+  const { jobTitle } = await Account.getById(req.user.id);
   //2: "job title" notification banner
-  const useJobTitleBanner = await directories.fetchUserBanners(req.user.id, 2)
-  const showJobTitleBanner = !useJobTitleBanner && !jobTitle
+  const useJobTitleBanner = await directories.fetchUserBanners(req.user.id, 2);
+  const showJobTitleBanner = !useJobTitleBanner && !jobTitle;
 
   //-3: "Unacknowledged" banner for changed password
-  const passwordChangedBanner = await directories.fetchUserBanners(req.user.id, -3)
+  const passwordChangedBanner = await directories.fetchUserBanners(req.user.id, -3);
+
+  // 4: "Sub-service added" banners fetch
+  const subServiceAddedBanners = req.user.id ? await fetchSubServiceAddedBanners(req.user.id) : null;
 
   logger.audit({
     type: 'Sign-in',
@@ -231,6 +239,21 @@ const getServices = async (req, res) => {
       client: config.loggerSettings.applicationName,
     },
   });
+
+  const userPireanServices = services.filter((value) => pireanServices.includes(value.name));
+  ///testing here for new services use sortby accessGranted to get the latest one
+  let nowDate = new Date().getDate();
+  const checklastestaddition = services.filter((x) => {
+    return (
+      new Date(x.accessGrantedOn).getDate() >= new Date(last_login).getDate() &&
+      new Date(x.accessGrantedOn).getDate() <= nowDate
+    );
+  });
+  if (checklastestaddition.length > 0 && (res.locals.flash === undefined || res.locals.flash.title === undefined)) {
+    res.locals.flash.title = [`Success`];
+    res.locals.flash.heading = `New service added: ${checklastestaddition[0].name}`;
+    res.locals.flash.message = `Select the service from the list below to access its functions and features.`;
+  }
 
   return res.render('home/views/services', {
     title: 'Access DfE services',
@@ -248,6 +271,8 @@ const getServices = async (req, res) => {
     passwordChangedBanner,
     showJobTitleBanner,
     pireanServices,
+    userPireanServices,
+    subServiceAddedBanners,
   });
 };
 

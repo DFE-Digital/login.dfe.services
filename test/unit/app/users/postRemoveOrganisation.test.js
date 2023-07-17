@@ -6,6 +6,7 @@ jest.mock('./../../../../src/infrastructure/organisations', () => {
   return {
     deleteInvitationOrganisation: jest.fn(),
     deleteUserOrganisation: jest.fn(),
+    getOrganisationAndServiceForUser: jest.fn((uid) => []),
   };
 });
 

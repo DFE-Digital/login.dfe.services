@@ -1,6 +1,15 @@
 const { mockRequest, mockResponse } = require('../../../utils/jestMocks');
+const { isOrgEndUser, isRemoveService, getOrgNaturalIdentifiers } = require('../../../../src/app/users/utils');
 
 jest.mock('./../../../../src/infrastructure/config', () => require('../../../utils/jestMocks').mockConfig());
+
+jest.mock('../../../../src/app/users/utils', () => {
+  return {
+    isOrgEndUser: jest.fn(),
+    isRemoveService: jest.fn(),
+    getOrgNaturalIdentifiers: jest.fn(),
+  };
+});
 
 const mockServiceOrganisations = [
   {
@@ -37,6 +46,7 @@ describe('when selecting a service (with organisation)', () => {
   let postSelectServiceWithOrg;
 
   beforeEach(() => {
+    isOrgEndUser.mockReset();
     req = mockRequest();
     req.user = {
       sub: 'userId',
@@ -51,10 +61,29 @@ describe('when selecting a service (with organisation)', () => {
     postSelectServiceWithOrg = require('../../../../src/app/users/selectServiceWithOrganisation').post;
   });
 
-  it('then it should redirect to the selected service', async () => {
+  it('if approver, then it should redirect to edit the selected service', async () => {
+
     await postSelectServiceWithOrg(req, res);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/organisationId/users/userId/services/serviceId`);
+  });
+
+  it('if end user, then it should redirect to request edit the selected service', async () => {
+    isOrgEndUser.mockReset();
+    isOrgEndUser.mockReturnValue(true);
+    await postSelectServiceWithOrg(req, res);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe('/request-service/organisationId/users/userId/edit-services/serviceId');
+  });
+
+  it('if approver and remove service, then it should redirect to remove the selected service', async () => {
+    isRemoveService.mockReset();
+    isRemoveService.mockReturnValue(true);
+    await postSelectServiceWithOrg(req, res);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      '/approvals/organisationId/users/userId/services/serviceId/remove-service',
+    );
   });
 
   it('then it should render validation message if no selected service', async () => {

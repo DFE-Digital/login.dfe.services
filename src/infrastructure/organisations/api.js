@@ -113,10 +113,26 @@ const getRequestsForOrganisations = async (organisationIds, correlationId) => {
   return callApi('GET', `/organisations/${organisationIds}/requests/all`, correlationId);
 };
 
+const getAllRequestsTypesForApprover = async (uid, pageSize, pageNumber, correlationId) => {
+  return callApi(
+    'GET',
+    `/organisations/org-service-subService-requests-for-approval/${uid}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    correlationId,
+  );
+};
+const getNonPagedRequestsTypesForApprover = async (uid, correlationId) => {
+  return callApi(
+    'GET',
+    `/organisations/org-service-subService-requests-for-approval/${uid}`,
+    correlationId,
+  );
+};
 const getRequestById = async (...args) => {
   const { dataValues, ...request } = await organisation.getUserOrganisationRequest(...args);
   return { ...dataValues, ...request, org_id: dataValues.organisation_id, org_name: dataValues.Organisation.name };
 };
+
+
 
 const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt) => {
   const body = {};
@@ -168,6 +184,7 @@ module.exports = {
   searchOrganisations,
   createUserOrganisationRequest,
   getAllRequestsForApprover,
+  getNonPagedRequestsTypesForApprover,
   getRequestsForOrganisation,
   getRequestsForOrganisations,
   getRequestById,
@@ -176,4 +193,5 @@ module.exports = {
   getApproversForOrganisation,
   getLatestRequestAssociatedWithUser,
   getCategories,
+  getAllRequestsTypesForApprover,
 };

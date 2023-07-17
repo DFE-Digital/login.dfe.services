@@ -14,7 +14,7 @@
 <div class="govuk-width-container">
 
     <div class="govuk-grid-row govuk-!-margin-bottom-9">
-        
+
         <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
 
             <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
@@ -43,11 +43,11 @@
                     </div>
                 <% } %>
                 <!-- If user is an approver, and there are requests pending, show this banner -->
-                <% if (locals.approverRequests && locals.approverRequests.length > 0) { %>
+                <% if (locals.totalNumberOfAccessRequests && locals.totalNumberOfAccessRequests > 0) { %>
                     <div id="notification-wrapper-approver-request"
                         class="govuk-notification-banner"
-                        role="region" 
-                        aria-labelledby="govuk-notification-banner-title" 
+                        role="region"
+                        aria-labelledby="govuk-notification-banner-title"
                         data-module="govuk-notification-banner">
                         <div class="govuk-notification-banner__header govuk-grid-row">
                             <div class="govuk-grid-column-two-thirds">
@@ -56,7 +56,7 @@
                                 </h2>
                             </div>
                             <div class="govuk-grid-column-one-third">
-                                <span class="close-button pull-right" id="close-missing-jobtitle">x</span>
+                                <span class="close-button pull-right" id="close-requests-awaiting">x</span>
                             </div>
                         </div>
                         <div class="govuk-notification-banner__content" id="notification-content">
@@ -99,8 +99,14 @@
                             <th scope="col" class="govuk-table__header width-40">
                                 Organisation
                             </th>
+                            <th scope="col" class="govuk-table__header width-40">
+                                Legal name
+                            </th>
                             <th scope="col" class="govuk-table__header">
                                 URN
+                            </th>
+                            <th scope="col" class="govuk-table__header">
+                                UPIN
                             </th>
                             <th scope="col" class="govuk-table__header">
                                 UKPRN
@@ -116,18 +122,24 @@
                             </th>
                         </tr>
                     </thead>
-    
+
                     <tbody class="govuk-table__body">
                         <% for(let i= 0; i < locals.organisations.length; i++) {
                             const organisation = locals.organisations[i]%>
-        
+
                             <tr class="govuk-table__row">
                                 <th scope="row" class="govuk-table__header">
                                     <p><%= organisation.name %></p>
                                 </th>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.LegalName %></td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.urn %></td>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.upin %></td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.ukprn %></td>
-                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.status.name %></td>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                            <% if (organisation.status) { %>
+                                            <%= organisation.status.name %>
+                                            <%}%>
+                                </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <% if (organisation.role) { %>
                                         <%= organisation.role.name %>

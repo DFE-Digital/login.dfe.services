@@ -1,21 +1,55 @@
 'use strict';
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { isUserManagement, getSingleServiceForUser, isEditService } = require('./utils');
-const { getApplication } = require('./../../infrastructure/applications');
+const { isUserManagement, getSingleServiceForUser, isEditService, getUserDetails } = require('./utils');
+const { getApplication, getService } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
-const renderEditServicePage = (req, res, model) => {
+const renderEditServicePage = async (req, res, model) => {
+  const userDetails = await getUserDetails(req);
   const isManage = isUserManagement(req);
+  const service = await getService(req.params.sid, req.id);
+  const maximumRolesAllowed = service?.relyingParty?.params?.maximumRolesAllowed;
+  const minimumRolesRequired = service?.relyingParty?.params?.minimumRolesRequired;
+  const allowedToSelectMoreThanOneRole = rolesRequirement(maximumRolesAllowed, minimumRolesRequired)
+
   res.render(
     `users/views/editServices`,
     { 
       ...model, 
-      currentPage: isManage? "users" : "services"
+      currentPage: isManage? "users" : "services", 
+      user: userDetails, 
+      allowedToSelectMoreThanOneRole
     }
   );
+};
+
+const rolesRequirement = (maximumRolesAllowed, minimumRolesRequired) => {
+  let selectMoreThanOneRole = false;
+
+  if (maximumRolesAllowed && minimumRolesRequired) {
+    if (maximumRolesAllowed && parseInt(maximumRolesAllowed, 10) > 1 ) {
+      selectMoreThanOneRole = true;
+    }
+  }
+
+  if (maximumRolesAllowed || minimumRolesRequired) {
+    if (!maximumRolesAllowed && parseInt(minimumRolesRequired, 10) == 1 ) {
+      selectMoreThanOneRole = true;
+    }
+
+    if (!maximumRolesAllowed && parseInt(minimumRolesRequired, 10) > 1) {
+      selectMoreThanOneRole = true;
+    }
+  }
+
+  if (!maximumRolesAllowed && !minimumRolesRequired) {
+    selectMoreThanOneRole = true;
+  }
+
+  return selectMoreThanOneRole;
 };
 
 const buildBackLink = (req) => {
@@ -23,14 +57,28 @@ const buildBackLink = (req) => {
   if(isEditServiceUrl) {
     return `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.EDIT_SERVICE}`
   } else if (!isUserManagement(req)) {
-    return `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
-  } else {
+      if (req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST) {
+        return `/access-requests/subService-requests/${req.session.rid}`;
+      }else
+      return `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
+  }  else {
     return `/approvals/users/${req.params.uid}`;
   }
 };
 
+const buildCancelLink= (req) =>{
+  if (!isUserManagement(req)) {
+    if (req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST) {
+      return `/access-requests/subService-requests/${req.session.rid}`;
+    }else
+    return `/approvals/users/${req.params.uid}`;
+  }else{
+    return  `/my-services`;
+  }
+};
+
 const getViewModel = async (req) => {
-  const isManage = isUserManagement(req);
+  const isManage = isUserManagement(req); // this variable is not being used!
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
@@ -40,11 +88,12 @@ const getViewModel = async (req) => {
     req.params.sid,
     req.id,
   );
+  
   const serviceRoles = policyResult.rolesAvailableToUser;
   const application = await getApplication(req.params.sid, req.id);
   return {
     backLink: buildBackLink(req),
-    cancelLink: isManage ? `/approvals/users/${req.params.uid}` : `/my-services`,
+    cancelLink: buildCancelLink(req),
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     organisationDetails,
@@ -74,10 +123,14 @@ const get = async (req, res) => {
   }
 
   const model = await getViewModel(req);
+  
   model.service.roles = model.userService.roles;
+  if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
+    model.service.roles = req.session.roles;
+    
+  }
   saveRoleInSession(req, model.service.roles);
-
-  renderEditServicePage(req, res, model);
+  await renderEditServicePage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -89,7 +142,7 @@ const post = async (req, res) => {
   if (!(selectedRoles instanceof Array)) {
     selectedRoles = [req.body.role];
   }
-
+ 
   const policyValidationResult = await policyEngine.validate(
     req.params.uid.startsWith('inv-') ? undefined : req.params.uid,
     req.params.orgId,
@@ -103,26 +156,36 @@ const post = async (req, res) => {
     let roles = {};
     model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
-    renderEditServicePage(req, res, model);
+    await renderEditServicePage(req, res, model);
   }
-
+ 
   saveRoleInSession(req, selectedRoles);
 
   let nexturl = `${req.params.sid}/confirm-edit-service`;
-  if (isUserManagement(req)) {
-    nexturl += '?manage_users=true';
-  }
+ 
+    if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
+      const model = await getViewModel(req);
+    let roles = {};
+    model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
+      //loop through and add the ones selected and remove the ones not selected
+      req.session.role = selectedRoles;
+      req.session.roleIds = model.service.roles;
+      nexturl = `/access-requests/subService-requests/${req.session.rid}`;
+    }else if(isUserManagement(req)){
+     nexturl += '?manage_users=true';
+    }
 
   return res.redirect(nexturl);
 };
 
 const saveRoleInSession = (req, selectedRoles) => {
+
   req.session.service = {
     roles: selectedRoles,
   };
 };
 
-const haveRolesNotBeenUpdated = (req, selectedRoles) => {
+const haveRolesNotBeenUpdated = (req, selectedRoles) => { // This function is not used!
   if (req.session.service && req.session.service.roles) {
     return _.isEqual(req.session.service.roles.map((item) => item.id).sort(), selectedRoles.sort());
   }

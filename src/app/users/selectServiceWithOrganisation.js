@@ -1,7 +1,7 @@
 'use strict';
 
 const { services, organisation } = require('login.dfe.dao');
-const { getOrgNaturalIdentifiers, isRemoveService } = require('./utils');
+const { getOrgNaturalIdentifiers, isRemoveService, isOrgEndUser } = require('./utils');
 
 const buildAdditionalOrgDetails = (serviceOrganisations) => {
   serviceOrganisations.forEach((serviceOrg) => {
@@ -17,7 +17,7 @@ const buildPageTitle = (req) => {
   if (isRemoveService(req)) {
     return 'Remove which service?';
   }
-  return 'Edit which service?';
+  return 'Which service do you want to view or edit?';
 };
 
 const renderSelectServiceWithOrganisationPage = (req, res, model) => {
@@ -25,18 +25,24 @@ const renderSelectServiceWithOrganisationPage = (req, res, model) => {
 };
 
 const buildRedirectURL = (req, serviceOrgDetails) => {
-  let redirectURL = `/approvals/${serviceOrgDetails.Organisation.id}/users/${req.user.sub}/services/${serviceOrgDetails.Service.id}`;
-  if (isRemoveService(req)) {
-    redirectURL += '/remove-service';
+  const orgId = serviceOrgDetails.Organisation.id;
+  const isEndUser = isOrgEndUser(req.userOrganisations, orgId);
+  let redirectURL;
+  if (isEndUser) {
+    redirectURL = `/request-service/${orgId}/users/${req.user.sub}/edit-services/${serviceOrgDetails.Service.id}`;
+  } else {
+    redirectURL = `/approvals/${serviceOrgDetails.Organisation.id}/users/${req.user.sub}/services/${serviceOrgDetails.Service.id}`;
+    if (isRemoveService(req)) {
+      redirectURL += '/remove-service';
+    }
   }
   return redirectURL;
 };
 
 const get = async (req, res) => {
   // get visible service orgs for this user: checking isExternalService, hideApprover, user is approver at that org
-  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(req.user.sub);
+  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(req.user.sub, false);
   buildAdditionalOrgDetails(serviceOrganisations);
-
   const model = {
     csrfToken: req.csrfToken(),
     title: buildPageTitle(req),
@@ -70,7 +76,7 @@ const validate = (req) => {
 
 const post = async (req, res) => {
   const model = validate(req);
-  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(req.user.sub);
+  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(req.user.sub, false);
   buildAdditionalOrgDetails(serviceOrganisations);
 
   // persist selected org in session
@@ -87,6 +93,9 @@ const post = async (req, res) => {
   const serviceOrgDetails = serviceOrganisations.find((serviceOrg) => {
     return serviceOrg.id === req.body.selectedServiceOrganisation;
   });
+  if (req.session?.service?.roles) {
+    req.session.service.roles = undefined;
+  }
 
   return res.redirect(buildRedirectURL(req, serviceOrgDetails));
 };

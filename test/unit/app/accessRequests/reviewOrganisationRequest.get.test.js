@@ -1,8 +1,8 @@
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
+jest.mock('login.dfe.dao', () => require('./../../../utils/jestMocks').mockDao());
 jest.mock('./../../../../src/app/accessRequests/utils');
-
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
+const { mockRequest, mockResponse, mockDao } = require('./../../../utils/jestMocks');
 const { getAndMapOrgRequest } = require('./../../../../src/app/accessRequests/utils');
 const { get } = require('./../../../../src/app/accessRequests/reviewOrganisationRequest');
 

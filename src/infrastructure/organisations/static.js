@@ -112,6 +112,10 @@ const getCategories = async () => {
   return Promise.resolve();
 };
 
+const getAllRequestsTypesForApprover = async (userId, pageSize, pageNumber, correlationId) => {
+  return Promise.resolve();
+};
+
 module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
@@ -133,4 +137,5 @@ module.exports = {
   getApproversForOrganisation,
   getLatestRequestAssociatedWithUser,
   getCategories,
+  getAllRequestsTypesForApprover,
 };

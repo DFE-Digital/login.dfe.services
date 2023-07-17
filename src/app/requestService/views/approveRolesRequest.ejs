@@ -1,0 +1,98 @@
+<div class="govuk-width-container">
+    <div class="govuk-grid-row govuk-!-margin-top-9">
+
+        <form method="post" class="prevent-form-double-submission">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" id="services">
+                    <div class="govuk-grid-column-three-quarters">
+                        <h1 class="govuk-heading-m">
+                            Review new sub-service for <%= locals.endUserName %>
+                        </h1>
+        
+                        <p class="govuk-body">Review these details before approving request.</p>
+        
+                        <h2 class="govuk-heading-m">
+                            Review summary
+                        </h2>
+                        <div class="<%= (locals.validationMessages.messages !== undefined) ? 'govuk-form-group--error' : '' %>">
+                            <dl class="govuk-summary-list">
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Name
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        <%= locals.endUserName %>
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Email address
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        <%= locals.endUserEmail %>
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Organisation
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        <%= locals.organisationDetails.organisation.name %>
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                    </dd>
+                                </div>
+            
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Service
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        <%= locals.service.name %>
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                    </dd>
+                                </div>
+            
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Sub-service or role
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        <% if (locals.service.roles.length > 0) { %>
+                                            <% for (let x = 0; x < locals.service.roles.length; x++) { %>
+                                                <% const role = locals.service.roles[x]; %>
+                                                <%= role.name %> <br>
+                                            <% } %>
+                                        <% } else { %>
+                                            No roles selected
+                                        <% } %>
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        <a class="govuk-link" href="<%=locals.subServiceAmendUrl %>">
+                                            Amend
+                                        </a>
+                                    </dd>
+                                </div>
+                            </dl>            
+                        </div>
+                        <div class="govuk-button-group">
+                            <% if(!locals.validationMessages.messages) { %>
+                                <button type="submit" class="govuk-button">Approve request</button>
+                            <% } %>
+                            <a href="/my-services" class="govuk-button govuk-button--secondary">Cancel</a>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+           
+        </form>
+    </div>
+</div>
+</div>

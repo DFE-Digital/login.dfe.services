@@ -19,6 +19,37 @@
                     </dd>
                 </div>
 
+                <% if (locals.organisation.LegalName) { %>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Legal name
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= locals.organisation.LegalName %>
+                        </dd>
+                    </div>
+                <% } %>
+                
+                <% if (organisation.type || organisation.providerTypeName) { %>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Type
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= organisation.type ? organisation.type.name : organisation.providerTypeName %>
+                        </dd>
+                    </div>
+                <% } else if (organisation.category) { %>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Category
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= organisation.category.name %>
+                        </dd>
+                    </div>
+                <% } %>
+    
                 <% if (locals.organisation.address) { %>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -26,17 +57,6 @@
                     </dt>
                     <dd class="govuk-summary-list__value">
                         <%= locals.organisation.address %>
-                    </dd>
-                </div>
-                <% } %>
-
-                <% if (locals.organisation.category && locals.organisation.category.name) { %>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Category
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        <%= locals.organisation.category.name %>
                     </dd>
                 </div>
                 <% } %>
@@ -62,7 +82,7 @@
                     </dd>
                 </div>
                 <% } %>
-
+    
                 <% if (locals.organisation.ukprn) { %>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -72,6 +92,17 @@
                         <%= locals.organisation.ukprn%>
                     </dd>
                 </div>
+                <% } %>
+                
+                <% if (locals.organisation.upin) { %>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            UPIN
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            <%= locals.organisation.upin %>
+                        </dd>
+                    </div>
                 <% } %>
             </dl>
 

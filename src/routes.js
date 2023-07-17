@@ -9,7 +9,6 @@ const healthCheck = require('login.dfe.healthcheck');
 const organisations = require('./app/organisations');
 const users = require('./app/users');
 const requestOrganisation = require('./app/requestOrganisation');
-const appCache = require('./app/appCache');
 const version = require('../package.json').version;
 const requestService = require('./app/requestService');
 
@@ -74,7 +73,6 @@ const routes = (app, csrf) => {
   app.use('/request-organisation', requestOrganisation(csrf));
   app.use('/access-requests', accessRequests(csrf, app));
   app.use('/request-service', requestService(csrf));
-  app.use('/appcache', appCache(csrf));
 
   app.get('*', (req, res) => {
     res.status(404).render('errors/views/notFound');

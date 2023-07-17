@@ -18,13 +18,19 @@
         <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
             <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
                 <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
-                    <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
+                    <% if(locals.flash.title[0] !== 'Success') {%>
+                    <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner"
                         role="alert" aria-labelledby="govuk-notification-banner-title"
                         data-module="govuk-notification-banner">
+                        <% } else{ %>
+                            <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
+                            role="alert" aria-labelledby="govuk-notification-banner-title"
+                            data-module="govuk-notification-banner">
+                            <%}%>
                         <div class="govuk-notification-banner__header govuk-grid-row">
                             <div class="govuk-grid-column-two-thirds">
                                 <h2 class="govuk-notification-banner__title" id="notification-title">
-                                    <%= locals.flash.title %>
+                                    <%= locals.flash.title %> 
                                 </h2>
                             </div>
                             <div class="govuk-grid-column-one-third">
@@ -56,6 +62,18 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full-width">
+
+    <%
+    const paginationModel = {
+        method: 'post',
+        csrfToken,
+        currentPage: locals.page,
+        numberOfPages: locals.numberOfPages,
+        totalNumberOfResults: locals.totalNumberOfResults,
+        numberOfResultsOnPage: locals.requests.length,
+    }
+    %>           
+     <%- include('../../layouts/pagination', paginationModel); %>
             <table class="govuk-table">
                 <thead class="govuk-table__head">
                     <tr class="govuk-table__row">
@@ -101,7 +119,7 @@
                                     <%= request.userName %>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                                    Organisation access
+                                    <%= request.request_type.name %>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <%= request.org_name %>
@@ -110,9 +128,15 @@
                                     <%= request.status.name %>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                                    <a class="govuk-link" href="requests/<%= request.id %>">
+                                    <% if(request.request_type.id  === 'service') { %>
+                                    <a class="govuk-link" href="<%= request.request_type.id %>-requests/<%= request.id %>/services/<%= request.service_id %>/roles/<%=encodeURIComponent(request.role_ids) %>">
                                         Review
                                     </a>
+                                    <% } else { %>
+                                        <a class="govuk-link" href="<%= request.request_type.id %>-requests/<%= request.id %>">
+                                            Review
+                                        </a>
+                                    <% } %>
                                 </td>
                             </tr>
                     <% } %>

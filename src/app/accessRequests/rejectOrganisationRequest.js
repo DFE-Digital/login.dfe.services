@@ -12,7 +12,7 @@ const get = async (req, res) => {
   return res.render('accessRequests/views/rejectOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Reason for rejection - DfE Sign-in',
-    backLink: `/access-requests/requests/${req.params.rid}`,
+    backLink: `/access-requests/organisation-requests/${req.params.rid}`,
     cancelLink: `/access-requests/requests`,
     reason: '',
     validationMessages: {},
@@ -24,7 +24,7 @@ const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const model = {
     title: 'Reason for rejection - DfE Sign-in',
-    backLink: `/access-requests/requests/${req.params.rid}`,
+    backLink: `/access-requests/organisation-requests/${req.params.rid}`,
     cancelLink: `/access-requests/requests`,
     reason: req.body.reason,
     request,

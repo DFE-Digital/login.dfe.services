@@ -11,7 +11,7 @@ resources:
       type: github
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.config
-      ref: feature/raf
+      ref: master
 
 trigger:
   branches:

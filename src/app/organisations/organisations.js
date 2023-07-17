@@ -3,6 +3,7 @@
 const {
   getOrganisationAndServiceForUser,
   getPendingRequestsAssociatedWithUser,
+  getAllRequestsTypesForApprover,
 } = require('./../../infrastructure/organisations');
 const Account = require('./../../infrastructure/account');
 const flatten = require('lodash/flatten');
@@ -34,8 +35,10 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
     return {
       id: organisation.organisation.id,
       name: organisation.organisation.name,
+      LegalName: organisation.organisation.LegalName,
       urn: organisation.organisation.urn,
       uid: organisation.organisation.uid,
+      upin: organisation.organisation.upin,
       ukprn: organisation.organisation.ukprn,
       status: organisation.organisation.status,
       role: organisation.role,
@@ -49,9 +52,11 @@ const getAndMapPendingRequests = async (account, correlationId) => {
   return pendingUserRequests.map((org) => ({
     id: org.org_id,
     name: org.org_name,
+    LegalName: org.LegalName,
     urn: org.urn,
-    ukprn: org.ukprn,
     uid: org.uid,
+    upin: org.upin,
+    ukprn: org.ukprn,
     status: org.org_status,
     requestDate: org.created_date,
     requestStatus: org.status.id,
@@ -78,6 +83,8 @@ const organisations = async (req, res) => {
   const sortedOrgs = sortBy(allOrgs, 'name');
   const approverRequests = req.organisationRequests || [];
   const disableReqOrgLink = await disableRequestOrgLink(organisationRequests, organisations);
+  const { totalNumberOfRecords } = await getAllRequestsTypesForApprover(req.user.sub, req.id);
+  const totalNumberOfAccessRequests = totalNumberOfRecords;
 
   return res.render('organisations/views/organisations', {
     title: 'Organisations',
@@ -86,6 +93,7 @@ const organisations = async (req, res) => {
     currentPage: 'organisations',
     approverRequests,
     disableReqOrgLink,
+    totalNumberOfAccessRequests,
   });
 };
 

@@ -67,12 +67,12 @@ const get = async (req, res) => {
     const userServiceRequestStatus = await getUserServiceRequestStatus(userServiceRequestId);
     if (userServiceRequestStatus === -1) {
       model.validationMessages = {};
-      return res.render('requestService/views/serviceAlreadyRejected', model);
+      return res.render('requestService/views/requestAlreadyRejected', model);
     }
 
     if (userServiceRequestStatus === 1) {
       model.validationMessages = {};
-      return res.render('requestService/views/serviceAlreadyApproved', model);
+      return res.render('requestService/views/requestAlreadyApproved', model);
     }
   }
 
@@ -137,12 +137,12 @@ const post = async (req, res) => {
 
     if (updateServiceReq.success === false && resStatus === -1) {
       model.validationMessages = {};
-      return res.render('requestService/views/serviceAlreadyRejected', model);
+      return res.render('requestService/views/requestAlreadyRejected', model);
     }
 
     if (updateServiceReq.success === false && resStatus === 1) {
       model.validationMessages = {};
-      return res.render('requestService/views/serviceAlreadyApproved', model);
+      return res.render('requestService/views/requestAlreadyApproved', model);
     }
   }
   await notificationClient.sendServiceRequestRejected(

@@ -126,6 +126,22 @@ const isViewOrganisationRequests = (req) => {
   return req.query.action === actions.VIEW_ORG_REQUESTS;
 };
 
+const isReviewServiceReqAmendRole = (req) => {
+  return (
+    req.query.action === actions.REVIEW_SERVICE_REQ_ROLE &&
+    req.session.reviewServiceRequest.serviceReqId &&
+    req.session.reviewServiceRequest.serviceId
+  );
+};
+
+const isReviewServiceReqAmendService = (req) => {
+  return (
+    req.query.action === actions.REVIEW_SERVICE_REQ_SERVICE &&
+    req.session.reviewServiceRequest.serviceReqId &&
+    req.session.reviewServiceRequest.serviceId
+  );
+};
+
 const getApproverOrgsFromReq = (req) => {
   if (req.userOrganisations) {
     return req.userOrganisations.filter((x) => x.role.id === 10000);
@@ -168,6 +184,14 @@ const getOrgNaturalIdentifiers = (org) => {
   return naturalIdentifiers;
 };
 
+const isOrgEndUser = (userOrganisations, orgId) => {
+  if (userOrganisations) {
+    const org = userOrganisations.filter((x) => x.organisation.id === orgId);
+    return org.filter((x) => x.role.id === 0).length > 0;
+  }
+  return false;
+};
+
 module.exports = {
   getUserDetails,
   getAllServicesForUserInOrg,
@@ -182,10 +206,13 @@ module.exports = {
   isUserEndUser,
   isOrganisationInvite,
   isViewOrganisationRequests,
+  isReviewServiceReqAmendRole,
+  isReviewServiceReqAmendService,
   isRequestService,
   isManageUserService,
   isRequestServiceInSession,
   isAddService,
   isEditService,
   isRemoveService,
+  isOrgEndUser,
 };

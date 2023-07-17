@@ -52,8 +52,29 @@ const isServiceEmailNotificationAllowed = async () => {
   return true;
 };
 
+const getService = async (serviceId, correlationId) => {
+  const token = await jwtStrategy(config.applications.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'GET',
+      uri: `${config.applications.service.url}/services/${serviceId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return undefined;
+    }
+    throw e;
+  }
+}
+
 module.exports = {
   getApplication,
   getAllServices,
   isServiceEmailNotificationAllowed,
+  getService,
 };
