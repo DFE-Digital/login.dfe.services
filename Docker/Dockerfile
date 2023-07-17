@@ -1,4 +1,4 @@
-FROM node:14.18.1
+FROM mcr.microsoft.com/devcontainers/javascript-node:14
 
 ENV PORT 8080
 ENV settings /home/site/wwwroot/config/login.dfe.services.tran.json
@@ -28,4 +28,4 @@ COPY Docker/sshd_config /etc/ssh/sshd_config
 
 EXPOSE 8080 2222
 
-ENTRYPOINT ["pm2", "start", "/home/site/wwwroot/process.json", "--no-daemon"]
+ENTRYPOINT ["/bin/sh", "-c" ,"service ssh start && pm2 start /home/site/wwwroot/process.json --no-daemon"]
