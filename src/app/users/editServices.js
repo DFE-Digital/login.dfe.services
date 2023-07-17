@@ -95,11 +95,8 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
   }
-  console.log('before getViewModel')
   const model = await getViewModel(req);
 
-  console.log('after getViewModel')
-  
   model.service.roles = model.userService.roles;
   if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
     model.service.roles = req.session.roles;
