@@ -18,7 +18,6 @@ ENV PM2HOME /pm2home
 
 # enable SSH
 ENV SSH_PASSWD "root:Docker!"
-RUN apt-get update 
 RUN mkdir -p /home/LogFiles 
 RUN apt-get install -y --no-install-recommends dialog 
 RUN apt-get update 
