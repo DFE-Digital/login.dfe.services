@@ -18,12 +18,12 @@ ENV PM2HOME /pm2home
 
 # enable SSH
 ENV SSH_PASSWD "root:Docker!"
-RUN apt-get update \
-        && mkdir -p /home/LogFiles \
-        && apt-get install -y --no-install-recommends dialog \
-        && apt-get update \
-	&& apt-get install -y --no-install-recommends openssh-server \
-	&& echo "$SSH_PASSWD" | chpasswd 
+RUN apt-get update 
+RUN mkdir -p /home/LogFiles 
+RUN apt-get install -y --no-install-recommends dialog 
+RUN apt-get update 
+RUN apt-get install -y --no-install-recommends openssh-server 
+RUN echo "$SSH_PASSWD" | chpasswd 
 
 COPY Docker/sshd_config /etc/ssh/sshd_config
 
