@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { getSingleServiceForUser } = require('../../../src/app/users/utils');
+const { getSingleServiceForUser, rolesRequirement } = require('../../../src/app/users/utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
@@ -23,6 +23,9 @@ const getViewModel = async (req) => {
   );
   const serviceRoles = policyResult.rolesAvailableToUser;
   const application = await getApplication(req.params.sid, req.id);
+  const maximumRolesAllowed = application?.relyingParty?.params?.maximumRolesAllowed;
+  const minimumRolesRequired = application?.relyingParty?.params?.minimumRolesRequired;
+  const allowedToSelectMoreThanOneRole = rolesRequirement(maximumRolesAllowed, minimumRolesRequired);
   const backLink = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
 
   return {
@@ -44,16 +47,15 @@ const getViewModel = async (req) => {
     serviceRoles,
     serviceDetails: application,
     userService,
-    maxAllowedMessage:
-      application.relyingParty && application.relyingParty.params && application.relyingParty.params.maximumRolesAllowed
-        ? application.relyingParty.params.maximumRolesAllowed
-        : undefined,
+    allowedToSelectMoreThanOneRole,
     roleMessage:
       application.relyingParty && application.relyingParty.params && application.relyingParty.params.serviceRoleMessage
         ? application.relyingParty.params.serviceRoleMessage
         : undefined,
   };
 };
+
+
 
 const get = async (req, res) => {
   if (!req.session.user) {

@@ -1,7 +1,7 @@
 'use strict';
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { isUserManagement, getSingleServiceForUser, isEditService, getUserDetails } = require('./utils');
+const { isUserManagement, getSingleServiceForUser, isEditService, getUserDetails, rolesRequirement } = require('./utils');
 const { getApplication, getService } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
@@ -24,32 +24,6 @@ const renderEditServicePage = async (req, res, model) => {
       allowedToSelectMoreThanOneRole
     }
   );
-};
-
-const rolesRequirement = (maximumRolesAllowed, minimumRolesRequired) => {
-  let selectMoreThanOneRole = false;
-
-  if (maximumRolesAllowed && minimumRolesRequired) {
-    if (maximumRolesAllowed && parseInt(maximumRolesAllowed, 10) > 1 ) {
-      selectMoreThanOneRole = true;
-    }
-  }
-
-  if (maximumRolesAllowed || minimumRolesRequired) {
-    if (!maximumRolesAllowed && parseInt(minimumRolesRequired, 10) == 1 ) {
-      selectMoreThanOneRole = true;
-    }
-
-    if (!maximumRolesAllowed && parseInt(minimumRolesRequired, 10) > 1) {
-      selectMoreThanOneRole = true;
-    }
-  }
-
-  if (!maximumRolesAllowed && !minimumRolesRequired) {
-    selectMoreThanOneRole = true;
-  }
-
-  return selectMoreThanOneRole;
 };
 
 const buildBackLink = (req) => {
@@ -121,8 +95,10 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
   }
-
+  console.log('before getViewModel')
   const model = await getViewModel(req);
+
+  console.log('after getViewModel')
   
   model.service.roles = model.userService.roles;
   if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
