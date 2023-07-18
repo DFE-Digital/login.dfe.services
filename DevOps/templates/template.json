@@ -208,7 +208,8 @@
                             "DOCKER_REGISTRY_SERVER_PASSWORD": "[parameters('acrPassword')]",
                             "DOCKER_REGISTRY_SERVER_URL": "[parameters('acrUrl')]",
                             "DOCKER_REGISTRY_SERVER_USERNAME": "[parameters('acrUsername')]",
-                            "WEBSITES_ENABLE_APP_SERVICE_STORAGE":"false"
+                            "WEBSITES_ENABLE_APP_SERVICE_STORAGE":"false",
+                            "PORT":"8080"
                         }
                     },
                      "healthCheckPath": {
