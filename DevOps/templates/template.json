@@ -207,7 +207,8 @@
                             "PIREAN_SERVICES": "[parameters('pireanServices')]",
                             "DOCKER_REGISTRY_SERVER_PASSWORD": "[parameters('acrPassword')]",
                             "DOCKER_REGISTRY_SERVER_URL": "[parameters('acrUrl')]",
-                            "DOCKER_REGISTRY_SERVER_USERNAME": "[parameters('acrUsername')]"
+                            "DOCKER_REGISTRY_SERVER_USERNAME": "[parameters('acrUsername')]",
+                            "WEBSITES_ENABLE_APP_SERVICE_STORAGE":"false"
                         }
                     },
                      "healthCheckPath": {
