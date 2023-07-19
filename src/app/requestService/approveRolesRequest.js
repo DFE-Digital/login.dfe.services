@@ -7,6 +7,8 @@ const { getUserServiceRequestStatus, updateServiceRequest } = require('./utils')
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
 const { createSubServiceAddedBanners } = require('../home/userBannersHandlers');
 
+const { getOrganisationPermissionLevel } = require('../../app/accessRequests/utils');
+
 const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
 
@@ -167,6 +169,7 @@ const post = async (req, res) => {
   await createSubServiceAddedBanners(endUserId, service.name, rolesName);
 
   if (isEmailAllowed) {
+    const permissionLevel = await getOrganisationPermissionLevel(endUserId, orgId, reqId);
     const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
     await notificationClient.sendSubServiceRequestApproved(
       endUserDetails.email,
@@ -175,6 +178,7 @@ const post = async (req, res) => {
       organisation.name,
       service.name,
       rolesName,
+      permissionLevel,
     );
   }
 
