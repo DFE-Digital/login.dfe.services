@@ -3,15 +3,18 @@ const {
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
   getNewRoleDetails,
+  getOrganisationPermissionLevel,
 } = require('../../../../src/app/accessRequests/utils');
 const { updateServiceRequest } = require('../../../../src/app/requestService/utils');
 const { createSubServiceAddedBanners } = require('../../../../src/app/home/userBannersHandlers');
 const { post } = require('../../../../src/app/accessRequests/reviewSubServiceRequest');
-const NotificationClient = require('login.dfe.notifications.client');
+const { isServiceEmailNotificationAllowed } = require('../../../../src/infrastructure/applications');
+const notificationClient = require('login.dfe.notifications.client');
 const sendAccessRequest = jest.fn();
 
 const Account = require('../../../../src/infrastructure/account');
 jest.mock('login.dfe.policy-engine');
+jest.mock('login.dfe.notifications.client');
 jest.mock('../../../../src/infrastructure/config', () => {
   return mockAdapterConfig();
 });
@@ -28,7 +31,11 @@ jest.mock('../../../../src/app/accessRequests/utils', () => {
     getAndMapServiceRequest: jest.fn(),
     getSubServiceRequestVieModel: jest.fn(),
     getNewRoleDetails: jest.fn(),
+    getOrganisationPermissionLevel: jest.fn(),
   };
+});
+jest.mock('../../../../src/infrastructure/applications', () => {
+  return { isServiceEmailNotificationAllowed: jest.fn() };
 });
 
 jest.mock('../../../../src/app/requestService/utils', () => {
@@ -208,6 +215,11 @@ describe('When reviewing a sub-service request for approving', () => {
         { claims: { sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests' } },
       ]);
 
+    getOrganisationPermissionLevel.mockReset().mockReturnValue({
+      id: 0,
+      name: 'End user',
+    });
+
     updateServiceRequest.mockReset();
     updateServiceRequest.mockReturnValue((request = { success: true }));
 
@@ -220,7 +232,62 @@ describe('When reviewing a sub-service request for approving', () => {
     getNewRoleDetails.mockReset();
     getNewRoleDetails.mockReturnValue(listRoles);
 
+    sendSubServiceRequestApproved = jest.fn();
+    notificationClient.mockReset().mockImplementation(() => ({
+      sendSubServiceRequestApproved,
+    }));
+
     postSubServiceRequest = require('../../../../src/app/accessRequests/reviewSubServiceRequest').post;
+  });
+
+  it('then it should check if email notification is allowed for service', async () => {
+    await post(req, res);
+
+    expect(isServiceEmailNotificationAllowed.mock.calls).toHaveLength(1);
+  });
+
+  it('then it should check the user organisation permission if email notification is allowed for service', async () => {
+    isServiceEmailNotificationAllowed.mockReset().mockReturnValue(true);
+    await post(req, res);
+
+    expect(getOrganisationPermissionLevel.mock.calls).toHaveLength(1);
+    expect(getOrganisationPermissionLevel.mock.calls[0][0]).toBe('endUser1');
+    expect(getOrganisationPermissionLevel.mock.calls[0][1]).toBe('org1');
+    expect(getOrganisationPermissionLevel.mock.calls[0][2]).toBe('sub-service-req-ID');
+  });
+
+  it('then it should not check the user organisation permission if email notification is not allowed for service', async () => {
+    isServiceEmailNotificationAllowed.mockReset().mockReturnValue(false);
+    await post(req, res);
+
+    expect(getOrganisationPermissionLevel.mock.calls).toHaveLength(0);
+  });
+
+  it('then it should send an email notification if notifications are allowed', async () => {
+    isServiceEmailNotificationAllowed.mockReset().mockReturnValue(true);
+    await post(req, res);
+
+    expect(sendSubServiceRequestApproved.mock.calls).toHaveLength(1);
+    expect(sendSubServiceRequestApproved.mock.calls[0][0]).toBe('b@b.gov.uk');
+    expect(sendSubServiceRequestApproved.mock.calls[0][1]).toBe('b');
+    expect(sendSubServiceRequestApproved.mock.calls[0][2]).toBe('b');
+    expect(sendSubServiceRequestApproved.mock.calls[0][3]).toBe('org1');
+    expect(sendSubServiceRequestApproved.mock.calls[0][4]).toBe('service one');
+    expect(sendSubServiceRequestApproved.mock.calls[0][5]).toStrictEqual([
+      'ASP School Anon 1',
+      'ASP School Anon 2',
+      'ASP School Anon 3',
+      'ASP School Anon 4',
+      'ASP School Anon 5',
+    ]);
+    expect(sendSubServiceRequestApproved.mock.calls[0][6]).toEqual({ id: 0, name: 'End user' });
+  });
+
+  it('then it should not send an email notification if notifications are not allowed', async () => {
+    isServiceEmailNotificationAllowed.mockReset().mockReturnValue(false);
+    await post(req, res);
+
+    expect(sendSubServiceRequestApproved.mock.calls).toHaveLength(0);
   });
 
   it('then it should render Success when its approved correctly', async () => {

@@ -4,10 +4,13 @@ const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
-const { getRequestById, getOrganisationById } = require('./../../infrastructure/organisations');
+const {
+  getRequestById,
+  getOrganisationById,
+  getOrganisationAndServiceForUser,
+} = require('./../../infrastructure/organisations');
 
 const { services } = require('login.dfe.dao');
-const { contains } = require('lodash/fp');
 
 const getSubServiceRequestVieModel = async (model, requestId, req) => {
   let viewModel = {};
@@ -157,6 +160,26 @@ const isAllowedToApproveReq = async (req, res, next) => {
   return res.status(401).render('errors/views/notAuthorised');
 };
 
+const getOrganisationPermissionLevel = async (userId, orgId, correlationId) => {
+  try {
+    const userOrganisations = await getOrganisationAndServiceForUser(userId, correlationId);
+    const userOrganisationDetails = userOrganisations.find((x) => x.organisation.id === orgId);
+
+    if (userOrganisationDetails) {
+      return {
+        id: userOrganisationDetails.role.id,
+        name: userOrganisationDetails.role.name,
+      };
+    } else {
+      return {};
+    }
+  } catch (error) {
+    throw new Error(
+      `Failed to retrieve user's organisation permission level for request ID: ${correlationId}. Error: ${error.message}`,
+    );
+  }
+};
+
 module.exports = {
   getAndMapOrgRequest,
   getUserDetails,
@@ -166,4 +189,5 @@ module.exports = {
   getAndMapServiceRequest,
   generateFlashMessages,
   isAllowedToApproveReq,
+  getOrganisationPermissionLevel,
 };
