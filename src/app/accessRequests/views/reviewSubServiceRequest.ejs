@@ -2,10 +2,14 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-xl">
-                Review request
+                <% if (locals.roles.length> 0 && locals.roles.length <=1) { %>Review sub-service request <% } else { %>
+                    Review sub-services request
+                      <% } %>
             </h1>
-            <p class="govuk-body-l">Review these details before adding  <%= locals.endUsersGivenName %> <%= locals.endUsersFamilyName %> to 
-                <%= locals.Service_name %>.</p>
+            <p class="govuk-body-l">Review these details before changing 
+                <% if (locals.roles.length> 0 && locals.roles.length <=1) { %>sub-service<% } else { %>
+                    sub-services
+                      <% } %> access for <%= locals.endUsersGivenName %> <%= locals.endUsersFamilyName %>.</p>
             <h2 class="govuk-heading-m">
                 Request details
             </h2>
@@ -69,7 +73,9 @@
 
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
-                        Sub-service
+                        <% if (locals.roles.length> 0 && locals.roles.length <=1) { %>Sub-service requested <% } else { %>
+                          Sub-services requested
+                            <% } %>
                     </dt>
                     <dd class="govuk-summary-list__value">
                         <% if (locals.roles.length> 0) { %>
@@ -135,7 +141,14 @@
 
                     </fieldset>
                 </div>
-
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                      <span class="govuk-warning-text__assistive">Warning</span>
+                      By approving this request, the access for the <%= locals.endUsersGivenName %> <%=locals.endUsersFamilyName %> will change immediatley.
+                    </strong>
+                  </div>
+                
                 <div class="govuk-button-group">
                     <button type="submit" class="govuk-button">Confirm</button>
                     <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
