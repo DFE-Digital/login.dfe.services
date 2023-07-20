@@ -153,10 +153,16 @@
             "description": "Azure Container Registery password"
         }
      },
-    "manageIdentity": {
+    "manageIdentityClientId": {
         "type": "string",
         "metadata": {
             "description": "Manage Identity Client ID"
+        }
+    },
+    "manageIdentityName": {
+        "type": "string",
+        "metadata": {
+            "description": "Manage Identity name"
         }
     }
     },
@@ -204,6 +210,9 @@
                     "minTlsVersion": {
                         "value": "[parameters('minTlsVersion')]"
                     },
+                    "manageIdentityName": {
+                        "value": "[parameters('manageIdentityName')]"
+                    },
                     "additionalAppSettings": {
                         "value": {
                             "QUEUE_CONNECTION_STRING": "[parameters('auditServiceBusConnectionString')]",
@@ -216,7 +225,7 @@
                             "DOCKER_REGISTRY_SERVER_USERNAME": "[parameters('acrUsername')]",
                             "WEBSITES_ENABLE_APP_SERVICE_STORAGE":"false",
                             "PORT":"8080",
-                            "MANAGE_IDENTITY": "[parameters('manageIdentity')]"
+                            "MANAGE_IDENTITY": "[parameters('manageIdentityClientId')]"
                         }
                     },
                      "healthCheckPath": {
