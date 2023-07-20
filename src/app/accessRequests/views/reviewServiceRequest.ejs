@@ -147,7 +147,13 @@
 
                     </fieldset>
                 </div>
-
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                      <span class="govuk-warning-text__assistive">Warning</span>
+                      By approving this request, the access for <%= locals.request.endUsersGivenName %> <%=locals.request.endUsersFamilyName %> will change immediately.
+                    </strong>
+                  </div>
                 <div class="govuk-button-group">
                     <button type="submit" class="govuk-button">Confirm</button>
                     <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
