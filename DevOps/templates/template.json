@@ -152,6 +152,12 @@
         "metadata": {
             "description": "Azure Container Registery password"
         }
+     },
+    "manageIdentity": {
+        "type": "string",
+        "metadata": {
+            "description": "Manage Identity Client ID"
+        }
     }
     },
     "variables": {
@@ -209,7 +215,8 @@
                             "DOCKER_REGISTRY_SERVER_URL": "[parameters('acrUrl')]",
                             "DOCKER_REGISTRY_SERVER_USERNAME": "[parameters('acrUsername')]",
                             "WEBSITES_ENABLE_APP_SERVICE_STORAGE":"false",
-                            "PORT":"8080"
+                            "PORT":"8080",
+                            "MANAGE_IDENTITY": "[parameters('manageIdentity')]",
                         }
                     },
                      "healthCheckPath": {
