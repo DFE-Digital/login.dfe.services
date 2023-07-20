@@ -8,10 +8,10 @@
                 <fieldset class="govuk-fieldset" id="services">
                     <div class="govuk-grid-column-three-quarters">
                         <h1 class="govuk-heading-m">
-                            Review new sub-service for <%= locals.endUserName %>
+                            Review sub-service request 
                         </h1>
         
-                        <p class="govuk-body">Review these details before approving request.</p>
+                        <p class="govuk-body">Review these details before changing sub-service access for <%= locals.endUserName %>.</p>
         
                         <h2 class="govuk-heading-m">
                             Review summary
@@ -62,7 +62,7 @@
             
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
-                                        Sub-service or role
+                                        <%= locals.service.roles.length > 1 ? 'Sub-services' : 'Sub-service' %>
                                     </dt>
                                     <dd class="govuk-summary-list__value">
                                         <% if (locals.service.roles.length > 0) { %>
@@ -76,11 +76,18 @@
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
                                         <a class="govuk-link" href="<%=locals.subServiceAmendUrl %>">
-                                            Amend
+                                            Change
                                         </a>
                                     </dd>
                                 </div>
-                            </dl>            
+                            </dl>      
+                            <div class="govuk-warning-text">
+                                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                                <strong class="govuk-warning-text__text">
+                                  <span class="govuk-warning-text__assistive">Warning</span>
+                                  By approving this request, the access for <%= locals.endUserName %> will change immediately.
+                                </strong>
+                              </div>
                         </div>
                         <div class="govuk-button-group">
                             <% if(!locals.validationMessages.messages) { %>
