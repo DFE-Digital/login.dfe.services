@@ -192,6 +192,33 @@ const isOrgEndUser = (userOrganisations, orgId) => {
   return false;
 };
 
+
+const rolesRequirement = (maximumRolesAllowed, minimumRolesRequired) => {
+  let selectMoreThanOneRole = false;
+
+  if (maximumRolesAllowed && minimumRolesRequired) {
+    if (maximumRolesAllowed && parseInt(maximumRolesAllowed, 10) > 1 ) {
+      selectMoreThanOneRole = true;
+    }
+  }
+
+  if (maximumRolesAllowed || minimumRolesRequired) {
+    if (!maximumRolesAllowed && parseInt(minimumRolesRequired, 10) == 1 ) {
+      selectMoreThanOneRole = true;
+    }
+
+    if (!maximumRolesAllowed && parseInt(minimumRolesRequired, 10) > 1) {
+      selectMoreThanOneRole = true;
+    }
+  }
+
+  if (!maximumRolesAllowed && !minimumRolesRequired) {
+    selectMoreThanOneRole = true;
+  }
+
+  return selectMoreThanOneRole;
+};
+
 module.exports = {
   getUserDetails,
   getAllServicesForUserInOrg,
@@ -215,4 +242,5 @@ module.exports = {
   isEditService,
   isRemoveService,
   isOrgEndUser,
+  rolesRequirement,
 };
