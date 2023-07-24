@@ -142,6 +142,10 @@ const isReviewServiceReqAmendService = (req) => {
   );
 };
 
+const isReviewSubServiceRequest = (req) => {
+  return req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST;
+};
+
 const getApproverOrgsFromReq = (req) => {
   if (req.userOrganisations) {
     return req.userOrganisations.filter((x) => x.role.id === 10000);
@@ -215,4 +219,5 @@ module.exports = {
   isEditService,
   isRemoveService,
   isOrgEndUser,
+  isReviewSubServiceRequest,
 };

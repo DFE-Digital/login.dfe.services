@@ -1,7 +1,13 @@
 'use strict';
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { isUserManagement, getSingleServiceForUser, isEditService, getUserDetails } = require('./utils');
+const {
+  isUserManagement,
+  getSingleServiceForUser,
+  isEditService,
+  getUserDetails,
+  isReviewSubServiceRequest,
+} = require('./utils');
 const { getApplication, getService } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
@@ -45,7 +51,7 @@ const rolesRequirement = (maximumRolesAllowed, minimumRolesRequired) => {
     }
   }
 
-  if (!maximumRolesAllowed && !minimumRolesRequired) {
+  if (maximumRolesAllowed && !minimumRolesRequired) {
     selectMoreThanOneRole = true;
   }
 
@@ -78,7 +84,8 @@ const buildCancelLink= (req) =>{
 };
 
 const getViewModel = async (req) => {
-  const isManage = isUserManagement(req); // this variable is not being used!
+  const isManage = isUserManagement(req);
+  const isReviewSubServiceReq = isReviewSubServiceRequest(req);
   const userService = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
   const organisationId = req.params.orgId;
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === organisationId);
@@ -88,7 +95,7 @@ const getViewModel = async (req) => {
     req.params.sid,
     req.id,
   );
-  
+
   const serviceRoles = policyResult.rolesAvailableToUser;
   const application = await getApplication(req.params.sid, req.id);
   return {
@@ -114,6 +121,8 @@ const getViewModel = async (req) => {
       application.relyingParty && application.relyingParty.params && application.relyingParty.params.serviceRoleMessage
         ? application.relyingParty.params.serviceRoleMessage
         : undefined,
+    isManage,
+    isReviewSubServiceReq,
   };
 };
 
@@ -123,7 +132,7 @@ const get = async (req, res) => {
   }
 
   const model = await getViewModel(req);
-  
+
   model.service.roles = model.userService.roles;
   if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
     model.service.roles = req.session.roles;
