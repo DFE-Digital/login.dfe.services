@@ -7,6 +7,7 @@ const {
   isEditService,
   getUserDetails,
   isReviewSubServiceRequest,
+  isMultipleRolesAllowed,
 } = require('./utils');
 const { getApplication, getService } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
@@ -19,7 +20,7 @@ const renderEditServicePage = async (req, res, model) => {
   const service = await getService(req.params.sid, req.id);
   const maximumRolesAllowed = service?.relyingParty?.params?.maximumRolesAllowed;
   const minimumRolesRequired = service?.relyingParty?.params?.minimumRolesRequired;
-  const allowedToSelectMoreThanOneRole = rolesRequirement(maximumRolesAllowed, minimumRolesRequired)
+  const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(maximumRolesAllowed, minimumRolesRequired);
 
   res.render(
     `users/views/editServices`,
@@ -30,32 +31,6 @@ const renderEditServicePage = async (req, res, model) => {
       allowedToSelectMoreThanOneRole
     }
   );
-};
-
-const rolesRequirement = (maximumRolesAllowed, minimumRolesRequired) => {
-  let selectMoreThanOneRole = false;
-
-  if (maximumRolesAllowed && minimumRolesRequired) {
-    if (maximumRolesAllowed && parseInt(maximumRolesAllowed, 10) > 1 ) {
-      selectMoreThanOneRole = true;
-    }
-  }
-
-  if (maximumRolesAllowed || minimumRolesRequired) {
-    if (!maximumRolesAllowed && parseInt(minimumRolesRequired, 10) == 1 ) {
-      selectMoreThanOneRole = true;
-    }
-
-    if (!maximumRolesAllowed && parseInt(minimumRolesRequired, 10) > 1) {
-      selectMoreThanOneRole = true;
-    }
-  }
-
-  if (maximumRolesAllowed && !minimumRolesRequired) {
-    selectMoreThanOneRole = true;
-  }
-
-  return selectMoreThanOneRole;
 };
 
 const buildBackLink = (req) => {
@@ -167,11 +142,11 @@ const post = async (req, res) => {
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
     await renderEditServicePage(req, res, model);
   }
- 
+
   saveRoleInSession(req, selectedRoles);
 
   let nexturl = `${req.params.sid}/confirm-edit-service`;
- 
+
     if(req.session.rid && req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST){
       const model = await getViewModel(req);
     let roles = {};
@@ -188,7 +163,6 @@ const post = async (req, res) => {
 };
 
 const saveRoleInSession = (req, selectedRoles) => {
-
   req.session.service = {
     roles: selectedRoles,
   };
