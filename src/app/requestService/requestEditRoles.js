@@ -21,10 +21,18 @@ const getViewModel = async (req) => {
     req.id,
   );
   const serviceRoles = policyResult.rolesAvailableToUser;
+  const numberOfRolesAvailable = serviceRoles.length;
   const application = await getApplication(req.params.sid, req.id);
+
   const maximumRolesAllowed = application?.relyingParty?.params?.maximumRolesAllowed;
   const minimumRolesRequired = application?.relyingParty?.params?.minimumRolesRequired;
-  const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(maximumRolesAllowed, minimumRolesRequired);
+
+  const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(
+    maximumRolesAllowed,
+    minimumRolesRequired,
+    numberOfRolesAvailable,
+  );
+
   const backLink = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
 
   return {

@@ -18,19 +18,12 @@ const renderEditServicePage = async (req, res, model) => {
   const userDetails = await getUserDetails(req);
   const isManage = isUserManagement(req);
   const service = await getService(req.params.sid, req.id);
-  const maximumRolesAllowed = service?.relyingParty?.params?.maximumRolesAllowed;
-  const minimumRolesRequired = service?.relyingParty?.params?.minimumRolesRequired;
-  const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(maximumRolesAllowed, minimumRolesRequired);
 
-  res.render(
-    `users/views/editServices`,
-    { 
-      ...model, 
-      currentPage: isManage? "users" : "services", 
-      user: userDetails, 
-      allowedToSelectMoreThanOneRole
-    }
-  );
+  res.render(`users/views/editServices`, {
+    ...model,
+    currentPage: isManage ? 'users' : 'services',
+    user: userDetails,
+  });
 };
 
 const buildBackLink = (req) => {
@@ -72,6 +65,18 @@ const getViewModel = async (req) => {
   );
 
   const serviceRoles = policyResult.rolesAvailableToUser;
+  const numberOfRolesAvailable = serviceRoles.length;
+
+  const service = await getService(req.params.sid, req.id);
+  const maximumRolesAllowed = service?.relyingParty?.params?.maximumRolesAllowed;
+  const minimumRolesRequired = service?.relyingParty?.params?.minimumRolesRequired;
+
+  const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(
+    maximumRolesAllowed,
+    minimumRolesRequired,
+    numberOfRolesAvailable,
+  );
+
   const application = await getApplication(req.params.sid, req.id);
   return {
     backLink: buildBackLink(req),
@@ -98,6 +103,7 @@ const getViewModel = async (req) => {
         : undefined,
     isManage,
     isReviewSubServiceReq,
+    allowedToSelectMoreThanOneRole,
   };
 };
 

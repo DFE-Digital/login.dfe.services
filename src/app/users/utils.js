@@ -196,26 +196,29 @@ const isOrgEndUser = (userOrganisations, orgId) => {
   return false;
 };
 
-const isMultipleRolesAllowed = (maximumRolesAllowed, minimumRolesRequired) => {
+const isMultipleRolesAllowed = (maximumRolesAllowed, minimumRolesRequired, numberOfRolesAvailable) => {
   const maxRoles = parseInt(maximumRolesAllowed, 10);
   const minRoles = parseInt(minimumRolesRequired, 10);
+  if (numberOfRolesAvailable <= 1) {
+    return false;
+  } else {
+    if (isNaN(maxRoles) && isNaN(minRoles)) {
+      return true;
+    }
+    if (isNaN(maxRoles) && minRoles >= 1) {
+      return true;
+    }
 
-  if (isNaN(maxRoles) && isNaN(minRoles)) {
-    return true;
-  }
-  if (isNaN(maxRoles) && minRoles >= 1) {
-    return true;
-  }
+    if (maxRoles >= 2 || minRoles >= 2) {
+      return true;
+    }
 
-  if (maxRoles >= 2 || minRoles >= 2) {
-    return true;
-  }
+    if (maxRoles === 1 && (isNaN(minRoles) || minRoles === 0)) {
+      return false;
+    }
 
-  if (maxRoles === 1 && (isNaN(minRoles) || minRoles === 0)) {
     return false;
   }
-
-  return false;
 };
 
 module.exports = {
