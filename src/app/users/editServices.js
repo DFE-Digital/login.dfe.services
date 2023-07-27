@@ -9,7 +9,7 @@ const {
   isReviewSubServiceRequest,
   isMultipleRolesAllowed,
 } = require('./utils');
-const { getApplication, getService } = require('./../../infrastructure/applications');
+const { getApplication } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
@@ -17,7 +17,6 @@ const policyEngine = new PolicyEngine(config);
 const renderEditServicePage = async (req, res, model) => {
   const userDetails = await getUserDetails(req);
   const isManage = isUserManagement(req);
-  const service = await getService(req.params.sid, req.id);
 
   res.render(`users/views/editServices`, {
     ...model,
@@ -64,20 +63,12 @@ const getViewModel = async (req) => {
     req.id,
   );
 
+  const application = await getApplication(req.params.sid, req.id);
   const serviceRoles = policyResult.rolesAvailableToUser;
   const numberOfRolesAvailable = serviceRoles.length;
 
-  const service = await getService(req.params.sid, req.id);
-  const maximumRolesAllowed = service?.relyingParty?.params?.maximumRolesAllowed;
-  const minimumRolesRequired = service?.relyingParty?.params?.minimumRolesRequired;
+  const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(application, numberOfRolesAvailable);
 
-  const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(
-    maximumRolesAllowed,
-    minimumRolesRequired,
-    numberOfRolesAvailable,
-  );
-
-  const application = await getApplication(req.params.sid, req.id);
   return {
     backLink: buildBackLink(req),
     cancelLink: buildCancelLink(req),

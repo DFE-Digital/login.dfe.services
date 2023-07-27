@@ -196,9 +196,13 @@ const isOrgEndUser = (userOrganisations, orgId) => {
   return false;
 };
 
-const isMultipleRolesAllowed = (maximumRolesAllowed, minimumRolesRequired, numberOfRolesAvailable) => {
+const isMultipleRolesAllowed = (serviceDetails, numberOfRolesAvailable) => {
+  const maximumRolesAllowed = serviceDetails?.relyingParty?.params?.maximumRolesAllowed;
+  const minimumRolesRequired = serviceDetails?.relyingParty?.params?.minimumRolesRequired;
+
   const maxRoles = parseInt(maximumRolesAllowed, 10);
   const minRoles = parseInt(minimumRolesRequired, 10);
+
   if (numberOfRolesAvailable <= 1) {
     return false;
   } else {
