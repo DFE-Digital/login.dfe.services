@@ -32,13 +32,19 @@
 
                         <% if (locals.serviceRoles.length > 0) { %>
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--xs">
-                                <p class="govuk-body"><%= locals.allowedToSelectMoreThanOneRole ? 'Select a minimum of 1 role.' : 'Select 1 role.' %> Any changes you make to sub-service selection will change access for <%= locals.user.firstName %> <%= locals.user.lastName %>.
-                                    <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceRoleMessage) { %>
-                                        <%= locals.serviceDetails.relyingParty.params.serviceRoleMessage %>
-                                    <% } %>
+                                <p class="govuk-body">
+                                  <% const selectRoleText = locals.allowedToSelectMoreThanOneRole ? 'Select a minimum of 1 role.' : 'Select 1 role.' %>
+                                  <%= selectRoleText %>
+                                  <% if (locals.isManage || locals.isReviewSubServiceReq){ %>
+                                    Any changes you make to sub-service selection will change access for <%= locals.user.firstName %> <%= locals.user.lastName %>.
+                                  <% } else { %>
+                                    Some services ask you to select a sub-service, role, or form to better define how you will use them.
+                                  <% } %>
+                          <!--         <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceRoleMessage) { %>
+                                    <%= locals.serviceDetails.relyingParty.params.serviceRoleMessage %>
+                                  <% } %> -->
                                 </p>
-                            </legend>
-
+                              </legend>
                             <table class="govuk-table">
                                 <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">Select all required sub-services</caption>
                                 <thead class="govuk-table__head">
@@ -70,6 +76,15 @@
                                     <% } %>
                                 </tbody>
                             </table>
+                            <%  if (!locals.isManage && !locals.isReviewSubServiceReq) { %>
+                                 <div class="govuk-warning-text govuk-!-margin-bottom-0">
+                                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                                <strong class="govuk-warning-text__text">
+                                  <span class="govuk-warning-text__assistive">Warning</span>
+                                  If you deselect a role that you currently have access to and this request is approved, you will lose access to that sub-service.
+                                </strong>
+                              </div>
+                              <% } %>
 
                         <% } else { %>
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">

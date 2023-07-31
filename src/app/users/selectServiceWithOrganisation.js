@@ -4,13 +4,14 @@ const { services, organisation } = require('login.dfe.dao');
 const { getOrgNaturalIdentifiers, isRemoveService, isOrgEndUser } = require('./utils');
 
 const buildAdditionalOrgDetails = (serviceOrganisations) => {
-  serviceOrganisations.forEach((serviceOrg) => {
+  for (const serviceOrg of serviceOrganisations) {
     const org = serviceOrg.Organisation;
     if (org) {
       org.naturalIdentifiers = getOrgNaturalIdentifiers(org);
       org.statusName = organisation.getStatusNameById(org.Status);
     }
-  });
+  }
+  return serviceOrganisations;
 };
 
 const buildPageTitle = (req) => {
@@ -39,10 +40,32 @@ const buildRedirectURL = (req, serviceOrgDetails) => {
   return redirectURL;
 };
 
+const filterHiddenOrganisations = (serviceOrganisations) => {
+  return serviceOrganisations.filter((serviceOrg) => serviceOrg.Organisation.Status !== 0);
+};
+
+const listVisibleServiceOrganisations = async (req) => {
+  try {
+    const isRemoveRequest = isRemoveService(req);
+    const filterByApproverRole = isRemoveRequest ? true : false;
+
+    // get visible service for all orgs for this user: checking isExternalService, hideApprover
+    const allServiceOrganisations = await services.getFilteredUserServicesWithOrganisation(
+      req.user.sub,
+      filterByApproverRole,
+    );
+
+    // filter services associated with hidden oranisations (ID only services)
+    const serviceOrganisations = filterHiddenOrganisations(allServiceOrganisations);
+    return buildAdditionalOrgDetails(serviceOrganisations);
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 const get = async (req, res) => {
-  // get visible service orgs for this user: checking isExternalService, hideApprover, user is approver at that org
-  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(req.user.sub, false);
-  buildAdditionalOrgDetails(serviceOrganisations);
+  const serviceOrganisations = await listVisibleServiceOrganisations(req);
+
   const model = {
     csrfToken: req.csrfToken(),
     title: buildPageTitle(req),
@@ -76,8 +99,7 @@ const validate = (req) => {
 
 const post = async (req, res) => {
   const model = validate(req);
-  const serviceOrganisations = await services.getFilteredUserServicesWithOrganisation(req.user.sub, false);
-  buildAdditionalOrgDetails(serviceOrganisations);
+  const serviceOrganisations = await listVisibleServiceOrganisations(req);
 
   // persist selected org in session
   if (req.session.user) {

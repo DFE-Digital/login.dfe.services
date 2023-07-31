@@ -150,11 +150,11 @@
 
                             <% if (locals.serviceRoles.length > 0) { %>
                                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--xs">
-                                    <p class="govuk-body">This service will be added to the user’s account, assigned to organisation: <b><%=locals.organisationDetails.organisation.name%></b>.
-                                        <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceRoleMessage) { %>
-                                            <%= locals.serviceDetails.relyingParty.params.serviceRoleMessage %>
-                                        <% } %>
-                                    </p>
+                                    <p class="govuk-body"> <%= locals.allowedToSelectMoreThanOneRole ? 'Select a minimum of 1 role.' : 'Select 1 role.' %> This service will be added to the user’s account, assigned to organisation: <b><%=locals.organisationDetails.organisation.name%></b>.
+                              <!-- <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceRoleMessage) { %>
+                                <%= locals.serviceDetails.relyingParty.params.serviceRoleMessage %>
+                              <% } %> -->
+                                        </p>
                                 </legend>
 
                                 <table class="govuk-table">
