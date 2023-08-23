@@ -72,7 +72,7 @@
                     </dt>
                     <dd class="govuk-summary-list__value">
                         <% if (locals.roles.length> 0) { %>
-                            <% for (let x=0; x < locals.roles.length; x++) { %>
+                            <% for (let x=0; x <= locals.roles.length; x++) { %>
                                 <% const role=locals.roles[x]; %>
                                     <%= role.name %> <br>
                                         <% } %>

@@ -3,9 +3,10 @@
   "version": "1.0.44",
   "description": "",
   "scripts": {
-    "dev": "settings='./config/login.dfe.services.dev.json' node src/index.js",
+    "dev": "set NODE_ENV = ./config/login.dfe.services.local.json node src/index.js",
     "test": "jest --runInBand --coverage",
-    "lint": "eslint . --ext .js"
+    "lint": "eslint . --ext .js",
+    "start": "node --debug=9230 --inspect=0.0.0.0 /app/src/index.js"
   },
   "engines": {
     "node": "12.x.x"

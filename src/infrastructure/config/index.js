@@ -39,7 +39,7 @@ const fetchConfig = () => {
     }
   }
 
-  throw new Error('Missing configuration');
+  throw new Error('Missing configuration config/login.dfe.services.local.json');
 };
 
 module.exports = fetchConfig();
