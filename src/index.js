@@ -34,7 +34,7 @@ const init = async () => {
   }
 
   const app = express();
-  
+
   if (config.hostingEnvironment.hstsMaxAge) {
     app.use(
       helmet({
@@ -45,8 +45,8 @@ const init = async () => {
         hsts: {
           maxAge: config.hostingEnvironment.hstsMaxAge,
           preload: true,
-        }
-      })
+        },
+      }),
     );
   } else {
     app.use(
@@ -107,7 +107,6 @@ const init = async () => {
     next();
   });
 
-
   app.use(flash());
 
   let assetsUrl = config.assets.url;
@@ -123,7 +122,10 @@ const init = async () => {
     },
     app: {
       title: 'DfE Sign-in',
-      environmentBannerMessage: config.hostingEnvironment.environmentBannerMessage,
+      environmentBannerMessage:
+        config.hostingEnvironment.environmentBannerMessage !== 'null'
+          ? config.hostingEnvironment.environmentBannerMessage
+          : null,
     },
     gaTrackingId: config.hostingEnvironment.gaTrackingId,
     useApproverJourney: config.toggles.useApproverJourney,

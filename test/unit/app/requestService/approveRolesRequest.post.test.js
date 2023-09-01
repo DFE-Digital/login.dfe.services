@@ -5,6 +5,7 @@ const { listRolesOfService, updateUserService } = require('../../../../src/infra
 const { isServiceEmailNotificationAllowed } = require('../../../../src/infrastructure/applications');
 const { createSubServiceAddedBanners } = require('../../../../src/app/home/userBannersHandlers');
 const { getUserServiceRequestStatus, updateServiceRequest } = require('../../../../src/app/requestService/utils');
+const { getOrganisationPermissionLevel } = require('../../../../src/app/accessRequests/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const notificationClient = require('login.dfe.notifications.client');
 const logger = require('./../../../../src/infrastructure/logger');
@@ -46,6 +47,9 @@ jest.mock('login.dfe.dao', () => {
     },
   };
 });
+jest.mock('../../../../src/app/accessRequests/utils', () => ({
+  getOrganisationPermissionLevel: jest.fn(),
+}));
 
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
@@ -151,6 +155,11 @@ describe('When approving a sub service request', () => {
       },
     });
 
+    getOrganisationPermissionLevel.mockReset().mockReturnValue({
+      id: 0,
+      name: 'End user',
+    });
+
     postApproveRolesRequest = require('../../../../src/app/requestService/approveRolesRequest').post;
     sendSubServiceRequestApproved = jest.fn();
     notificationClient.mockReset().mockImplementation(() => ({
@@ -236,6 +245,23 @@ describe('When approving a sub service request', () => {
     expect(isServiceEmailNotificationAllowed.mock.calls).toHaveLength(1);
   });
 
+  it('then it should check the user organisation permission if email notification is allowed for service', async () => {
+    isServiceEmailNotificationAllowed.mockReset().mockReturnValue(true);
+    await postApproveRolesRequest(req, res);
+
+    expect(getOrganisationPermissionLevel.mock.calls).toHaveLength(1);
+    expect(getOrganisationPermissionLevel.mock.calls[0][0]).toBe('endUser1');
+    expect(getOrganisationPermissionLevel.mock.calls[0][1]).toBe('organisationId');
+    expect(getOrganisationPermissionLevel.mock.calls[0][2]).toBe('correlationId');
+  });
+
+  it('then it should not check the user organisation permission if email notification is not allowed for service', async () => {
+    isServiceEmailNotificationAllowed.mockReset().mockReturnValue(false);
+    await postApproveRolesRequest(req, res);
+
+    expect(getOrganisationPermissionLevel.mock.calls).toHaveLength(0);
+  });
+
   it('then it should send an email notification if notifications are allowed', async () => {
     isServiceEmailNotificationAllowed.mockReset().mockReturnValue(true);
     await postApproveRolesRequest(req, res);
@@ -247,6 +273,14 @@ describe('When approving a sub service request', () => {
     expect(sendSubServiceRequestApproved.mock.calls[0][3]).toBe('organisationName');
     expect(sendSubServiceRequestApproved.mock.calls[0][4]).toBe('service name');
     expect(sendSubServiceRequestApproved.mock.calls[0][5]).toStrictEqual(['role_name']);
+    expect(sendSubServiceRequestApproved.mock.calls[0][6]).toEqual({ id: 0, name: 'End user' });
+  });
+
+  it('then it should not send an email notification if notifications are not allowed', async () => {
+    isServiceEmailNotificationAllowed.mockReset().mockReturnValue(false);
+    await postApproveRolesRequest(req, res);
+
+    expect(sendSubServiceRequestApproved.mock.calls).toHaveLength(0);
   });
 
   it('then it should should audit the approval', async () => {

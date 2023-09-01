@@ -154,7 +154,7 @@ const post = async (req, res) => {
     } else {
       res.csrfToken = req.csrfToken();
       res.flash('title', `Important`);
-      res.flash('heading', `Your request cannot be completed as you have no approvers at this oranisation`);
+      res.flash('heading', `Your request cannot be completed as you have no approvers at this organisation`);
       res.flash('message', `Please <a href='${place}/contact-us'>Contact us</a> for help.`);
     }
     return res.redirect('/my-services');

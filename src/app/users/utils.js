@@ -142,6 +142,10 @@ const isReviewServiceReqAmendService = (req) => {
   );
 };
 
+const isReviewSubServiceRequest = (req) => {
+  return req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST;
+};
+
 const getApproverOrgsFromReq = (req) => {
   if (req.userOrganisations) {
     return req.userOrganisations.filter((x) => x.role.id === 10000);
@@ -192,6 +196,35 @@ const isOrgEndUser = (userOrganisations, orgId) => {
   return false;
 };
 
+const isMultipleRolesAllowed = (serviceDetails, numberOfRolesAvailable) => {
+  const maximumRolesAllowed = serviceDetails?.relyingParty?.params?.maximumRolesAllowed;
+  const minimumRolesRequired = serviceDetails?.relyingParty?.params?.minimumRolesRequired;
+
+  const maxRoles = parseInt(maximumRolesAllowed, 10);
+  const minRoles = parseInt(minimumRolesRequired, 10);
+
+  if (numberOfRolesAvailable <= 1) {
+    return false;
+  } else {
+    if (isNaN(maxRoles) && isNaN(minRoles)) {
+      return true;
+    }
+    if (isNaN(maxRoles) && minRoles >= 1) {
+      return true;
+    }
+
+    if (maxRoles >= 2 || minRoles >= 2) {
+      return true;
+    }
+
+    if (maxRoles === 1 && (isNaN(minRoles) || minRoles === 0)) {
+      return false;
+    }
+
+    return false;
+  }
+};
+
 module.exports = {
   getUserDetails,
   getAllServicesForUserInOrg,
@@ -215,4 +248,6 @@ module.exports = {
   isEditService,
   isRemoveService,
   isOrgEndUser,
+  isReviewSubServiceRequest,
+  isMultipleRolesAllowed,
 };

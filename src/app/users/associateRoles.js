@@ -6,6 +6,7 @@ const {
   isManageUserService,
   isReviewServiceReqAmendRole,
   isReviewServiceReqAmendService,
+  isMultipleRolesAllowed,
 } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
@@ -15,10 +16,10 @@ const { actions } = require('../constans/actions');
 
 const renderAssociateRolesPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
-  res.render(
-    `users/views/${isSelfManage ? "associateRolesRedesigned" : "associateRoles" }`,
-    { ...model, currentPage: isSelfManage? "services": "users" }
-  );
+  res.render(`users/views/${isSelfManage ? 'associateRolesRedesigned' : 'associateRoles'}`, {
+    ...model,
+    currentPage: isSelfManage ? 'services' : 'users',
+  });
 };
 
 const buildBackLink = (req, currentServiceIndex) => {
@@ -122,6 +123,10 @@ const getViewModel = async (req) => {
   );
 
   const serviceRoles = policyResult.rolesAvailableToUser;
+  const numberOfRolesAvailable = serviceRoles.length;
+
+  const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(serviceDetails, numberOfRolesAvailable);
+
   const selectedRoles = req.session.user.services
     ? req.session.user.services.find((x) => x.serviceId === req.params.sid)
     : [];
@@ -142,6 +147,7 @@ const getViewModel = async (req) => {
     currentService,
     totalNumberOfServices,
     isRequestSubService,
+    allowedToSelectMoreThanOneRole,
   };
 };
 

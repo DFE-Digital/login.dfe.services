@@ -6,6 +6,7 @@ const {
   getAndMapServiceRequest,
   generateFlashMessages,
   getRoleAndServiceNames,
+  getOrganisationPermissionLevel,
 } = require('./utils');
 const { createSubServiceAddedBanners } = require('../home/userBannersHandlers');
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
@@ -147,6 +148,12 @@ const post = async (req, res) => {
           connectionString: config.notifications.connectionString,
         });
 
+        const permissionLevel = await getOrganisationPermissionLevel(
+          model.viewModel.user_id,
+          model.viewModel.org_id,
+          req.params.rid,
+        );
+
         await notificationClient.sendSubServiceRequestApproved(
           model.viewModel.endUsersEmail,
           model.viewModel.endUsersGivenName,
@@ -154,6 +161,7 @@ const post = async (req, res) => {
           model.viewModel.org_name,
           serviceName,
           rolesName,
+          permissionLevel,
         );
       }
 

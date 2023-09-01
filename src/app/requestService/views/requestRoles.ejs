@@ -32,13 +32,13 @@
                       <legend class="govuk-visually-hidden">'Select all required sub-services'</legend>
 
                       <% if (locals.serviceRoles.length > 0) { %>
-                          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xs">
-                              <p class="govuk-body">Some services ask you to select a sub-service, role, or form to better define how you will use them.
-                                  <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceRoleMessage) { %>
-                                      <%= locals.serviceDetails.relyingParty.params.serviceRoleMessage %>
-                                  <% } %>
-                              </p>
-                          </legend>
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xs">
+                            <p class="govuk-body"> <%= locals.allowedToSelectMoreThanOneRole ? 'Select a minimum of 1 role.' : 'Select 1 role.' %> Some services ask you to select a sub-service, role, or form to better define how you will use them.
+                                <!-- <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceRoleMessage) { %>
+                                    <%= locals.serviceDetails.relyingParty.params.serviceRoleMessage %>
+                                <% } %> -->
+                      </p>
+                    </legend>
 
                           <table class="govuk-table">
                               <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">Select all required sub-services</caption>

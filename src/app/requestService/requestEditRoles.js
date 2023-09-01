@@ -1,12 +1,11 @@
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { getSingleServiceForUser } = require('../../../src/app/users/utils');
+const { getSingleServiceForUser, isMultipleRolesAllowed } = require('../users/utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 const { checkForActiveRequests } = require('./utils');
-const { azureFunctionsTypes } = require('applicationinsights');
 const renderRequestEditRoles = (res, model) => {
   res.render('requestService/views/requestEditRoles', { ...model });
 };
@@ -22,7 +21,11 @@ const getViewModel = async (req) => {
     req.id,
   );
   const serviceRoles = policyResult.rolesAvailableToUser;
+  const numberOfRolesAvailable = serviceRoles.length;
   const application = await getApplication(req.params.sid, req.id);
+
+  const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(application, numberOfRolesAvailable);
+
   const backLink = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
 
   return {
@@ -52,6 +55,7 @@ const getViewModel = async (req) => {
       application.relyingParty && application.relyingParty.params && application.relyingParty.params.serviceRoleMessage
         ? application.relyingParty.params.serviceRoleMessage
         : undefined,
+    allowedToSelectMoreThanOneRole,
   };
 };
 
