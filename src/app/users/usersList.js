@@ -82,6 +82,8 @@ const search = async (req) => {
     }
   }
 
+  usersForOrganisation.users = filterDuplicateUsers(usersForOrganisation.users);
+
   return {
     page,
     sortBy,
@@ -114,6 +116,23 @@ const search = async (req) => {
     },
   };
 };
+
+const filterDuplicateUsers = (users) => {
+  if(!users || users.length == 0) {
+    return users;
+  }
+
+  users.forEach((item, index, object) => {
+    if (item.statusId.description.toLowerCase() == 'invited') {
+      const activeUser = users.find(u => u.email == item.email && u.statusId.description.toLowerCase() == 'active');
+      if (activeUser) {
+        object.splice(index, 1);
+      }
+    }
+  });
+
+  return users;
+}
 
 const buildInviteUserLink = (orgIds) => {
   if (orgIds && orgIds.length === 1) {
