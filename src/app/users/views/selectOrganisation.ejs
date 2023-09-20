@@ -40,6 +40,13 @@
                                             <%= org.naturalIdentifiers.join(', ') %>
                                         </span>
                                     <% } %>
+                                    <br />
+                                    <% if (org.organisation.LegalName) { %>
+                                        <span class="govuk-hint govuk-label__hint" >
+                                            Legal Name:  <%= org.organisation.LegalName %>
+                                        </span>
+                                    <% } %>
+                                    <br />
                                     <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
                                         <span class="govuk-hint govuk-label__hint" >
                                             <%= org.organisation.address %>
