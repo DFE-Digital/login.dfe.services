@@ -2,13 +2,17 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-!-margin-top-3 <%= locals.isApprover ? 'govuk-grid-column-three-quarters' : 'govuk-grid-column-two-thirds' %>">
-            <h1 class="govuk-heading-m govuk-!-margin-top-3">
+            <h1 class="govuk-heading-xl govuk-!-margin-top-3">
                 <% if (locals.isApprover || locals.hasDualPermission) { %>
-                    Add service for which organisation?
+                    Select your Organisation
                 <% } else { %>
-                    Request a service for which organisation?                    
+                    Select your Organisation                 
                 <% } %>
             </h1>
+
+            <p class="govuk-body">
+                You are associated with more than one organisation, please select the one you wish to sign-in with.
+            </p>
 
             <form method="post" class="prevent-form-double-submission">
 
@@ -27,59 +31,42 @@
 
                         <legend class="govuk-visually-hidden">Select the organisation</legend>
 
-                        <table class="govuk-table govuk-!-margin-top-3">
-                            <thead class="govuk-table__head">
-                                <tr class="govuk-table__row extra-padding govuk-grid-row">
-                                    <th scope="col" class="govuk-table__header width-10">Select</th>
-                                    <th scope="col" class="govuk-table__header width-40">Organisation</th>
-                                    <th scope="col" class="govuk-table__header width-20">Status</th>
-                                    <th scope="col" class="govuk-table__header width-30">Reference</th>
-                                </tr>
-                            </thead>
-                            <tbody class="govuk-table__body">
-                                <% 
-                                    for(let i= 0; i < locals.organisations.length; i++) {
-                                        const org = locals.organisations[i];
-                                %>
-                                <tr class="govuk-table__row extra-padding">
-                                    <td class="govuk-table__cell">
-                                        <div class="govuk-radios">
-                                            <div class="govuk-radios__item">
-                                                <input class="govuk-radios__input <%= locals.organisations.length > 2 ? 'auto-scroll-on-change' : '' %>"
-                                                    id="<%= org.organisation.id %>" name="selectedOrganisation" type="radio" value="<%= org.organisation.id %>"
-                                                    <%= org.organisation.id === selectedOrganisation ? 'checked': ''%>
-                                                    >
-                                                <label class="govuk-label govuk-radios__label cursor-pointer"></label>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="govuk-table__cell">
-                                        <label
-                                            class="govuk-label govuk-radios__label govuk-!-font-weight-bold govuk-!-padding-left-0"
-                                            for="<%= org.organisation.id %>">
-                                            <span class="govuk-label govuk-label--s">
-                                                <%= org.organisation.name %>
+                        <div class="govuk-radios">
+
+                            <% for(let i= 0; i < locals.organisations.length; i++) {
+                                const org = locals.organisations[i];
+                            %>
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input <%= locals.organisations.length > 2 ? 'auto-scroll-on-change' : '' %>"
+                                        id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>"
+                                        <%= org.organisation.id === selectedOrganisation ? 'checked': ''%>
+                                        >
+                                    <label class="govuk-label govuk-radios__label" for="<%= org.organisation.id %>">
+                                        <span class="govuk-label govuk-label--s">
+                                            <%= org.organisation.name %> <%=org.organisation.status ? `(${org.organisation.status.name})` : '' %>
+                                        </span>
+                                        <% if (org.naturalIdentifiers) { %>
+                                            <span class="govuk-hint govuk-label__hint" >
+                                                <%= org.naturalIdentifiers.join(', ') %>
                                             </span>
-                                        </label>
-                                    </td>
-                                    <td class="govuk-table__cell">
-                                        <label class="cursor-pointer" for="<%= org.organisation.id %>">
-                                            <%=org.organisation.status ? `${org.organisation.status.name}` : '' %>
-                                        </label>
-                                     </td>
-                                    <td class="govuk-table__cell">
-                                        <label class="cursor-pointer" for="<%= org.organisation.id %>">
-                                            <% if (org.naturalIdentifiers) { %>
-                                                <% for(let i= 0; i < org.naturalIdentifiers.length; i++)  { %>
-                                                    <div> <%= org.naturalIdentifiers[i]  %></div>
-                                                <% } %>
-                                            <% } %>
-                                        </label>
-                                    </td>
-                                </tr>
-                                <% } %>
-                            </tbody>
-                        </table>
+                                        <% } %>
+                                        <br />
+                                        <% if (org.organisation.LegalName) { %>
+                                            <span class="govuk-hint govuk-label__hint" >
+                                                Legal Name:  <%= org.organisation.LegalName %>
+                                            </span>
+                                        <% } %>
+                                        <br />
+                                        <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
+                                            <span class="govuk-hint govuk-label__hint" >
+                                                <%= org.organisation.address %>
+                                            </span>
+                                        <% } %>
+                                    </label>
+                                </div>
+                            <% } %>
+    
+                            </div>
                     </fieldset>
 
                 </div>
