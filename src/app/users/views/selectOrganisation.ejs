@@ -2,9 +2,16 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-xl">
-                Select organisation
+                Select your Organisation
             </h1>
+            <p class="govuk-body">
+                You are associated with more than one organisation, please select the one you wish to sign-in with.
+            </p>
 
+            <h2 class="govuk-heading-m govuk-!-margin-top-3">
+                Your Organisations
+            </h2>
+            
             <form method="post">
 
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
@@ -40,6 +47,13 @@
                                             <%= org.naturalIdentifiers.join(', ') %>
                                         </span>
                                     <% } %>
+                                    <br />
+                                    <% if (org.organisation.LegalName) { %>
+                                        <span class="govuk-hint govuk-label__hint" >
+                                            Legal Name:  <%= org.organisation.LegalName %>
+                                        </span>
+                                    <% } %>
+                                    <br />
                                     <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
                                         <span class="govuk-hint govuk-label__hint" >
                                             <%= org.organisation.address %>
