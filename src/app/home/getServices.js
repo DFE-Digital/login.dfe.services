@@ -64,6 +64,9 @@ const getAndMapServices = async (account, correlationId) => {
                 ? application.relyingParty.params[role.code]
                 : '',
             isRole: true,
+            description: application.relyingParty && application.relyingParty.params && application.relyingParty.params[role.code + '_DESCRIPTION']
+              ? application.relyingParty.params[role.code + '_DESCRIPTION']
+              : '',
           });
         }
         service.hideService = true;
