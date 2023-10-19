@@ -164,6 +164,25 @@ const init = async () => {
   app.use(setUserContext);
   app.use(setConfigContext);
 
+  /*
+    Addressing issue with latest version of passport dependency packge
+    TypeError: req.session.regenerate is not a function
+    Reference: https://github.com/jaredhanson/passport/issues/907#issuecomment-1697590189
+  */
+    app.use((request, response, next) => {
+      if (request.session && !request.session.regenerate) {
+        request.session.regenerate = (cb) => {
+          cb();
+        };
+      }
+      if (request.session && !request.session.save) {
+        request.session.save = (cb) => {
+          cb();
+        };
+      }
+      next();
+    });
+
   registerRoutes(app, csrf);
 
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer(
