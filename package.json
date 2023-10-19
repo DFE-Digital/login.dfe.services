@@ -28,7 +28,7 @@
     "cookie-parser": "^1.4.3",
     "cookie-session": "^2.0.0-beta.3",
     "csurf": "^1.9.0",
-    "ejs": "^2.5.7",
+    "ejs": "^3.1.9",
     "eslint": "^6.8.0",
     "eslint-plugin-prettier": "^3.1.4",
     "express": "^4.15.4",
@@ -60,6 +60,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "ejs-lint": "^2.0.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.2",
     "jest": "^24.9.0",
