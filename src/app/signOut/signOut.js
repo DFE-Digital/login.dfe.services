@@ -78,7 +78,9 @@ const signUserOut = async (req, res) => {
 };
 
 const logout = (req, res) => {
-  req.logout();
+  req.logout(() => {
+    logger.info('user logged out.');
+  });
   req.session = null; // Needed to clear session and completely logout
 };
 
