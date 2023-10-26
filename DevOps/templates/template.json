@@ -175,7 +175,8 @@
                             "TOPIC_NAME": "[parameters('auditServiceBusTopicName')]",
                             "SUBSCRIPTION_NAME": "[parameters('auditServiceBusSubscriptionName')]",
                             "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
-                            "PIREAN_SERVICES": "[parameters('pireanServices')]"
+                            "PIREAN_SERVICES": "[parameters('pireanServices')]",
+                            "emailValidation": "[parameters('emailValidation')]"
                         }
                     },
                      "healthCheckPath": {
@@ -203,9 +204,6 @@
                                 "priority": 10
                             }
                         ]
-                    },
-                    "emailValidation": {
-                        "value": "[parameters('emailValidation')]"
                     }
 
                 }
