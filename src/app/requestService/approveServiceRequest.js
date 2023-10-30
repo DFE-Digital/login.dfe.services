@@ -3,7 +3,11 @@ const { listRolesOfService, addUserService, getServicesForUser } = require('../.
 const { getOrganisationAndServiceForUser } = require('../../infrastructure/organisations');
 const { getUserDetails } = require('../users/utils');
 const { actions } = require('../constans/actions');
-
+const {
+  createSubServiceAddedBanners,
+  createUserBanners,
+  closeSubServiceAddedBanner,
+} = require('../home/userBannersHandlers');
 const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
 
@@ -215,7 +219,7 @@ const post = async (req, res) => {
     viewModel.service.roles.map((i) => i.name),
     mngUserOrgPermission,
   );
-
+  const bannerTing = await createUserBanners(req.user.id, -3);
   logger.audit({
     type: 'services',
     subType: 'access-request',

@@ -1,6 +1,6 @@
 const { directories } = require('login.dfe.dao');
 
-const jobTitleBannerHandler = async (req, res) => {
+const jobTitleBannerHandler = async (req, res, inflight = false) => {
   if (!req.session.user) {
     return res.redirect('/my-services');
   }
@@ -8,7 +8,9 @@ const jobTitleBannerHandler = async (req, res) => {
   const banner = await directories.fetchUserBanners(userId, 2);
   if (!banner) {
     await createUserBanners(userId, 2);
-    res.status(200).send('User banner acknowledgement received').end();
+    if (!inflight) {
+      res.status(200).send('User banner acknowledgement received').end();
+    }
   }
 };
 
