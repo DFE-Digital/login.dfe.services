@@ -18,12 +18,13 @@ const {
 const { fetchSubServiceAddedBanners, jobTitleBannerHandler } = require('../home/userBannersHandlers');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
-const { getApproverOrgsFromReq, isUserEndUser } = require('../users/utils');
+const { getApproverOrgsFromReq, isUserEndUser, isLoginOver24 } = require('../users/utils');
 const { actions } = require('../constans/actions');
 const flash = require('express-flash-2');
 
 const pireanServices = process.env.PIREAN_SERVICES ? process.env.PIREAN_SERVICES.split(',') : [];
 let user = null;
+
 const getAndMapServices = async (account, correlationId) => {
   user = await Account.getById(account.id);
   const isMigrated = user && user.claims ? user.claims.isMigrated : false;
@@ -220,9 +221,9 @@ const getServices = async (req, res) => {
   let showJobTitleBanner = !useJobTitleBanner && !jobTitle;
   //checks for first login if null they havn't logged in yet
   if (user.claims.prev_login !== undefined && user.claims.prev_login !== null  && showJobTitleBanner) {
-    //check last logged in if its within 24 hrs show unless closed
-    let canExecuteNow = moment(user.claims.last_login).isSameOrAfter(user.claims.prev_login);
-    if (canExecuteNow) {
+    //check last logged in if its within 24 hrs show banner
+    const checkfor24 = await isLoginOver24(user.claims.last_login, user.claims.prev_login);
+    if (checkfor24) {
       //close by adding database
       await jobTitleBannerHandler(req, res, true);
       showJobTitleBanner = false;
