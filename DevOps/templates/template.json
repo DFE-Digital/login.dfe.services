@@ -122,6 +122,13 @@
             "metadata": {
                 "description": "Add app settings to support the display of warning messages for pirean services"
             }
+        },
+         "emailValidation": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable black list of email "
+            }
         }
     },
     "variables": {
@@ -168,7 +175,8 @@
                             "TOPIC_NAME": "[parameters('auditServiceBusTopicName')]",
                             "SUBSCRIPTION_NAME": "[parameters('auditServiceBusSubscriptionName')]",
                             "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
-                            "PIREAN_SERVICES": "[parameters('pireanServices')]"
+                            "PIREAN_SERVICES": "[parameters('pireanServices')]",
+                            "emailValidation": "[parameters('emailValidation')]"
                         }
                     },
                      "healthCheckPath": {

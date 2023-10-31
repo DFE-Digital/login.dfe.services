@@ -54,7 +54,7 @@ const validate = async (req) => {
     organisationId: req.params.orgId,
     isDSIUser: false,
   };
-
+  
   const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,60}$/i;
 
   if (!model.firstName) {
@@ -73,7 +73,7 @@ const validate = async (req) => {
     model.validationMessages.email = 'Please enter an email address';
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
     model.validationMessages.email = 'Please enter a valid email address';
-  } else if (config.toggles.environmentName === 'pr' && emailPolicy.isBlacklistedEmail(model.email)) {
+  } else if (process.env.emailValidation !== 'False' && emailPolicy.isBlacklistedEmail(model.email)) {
     model.validationMessages.email = 'This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.';
   } else {
     const existingUser = await Account.getByEmail(model.email);
