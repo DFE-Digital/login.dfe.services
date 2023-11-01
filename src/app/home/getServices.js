@@ -250,7 +250,8 @@ const getServices = async (req, res) => {
 
   const userPireanServices = services.filter((value) => pireanServices.includes(value.name));
   ///testing here for new services use sortby accessGranted to get the latest one
-  let nowDate = new Date().getDate(); //used to determine last logged 24 hrs
+  //used to determine last logged 24 hrs
+  let nowDate = new Date().getDate(); 
   const checklastestaddition = services.filter((x) => {
     return (
       new Date(x.accessGrantedOn).getDate() >= new Date(user.claims.last_login).getDate() &&
