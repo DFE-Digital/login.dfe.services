@@ -9,9 +9,9 @@ const {
 } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
-
+const moment = require('moment');
 const sortBy = require('lodash/sortBy');
-
+const numberOfHours = 24;
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
   const user = await getById(uid, req.id);
@@ -195,7 +195,16 @@ const isOrgEndUser = (userOrganisations, orgId) => {
   }
   return false;
 };
-
+const isLoginOver24 = (last_login, prev_login) => {
+  let a = moment(last_login, "HH:mm")
+  let b = moment(prev_login, "HH:mm")
+  let checkfor24 = a.diff(b, 'hours');
+  if(checkfor24 > numberOfHours)
+  {
+    return true;
+  }
+  return false;
+};
 const isMultipleRolesAllowed = (serviceDetails, numberOfRolesAvailable) => {
   const maximumRolesAllowed = serviceDetails?.relyingParty?.params?.maximumRolesAllowed;
   const minimumRolesRequired = serviceDetails?.relyingParty?.params?.minimumRolesRequired;
@@ -250,4 +259,5 @@ module.exports = {
   isOrgEndUser,
   isReviewSubServiceRequest,
   isMultipleRolesAllowed,
+  isLoginOver24,
 };

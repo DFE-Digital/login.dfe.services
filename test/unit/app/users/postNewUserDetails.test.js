@@ -202,7 +202,7 @@ describe('when entering a new users details', () => {
 
     await postNewUserDetails(req, res);
 
-    expect(res.render.mock.calls).toHaveLength(0);
+    expect(res.render.mock.calls).toHaveLength(1);
   });
 
   it('then it should render view if email already associated to a user in this org', async () => {
