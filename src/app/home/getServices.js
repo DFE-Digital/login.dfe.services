@@ -4,7 +4,7 @@ const { getServicesForUser } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
 const Account = require('./../../infrastructure/account');
 const appCache = require('./../../infrastructure/helpers/AppCache');
-
+const moment = require('moment');
 const { directories } = require('login.dfe.dao');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
@@ -15,18 +15,18 @@ const {
   getPendingRequestsAssociatedWithUser,
   getLatestRequestAssociatedWithUser,
 } = require('./../../infrastructure/organisations');
-const { fetchSubServiceAddedBanners } = require('../home/userBannersHandlers');
+const { fetchSubServiceAddedBanners, jobTitleBannerHandler } = require('../home/userBannersHandlers');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
-const { getApproverOrgsFromReq, isUserEndUser } = require('../users/utils');
+const { getApproverOrgsFromReq, isUserEndUser, isLoginOver24 } = require('../users/utils');
 const { actions } = require('../constans/actions');
 const flash = require('express-flash-2');
 
 const pireanServices = process.env.PIREAN_SERVICES ? process.env.PIREAN_SERVICES.split(',') : [];
-let last_login = undefined;
+let user = null;
+
 const getAndMapServices = async (account, correlationId) => {
-  const user = await Account.getById(account.id);
-  last_login = user.claims.last_login;
+  user = await Account.getById(account.id);
   const isMigrated = user && user.claims ? user.claims.isMigrated : false;
   const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
   let services = serviceAccess.map((sa) => ({
@@ -215,12 +215,20 @@ const getServices = async (req, res) => {
   }
 
   isRequestServiceAllowed = !!requestServicesRedirect;
-
   const { jobTitle } = await Account.getById(req.user.id);
   //2: "job title" notification banner
   const useJobTitleBanner = await directories.fetchUserBanners(req.user.id, 2);
-  const showJobTitleBanner = !useJobTitleBanner && !jobTitle;
-
+  let showJobTitleBanner = !useJobTitleBanner && !jobTitle;
+  //checks for first login if null they havn't logged in yet
+  if (user.claims.prev_login !== undefined && user.claims.prev_login !== null  && showJobTitleBanner) {
+    //check last logged in if its within 24 hrs show banner
+    const checkfor24 = await isLoginOver24(user.claims.last_login, user.claims.prev_login);
+    if (checkfor24) {
+      //close by adding database
+      await jobTitleBannerHandler(req, res, true);
+      showJobTitleBanner = false;
+    }
+  }
   //-3: "Unacknowledged" banner for changed password
   const passwordChangedBanner = await directories.fetchUserBanners(req.user.id, -3);
 
@@ -242,14 +250,16 @@ const getServices = async (req, res) => {
 
   const userPireanServices = services.filter((value) => pireanServices.includes(value.name));
   ///testing here for new services use sortby accessGranted to get the latest one
-  let nowDate = new Date().getDate();
+  //used to determine last logged 24 hrs
+  let nowDate = new Date().getDate(); 
   const checklastestaddition = services.filter((x) => {
     return (
-      new Date(x.accessGrantedOn).getDate() >= new Date(last_login).getDate() &&
+      new Date(x.accessGrantedOn).getDate() >= new Date(user.claims.last_login).getDate() &&
       new Date(x.accessGrantedOn).getDate() <= nowDate
     );
   });
   if (checklastestaddition.length > 0 && (res.locals.flash === undefined || res.locals.flash.title === undefined)) {
+    ///does this exist in userbanner?
     res.locals.flash.title = [`Success`];
     res.locals.flash.heading = `New service added: ${checklastestaddition[0].name}`;
     res.locals.flash.message = `Select the service from the list below to access its functions and features.`;
