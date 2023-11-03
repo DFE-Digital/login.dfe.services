@@ -59,6 +59,47 @@ const createSubServiceAddedBanners = async (endUserId, serviceName, rolesName) =
     );
   }
 };
+const createServiceAddedBanners = async (endUserId, serviceName) => {
+  try {
+    const bannerDetails = JSON.stringify({
+      bannerType: 'Service added',
+      serviceName,
+    });
+    await createUserBanners(endUserId, 5, bannerDetails);
+  } catch (error) {
+    throw new Error(
+      `Failed to create the 'Service added' banner for the user with ID [${endUserId}], service [${serviceName}], and sub-services: ${rolesName.join(
+        ', ',
+      )} - ${error}.
+      `,
+    );
+  }
+};
+
+const fetchNewServiceBanners = async(userId) => { 
+  try {
+  const result = await directories.fetchMultipleUserBanners(userId, 5);
+
+  const banners = result.map(({ id, userId, bannerData }) => {
+    let serviceName = null;
+
+    if (bannerData) {
+      const parsedBannerData = JSON.parse(bannerData);
+      serviceName = parsedBannerData.serviceName || null;
+    }
+
+    return {
+      id,
+      userId,
+      serviceName,
+    };
+  });
+
+  return banners;
+} catch (error) {
+  throw new Error(`Error fetching 'Service added' banners for user ${userId} - ${error}.`);
+}
+};
 
 const fetchSubServiceAddedBanners = async (userId) => {
   try {
@@ -103,10 +144,31 @@ const closeSubServiceAddedBanner = async (req, res) => {
   }
 };
 
+const closeServiceAddedBanner = async (req, res) => {
+  try {
+    const newServiceBanner = await fetchNewServiceBanners(req.user.id, 5);
+  
+    if(newServiceBanner){
+      const banner = newServiceBanner.find((x) => x.serviceName === req.params.bannerId);
+      if(banner){
+      await directories.deleteUserBanner(banner.id);
+      }
+    }
+    
+    res.sendStatus(200).end();
+  } catch (error) {
+    throw new Error(`Error removing 'Service added' banner with id 5 - ${error}.`);
+  }
+};
+
 module.exports = {
   jobTitleBannerHandler,
   passwordChangeBannerHandler,
   createSubServiceAddedBanners,
   fetchSubServiceAddedBanners,
   closeSubServiceAddedBanner,
+  closeServiceAddedBanner,
+  createServiceAddedBanners,
+  createUserBanners,
+  fetchNewServiceBanners,
 };

@@ -4,7 +4,6 @@ const { getServicesForUser } = require('./../../infrastructure/access');
 const { getApplication } = require('./../../infrastructure/applications');
 const Account = require('./../../infrastructure/account');
 const appCache = require('./../../infrastructure/helpers/AppCache');
-const moment = require('moment');
 const { directories } = require('login.dfe.dao');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
@@ -15,7 +14,7 @@ const {
   getPendingRequestsAssociatedWithUser,
   getLatestRequestAssociatedWithUser,
 } = require('./../../infrastructure/organisations');
-const { fetchSubServiceAddedBanners, jobTitleBannerHandler } = require('../home/userBannersHandlers');
+const { fetchSubServiceAddedBanners, jobTitleBannerHandler, fetchNewServiceBanners } = require('../home/userBannersHandlers');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 const { getApproverOrgsFromReq, isUserEndUser, isLoginOver24 } = require('../users/utils');
@@ -222,7 +221,7 @@ const getServices = async (req, res) => {
   //checks for first login if null they havn't logged in yet
   if (user.claims.prev_login !== undefined && user.claims.prev_login !== null  && showJobTitleBanner) {
     //check last logged in if its within 24 hrs show banner
-    const checkfor24 = await isLoginOver24(user.claims.last_login, user.claims.prev_login);
+    const checkfor24 = isLoginOver24(user.claims.last_login, user.claims.prev_login);
     if (checkfor24) {
       //close by adding database
       await jobTitleBannerHandler(req, res, true);
@@ -249,20 +248,22 @@ const getServices = async (req, res) => {
   });
 
   const userPireanServices = services.filter((value) => pireanServices.includes(value.name));
-  ///testing here for new services use sortby accessGranted to get the latest one
-  //used to determine last logged 24 hrs
-  let nowDate = new Date().getDate(); 
-  const checklastestaddition = services.filter((x) => {
-    return (
-      new Date(x.accessGrantedOn).getDate() >= new Date(user.claims.last_login).getDate() &&
-      new Date(x.accessGrantedOn).getDate() <= nowDate
-    );
-  });
-  if (checklastestaddition.length > 0 && (res.locals.flash === undefined || res.locals.flash.title === undefined)) {
-    ///does this exist in userbanner?
-    res.locals.flash.title = [`Success`];
-    res.locals.flash.heading = `New service added: ${checklastestaddition[0].name}`;
-    res.locals.flash.message = `Select the service from the list below to access its functions and features.`;
+  const newServiceBanner = await fetchNewServiceBanners(req.user.id, 5);
+  if(newServiceBanner !== null && newServiceBanner !== undefined && newServiceBanner.length > 0)
+  {
+    if((res.locals.flash === undefined || res.locals.flash.title === undefined))
+    {
+      const checkfor24 = isLoginOver24(user.claims.last_login, user.claims.prev_login);
+      if(!checkfor24){
+        newServiceBanner.forEach((serviceItem) =>{
+          res.flash(["success"], `${serviceItem.serviceName}`)
+        });
+      }else{
+        newServiceBanner.forEach((serviceItem) =>{
+          directories.deleteUserBanner(serviceItem.id);
+        });
+      }
+    }
   }
 
   return res.render('home/views/services', {
