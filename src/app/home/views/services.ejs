@@ -488,10 +488,7 @@
             });
         })
         $('.close-button.pull-right.close_new_service').on('click', function() {
-           
             const itemId = $(this).attr('id');
-
-            alert('close event' + this);
             $.ajax(`/close-service-added/${itemId}`).done(() => {
                 const item = $(`#notification-wrapper-${itemId}`)
                 item.remove();
