@@ -249,15 +249,14 @@ const getServices = async (req, res) => {
 
   const userPireanServices = services.filter((value) => pireanServices.includes(value.name));
   const newServiceBanner = await fetchNewServiceBanners(req.user.id, 5);
+  let newAddedServiceBanner = [];
   if(newServiceBanner !== null && newServiceBanner !== undefined && newServiceBanner.length > 0)
   {
     if((res.locals.flash === undefined || res.locals.flash.title === undefined))
     {
       const checkfor24 = isLoginOver24(user.claims.last_login, user.claims.prev_login);
       if(!checkfor24){
-        newServiceBanner.forEach((serviceItem) =>{
-          res.flash(["success"], `${serviceItem.serviceName}`)
-        });
+        newAddedServiceBanner = newServiceBanner;
       }else{
         newServiceBanner.forEach((serviceItem) =>{
           directories.deleteUserBanner(serviceItem.id);
@@ -269,6 +268,7 @@ const getServices = async (req, res) => {
   return res.render('home/views/services', {
     title: 'Access DfE services',
     user: account,
+    newAddedServiceBanner,
     services,
     currentPage: 'services',
     approverRequests,

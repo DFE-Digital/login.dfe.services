@@ -64,8 +64,8 @@
                                 </strong>
                             </div>
                             <%}%>
-                            <% if (locals.flash.success) { %>
-                              <%  locals.flash.success.forEach((item) => { %>
+                            <% if (locals.newAddedServiceBanner) { %>
+                              <%  locals.newAddedServiceBanner.forEach((item) => { %>
                                 <div id="notification-wrapper-<%=item%>" class="govuk-notification-banner govuk-notification-banner--success"
                                 role="alert" aria-labelledby="govuk-notification-banner-title"
                                 data-module="govuk-notification-banner">
@@ -76,12 +76,12 @@
                                     </h2>
                                 </div>
                                 <div class="govuk-grid-column-one-third">
-                                    <span class="close-button pull-right close_new_service" id="<%= item %>">x</span>
+                                    <span class="close-button pull-right close_new_service" id="<%= item.serviceName %>">x</span>
                                 </div>
                             </div>
                             <div class="govuk-notification-banner__content" id="notification-content">
                                 <h3 class="govuk-notification-banner__heading">
-                                    New Service Added: <%= item %> 
+                                    New Service Added: <%= item.serviceName %> 
                                 </h3>
                                 <p class="govuk-body">
                                     Select the service from the list below to access its functions and features.
