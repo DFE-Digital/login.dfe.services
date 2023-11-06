@@ -23,7 +23,7 @@ jest.mock('./../../../../src/infrastructure/logger', () => ({
 }));
 
 jest.mock('../../../../src/app/home/userBannersHandlers', () => {
-  return { fetchSubServiceAddedBanners: jest.fn() };
+  return { fetchSubServiceAddedBanners: jest.fn(), fetchNewServiceBanners: jest.fn() };
 });
 
 jest.mock('login.dfe.dao', () => {
@@ -43,7 +43,8 @@ const Account = require('./../../../../src/infrastructure/account');
 const { getServicesForUser } = require('./../../../../src/infrastructure/access');
 const { getApplication } = require('./../../../../src/infrastructure/applications');
 const getServices = require('./../../../../src/app/home/getServices');
-const { fetchSubServiceAddedBanners } = require('../../../../src/app/home/userBannersHandlers');
+const { fetchSubServiceAddedBanners, fetchNewServiceBanners } = require('../../../../src/app/home/userBannersHandlers');
+const flash = require('express-flash-2');
 
 const res = mockResponse();
 const userAccess = [{ serviceId: 'service1' }];
@@ -66,13 +67,16 @@ describe('when displaying the users services', () => {
     });
 
     res.mockResetAll();
+    res.locals = {
+      flash: undefined,
+    };
 
     Account.fromContext.mockReset().mockReturnValue({
       id: 'user1',
     });
 
     getServicesForUser.mockReset().mockReturnValue(userAccess);
-
+    fetchNewServiceBanners.mockReset().mockReturnValue([{id: 'banner1', userId: 'user1', serviceName: 'bobs burgers'},{id: 'banner2', userId: 'user1', serviceName: 'Analysis reports'}])
     getApplication.mockReset().mockReturnValue(application);
     Account.getById.mockReset().mockReturnValue({
       claims: {
@@ -149,11 +153,16 @@ describe('when displaying the users services', () => {
 
   it('then it should fetch and display "Sub-service added" banners if there is a user in session and the banners exist', async () => {
     await getServices(req, res);
-
+  
     expect(fetchSubServiceAddedBanners.mock.calls).toHaveLength(1);
     expect(fetchSubServiceAddedBanners.mock.calls[0][0]).toBe('user1');
   });
-
+  it('then it should fetch and display "Service added" banners if there is a user in session and the banners exist', async () => {
+    await getServices(req, res);
+  
+    expect(fetchNewServiceBanners.mock.calls).toHaveLength(1);
+    expect(fetchNewServiceBanners.mock.calls[0][0]).toBe('user1');
+  });
   it('then it should not fetch and display "Sub-service added" banners if there is no user in session', async () => {
     req.user.id = undefined;
     await getServices(req, res);
