@@ -146,15 +146,7 @@ const closeSubServiceAddedBanner = async (req, res) => {
 
 const closeServiceAddedBanner = async (req, res) => {
   try {
-    const newServiceBanner = await fetchNewServiceBanners(req.user.id, 5);
-  
-    if(newServiceBanner){
-      const banner = newServiceBanner.find((x) => x.serviceName === req.params.bannerId);
-      if(banner){
-      await directories.deleteUserBanner(banner.id);
-      }
-    }
-    
+    await directories.deleteUserBanner(req.params.bannerId);
     res.sendStatus(200).end();
   } catch (error) {
     throw new Error(`Error removing 'Service added' banner with id 5 - ${error}.`);
