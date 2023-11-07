@@ -66,7 +66,7 @@
                             <%}%>
                             <% if (locals.newAddedServiceBanner) { %>
                               <%  locals.newAddedServiceBanner.forEach((item) => { %>
-                                <div id="notification-wrapper-<%=item%>" class="govuk-notification-banner govuk-notification-banner--success"
+                                <div id="notification-wrapper-service-added" class="govuk-notification-banner govuk-notification-banner--success"
                                 role="alert" aria-labelledby="govuk-notification-banner-title"
                                 data-module="govuk-notification-banner">
                             <div class="govuk-notification-banner__header govuk-grid-row">
@@ -490,8 +490,7 @@
         $('.close-button.pull-right.close_new_service').on('click', function() {
             const itemId = $(this).attr('id');
             $.ajax(`/close-service-added/${itemId}`).done(() => {
-                const item = $(`#notification-wrapper-${itemId}`)
-                item.remove();
+                $(this).remove();
             });
         })
         $('#close-password-change').on('click', () => {
