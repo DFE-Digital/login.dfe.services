@@ -7,6 +7,7 @@ const { services: daoServices } = require('login.dfe.dao');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
+const { createUserBanners } = require('../home/userBannersHandlers');
 const NotificationClient = require('login.dfe.notifications.client');
 const { response } = require('express');
 const notificationClient = new NotificationClient({
@@ -204,10 +205,15 @@ const post = async (req, res) => {
         organisation.id
       }) for end user (endUserId: ${endUserId}) - requestId (reqId: ${rid})`,
     });
-
+    const serviceName = service.name;
+    const newServiceDetails = JSON.stringify({
+      bannerType: 'Service added',
+      serviceName,
+    });
+    await createUserBanners(endUserId, 5, newServiceDetails);
     res.flash('title', `Success`);
     res.flash('heading', `Service access request approved`);
-    res.flash('message', `${endUsersGivenName} ${endUsersFamilyName} has been added to ${service.name}.`);
+    res.flash('message', `${endUsersGivenName} ${endUsersFamilyName} has been added to ${serviceName}.`);
 
     return res.redirect(`/access-requests/requests`);
   }

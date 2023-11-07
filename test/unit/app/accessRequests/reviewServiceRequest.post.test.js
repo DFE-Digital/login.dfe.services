@@ -6,6 +6,7 @@ const { getUserServiceRequestStatus, updateServiceRequest } = require('../../../
 const PolicyEngine = require('login.dfe.policy-engine');
 const NotificationClient = require('login.dfe.notifications.client');
 const logger = require('./../../../../src/infrastructure/logger');
+const { createUserBanners } = require('../../../../src/app/home/userBannersHandlers');
 
 jest.mock('login.dfe.policy-engine');
 jest.mock('login.dfe.notifications.client');
@@ -25,7 +26,9 @@ jest.mock('../../../../src/infrastructure/access', () => {
     listRolesOfService: jest.fn(),
   };
 });
-
+jest.mock('../../../../src/app/home/userBannersHandlers', () => {
+  return { createUserBanners: jest.fn() };
+});
 jest.mock('../../../../src/app/requestService/utils', () => {
   return {
     getUserServiceRequestStatus: jest.fn(),
@@ -223,7 +226,8 @@ describe('when reviewing a service request', () => {
 
   it('then it should update the service request status to approved', async () => {
     await post(req, res);
-
+    expect(createUserBanners.mock.calls).toHaveLength(1);
+    expect(createUserBanners.mock.calls[0][0]).toBe('end-user-id');
     expect(updateServiceRequest.mock.calls).toHaveLength(1);
     expect(updateServiceRequest.mock.calls[0][0]).toBe('request-id');
     expect(updateServiceRequest.mock.calls[0][1]).toBe(1);

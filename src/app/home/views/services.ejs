@@ -64,7 +64,32 @@
                                 </strong>
                             </div>
                             <%}%>
-    
+                            <% if (locals.newAddedServiceBanner) { %>
+                              <%  locals.newAddedServiceBanner.forEach((item) => { %>
+                                <div id="notification-wrapper-<%=item%>" class="govuk-notification-banner govuk-notification-banner--success"
+                                role="alert" aria-labelledby="govuk-notification-banner-title"
+                                data-module="govuk-notification-banner">
+                            <div class="govuk-notification-banner__header govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                                        Success
+                                    </h2>
+                                </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <span class="close-button pull-right close_new_service" id="<%= item.id %>">x</span>
+                                </div>
+                            </div>
+                            <div class="govuk-notification-banner__content" id="notification-content">
+                                <h3 class="govuk-notification-banner__heading">
+                                    New Service Added: <%= item.serviceName %> 
+                                </h3>
+                                <p class="govuk-body">
+                                    Select the service from the list below to access its functions and features.
+                                </p>
+                            </div>
+                        </div>
+                        <%})%>
+                    <% } %>
                         <!-- Banner messages after completing an action (add service, edit service...) -->
                         <% if(locals.showJobTitleBanner) { %>
                             <div id="notification-wrapper-missing-jobtitle"
@@ -139,7 +164,11 @@
                                         </h2>
                                     </div>
                                     <div class="govuk-grid-column-one-third">
+                                        <% if (locals.flash.heading.includes("New service added")){%>
+                                            <span class="close-button pull-right" id="close_new_service">x</span>
+                                        <%} else { %>
                                         <span class="close-button pull-right" id="close">x</span>
+                                        <%}%>
                                     </div>
                                 </div>
                                 <div class="govuk-notification-banner__content" id="notification-content">
@@ -455,6 +484,13 @@
         $('#close-missing-jobtitle').on('click', () => {
             $.ajax(`/close-missing-jobtitle`).done(() => {
                 const item = $('#notification-wrapper-missing-jobtitle')
+                item.remove();
+            });
+        })
+        $('.close-button.pull-right.close_new_service').on('click', function() {
+            const itemId = $(this).attr('id');
+            $.ajax(`/close-service-added/${itemId}`).done(() => {
+                const item = $(`#notification-wrapper-${itemId}`)
                 item.remove();
             });
         })
