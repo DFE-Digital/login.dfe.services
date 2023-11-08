@@ -33,7 +33,7 @@
                         <% if (locals.serviceRoles.length > 0) { %>
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--xs">
                                 <p class="govuk-body">
-                                  <% const selectRoleText = locals.allowedToSelectMoreThanOneRole ? 'Select a minimum of 1 role.' : 'Select 1 role.' %>
+                                  <% const selectRoleText = (locals.allowedToSelectMoreThanOneRole && !locals.isRoleSelectionConstraintPresent) ? 'Select a minimum of 1 role.' : 'Select 1 role.' %>
                                   <%= selectRoleText %>
                                   <% if (locals.isManage || locals.isReviewSubServiceReq){ %>
                                     Any changes you make to sub-service selection will change access for <%= locals.user.firstName %> <%= locals.user.lastName %>.

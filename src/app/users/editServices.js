@@ -8,6 +8,7 @@ const {
   getUserDetails,
   isReviewSubServiceRequest,
   isMultipleRolesAllowed,
+  RoleSelectionConstraintCheck,
 } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
@@ -69,6 +70,13 @@ const getViewModel = async (req) => {
 
   const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(application, numberOfRolesAvailable);
 
+  const roleSelectionConstraint = application?.relyingParty?.params?.roleSelectionConstraint;
+  
+  let isRoleSelectionConstraintPresent = false;
+  if (roleSelectionConstraint) {
+    isRoleSelectionConstraintPresent = RoleSelectionConstraintCheck(serviceRoles, roleSelectionConstraint)
+  }
+
   return {
     backLink: buildBackLink(req),
     cancelLink: buildCancelLink(req),
@@ -95,6 +103,7 @@ const getViewModel = async (req) => {
     isManage,
     isReviewSubServiceReq,
     allowedToSelectMoreThanOneRole,
+    isRoleSelectionConstraintPresent,
   };
 };
 

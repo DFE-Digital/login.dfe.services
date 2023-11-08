@@ -7,6 +7,7 @@ const {
   isReviewServiceReqAmendRole,
   isReviewServiceReqAmendService,
   isMultipleRolesAllowed,
+  RoleSelectionConstraintCheck,
 } = require('./utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/organisations');
@@ -125,24 +126,12 @@ const getViewModel = async (req) => {
   const serviceRoles = policyResult.rolesAvailableToUser;
   const numberOfRolesAvailable = serviceRoles.length;
 
-  let roleSelectionConstraint = serviceDetails?.relyingParty?.params?.roleSelectionConstraint;
+  const roleSelectionConstraint = serviceDetails?.relyingParty?.params?.roleSelectionConstraint;
   
-  let roleFoundCount = 0;
   let isRoleSelectionConstraintPresent = false;
   if (roleSelectionConstraint) {
-    let roleIds = roleSelectionConstraint.split(',').map( (role) => role.trim());
-    serviceRoles.map( (role) => {
-      if (roleIds.includes(role.id)) {
-        roleFoundCount += 1;
-      }
-    });
+    isRoleSelectionConstraintPresent = RoleSelectionConstraintCheck(serviceRoles, roleSelectionConstraint)
   }
-
-  if (roleFoundCount >= 2) {
-    isRoleSelectionConstraintPresent = true;
-  }
-
-
 
   const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(serviceDetails, numberOfRolesAvailable);
 

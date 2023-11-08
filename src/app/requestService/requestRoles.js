@@ -1,6 +1,6 @@
 'use strict';
 const config = require('../../infrastructure/config');
-const { isMultipleRolesAllowed } = require('../users/utils');
+const { isMultipleRolesAllowed, RoleSelectionConstraintCheck } = require('../users/utils');
 const { getApplication } = require('../../infrastructure/applications');
 const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
 const PolicyEngine = require('login.dfe.policy-engine');
@@ -43,6 +43,14 @@ const getViewModel = async (req) => {
   const numberOfRolesAvailable = serviceRoles.length;
   const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(serviceDetails, numberOfRolesAvailable);
 
+  const roleSelectionConstraint = serviceDetails?.relyingParty?.params?.roleSelectionConstraint;
+
+  let isRoleSelectionConstraintPresent = false;
+  if (roleSelectionConstraint) {
+    isRoleSelectionConstraintPresent = RoleSelectionConstraintCheck(serviceRoles, roleSelectionConstraint);
+  }
+
+
   return {
     csrfToken: req.csrfToken(),
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
@@ -57,6 +65,7 @@ const getViewModel = async (req) => {
     currentService,
     totalNumberOfServices,
     allowedToSelectMoreThanOneRole,
+    isRoleSelectionConstraintPresent,
   };
 };
 
