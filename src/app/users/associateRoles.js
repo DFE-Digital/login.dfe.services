@@ -125,6 +125,25 @@ const getViewModel = async (req) => {
   const serviceRoles = policyResult.rolesAvailableToUser;
   const numberOfRolesAvailable = serviceRoles.length;
 
+  let roleSelectionConstraint = serviceDetails?.relyingParty?.params?.roleSelectionConstraint;
+  
+  let roleFoundCount = 0;
+  let isRoleSelectionConstraintPresent = false;
+  if (roleSelectionConstraint) {
+    let roleIds = roleSelectionConstraint.split(',').map( (role) => role.trim());
+    serviceRoles.map( (role) => {
+      if (roleIds.includes(role.id)) {
+        roleFoundCount += 1;
+      }
+    });
+  }
+
+  if (roleFoundCount >= 2) {
+    isRoleSelectionConstraintPresent = true;
+  }
+
+
+
   const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(serviceDetails, numberOfRolesAvailable);
 
   const selectedRoles = req.session.user.services
@@ -148,6 +167,7 @@ const getViewModel = async (req) => {
     totalNumberOfServices,
     isRequestSubService,
     allowedToSelectMoreThanOneRole,
+    isRoleSelectionConstraintPresent
   };
 };
 
