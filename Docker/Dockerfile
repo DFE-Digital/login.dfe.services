@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/javascript-node:14
+FROM mcr.microsoft.com/devcontainers/javascript-node:18
 
 ENV PORT 8080
 ENV settings /home/site/wwwroot/config/login.dfe.services.tran.json
@@ -42,4 +42,4 @@ RUN chmod 755 tokenization.ps1
 
 EXPOSE 8080 2221
 
-ENTRYPOINT ["/home/site/wwwroot/init.sh"]
+CMD ["init.sh"]

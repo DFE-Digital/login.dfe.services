@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "settings='./config/login.dfe.services.dev.json' node src/index.js",
     "test": "jest --runInBand --coverage",
-    "lint": "eslint . --ext .js"
+    "lint": "eslint . --ext .js",
+    "start": "node src/index.js"
   },
   "engines": {
     "node": "18.x.x"

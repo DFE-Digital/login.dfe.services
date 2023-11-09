@@ -210,10 +210,10 @@
                             const singleSubServiceAdded = (subServiceAddedBanner) => subServiceAddedBanner?.subServiceName?.length === 1;
                           
                             locals.subServiceAddedBanners.forEach((subServiceAddedBanner) => { %>
-                              <div id="notification-wrapper-sub-service-added" class="govuk-notification-banner" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                              <div id="notification-wrapper-sub-service-added" class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
                                 <div class="govuk-notification-banner__header govuk-grid-row">
                                   <div class="govuk-grid-column-two-thirds">
-                                    <h2 class="govuk-notification-banner__title" id="notification-title">Important</h2>
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">Success</h2>
                                   </div>
                                   <div class="govuk-grid-column-one-third">
                                     <span class="close-button pull-right close-sub-service-added-banner" id="<%= subServiceAddedBanner.id %>">x</span>

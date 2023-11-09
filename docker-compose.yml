@@ -9,7 +9,4 @@ services:
     environment:
       NODE_ENV: development
       settings: ./config/login.dfe.services.local.json 
-    ports:
-      - 41012:41012
-      - 9229:9229
-    command: ["node", "--inspect=0.0.0.0:9229", "index.js"]
+    command: ["node", "src/index.js"]

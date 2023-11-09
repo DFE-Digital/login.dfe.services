@@ -232,7 +232,16 @@ const getServices = async (req, res) => {
   const passwordChangedBanner = await directories.fetchUserBanners(req.user.id, -3);
 
   // 4: "Sub-service added" banners fetch
-  const subServiceAddedBanners = req.user.id ? await fetchSubServiceAddedBanners(req.user.id) : null;
+  let subServiceAddedBanners = req.user.id ? await fetchSubServiceAddedBanners(req.user.id) : null;
+  const checkfor24 = isLoginOver24(user.claims.last_login, user.claims.prev_login);
+  if(subServiceAddedBanners){
+    if(checkfor24){
+      subServiceAddedBanners.forEach((serviceItem) =>{
+        directories.deleteUserBanner(serviceItem.id);
+      });
+      subServiceAddedBanners = [];
+    }
+  }
 
   logger.audit({
     type: 'Sign-in',
@@ -254,7 +263,7 @@ const getServices = async (req, res) => {
   {
     if((res.locals.flash === undefined || res.locals.flash.title === undefined))
     {
-      const checkfor24 = isLoginOver24(user.claims.last_login, user.claims.prev_login);
+      
       if(!checkfor24){
         newAddedServiceBanner = newServiceBanner;
       }else{
