@@ -234,6 +234,29 @@ const isMultipleRolesAllowed = (serviceDetails, numberOfRolesAvailable) => {
   }
 };
 
+const RoleSelectionConstraintCheck = (serviceRoles, roleSelectionConstraint) => {
+  try {
+    let roleFoundCount = 0;
+    if (roleSelectionConstraint) {
+      let roleIds = roleSelectionConstraint.split(',').map( (role) => role.trim());
+      serviceRoles.map( (role) => {
+        if (roleIds.includes(role.id)) {
+          roleFoundCount += 1;
+        }
+      });
+    }
+
+    if (roleFoundCount >= 2) {
+      return true;
+    } 
+    return false;
+  } catch (e) {
+    return false;
+  }
+ 
+  
+}
+
 module.exports = {
   getUserDetails,
   getAllServicesForUserInOrg,
@@ -260,4 +283,5 @@ module.exports = {
   isReviewSubServiceRequest,
   isMultipleRolesAllowed,
   isLoginOver24,
+  RoleSelectionConstraintCheck,
 };

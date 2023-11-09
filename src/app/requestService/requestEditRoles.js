@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const config = require('./../../infrastructure/config');
-const { getSingleServiceForUser, isMultipleRolesAllowed } = require('../users/utils');
+const { getSingleServiceForUser, isMultipleRolesAllowed, RoleSelectionConstraintCheck } = require('../users/utils');
 const { getApplication } = require('./../../infrastructure/applications');
 const { actions } = require('../constans/actions');
 const PolicyEngine = require('login.dfe.policy-engine');
@@ -25,6 +25,13 @@ const getViewModel = async (req) => {
   const application = await getApplication(req.params.sid, req.id);
 
   const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(application, numberOfRolesAvailable);
+
+  const roleSelectionConstraint = application?.relyingParty?.params?.roleSelectionConstraint;
+
+  let isRoleSelectionConstraintPresent = false;
+  if (roleSelectionConstraint) {
+    isRoleSelectionConstraintPresent = RoleSelectionConstraintCheck(serviceRoles, roleSelectionConstraint)
+  }
 
   const backLink = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
 
@@ -56,6 +63,7 @@ const getViewModel = async (req) => {
         ? application.relyingParty.params.serviceRoleMessage
         : undefined,
     allowedToSelectMoreThanOneRole,
+    isRoleSelectionConstraintPresent,
   };
 };
 
