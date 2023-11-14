@@ -176,8 +176,8 @@
                             "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
                             "PIREAN_SERVICES": "[parameters('pireanServices')]",
                             "emailValidation": "[parameters('emailValidation')]",
-                            "WEBSITE LOCAL CACHE OPTION": "Always",
-                            "WEBSITE LOCAL CACHE SIZEINMB": "2000"
+                            "WEBSITE_LOCAL_CACHE_OPTION": "Always",
+                            "WEBSITE_LOCAL_CACHE_SIZEINMB": "2000"
                         }
                     },
                      "healthCheckPath": {
