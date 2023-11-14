@@ -26,6 +26,13 @@ pr:
     - develop
 
 parameters:
+- name: location
+  type: string
+  displayName: 'Select Deploy location'
+  default: westeurope
+  values:
+    - westeurope
+    - northeurope
 - name: AppDeploy
   type: boolean
   displayName: 'App Deployment only'
@@ -126,6 +133,7 @@ stages:
         nodeVersionSpec: '18.17.0'
         npmInstCmd: 'install --force --json --no-package-lock'
         npmPruneFixCmd: 'install --production --json --force --no-package-lock'
+        deploymentLocation: ${{parameters.location}}
 
 
 - ${{ each var in variables }}:
@@ -158,6 +166,7 @@ stages:
                 certificateName: non-prod-gateway
               AppDeploy: ${{parameters.AppDeploy}}
               runtimeStack: NODE|18-lts
+              deploymentLocation: ${{parameters.location}}
 
         - ${{ if parameters.AppDeploy }}:
           - template: pipeline/deploy.yml@devopsTemplates
@@ -174,4 +183,5 @@ stages:
               releaseArtifactName: ${{variables.applicationFullName}}-${{var.key}}-$(Build.BuildId)-release
               InfrDeploy: ${{parameters.InfrDeploy}}
               runtimeStack: NODE|18-lts
+              deploymentLocation: ${{parameters.location}}
     
