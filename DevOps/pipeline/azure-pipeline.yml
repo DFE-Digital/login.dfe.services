@@ -77,7 +77,7 @@ variables:
     value: false
 - name: dev
   ${{ if or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}:
-    value: true
+    value: false
   ${{ else }}:
     value: false
 - name: test
