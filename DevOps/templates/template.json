@@ -198,7 +198,7 @@
                     "ipSecurityRestrictions": {
                         "value": [
                             {
-                                "vnetSubnetResourceId": "AzureFrontDoor.Backend",
+                                "ipAddress": "AzureFrontDoor.Backend",
                                 "action": "Allow",
                                 "tag": "ServiceTag",
                                 "name": "AzureFrontDoor",
