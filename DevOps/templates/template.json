@@ -207,7 +207,7 @@
                                 "priority": 10,
                                 "headers": {
                                     "x-azure-fdid": [
-                                        "[reference(resourceId(variables('frontDoorRg'),'Microsoft.Cdn/profiles', variables('frontDoorName'))).frontDoorId]"
+                                        "[reference(resourceId(variables('frontDoorRg'),'Microsoft.Cdn/profiles', variables('frontDoorName')), '2022-11-01-preview').frontDoorId]"
                                     ]
                                 }
                             }
