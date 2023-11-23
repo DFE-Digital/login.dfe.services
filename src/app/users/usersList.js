@@ -4,6 +4,7 @@ const { getAllUsersForOrg, searchForUsers } = require('../../infrastructure/sear
 const { getById } = require('../../infrastructure/account');
 const { getApproverOrgsFromReq } = require('./utils');
 const { actions } = require('../constans/actions');
+const he = require('he');
 
 const clearUserSessionData = (req) => {
   if (req.session.user) {
@@ -38,7 +39,7 @@ const search = async (req) => {
   let usersForOrganisation;
   if (paramsSource.searchCriteria && paramsSource.searchCriteria.length >= 3) {
     usersForOrganisation = await searchForUsers(
-      paramsSource.searchCriteria.replace(' ', '*&*').trim() + '*',
+      `${paramsSource.searchCriteria}*`,
       page,
       sortBy,
       sortAsc ? 'asc' : 'desc',
@@ -210,7 +211,7 @@ const post = async (req, res) => {
     totalNumberOfResults: result.totalNumberOfResults,
     inviteUserUrl,
     requestsUrl,
-    searchCriteria: result.searchCriteria,
+    searchCriteria: he.decode(result.searchCriteria),
   });
 };
 
