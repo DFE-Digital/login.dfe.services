@@ -71,7 +71,7 @@
                         Sub-service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        <% if (locals.roles.length < 1  || locals.roles == undefined) { %>
+                        <% if (locals.roles == undefined || locals.roles.length < 1  ) { %>
                             <% for (let x=0; x <= locals.roles.length; x++) { %>
                                 <% if(locals.roles[x] !== undefined){%>
                                 <% const role=locals.roles[x]; %>
