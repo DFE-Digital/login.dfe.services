@@ -56,7 +56,7 @@
                             
                             <% if (locals.validationMessages.roles !== undefined) { %>
                                 <span id="validation-selected-role" class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.roles %>
+                                    <span class="govuk-visually-hidden">There is a problem</span> <%-locals.validationMessages.roles%>
                                 </span>
                             <% } %>
                             
@@ -142,7 +142,7 @@
 
                             <% if (locals.validationMessages.roles !== undefined) { %>
                                 <span id="validation-selected-role" class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.roles %>
+                                    <span class="govuk-visually-hidden">There is a problem</span> <%-locals.validationMessages.roles%>
                                 </span>
                             <% } %>
 
