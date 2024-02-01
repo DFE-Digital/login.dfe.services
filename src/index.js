@@ -6,7 +6,7 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const expressLayouts = require('express-ejs-layouts');
-const session = require('cookie-session');
+const session = require('express-session');
 const moment = require('moment');
 const http = require('http');
 const https = require('https');
@@ -163,25 +163,6 @@ const init = async () => {
   app.use(passport.session());
   app.use(setUserContext);
   app.use(setConfigContext);
-
-  /*
-    Addressing issue with latest version of passport dependency packge
-    TypeError: req.session.regenerate is not a function
-    Reference: https://github.com/jaredhanson/passport/issues/907#issuecomment-1697590189
-  */
-    app.use((request, response, next) => {
-      if (request.session && !request.session.regenerate) {
-        request.session.regenerate = (cb) => {
-          cb();
-        };
-      }
-      if (request.session && !request.session.save) {
-        request.session.save = (cb) => {
-          cb();
-        };
-      }
-      next();
-    });
 
   registerRoutes(app, csrf);
 
