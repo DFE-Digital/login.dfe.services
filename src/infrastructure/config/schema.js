@@ -20,6 +20,34 @@ const notificationsSchema = new SimpleSchema({
   connectionString: patterns.redis,
 });
 
+const serviceMappingSchema = new SimpleSchema({
+  type: {
+    type: String,
+    allowedValues: ['redis'],
+  },
+  params: {
+    type: Object,
+    optional: true,
+    custom: function () {
+      if (this.siblingField('type').value === 'redis' && !this.isSet) {
+        return SimpleSchema.ErrorTypes.REQUIRED
+      }
+    }
+  },
+  'params.connectionString': {
+    type: String,
+    regEx: patterns.redis,
+    optional: true,
+    custom: function () {
+      if (this.field('type').value === 'redis' && !this.isSet) {
+        return SimpleSchema.ErrorTypes.REQUIRED
+      }
+    },
+  },
+  key2SuccessServiceId: patterns.uuid,
+});
+
+
 const organisationRequestsSchema = new SimpleSchema({
   requestLimit: {
     type: SimpleSchema.Integer,
@@ -59,6 +87,7 @@ const schema = new SimpleSchema({
     optional: true,
   },
   adapter: adapterSchema,
+  serviceMapping: serviceMappingSchema,
   assets: schemas.assets,
 });
 
