@@ -23,9 +23,16 @@ const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-hand
 
 const registerRoutes = require('./routes');
 
+https.globalAgent.maxSockets = http.globalAgent.maxSockets = config.hostingEnvironment.agentKeepAlive.maxSockets || 50;
+
+configSchema.validate();
+
 // Initialize client.
 let redisClient = createClient({
-  url: config.serviceMapping.params.connectionString
+  url: config.serviceMapping.params.connectionString,
+  socket: {
+    tls: true
+  }
 });
 
 // Initialize store.
@@ -34,13 +41,7 @@ let redisStore = new RedisStore({
   prefix: 'CookieSession:',
 });
 
-https.globalAgent.maxSockets = http.globalAgent.maxSockets = config.hostingEnvironment.agentKeepAlive.maxSockets || 50;
-
-configSchema.validate();
-
-(async () => { 
-  await redisClient.connect().catch(console.error)
-});
+redisClient.connect().catch(console.error)
 
 redisClient.on('error', function (err) {
     console.log('Could not establish a connection with redis. ', err);
