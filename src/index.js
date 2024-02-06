@@ -29,7 +29,7 @@ configSchema.validate();
 
 // Initialize client.
 let redisClient = createClient({
-  url: config.serviceMapping.params.connectionString,
+  url: config.cookieSessionRedis.params.connectionString,
   socket: {
     tls: true
   }

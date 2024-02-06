@@ -20,7 +20,7 @@ const notificationsSchema = new SimpleSchema({
   connectionString: patterns.redis,
 });
 
-const serviceMappingSchema = new SimpleSchema({
+const cookieSessionRedisSchema = new SimpleSchema({
   type: {
     type: String,
     allowedValues: ['redis'],
@@ -44,7 +44,6 @@ const serviceMappingSchema = new SimpleSchema({
       }
     },
   },
-  key2SuccessServiceId: patterns.uuid,
 });
 
 
@@ -87,7 +86,7 @@ const schema = new SimpleSchema({
     optional: true,
   },
   adapter: adapterSchema,
-  serviceMapping: serviceMappingSchema,
+  cookieSessionRedis: cookieSessionRedisSchema,
   assets: schemas.assets,
 });
 
