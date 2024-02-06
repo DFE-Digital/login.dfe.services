@@ -11,6 +11,7 @@ const Account = require('../../../../src/infrastructure/account');
 jest.mock('../../../../src/infrastructure/config', () => {
   return mockAdapterConfig()
 });
+jest.mock('login.dfe.notifications.client');
 const sendAccessRequest = jest.fn();
 jest.mock('../../../../src/infrastructure/logger', () => require('../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/infrastructure/account', () => ({

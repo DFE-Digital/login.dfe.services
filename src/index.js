@@ -6,11 +6,12 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const expressLayouts = require('express-ejs-layouts');
-const session = require('cookie-session');
+const session = require('express-session');
+const { createClient } = require('redis');
+const RedisStore = require('connect-redis').default;
 const moment = require('moment');
 const http = require('http');
 const https = require('https');
-const fs = require('fs');
 const path = require('path');
 const csurf = require('csurf');
 const flash = require('express-flash-2');
@@ -25,6 +26,30 @@ const registerRoutes = require('./routes');
 https.globalAgent.maxSockets = http.globalAgent.maxSockets = config.hostingEnvironment.agentKeepAlive.maxSockets || 50;
 
 configSchema.validate();
+
+// Initialize client.
+let redisClient = createClient({
+  url: config.cookieSessionRedis.params.connectionString,
+  socket: {
+    tls: true
+  }
+});
+
+// Initialize store.
+let redisStore = new RedisStore({
+  client: redisClient, 
+  prefix: 'CookieSession:',
+});
+
+redisClient.connect().catch(console.error)
+
+redisClient.on('error', function (err) {
+    console.log('Could not establish a connection with redis. ', err);
+});
+
+redisClient.on('connect', function (err) {
+    console.log('Connected to redis successfully');
+});
 
 const init = async () => {
   let expiryInMinutes = 30;
@@ -106,8 +131,11 @@ const init = async () => {
   app.set('views', path.resolve(__dirname, 'app'));
   app.use(expressLayouts);
   app.set('layout', 'layouts/layout');
+
   app.use(
     session({
+      name: 'session',
+      store: redisStore,
       resave: true,
       saveUninitialized: true,
       secret: config.hostingEnvironment.sessionSecret,
@@ -164,25 +192,6 @@ const init = async () => {
   app.use(setUserContext);
   app.use(setConfigContext);
 
-  /*
-    Addressing issue with latest version of passport dependency packge
-    TypeError: req.session.regenerate is not a function
-    Reference: https://github.com/jaredhanson/passport/issues/907#issuecomment-1697590189
-  */
-    app.use((request, response, next) => {
-      if (request.session && !request.session.regenerate) {
-        request.session.regenerate = (cb) => {
-          cb();
-        };
-      }
-      if (request.session && !request.session.save) {
-        request.session.save = (cb) => {
-          cb();
-        };
-      }
-      next();
-    });
-
   registerRoutes(app, csrf);
 
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer(
@@ -233,7 +242,7 @@ const init = async () => {
 };
 
 const app = init().catch((err) => {
-  logger.error(err);
+  logger.error('Error ocurred: ', err);
 });
 
 module.exports = app;

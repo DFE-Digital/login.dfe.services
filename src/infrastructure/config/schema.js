@@ -20,6 +20,33 @@ const notificationsSchema = new SimpleSchema({
   connectionString: patterns.redis,
 });
 
+const cookieSessionRedisSchema = new SimpleSchema({
+  type: {
+    type: String,
+    allowedValues: ['redis'],
+  },
+  params: {
+    type: Object,
+    optional: true,
+    custom: function () {
+      if (this.siblingField('type').value === 'redis' && !this.isSet) {
+        return SimpleSchema.ErrorTypes.REQUIRED
+      }
+    }
+  },
+  'params.connectionString': {
+    type: String,
+    regEx: patterns.redis,
+    optional: true,
+    custom: function () {
+      if (this.field('type').value === 'redis' && !this.isSet) {
+        return SimpleSchema.ErrorTypes.REQUIRED
+      }
+    },
+  },
+});
+
+
 const organisationRequestsSchema = new SimpleSchema({
   requestLimit: {
     type: SimpleSchema.Integer,
@@ -59,6 +86,7 @@ const schema = new SimpleSchema({
     optional: true,
   },
   adapter: adapterSchema,
+  cookieSessionRedis: cookieSessionRedisSchema,
   assets: schemas.assets,
 });
 

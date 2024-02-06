@@ -1,6 +1,7 @@
 'use strict';
 
-const winston = require('winston');
+const { format, transports, createLogger } = require('winston');
+const { combine, timestamp, prettyPrint, colorize, errors, simple  } = format;
 const config = require('./../config');
 const AuditTransporter = require('login.dfe.audit.transporter');
 const appInsights = require('applicationinsights');
@@ -11,13 +12,13 @@ const logLevel =
 
 const customLevels = {
   levels: {
-    audit: 0,
-    error: 1,
-    warn: 2,
-    info: 3,
-    verbose: 4,
-    debug: 5,
-    silly: 6,
+    'audit': 0,
+    'error': 1,
+    'warn': 2,
+    'info': 3,
+    'verbose': 4,
+    'debug': 5,
+    'silly': 6,
   },
   colors: {
     info: 'yellow',
@@ -32,11 +33,11 @@ const loggerConfig = {
   transports: [],
 };
 
-loggerConfig.transports.push(new winston.transports.Console({ level: logLevel, colorize: true }));
+loggerConfig.transports.push(new transports.Console({ level: logLevel, colorize: false }));
 
 if (config && config.loggerSettings && config.loggerSettings.redis && config.loggerSettings.redis.enabled) {
   loggerConfig.transports.push(
-    new winston.transports.Redis({
+    new transports.Redis({
       level: 'audit',
       length: 4294967295,
       host: config.loggerSettings.redis.host,
@@ -65,7 +66,15 @@ if (config.hostingEnvironment.applicationInsights) {
   );
 }
 
-const logger = winston.createLogger(loggerConfig);
+const logger = createLogger({
+  format: combine(    
+    simple(),
+    errors({ stack: true }), 
+    prettyPrint()
+  ),
+  transports: loggerConfig.transports,
+  levels: loggerConfig.levels
+}); 
 
 process.on('unhandledRejection', (reason, p) => {
   logger.error(`Unhandled Rejection at: ${JSON.stringify(p)}, reason: ${reason}`);
