@@ -91,28 +91,28 @@ const get = async (req, res) => {
   const model = await getViewModel(req);
   const { request, action, requestedRolesIds, service, endUserId } = model;
   const { rid, sid, rolesIds } = req.params;
-  req.session = {
-    ...req.session,
-    action: action,
-    reviewServiceRequest: {
-      serviceReqId: rid,
-      serviceId: sid,
-      selectedRoleIds: rolesIds,
-    },
-    user: {
-      ...req.session.user,
-      uid: endUserId,
-      firstName: request.endUsersGivenName,
-      lastName: request.endUsersFamilyName,
-      email: request.endUsersEmail,
-      services: [
-        {
-          serviceId: sid,
-          roles: requestedRolesIds,
-        },
-      ],
-    },
+  req.session.action = action; 
+  req.session.reviewServiceRequest = {
+    serviceReqId: rid,
+    serviceId: sid,
+    selectedRoleIds: rolesIds,
   };
+
+  req.session.user = {
+    ...req.session.user,
+    uid: endUserId,
+    firstName: request.endUsersGivenName,
+    lastName: request.endUsersFamilyName,
+    email: request.endUsersEmail,
+    services: [
+      {
+        serviceId: sid,
+        roles: requestedRolesIds,
+      },
+    ],
+  };
+    
+
 
   if (request.approverEmail) {
     const reqStatus = request.dataValues.status;
