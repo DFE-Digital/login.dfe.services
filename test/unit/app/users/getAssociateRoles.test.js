@@ -6,9 +6,10 @@ jest.mock('./../../../../src/infrastructure/applications', () => {
   };
 });
 
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
+const { mockRequest, mockResponse, mockConfig } = require('./../../../utils/jestMocks');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getApplication } = require('./../../../../src/infrastructure/applications');
+const { actions } = require('../../../../src/app/constans/actions');
 
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
@@ -17,10 +18,11 @@ const policyEngine = {
 describe('when displaying the associate roles view', () => {
   let req;
   let res;
-
+  let config;
   let getAssociateRoles;
 
   beforeEach(() => {
+    config = mockConfig();
     req = mockRequest();
     req.params = {
       uid: 'user1',
@@ -29,6 +31,7 @@ describe('when displaying the associate roles view', () => {
     };
     req.session = {
       user: {
+        uid:'07ba1cce-0f24-400f-b9bb-50ee72e93d6f',
         email: 'test@test.com',
         firstName: 'test',
         lastName: 'name',
@@ -122,4 +125,41 @@ describe('when displaying the associate roles view', () => {
     expect(getApplication.mock.calls).toHaveLength(1);
     expect(getApplication.mock.calls[0][0]).toBe('service1');
   });
+
+  it ('then it gets the correct cancel redirect link when adding new service to an end user', async () => {
+  await getAssociateRoles(req,res);
+  expect(res.render.mock.calls[0][1]).toMatchObject({
+    cancelLink: '/approvals/users/07ba1cce-0f24-400f-b9bb-50ee72e93d6f',
+  })
+})
+
+it ('then it gets the correct cancel redirect link reviewing a service request as an approver and amending the role', async () => {
+
+  req.query.action = actions.REVIEW_SERVICE_REQ_ROLE;
+  req.session.reviewServiceRequest = {
+    serviceReqId: 'service-request-id',
+    serviceId: 'service1', 
+    selectedRoleIds: 'roleId-1'
+  }
+
+  await getAssociateRoles(req,res);
+  expect(res.render.mock.calls[0][1]).toMatchObject({
+    cancelLink: `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/access-requests/service-requests/service-request-id/services/service1/roles/roleId-1`
+  })
+})
+
+it ('then it gets the correct cancel redirect link reviewing a service request as an approver and amending the service', async () => {
+
+  req.query.action = actions.REVIEW_SERVICE_REQ_SERVICE;
+  req.session.reviewServiceRequest = {
+    serviceReqId: 'service-request-id',
+    serviceId: 'service1', 
+    selectedRoleIds: 'roleId-1'
+  }
+
+  await getAssociateRoles(req,res);
+  expect(res.render.mock.calls[0][1]).toMatchObject({
+    cancelLink: `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/access-requests/service-requests/service-request-id/services/service1/roles/roleId-1`
+  })
+})
 });

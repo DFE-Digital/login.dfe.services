@@ -98,7 +98,7 @@ const buildCancelLink = (req) => {
     const rolesIds = encodeURIComponent(selectedRoleIds);
     return `${baseUrl}/access-requests/service-requests/${serviceReqId}/services/${serviceId}/roles/${rolesIds}`;
   } else {
-    return `/approvals/users/${req.session.user.id}`;
+    return `/approvals/users/${req.session.user.uid}`;
   }
 };
 
