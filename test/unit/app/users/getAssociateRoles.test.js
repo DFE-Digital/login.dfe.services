@@ -6,10 +6,19 @@ jest.mock('./../../../../src/infrastructure/applications', () => {
   };
 });
 
+jest.mock('../../../../src/app/users/utils', () => {
+  const originalUtils = jest.requireActual('../../../../src/app/users/utils');
+  return {
+    ...originalUtils,
+    RoleSelectionConstraintCheck: jest.fn()
+  };
+});
+
 const { mockRequest, mockResponse, mockConfig } = require('./../../../utils/jestMocks');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getApplication } = require('./../../../../src/infrastructure/applications');
 const { actions } = require('../../../../src/app/constans/actions');
+const { RoleSelectionConstraintCheck } = require('../../../../src/app/users/utils')
 
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
@@ -126,14 +135,14 @@ describe('when displaying the associate roles view', () => {
     expect(getApplication.mock.calls[0][0]).toBe('service1');
   });
 
-  it ('then it gets the correct cancel redirect link when adding new service to an end user', async () => {
+  it ('then it gets the correct "Cancel" redirect link when adding new service to an end user', async () => {
   await getAssociateRoles(req,res);
   expect(res.render.mock.calls[0][1]).toMatchObject({
     cancelLink: '/approvals/users/07ba1cce-0f24-400f-b9bb-50ee72e93d6f',
   })
 })
 
-it ('then it gets the correct cancel redirect link reviewing a service request as an approver and amending the role', async () => {
+it ('then it gets the correct "Cancel" redirect link reviewing a service request as an approver and amending the role', async () => {
 
   req.query.action = actions.REVIEW_SERVICE_REQ_ROLE;
   req.session.reviewServiceRequest = {
@@ -148,7 +157,7 @@ it ('then it gets the correct cancel redirect link reviewing a service request a
   })
 })
 
-it ('then it gets the correct cancel redirect link reviewing a service request as an approver and amending the service', async () => {
+it ('then it gets the correct "Cancel" redirect link reviewing a service request as an approver and amending the service', async () => {
 
   req.query.action = actions.REVIEW_SERVICE_REQ_SERVICE;
   req.session.reviewServiceRequest = {
@@ -162,4 +171,90 @@ it ('then it gets the correct cancel redirect link reviewing a service request a
     cancelLink: `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/access-requests/service-requests/service-request-id/services/service1/roles/roleId-1`
   })
 })
+
+it ('then the "Back" link should redirect to select organisation page when inviting a new user and a single service is selected', async () => {
+  req.session.user.isInvite = true;
+  req.params.uid = undefined;
+  
+  await getAssociateRoles(req,res);
+  expect(res.render.mock.calls[0][1]).toMatchObject({
+    backLink: '/approvals/org1/users/associate-services'
+  })
+})
+
+it ('then the "Back" link should redirect to select the correct page when inviting a new user and multiple services are selected', async () => {
+  req.session.user.isInvite = true;
+  req.params.uid = undefined;
+  req.params.sid = 'service2'
+  req.session.user.services = [
+    {
+      serviceId: 'service1',
+      roles: ['role-id-1'],
+    },
+    {
+      serviceId: 'service2',
+      roles: ['role-id-2'],
+    },
+  ];
+
+  await getAssociateRoles(req,res);
+  expect(res.render.mock.calls[0][1]).toMatchObject({
+    backLink: `/approvals/org1/users/associate-services/service1`
+  })
+})
+
+it ('then the "Back" link should redirect to service request review summary page when ammending a sub-service for approving - email journey', async () => {
+  req.query.action = actions.REQUEST_SERVICE;
+  req.session.user= {
+    services:[],
+    serviceId:'service-1',
+    roleIds:['role-id-1']}
+  await getAssociateRoles(req,res);
+  expect(res.render.mock.calls[0][1]).toMatchObject({
+    backLink: `/request-service/org1/users/user1/services/service-1/roles/%5B%22role-id-1%22%5D/approve`
+  })
+})
+
+it ('then the "Back" link should redirect to sub-service request review summary page when ammending a sub-service for approving - email journey', async () => {
+  req.query.action = actions.REQUEST_SUB_SERVICE;
+  req.session.subServiceReqId = 'sub-service-req-id-1'
+  req.session.user= {
+    services:[],
+    serviceId:'service-1',
+    roleIds:['role-id-1']}
+  await getAssociateRoles(req,res);
+  expect(res.render.mock.calls[0][1]).toMatchObject({
+    backLink: `https://localhost:3000/request-service/org1/users/undefined/services/service1/roles/%5B%22role-id-1%22%5D/sub-service-req-id-1/approve-roles-request`
+  })
+})
+
+it ('then the "Back" link should redirect to review service page when adding a service for an end-user and modifying the sub-service', async () => {
+  req.query.action = actions.MANAGE_SERVICE;
+
+  await getAssociateRoles(req,res);
+  expect(res.render.mock.calls[0][1]).toMatchObject({
+    backLink: '/approvals/org1/users/user1/confirm-details'
+  })
+})
+
+it('then it should call RoleSelectionConstraintCheck if there are any role selection constraints', async () => {
+  getApplication.mockReset().mockReturnValue({
+    relyingParty: {
+      params: {
+        allowManageInvite: 'true',
+        isIdOnly: 'false',
+        minimumRolesRequired: '1',
+        serviceId: 'service1',
+        roleSelectionConstraint: {
+          minAllowed: 1, 
+          maxAllowed: 2, 
+        },
+      },
+    },
+  });
+
+  await getAssociateRoles(req, res);
+  expect(RoleSelectionConstraintCheck).toHaveBeenCalled();
+});
+
 });
