@@ -135,14 +135,14 @@ const getViewModel = async (req) => {
 
   const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(serviceDetails, numberOfRolesAvailable);
 
-  const selectedRoles = req.session.user.services
+  const selectedRoles = req.session.user.services.length
     ? req.session.user.services.find((x) => x.serviceId === req.params.sid)
     : [];
 
   const isRequestSubService = req.query.action === actions.REQUEST_SUB_SERVICE && req.session.subServiceReqId ? true : false;
   return {
     csrfToken: req.csrfToken(),
-    name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
+    name: `${req.session.user.firstName} ${req.session.user.lastName}`,
     user: req.session.user,
     validationMessages: {},
     backLink: buildBackLink(req, currentServiceIndex),
