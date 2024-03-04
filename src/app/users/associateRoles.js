@@ -43,7 +43,7 @@ const buildBackLink = (req, currentServiceIndex) => {
   } else if (isReviewServiceReqAmendServiceUrl) {
     const action = actions.REVIEW_SERVICE_REQ_SERVICE;
     return `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${action}`;
-  } else if (req.query.action === 'request-sub-service' && req.session.subServiceReqId && req.session) {
+  } else if (req.query.action === actions.REQUEST_SUB_SERVICE && req.session.subServiceReqId && req.session) {
     return `${baseUrl}/request-service/${req.params.orgId}/users/${req.session.user.uid}/services/${
       req.params.sid
     }/roles/${encodeURIComponent(JSON.stringify(req.session.user.roleIds))}/${
@@ -66,7 +66,7 @@ const buildBackLink = (req, currentServiceIndex) => {
 const buildNextLink = (req, selectedRoles) => {
   const baseUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`;
   if (req.session.user.uid) {
-    if (req.query.action === 'request-sub-service' && req.session.subServiceReqId) {
+    if (req.query.action === actions.REQUEST_SUB_SERVICE && req.session.subServiceReqId) {
       return `${baseUrl}/request-service/${req.params.orgId}/users/${req.session.user.uid}/services/${
         req.params.sid
       }/roles/${encodeURIComponent(JSON.stringify(selectedRoles))}/${
@@ -98,7 +98,7 @@ const buildCancelLink = (req) => {
     const rolesIds = encodeURIComponent(selectedRoleIds);
     return `${baseUrl}/access-requests/service-requests/${serviceReqId}/services/${serviceId}/roles/${rolesIds}`;
   } else {
-    return `/approvals/users/${req.session.user.id}`;
+    return `/approvals/users/${req.session.user.uid}`;
   }
 };
 
@@ -127,7 +127,7 @@ const getViewModel = async (req) => {
   const numberOfRolesAvailable = serviceRoles.length;
 
   const roleSelectionConstraint = serviceDetails?.relyingParty?.params?.roleSelectionConstraint;
-  
+
   let isRoleSelectionConstraintPresent = false;
   if (roleSelectionConstraint) {
     isRoleSelectionConstraintPresent = RoleSelectionConstraintCheck(serviceRoles, roleSelectionConstraint)
@@ -135,14 +135,14 @@ const getViewModel = async (req) => {
 
   const allowedToSelectMoreThanOneRole = isMultipleRolesAllowed(serviceDetails, numberOfRolesAvailable);
 
-  const selectedRoles = req.session.user.services
+  const selectedRoles = req.session.user.services.length
     ? req.session.user.services.find((x) => x.serviceId === req.params.sid)
     : [];
 
-  const isRequestSubService = req.query.action === 'request-sub-service' && req.session.subServiceReqId ? true : false;
+  const isRequestSubService = req.query.action === actions.REQUEST_SUB_SERVICE && req.session.subServiceReqId ? true : false;
   return {
     csrfToken: req.csrfToken(),
-    name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
+    name: `${req.session.user.firstName} ${req.session.user.lastName}`,
     user: req.session.user,
     validationMessages: {},
     backLink: buildBackLink(req, currentServiceIndex),
