@@ -65,7 +65,7 @@ const getRoleAndServiceNames = async (subModel, requestId, req) => {
   ////add loop here to populate role and session role
   subModel.role_ids.forEach((item) => {
     let roleDetails = allRolesOfService.find((x) => x.id === item.id);
-    if (req !== undefined) {
+    if (req !== undefined && roleDetails) {
       req.session.roles.push(roleDetails);
     }
     subModel.roles.push(roleDetails);

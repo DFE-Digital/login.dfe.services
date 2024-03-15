@@ -71,15 +71,15 @@
                         Sub-service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        <% if (locals.roles == undefined || locals.roles.length < 1  ) { %>
+                        <% if (!locals.roles  || locals.roles.length < 1  ) { %>
+                            No roles selected
+                        <% } else { %>
                             <% for (let x=0; x <= locals.roles.length; x++) { %>
                                 <% if(locals.roles[x] !== undefined){%>
                                 <% const role=locals.roles[x]; %>
                                     <%= role.name %> <br>
-                                        <%} } %>
-                                            <% } else { %>
-                                                No roles selected
-                                                <% } %>
+                            <%} } %>
+                        <% } %>
                     </dd>
                     <dd class="govuk-summary-list__actions">
                         <a class="govuk-link" href="<%=locals.subServiceAmendUrl %>">
