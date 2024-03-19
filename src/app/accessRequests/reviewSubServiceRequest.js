@@ -74,7 +74,7 @@ const get = async (req, res) => {
       user.claims.email,
       viewModel.endUsersGivenName,
       viewModel.endUsersFamilyName,
-      viewModel.roles.map((i) => i.name),
+      viewModel.roles.map((i) => i?.name),
       res,
     );
     res.flash('title', `${title}`);
@@ -136,7 +136,7 @@ const post = async (req, res) => {
       req.params.rid,
     );
     if (request.success) {
-      const rolesName = model.viewModel.roles.map((i) => i.name);
+      const rolesName = model.viewModel.roles.map((i) => i?.name);
       const serviceName = model.viewModel.Service_name;
       const endUserId = model.viewModel.user_id;
 
