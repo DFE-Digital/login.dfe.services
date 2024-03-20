@@ -17,7 +17,7 @@ const { actions } = require('../constans/actions');
 
 const renderAssociateRolesPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
-   res.render(`users/views/${isSelfManage ? 'associateRolesRedesigned' : 'associateRoles'}`, {
+  res.render(`users/views/${isSelfManage ? 'associateRolesRedesigned' : 'associateRoles'}`, {
     ...model,
     currentPage: isSelfManage ? 'services' : 'users',
   });
