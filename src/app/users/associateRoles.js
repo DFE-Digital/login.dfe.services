@@ -17,7 +17,7 @@ const { actions } = require('../constans/actions');
 
 const renderAssociateRolesPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
-  res.render(`users/views/${isSelfManage ? 'associateRolesRedesigned' : 'associateRoles'}`, {
+   res.render(`users/views/${isSelfManage ? 'associateRolesRedesigned' : 'associateRoles'}`, {
     ...model,
     currentPage: isSelfManage ? 'services' : 'users',
   });
@@ -166,7 +166,7 @@ const get = async (req, res) => {
   }
 
   const model = await getViewModel(req);
-  renderAssociateRolesPage(req, res, model);
+   return renderAssociateRolesPage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -201,7 +201,7 @@ const post = async (req, res) => {
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
-    renderAssociateRolesPage(req, res, model);
+    return renderAssociateRolesPage(req, res, model);
   }
 
   if (currentService < req.session.user.services.length - 1) {
