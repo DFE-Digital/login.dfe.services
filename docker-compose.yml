@@ -1,8 +1,8 @@
 version: '3.4'
 
 services:
-  login.dfe.ervices:
-    image: login.dfe.services
+  logindfeservices:
+    image: logindfeservices
     build:
       context: .
       dockerfile: ./Docker/Dockerfile
