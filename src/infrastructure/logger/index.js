@@ -1,7 +1,7 @@
 'use strict';
 
-const { format, transports, createLogger } = require('winston');
-const { combine, timestamp, prettyPrint, colorize, errors, simple  } = format;
+const { format, transports, createLogger, addColors } = require('winston');
+const { combine, prettyPrint, errors, simple } = format;
 const config = require('./../config');
 const AuditTransporter = require('login.dfe.audit.transporter');
 const appInsights = require('applicationinsights');
@@ -21,19 +21,25 @@ const customLevels = {
     'silly': 6,
   },
   colors: {
-    info: 'yellow',
-    ok: 'green',
-    error: 'red',
     audit: 'magenta',
+    silly: 'rainbow',
   },
 };
+
+// Formatter to hide audit records from other loggers.
+const hideAudit = format((info) => ((info.level.toLowerCase() === 'audit') ? false : info));
+// Add the custom audit/silly colours, so they don't clash.
+addColors(customLevels.colors);
 
 const loggerConfig = {
   levels: customLevels.levels,
   transports: [],
 };
 
-loggerConfig.transports.push(new transports.Console({ level: logLevel, colorize: false }));
+loggerConfig.transports.push(new transports.Console({ 
+  format: format.combine(hideAudit(), format.simple()),
+  level: logLevel
+ }));
 
 if (config && config.loggerSettings && config.loggerSettings.redis && config.loggerSettings.redis.enabled) {
   loggerConfig.transports.push(
@@ -58,6 +64,7 @@ if (config.hostingEnvironment.applicationInsights) {
   appInsights.setup(config.hostingEnvironment.applicationInsights).setAutoCollectConsole(false, false).start();
   loggerConfig.transports.push(
     new AppInsightsTransport({
+      format: format.combine(hideAudit(), format.json()),
       client: appInsights.defaultClient,
       applicationName: config.loggerSettings.applicationName || 'Services',
       type: 'event',
