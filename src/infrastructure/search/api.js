@@ -1,14 +1,13 @@
 const config = require('./../config');
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 const getAllUsersForOrg = async (page, orgIds, sortBy, sortDirection, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
     let endpoint = `${config.search.service.url}/users`;
-    return await rp({
+    return await fetchApi(endpoint, {
       method: 'POST',
-      uri: endpoint,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -19,7 +18,6 @@ const getAllUsersForOrg = async (page, orgIds, sortBy, sortDirection, correlatio
         sortBy,
         sortDirection,
       },
-      json: true,
     });
   } catch (e) {
     if (e.statusCode === 404) {
@@ -34,9 +32,8 @@ const searchForUsers = async (criteria, page, sortBy, sortDirection, filters, se
   try {
     let endpoint = `${config.search.service.url}/users`;
 
-    const results = await rp({
+    const results = await fetchApi(`${endpoint}`, {
       method: 'POST',
-      uri: `${endpoint}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -49,7 +46,6 @@ const searchForUsers = async (criteria, page, sortBy, sortDirection, filters, se
         searchFields,
         ...filters,
       },
-      json: true,
     });
 
     return {
@@ -65,14 +61,12 @@ const searchForUsers = async (criteria, page, sortBy, sortDirection, filters, se
 const getById = async (userId, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
-    return await rp({
+    return await fetchApi(`${config.search.service.url}/users/${userId}`, {
       method: 'GET',
-      uri: `${config.search.service.url}/users/${userId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      json: true,
     });
   } catch (e) {
     if (e.statusCode === 404) {
@@ -95,15 +89,13 @@ const updateIndex = async (userId, organisations, email, services, correlationId
     if (services) {
       body.services = services;
     }
-    await rp({
+    await fetchApi(`${config.search.service.url}/users/${userId}`, {
       method: 'PATCH',
-      uri: `${config.search.service.url}/users/${userId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
       body,
-      json: true,
     });
     return true;
   } catch (e) {
@@ -120,9 +112,8 @@ const updateIndex = async (userId, organisations, email, services, correlationId
 const createIndex = async (id, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
-    await rp({
+    await fetchApi(`${config.search.service.url}/users/update-index`, {
       method: 'POST',
-      uri: `${config.search.service.url}/users/update-index`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -130,7 +121,6 @@ const createIndex = async (id, correlationId) => {
       body: {
         id,
       },
-      json: true,
     });
     return true;
   } catch (e) {

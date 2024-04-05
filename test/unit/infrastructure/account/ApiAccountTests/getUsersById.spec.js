@@ -1,11 +1,13 @@
 const { mockAdapterConfig } = require('../../../../utils/jestMocks');
 
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry', () => ({
+  fetchApi: jest.fn(),
+}));
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../../../src/infrastructure/config', () => {
   return mockAdapterConfig();
 });
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 jest.mock('login.dfe.dao', () => {
   return {
     directories: {
@@ -39,7 +41,7 @@ describe('When getting a collection of users', () => {
       getBearerToken,
     }));
 
-    rp.mockReset().mockReturnValue([]);
+    fetchApi.mockReset().mockReturnValue([]);
 
     Account = require('./../../../../../src/infrastructure/account/DirectoriesApiAccount');
   });
@@ -56,7 +58,7 @@ describe('When getting a collection of users', () => {
   });
 
   it('then it should return a list of users', async () => {
-    rp.mockImplementation(() => users);
+    fetchApi.mockImplementation(() => users);
 
     const actual = await Account.getUsersById(userIds);
 
@@ -64,7 +66,7 @@ describe('When getting a collection of users', () => {
   });
 
   it('then it should reject if password change fails', async () => {
-    rp.mockImplementation(() => {
+    fetchApi.mockImplementation(() => {
       const error = new Error('Unit test');
       error.statusCode = 401;
       throw error;

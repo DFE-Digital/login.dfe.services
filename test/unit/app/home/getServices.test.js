@@ -44,7 +44,7 @@ const { getServicesForUser } = require('./../../../../src/infrastructure/access'
 const { getApplication } = require('./../../../../src/infrastructure/applications');
 const getServices = require('./../../../../src/app/home/getServices');
 const { fetchSubServiceAddedBanners, fetchNewServiceBanners } = require('../../../../src/app/home/userBannersHandlers');
-const flash = require('express-flash-2');
+const flash = require('login.dfe.express-flash-2');
 
 const res = mockResponse();
 const userAccess = [{ serviceId: 'service1' }];

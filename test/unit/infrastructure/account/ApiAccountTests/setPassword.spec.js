@@ -1,11 +1,13 @@
 const { mockAdapterConfig } = require('../../../../utils/jestMocks');
 
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry', () => ({
+  fetchApi: jest.fn(),
+}));
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../../../src/infrastructure/config', () => {
   return mockAdapterConfig();
 });
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 jest.mock('login.dfe.dao', () => {
   return {
     directories: {
@@ -41,7 +43,7 @@ describe('When setting a users password', () => {
       getBearerToken,
     }));
 
-    rp.mockReset();
+    fetchApi.mockReset();
     const Account = require('./../../../../../src/infrastructure/account/DirectoriesApiAccount');
     account = Account.fromContext(user);
   });

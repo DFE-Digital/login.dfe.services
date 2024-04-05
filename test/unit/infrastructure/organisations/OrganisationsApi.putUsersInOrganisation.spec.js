@@ -1,6 +1,8 @@
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry', () => ({
+  fetchApi: jest.fn(),
+}));
 jest.mock('login.dfe.jwt-strategies', () => () => ({
   getBearerToken: () => 'token',
 }));
@@ -150,7 +152,7 @@ jest.mock('login.dfe.dao', () => {
 });
 
 const dao = require('login.dfe.dao');
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 
 describe('when putting a user in organisations for approval', () => {
   let req;
@@ -161,8 +163,8 @@ describe('when putting a user in organisations for approval', () => {
     req = mockRequest();
     res = mockResponse();
 
-    rp.mockReset();
-    rp.mockReturnValue({});
+    fetchApi.mockReset();
+    fetchApi.mockReturnValue({});
     apiCall = require('./../../../../src/infrastructure/organisations/api');
   });
 

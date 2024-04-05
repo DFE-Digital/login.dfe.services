@@ -1,6 +1,6 @@
 const Account = require('./Account');
 const config = require('./../config');
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { directories, invitation } = require('login.dfe.dao');
 
@@ -9,16 +9,14 @@ const callDirectoriesApi = async (resource, body, method = 'POST') => {
   try {
     const opts = {
       method,
-      uri: `${config.directories.service.url}/${resource}`,
       headers: {
         authorization: `bearer ${token}`,
       },
-      json: true,
     };
     if (method === 'POST' || method === 'PATCH') {
       opts.body = body;
     }
-    const result = await rp(opts);
+    const result = await fetchApi(`${config.directories.service.url}/${resource}`, opts);
 
     return {
       success: true,
