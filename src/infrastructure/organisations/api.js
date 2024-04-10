@@ -1,6 +1,6 @@
 const config = require('./../config');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 const { organisation, invitation, services } = require('login.dfe.dao');
 
 const callApi = async (method, path, correlationId, body) => {
@@ -12,17 +12,15 @@ const callApi = async (method, path, correlationId, body) => {
   const basePathSeperator = hasSeperator ? '' : '/';
   const opts = {
     method,
-    uri: `${config.organisations.service.url}${basePathSeperator}${path}`,
     headers: {
       authorization: `bearer ${token}`,
       'x-correlation-id': correlationId,
     },
-    json: true,
   };
   if (body && (method === 'POST' || method !== 'PUT' || method !== 'PATCH')) {
     opts.body = body;
   }
-  return rp(opts);
+  return fetchApi(`${config.organisations.service.url}${basePathSeperator}${path}`, opts);
 };
 
 const getOrganisationAndServiceForUser = async (userId, correlationId) => {

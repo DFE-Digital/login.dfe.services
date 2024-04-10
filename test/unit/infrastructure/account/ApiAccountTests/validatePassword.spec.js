@@ -1,6 +1,8 @@
 const { mockAdapterConfig } = require('../../../../utils/jestMocks');
 
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry', () => ({
+  fetchApi: jest.fn(),
+}));
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../../../src/infrastructure/config', () => {
   return mockAdapterConfig();
@@ -19,7 +21,7 @@ jest.mock('login.dfe.dao', () => {
     },
   };
 });
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 
 describe('When validating a users password', () => {
   const user = { email: 'user.one@unit.test' };
@@ -34,7 +36,7 @@ describe('When validating a users password', () => {
     jwtStrategy.mockImplementation(() => ({
       getBearerToken,
     }));
-    rp.mockReset();
+    fetchApi.mockReset();
 
     const Account = require('./../../../../../src/infrastructure/account/DirectoriesApiAccount');
     account = Account.fromContext(user);
@@ -43,10 +45,10 @@ describe('When validating a users password', () => {
   it('then it should authenticate user against directories api', async () => {
     await account.validatePassword(password);
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0].method).toBe('POST');
-    expect(rp.mock.calls[0][0].uri).toBe('http://unit.test.local/users/authenticate');
-    expect(rp.mock.calls[0][0].body).toMatchObject({
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://unit.test.local/users/authenticate');
+    expect(fetchApi.mock.calls[0][1].method).toBe('POST');
+    expect(fetchApi.mock.calls[0][1].body).toMatchObject({
       username: user.email,
       password,
     });
@@ -56,7 +58,7 @@ describe('When validating a users password', () => {
     await account.validatePassword(password);
 
     expect(getBearerToken.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0].headers.authorization).toBe('bearer token');
+    expect(fetchApi.mock.calls[0][1].headers.authorization).toBe('bearer token');
   });
 
   it('then it should return true is password is valid', async () => {
@@ -66,7 +68,7 @@ describe('When validating a users password', () => {
   });
 
   it('then it should return false when api returns error', async () => {
-    rp.mockImplementation(() => {
+    fetchApi.mockImplementation(() => {
       const error = new Error('Unit test');
       error.statusCode = 401;
       throw error;

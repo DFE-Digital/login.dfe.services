@@ -1,6 +1,8 @@
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry', () => ({
+  fetchApi: jest.fn(),
+}));
 jest.mock('login.dfe.jwt-strategies', () => () => ({
   getBearerToken: () => 'token',
 }));
@@ -148,7 +150,7 @@ jest.mock('login.dfe.dao', () => {
   };
 });
 
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 
 describe('when getting users in organisations for approval', () => {
   let req;
@@ -159,8 +161,8 @@ describe('when getting users in organisations for approval', () => {
     req = mockRequest();
     res = mockResponse();
 
-    rp.mockReset();
-    rp.mockReturnValue([
+    fetchApi.mockReset();
+    fetchApi.mockReturnValue([
       {
         user_id: '05A8B9E2-3550-4655-875D-01B017EC2555',
         organisation_id: 'FA460F7C-8AB9-4CEE-AAFF-82D6D341D702',
@@ -190,15 +192,15 @@ describe('when getting users in organisations for approval', () => {
   it('then it should query organisations api', async () => {
     await adapter.getOrganisationUsersForApproval('user1');
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0].uri).toBe('http://orgs.api.test/organisations/users-for-approval/user1');
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://orgs.api.test/organisations/users-for-approval/user1');
   });
 
   it('then it should include the bearer token for authorization', async () => {
     await adapter.getOrganisationUsersForApproval('user1');
 
-    expect(rp.mock.calls[0][0].headers).not.toBeNull();
-    expect(rp.mock.calls[0][0].headers.authorization).toBe('bearer token');
+    expect(fetchApi.mock.calls[0][1].headers).not.toBeNull();
+    expect(fetchApi.mock.calls[0][1].headers.authorization).toBe('bearer token');
   });
 
   it('then it should map api result to array of user-organisations', async () => {

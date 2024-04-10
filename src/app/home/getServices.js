@@ -19,7 +19,7 @@ const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 const { getApproverOrgsFromReq, isUserEndUser, isLoginOver24 } = require('../users/utils');
 const { actions } = require('../constans/actions');
-const flash = require('express-flash-2');
+const flash = require('login.dfe.express-flash-2');
 
 const pireanServices = process.env.PIREAN_SERVICES ? process.env.PIREAN_SERVICES.split(',') : [];
 let user = null;
