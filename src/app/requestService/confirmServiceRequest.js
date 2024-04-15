@@ -13,7 +13,7 @@ const notificationClient = new NotificationClient({
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
 const renderConfirmNewUserPage = (req, res, model) => {
-  res.render('requestService/views/confirmServiceRequest', model);
+  return res.render('requestService/views/confirmServiceRequest', model);
 };
 
 const buildBackLink = (req, services) => {
@@ -60,7 +60,7 @@ const get = async (req, res) => {
     organisationDetails,
   };
 
-  renderConfirmNewUserPage(req, res, model);
+  return renderConfirmNewUserPage(req, res, model);
 };
 
 const post = async (req, res) => {

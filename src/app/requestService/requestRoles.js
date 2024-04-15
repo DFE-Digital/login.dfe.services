@@ -6,7 +6,7 @@ const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/org
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 const renderAssociateRolesPage = (_req, res, model) => {
-  res.render('requestService/views/requestRoles', model);
+  return res.render('requestService/views/requestRoles', model);
 };
 
 const buildBackLink = (req) => {
@@ -75,7 +75,7 @@ const get = async (req, res) => {
   }
 
   const model = await getViewModel(req);
-  renderAssociateRolesPage(req, res, model);
+  return renderAssociateRolesPage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -109,7 +109,7 @@ const post = async (req, res) => {
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
-    renderAssociateRolesPage(req, res, model);
+    return renderAssociateRolesPage(req, res, model);
   }
 
   return res.redirect(`/request-service/${req.params.orgId}/users/${req.user.sub}/confirm-request`);
