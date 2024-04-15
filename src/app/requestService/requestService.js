@@ -11,7 +11,7 @@ const { checkForActiveRequests } = require('./utils');
 const policyEngine = new PolicyEngine(config);
 
 const renderAssociateServicesPage = (_req, res, model) => {
-  res.render('requestService/views/requestService', model);
+  return res.render('requestService/views/requestService', model);
 };
 
 const buildBackLink = (req) => {

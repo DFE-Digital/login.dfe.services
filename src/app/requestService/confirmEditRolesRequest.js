@@ -10,7 +10,7 @@ const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructu
 const { v4: uuid } = require('uuid');
 
 const renderConfirmEditRolesPage = (res, model) => {
-  res.render('requestService/views/confirmEditRolesRequest', { ...model });
+  return res.render('requestService/views/confirmEditRolesRequest', { ...model });
 };
 
 const getSelectedRoles = async (req) => {

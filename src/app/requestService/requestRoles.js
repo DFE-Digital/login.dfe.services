@@ -6,7 +6,7 @@ const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/org
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 const renderAssociateRolesPage = (_req, res, model) => {
-  res.render('requestService/views/requestRoles', model);
+  return res.render('requestService/views/requestRoles', model);
 };
 
 const buildBackLink = (req) => {

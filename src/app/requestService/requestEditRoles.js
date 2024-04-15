@@ -7,7 +7,7 @@ const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 const { checkForActiveRequests } = require('./utils');
 const renderRequestEditRoles = (res, model) => {
-  res.render('requestService/views/requestEditRoles', { ...model });
+  return res.render('requestService/views/requestEditRoles', { ...model });
 };
 
 const getViewModel = async (req) => {
