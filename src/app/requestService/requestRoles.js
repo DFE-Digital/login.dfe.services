@@ -75,7 +75,7 @@ const get = async (req, res) => {
   }
 
   const model = await getViewModel(req);
-  renderAssociateRolesPage(req, res, model);
+  return renderAssociateRolesPage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -109,7 +109,7 @@ const post = async (req, res) => {
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
     model.validationMessages.roles = policyValidationResult.map((x) => x.message);
-    renderAssociateRolesPage(req, res, model);
+    return renderAssociateRolesPage(req, res, model);
   }
 
   return res.redirect(`/request-service/${req.params.orgId}/users/${req.user.sub}/confirm-request`);

@@ -59,7 +59,7 @@ const get = async (req, res) => {
     service,
   };
 
-  renderConfirmEditRolesPage(res, model);
+  return renderConfirmEditRolesPage(res, model);
 };
 
 const post = async (req, res) => {

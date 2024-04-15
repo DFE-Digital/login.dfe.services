@@ -83,7 +83,7 @@ const get = async (req, res) => {
     isInvite: req.session.user.isInvite,
   };
 
-  renderAssociateServicesPage(req, res, model);
+  return renderAssociateServicesPage(req, res, model);
 };
 
 const validate = async (req) => {

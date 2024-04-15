@@ -60,7 +60,7 @@ const get = async (req, res) => {
     organisationDetails,
   };
 
-  renderConfirmNewUserPage(req, res, model);
+  return renderConfirmNewUserPage(req, res, model);
 };
 
 const post = async (req, res) => {

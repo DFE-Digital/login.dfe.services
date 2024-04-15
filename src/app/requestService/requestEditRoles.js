@@ -81,7 +81,7 @@ const get = async (req, res) => {
   }
 
   saveRoleInSession(req, model.service.roles);
-  renderRequestEditRoles(res, model);
+  return renderRequestEditRoles(res, model);
 };
 
 const post = async (req, res) => {
