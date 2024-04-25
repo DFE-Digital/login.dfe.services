@@ -35,7 +35,7 @@ const getViewModel = async (req) => {
     req.id,
   );
 
-  const serviceRoles = policyResult.rolesAvailableToUser;
+  const serviceRoles = policyResult.rolesAvailableToUser.sort((a, b) => a.name.localeCompare(b.name));
   const selectedRoles = req.session.user.services
     ? req.session.user.services.find((x) => x.serviceId === req.params.sid)
     : [];

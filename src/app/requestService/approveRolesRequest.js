@@ -48,7 +48,7 @@ const getViewModel = async (req, existingModel) => {
   const service = {
     serviceId,
     name: serviceDetails.name,
-    roles: roleDetails,
+    roles: roleDetails.sort((a, b) => a.name.localeCompare(b.name)),
   };
 
   const model = {
