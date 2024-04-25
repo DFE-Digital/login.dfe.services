@@ -61,7 +61,6 @@ typings/
 !/config/login.dfe.services.dev.json
 /config/
 
-
 .idea/workspace.xml
 .idea/watcherTasks.xml
 access.log

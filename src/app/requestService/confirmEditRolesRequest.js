@@ -15,7 +15,8 @@ const renderConfirmEditRolesPage = (res, model) => {
 
 const getSelectedRoles = async (req) => {
   let selectedRoleIds = req.session.service.roles;
-  const allRolesOfService = await listRolesOfService(req.params.sid, req.id);
+  let allRolesOfServiceUnsorted = await listRolesOfService(req.params.sid, req.id);
+  let allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
   let rotails;
 
   if (selectedRoleIds && !Array.isArray(selectedRoleIds)) {

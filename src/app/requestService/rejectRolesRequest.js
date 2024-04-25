@@ -20,7 +20,8 @@ const getViewModel = async (req) => {
 
   const allServices = await checkCacheForAllServices(req.id);
   const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-  const allRolesOfService = await listRolesOfService(serviceId, req.id);
+  const allRolesOfServiceUnsorted = await listRolesOfService(req.params.sid, req.id);
+  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
   const roleDetails = allRolesOfService.filter((x) => roles.find((y) => y.toLowerCase() === x.id.toLowerCase()));
 
   const service = {
