@@ -40,7 +40,8 @@ const getViewModel = async (req, existingModel) => {
 
   const allServices = await checkCacheForAllServices(req.id);
   const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-  const allRolesOfService = await listRolesOfService(serviceId, req.id);
+  const allRolesOfServiceUnsorted = await listRolesOfService(serviceId, req.id);
+  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
   const roleDetails = allRolesOfService.filter((x) => roles.find((y) => y.toLowerCase() === x.id.toLowerCase()));
 
   const subServiceAmendUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${serviceId}?action=${actions.REQUEST_SUB_SERVICE}`;
