@@ -65,7 +65,7 @@ const get = async (req, res) => {
     if (req.session.roleIds !== viewModel.role_ids) {
       viewModel.role_ids = req.session.roleIds;
       let submodel = await getRoleAndServiceNames(viewModel, req.params.rid, req);
-      viewModel.roles = submodel.roles.filter((x) => x !== undefined);
+      viewModel.roles = submodel.roles.filter((x) => x !== undefined).sort((a, b) => a.name.localeCompare(b.name));
       //req.session.roleIds = undefined;
       req.session.roles = viewModel.roles;
     } else {

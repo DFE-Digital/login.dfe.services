@@ -54,7 +54,8 @@ const post = async (req, res) => {
   const approver = req.user;
 
   const requestedRolesIds = roleIds && roleIds !== 'null' ? roleIds.split(',') : [];
-  const allRolesOfService = await listRolesOfService(serviceId, rid);
+  const allRolesOfServiceUnsorted = await listRolesOfService(serviceId, rid);
+  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
   const selectedRoles = allRolesOfService.filter((x) =>
     requestedRolesIds.find((y) => y.toLowerCase() === x.id.toLowerCase()),
   );

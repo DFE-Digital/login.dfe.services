@@ -21,7 +21,8 @@ const getViewModel = async (req) => {
   const endUserId = request.dataValues.user_id;
 
   const requestedRolesIds = roleIds && roleIds !== 'null' ? roleIds.split(',') : [];
-  const allRolesOfService = await listRolesOfService(req.params.sid, req.id);
+  const allRolesOfServiceUnsorted = await listRolesOfService(req.params.sid, req.id);
+  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
   const selectedRoles = allRolesOfService.filter((x) =>
     requestedRolesIds.find((y) => y.toLowerCase() === x.id.toLowerCase()),
   );
