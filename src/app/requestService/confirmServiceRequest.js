@@ -37,7 +37,8 @@ const get = async (req, res) => {
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
     const serviceDetails = allServices.services.find((x) => x.id === service.id);
-    const allRolesOfService = await listRolesOfService(service.id, req.id);
+    const allRolesOfServiceUnsorted = await listRolesOfService(service.id, req.id);
+    const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
     const rotails = allRolesOfService.filter((x) =>
       service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
     );
@@ -75,7 +76,8 @@ const post = async (req, res) => {
   const allServices = await checkCacheForAllServices();
   const serviceDetails = allServices.services.find((x) => x.id === req.session.user.services[0].serviceId);
   
-  const allRolesOfService = await listRolesOfService(serviceDetails.id, req.id);
+  const allRolesOfServiceUnsorted = await listRolesOfService(serviceDetails.id, req.id);
+  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
   const roles = allRolesOfService.filter((x) =>
       req.session.user.services[0].roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
   )

@@ -56,7 +56,8 @@ const getRoleAndServiceNames = async (subModel, requestId, req) => {
   let roleIds = subModel.role_ids;
   const allServices = await checkCacheForAllServices(requestId);
   const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-  const allRolesOfService = await listRolesOfService(serviceId, subModel.role_ids);
+  const allRolesOfServiceUnsorted = await listRolesOfService(serviceId, subModel.role_ids);
+  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
   subModel.roles = [];
   if (serviceDetails.name) subModel.Service_name = serviceDetails.name;
   if (req !== undefined) {
