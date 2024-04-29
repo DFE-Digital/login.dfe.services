@@ -24,7 +24,8 @@ const buildBackLink = (req) => {
 
 const getSelectedRoles = async (req) => {
   let selectedRoleIds = req.session.service.roles;
-  const allRolesOfService = await listRolesOfService(req.params.sid, req.id);
+  const allRolesOfServiceUnsorted = await listRolesOfService(req.params.sid, req.id);
+  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
   let rotails;
 
   if (selectedRoleIds && !Array.isArray(selectedRoleIds)) {

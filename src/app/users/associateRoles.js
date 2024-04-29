@@ -123,7 +123,7 @@ const getViewModel = async (req) => {
     req.id,
   );
 
-  const serviceRoles = policyResult.rolesAvailableToUser;
+  const serviceRoles = policyResult.rolesAvailableToUser.sort((a, b) => a.name.localeCompare(b.name));
   const numberOfRolesAvailable = serviceRoles.length;
 
   const roleSelectionConstraint = serviceDetails?.relyingParty?.params?.roleSelectionConstraint;
