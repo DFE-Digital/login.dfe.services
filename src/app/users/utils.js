@@ -176,6 +176,7 @@ const getOrgNaturalIdentifiers = (org) => {
   const urn = org.URN || org.urn;
   const uid = org.UID || org.uid;
   const ukprn = org.UKPRN || org.ukprn;
+  const upin = org.UPIN || org.upin;
   if (urn) {
     naturalIdentifiers.push(`URN: ${urn}`);
   }
@@ -184,6 +185,9 @@ const getOrgNaturalIdentifiers = (org) => {
   }
   if (ukprn) {
     naturalIdentifiers.push(`UKPRN: ${ukprn}`);
+  }
+  if (upin) {
+    naturalIdentifiers.push(`UPIN: ${upin}`);
   }
   return naturalIdentifiers;
 };
