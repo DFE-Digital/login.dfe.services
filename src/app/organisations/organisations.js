@@ -35,10 +35,10 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
     return {
       id: organisation.organisation.id,
       name: organisation.organisation.name,
-      LegalName: organisation.LegalName,
+      LegalName: organisation.organisation.LegalName,
       urn: organisation.organisation.urn,
       uid: organisation.organisation.uid,
-      upin: organisation.upin,
+      upin: organisation.organisation.upin,
       ukprn: organisation.organisation.ukprn,
       status: organisation.organisation.status,
       role: organisation.role,
