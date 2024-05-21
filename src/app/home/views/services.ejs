@@ -21,14 +21,16 @@
             </div>
         </div>
     </div>
-<% } %>
+    <% } %>
 
-<div class="govuk-width-container">
-    <div class="servicesv2">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
-                <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-                    <% if(locals.userPireanServices.length > 1)  { %>
+    <div class="govuk-width-container">
+        <div class="servicesv2">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
+
+                    <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
+                        <% if(locals.userPireanServices.length > 1)  {
+                        %>
                         <div class="govuk-warning-text">
                             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                             <strong class="govuk-warning-text__text">
@@ -67,101 +69,104 @@
                             <div id="notification-wrapper-service-added" class="govuk-notification-banner govuk-notification-banner--success"
                                 role="alert" aria-labelledby="govuk-notification-banner-title"
                                 data-module="govuk-notification-banner">
+                            <div class="govuk-notification-banner__header govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                                        Success
+                                    </h2>
+                                </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <span class="close-button pull-right close_new_service" id="<%= item.id %>">x</span>
+                                </div>
+                            </div>
+                            <div class="govuk-notification-banner__content" id="notification-content">
+                                <h3 class="govuk-notification-banner__heading">
+                                    New Service Added: <%= item.serviceName %>
+                                </h3>
+                                <p class="govuk-body">
+                                    Select the service from the list below to access its functions and features.
+                                </p>
+                            </div>
+                        </div>
+                        <%})%>
+                    <% } %>
+                        <!-- Banner messages after completing an action (add service, edit service...) -->
+                        <% if(locals.showJobTitleBanner) { %>
+                            <div id="notification-wrapper-missing-jobtitle"
+                                class="govuk-notification-banner"
+                                role="region"
+                                aria-labelledby="govuk-notification-banner-title"
+                                data-module="govuk-notification-banner">
                                 <div class="govuk-notification-banner__header govuk-grid-row">
                                     <div class="govuk-grid-column-two-thirds">
                                         <h2 class="govuk-notification-banner__title" id="notification-title">
-                                            Success
+                                           Important
                                         </h2>
                                     </div>
                                     <div class="govuk-grid-column-one-third">
-                                        <span class="close-button pull-right close_new_service" id="<%= item.id %>">x</span>
+                                        <span class="close-button pull-right" id="close-missing-jobtitle">x</span>
                                     </div>
                                 </div>
                                 <div class="govuk-notification-banner__content" id="notification-content">
                                     <h3 class="govuk-notification-banner__heading">
-                                        New Service Added: <%= item.serviceName %>
+                                        Provide information about your job title
                                     </h3>
                                     <p class="govuk-body">
-                                        Select the service from the list below to access its functions and features.
+                                        This will help approvers at your organisation verify your identity.
+                                    </p>
+                                    <p>
+                                        <a class="govuk-link-bold" href="<%=locals.urls.profile%>/change-job-title">Update job title</a>
                                     </p>
                                 </div>
                             </div>
-                        <% }) %>
-                    <% } %>
-                    <!-- Banner messages after completing an action (add service, edit service...) -->
-                    <% if(locals.showJobTitleBanner) { %>
-                        <div id="notification-wrapper-missing-jobtitle"
-                            class="govuk-notification-banner"
-                            role="region"
-                            aria-labelledby="govuk-notification-banner-title"
-                            data-module="govuk-notification-banner">
-                            <div class="govuk-notification-banner__header govuk-grid-row">
-                                <div class="govuk-grid-column-two-thirds">
-                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                        <% } %>
+                        <!-- If user is an approver, and there are requests pending, show this banner -->
+                        <% if (locals.totalNumberOfAccessRequests && locals.totalNumberOfAccessRequests > 0) { %>
+                            <div id="notification-wrapper-approver-request"
+                                class="govuk-notification-banner"
+                                role="region"
+                                aria-labelledby="govuk-notification-banner-title"
+                                data-module="govuk-notification-banner">
+                                <div class="govuk-notification-banner__header govuk-grid-row">
+                                    <div class="govuk-grid-column-two-thirds">
+                                        <h2 class="govuk-notification-banner__title" id="notification-title">
                                         Important
-                                    </h2>
+                                        </h2>
+                                    </div>
+                                    <div class="govuk-grid-column-one-third">
+                                        <span class="close-button pull-right" id="close-requests-awaiting">x</span>
+                                    </div>
                                 </div>
-                                <div class="govuk-grid-column-one-third">
-                                    <span class="close-button pull-right" id="close-missing-jobtitle">x</span>
-                                </div>
-                            </div>
-                            <div class="govuk-notification-banner__content" id="notification-content">
-                                <h3 class="govuk-notification-banner__heading">
-                                    Provide information about your job title
-                                </h3>
-                                <p class="govuk-body">
-                                    This will help approvers at your organisation verify your identity.
-                                </p>
-                                <p>
-                                    <a class="govuk-link-bold" href="<%=locals.urls.profile%>/change-job-title">Update job title</a>
-                                </p>
-                            </div>
-                        </div>
-                    <% } %>
-                    <!-- If user is an approver, and there are requests pending, show this banner -->
-                    <% if (locals.totalNumberOfAccessRequests && locals.totalNumberOfAccessRequests > 0) { %>
-                        <div id="notification-wrapper-approver-request"
-                            class="govuk-notification-banner"
-                            role="region"
-                            aria-labelledby="govuk-notification-banner-title"
-                            data-module="govuk-notification-banner">
-                            <div class="govuk-notification-banner__header govuk-grid-row">
-                                <div class="govuk-grid-column-two-thirds">
-                                    <h2 class="govuk-notification-banner__title" id="notification-title">
-                                    Important
-                                    </h2>
-                                </div>
-                                <div class="govuk-grid-column-one-third">
-                                    <span class="close-button pull-right" id="close-requests-awaiting">x</span>
+                                <div class="govuk-notification-banner__content" id="notification-content">
+                                    <h3 class="govuk-notification-banner__heading">
+                                        You have requests awaiting review
+                                    </h3>
+                                    <p>
+                                        <a class="govuk-link-bold" href="/access-requests">Go to requests</a>
+                                    </p>
                                 </div>
                             </div>
-                            <div class="govuk-notification-banner__content" id="notification-content">
-                                <h3 class="govuk-notification-banner__heading">
-                                    You have requests awaiting review
-                                </h3>
-                                <p>
-                                    <a class="govuk-link-bold" href="/access-requests">Go to requests</a>
-                                </p>
-                            </div>
-                        </div>
-                    <% } %>
-                    <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
-                        <div id="notification-wrapper" 
-                            class="govuk-notification-banner <%= (locals.flash.title[0] !== 'Success') ? '' : 'govuk-notification-banner--success' %>"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-labelledby="notification-title notification-heading notification-message"
-                            data-module="govuk-notification-banner">
-                            <div class="govuk-notification-banner__header govuk-grid-row">
-                                <div class="govuk-grid-column-two-thirds">
-                                    <h2 class="govuk-notification-banner__title" id="notification-title">
-                                        <%= locals.flash.title %>
-                                    </h2>
-                                </div>
-                                <div class="govuk-grid-column-one-third">
-                                    <% if (locals.flash.heading.includes("New service added")){ %>
-                                        <span class="close-button pull-right" id="close_new_service">x</span>
-                                    <%} else { %>
+                        <% } %>
+                        <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
+                            <% if(locals.flash.title[0] !== 'Success') {%>
+                            <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner"
+                                role="alert" aria-labelledby="govuk-notification-banner-title"
+                                data-module="govuk-notification-banner">
+                                <% } else{ %>
+                                    <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
+                                    role="alert" aria-labelledby="govuk-notification-banner-title"
+                                    data-module="govuk-notification-banner">
+                                    <%}%>
+                                <div class="govuk-notification-banner__header govuk-grid-row">
+                                    <div class="govuk-grid-column-two-thirds">
+                                        <h2 class="govuk-notification-banner__title" id="notification-title">
+                                            <%= locals.flash.title %>
+                                        </h2>
+                                    </div>
+                                    <div class="govuk-grid-column-one-third">
+                                        <% if (locals.flash.heading.includes("New service added")){%>
+                                            <span class="close-button pull-right" id="close_new_service">x</span>
+                                        <%} else { %>
                                         <span class="close-button pull-right" id="close">x</span>
                                     <% } %>
                                 </div>
@@ -202,13 +207,11 @@
                         </div>
                     <% } %>
 
-                    <% if (locals.subServiceAddedBanners && locals.subServiceAddedBanners.length) {
-                        const singleSubServiceAdded = (subServiceAddedBanner) => subServiceAddedBanner?.subServiceName?.length === 1;
-                        locals.subServiceAddedBanners.forEach((subServiceAddedBanner) => { %>
-                            <div id="notification-wrapper-sub-service-added" 
-                                class="govuk-notification-banner govuk-notification-banner--success" role="alert" 
-                                aria-labelledby="govuk-notification-banner-title" 
-                                data-module="govuk-notification-banner">
+                        <% if (locals.subServiceAddedBanners && locals.subServiceAddedBanners.length) {
+                            const singleSubServiceAdded = (subServiceAddedBanner) => subServiceAddedBanner?.subServiceName?.length === 1;
+
+                            locals.subServiceAddedBanners.forEach((subServiceAddedBanner) => { %>
+                              <div id="notification-wrapper-sub-service-added" class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
                                 <div class="govuk-notification-banner__header govuk-grid-row">
                                     <div class="govuk-grid-column-two-thirds">
                                         <h2 class="govuk-notification-banner__title" id="notification-title">
@@ -381,32 +384,31 @@
                                                     <% } %>
                                                 </ul>
                                             <% } else { %>
-                                                </br></br>
-                                                <article class="organisation-services govuk-!-margin-bottom-0">
-                                                    <section class="organisation">
-                                                        <div>
-                                                            <a href="" class="govuk-link-bold info-link">
-                                                                <%= approvers.length %> approvers
-                                                            </a>
+
+                                            </br></br>
+
+                                            <article class="organisation-services govuk-!-margin-bottom-0">
+                                                <section class="organisation">
+                                                    <div>
+                                                        <a href="" class="govuk-link-bold info-link"><%= approvers.length %>
+                                                            approvers</a>
+                                                    </div>
+                                                    <div class="meta js-hidden">
+                                                        <div class="approvers">
+                                                            <dl class="inline condensed small-dt">
+                                                                <ul>
+                                                                    <% for (let a = 0; a < approvers.length; a++) { %>
+                                                                    <li><a class="govuk-link-bold"
+                                                                            href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %></a>
+                                                                    </li>
+                                                                    <% } %>
+                                                                </ul>
+                                                            </dl>
                                                         </div>
-                                                        <div class="meta js-hidden">
-                                                            <div class="approvers">
-                                                                <dl class="inline condensed small-dt">
-                                                                    <ul>
-                                                                        <% for (let a = 0; a < approvers.length; a++) { %>
-                                                                            <li>
-                                                                                <a class="govuk-link-bold"
-                                                                                    href="mailto:<%=approvers[a].email%>">
-                                                                                    <%= approvers[a].email %>
-                                                                                </a>
-                                                                            </li>
-                                                                        <% } %>
-                                                                    </ul>
-                                                                </dl>
-                                                            </div>
-                                                        </div>
-                                                    </section>
-                                                </article>
+                                                    </div>
+                                                </section>
+                                            </article>
+
                                             <% }%>
                                         </li>
                                     <% } %>
@@ -424,27 +426,21 @@
                                     class="govuk-link-bold" href="organisations">approver</a>.</p>
                         </div>
                     </div>
-                <% } %>
-            </div>
+                    <% } %>
+                </div>
 
-            <!-- Related actions -->
-            <div class="govuk-grid-column-one-third pull-right">
-                <aside class="govuk-!-margin-top-9">
-                    <h2 class="govuk-heading-m">Related actions</h2>
-                    <ul class="govuk-list">
-                        <% if (locals.isApprover) { %>
-                            <li>
-                                <a class="govuk-link-bold" href="<%=locals.addServicesRedirect%>">
-                                    Add services to my account
-                                </a> 
-                            </li>
-                        <% } %>
-                        <% if (locals.services.length > 0) { %>
-                            <li>
-                                <a class="govuk-link-bold" href="<%=locals.editServicesRedirect%>">
-                                    View and edit services on my account
-                                </a> 
-                            </li>
+                <!-- Related actions -->
+                <div class="govuk-grid-column-one-third pull-right">
+                    <aside class="govuk-!-margin-top-9">
+                        <h2 class="govuk-heading-m">Related actions</h2>
+                        <ul class="govuk-list">
+                            <% if (locals.isApprover) { %>
+                            <li><a class="govuk-link-bold" href="<%=locals.addServicesRedirect%>">Add services to my
+                                    account</a> </li>
+                                    <% } %>
+                            <% if (locals.services.length > 0) { %>
+                            <li><a class="govuk-link-bold" href="<%=locals.editServicesRedirect%>">View and edit services on my
+                                    account</a> </li>
                             <% if (locals.isApprover) { %>
                                 <li>
                                     <a class="govuk-link-bold" href="<%=locals.removeServicesRedirect%>">
@@ -452,61 +448,50 @@
                                     </a> 
                                 </li>
                             <% } %>
-                        <% } %>
-                        <% if (locals.isRequestServiceAllowed) { %>
-                            <li>
-                                <a class="govuk-link-bold" href="<%=locals.requestServicesRedirect%>">Request access to a
-                                service
-                                </a>
-                            </li>
-                        <% } %>
-                            <li>
-                                <a class="govuk-link-bold" href="organisations">
-                                    See approvers at an organisation
-                                </a>
-                            </li>
-                            <li>
-                                <a rel="noreferrer noopener" target="_blank" class="govuk-link-bold" href="<%=locals.urls.help%>/services">
-                                    Help with services  (opens in new tab)
-                                </a>
-                            </li>
-                    </ul>
-                </aside>
+                            <% } %>
+                            <% if (locals.isRequestServiceAllowed) { %>
+                            <li><a class="govuk-link-bold" href="<%=locals.requestServicesRedirect%>">Request access to a
+                                    service</a></li>
+                            <% } %>
+                            <li><a class="govuk-link-bold" href="organisations">See approvers at an organisation</a></li>
+                            <li><a rel="noreferrer noopener" target="_blank" class="govuk-link-bold" href="<%=locals.urls.help%>/services">Help with services  (opens in new tab)</a></li>
+                        </ul>
+                    </aside>
+                </div>
+
             </div>
 
-        </div>
-
-        <!-- Show services list if task list version is disabled or user is mapped to at least 1 service -->
-        <div class="govuk-grid-row">
-            <% if (services.length !== 0) { %>
-            <div class="govuk-grid-column-full-width">
-                <table class="govuk-table">
-                    <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                            <th scope="col" class="govuk-table__header width-35">Service</th>
-                            <th scope="col" class="govuk-table__header width-65">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody class="govuk-table__body">
-                        <%
-                            const p_services = locals.pireanServices.map(element => {
-                                return element.toLowerCase();
-                            });
-                            const p_services_active_lnk = locals.pireanServicesActiveLink.map(element => {
-                                return element.toLowerCase();
-                            });
-                                for (let s = 0; s < services.length; s++) {
-                                    const service = services[s];
-                                %>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">
-                                <p class="<%= service.disabled ? 'service-link-disabled' : 'service-link'%>">
-                                    <% if (service.disabled) { %>
-                                    <span class="date">Available: <%=service.date%></span>
+            <!-- Show services list if task list version is disabled or user is mapped to at least 1 service -->
+            <div class="govuk-grid-row">
+                <% if (services.length !== 0) { %>
+                <div class="govuk-grid-column-full-width">
+                    <table class="govuk-table">
+                        <thead class="govuk-table__head">
+                            <tr class="govuk-table__row">
+                                <th scope="col" class="govuk-table__header width-35">Service</th>
+                                <th scope="col" class="govuk-table__header width-65">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody class="govuk-table__body">
+                            <%
+                                const p_services = locals.pireanServices.map(element => {
+                                    return element.toLowerCase();
+                                });
+                                const p_services_active_lnk = locals.pireanServicesActiveLink.map(element => {
+                                    return element.toLowerCase();
+                                });
+                                    for (let s = 0; s < services.length; s++) {
+                                        const service = services[s];
+                                    %>
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell">
+                                    <p class="<%= service.disabled ? 'service-link-disabled' : 'service-link'%>">
+                                        <% if (service.disabled) { %>
+                                        <span class="date">Available: <%=service.date%></span>
+                                        <h3 class="govuk-heading-s"><%=service.name%></h3>
+                                    <% } else if(p_services.includes(service.name.toLowerCase()) && !p_services_active_lnk.includes(service.name.toLowerCase())){ %>
                                     <h3 class="govuk-heading-s"><%=service.name%></h3>
-                                <% } else if(p_services.includes(service.name.toLowerCase()) && !p_services_active_lnk.includes(service.name.toLowerCase())){ %>
-                                <h3 class="govuk-heading-s"><%=service.name%></h3>
-                                    <% } else { %>
+                                        <% } else { %>
                                         <a href="<%=service.serviceUrl%>" class="govuk-link-bold"
                                         target="_blank"><%=service.name%></a>
                                     <% } %>
@@ -554,4 +539,5 @@
         $(this).remove();
     });}
 });
-</script>
+
+    </script>
