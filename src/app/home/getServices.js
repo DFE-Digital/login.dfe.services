@@ -22,6 +22,7 @@ const { actions } = require('../constans/actions');
 const flash = require('login.dfe.express-flash-2');
 
 const pireanServices = process.env.PIREAN_SERVICES ? process.env.PIREAN_SERVICES.split(',') : [];
+const pireanServicesActiveLink = process.env.PIREAN_SERVICES_ACTIVE_LNK ? process.env.PIREAN_SERVICES_ACTIVE_LNK.split(',') : [];
 let user = null;
 
 const getAndMapServices = async (account, correlationId) => {
@@ -263,7 +264,7 @@ const getServices = async (req, res) => {
   {
     if((res.locals.flash === undefined || res.locals.flash.title === undefined))
     {
-      
+
       if(!checkfor24){
         newAddedServiceBanner = newServiceBanner;
       }else{
@@ -292,6 +293,7 @@ const getServices = async (req, res) => {
     showJobTitleBanner,
     pireanServices,
     userPireanServices,
+    pireanServicesActiveLink,
     subServiceAddedBanners,
   });
 };
