@@ -218,6 +218,13 @@
                                         "[reference(resourceId(variables('frontDoorRg'),'Microsoft.Cdn/profiles', variables('frontDoorName')), '2022-11-01-preview').frontDoorId]"
                                     ]
                                 }
+                            },
+                            {
+                                "ipAddress": "AzureCloud",
+                                "action": "Allow",
+                                "tag": "ServiceTag",
+                                "name": "AzureCloud",
+                                "priority": 11
                             }
                         ]
                     }
