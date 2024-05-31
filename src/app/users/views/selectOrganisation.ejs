@@ -18,7 +18,7 @@
 
                 <div class="govuk-form-group <%= (locals.validationMessages.selectedOrganisation !== undefined) ? 'govuk-form-group--error' : '' %>">
 
-                    <fieldset class="govuk-fieldset">
+                    <fieldset class="govuk-fieldset" aria-describedby="validation-selected-organisation">
 
                         <% if (locals.validationMessages.selectedOrganisation !== undefined) { %>
                             <span id="validation-selected-organisation" class="govuk-error-message">
