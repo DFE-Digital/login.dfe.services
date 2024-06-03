@@ -115,7 +115,7 @@
                     class="govuk-form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'govuk-form-group--error' : '' %>">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
 
-                    <fieldset class="govuk-fieldset">
+                    <fieldset class="govuk-fieldset" aria-describedby="validation-selected-organisation">
 
                         <% if (locals.validationMessages.selectedResponse !==undefined) { %>
                             <span id="validation-selected-organisation" class="govuk-error-message">
