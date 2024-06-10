@@ -150,11 +150,15 @@
                         <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
                             <% if(locals.flash.title[0] !== 'Success') {%>
                             <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner"
-                                role="alert" aria-labelledby="govuk-notification-banner-title"
+                                role="alert" 
+                                aria-live="assertive"  
+                                aria-labelledby="notification-title notification-heading notification-message"
                                 data-module="govuk-notification-banner">
                                 <% } else{ %>
                                     <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
-                                    role="alert" aria-labelledby="govuk-notification-banner-title"
+                                    role="alert"
+                                    aria-live="assertive"  
+                                    aria-labelledby="notification-title notification-heading notification-message"
                                     data-module="govuk-notification-banner">
                                     <%}%>
                                 <div class="govuk-notification-banner__header govuk-grid-row">
@@ -172,10 +176,10 @@
                                     </div>
                                 </div>
                                 <div class="govuk-notification-banner__content" id="notification-content">
-                                    <h3 class="govuk-notification-banner__heading">
+                                    <h3 class="govuk-notification-banner__heading" id="notification-heading">
                                         <%= locals.flash.heading %>
                                     </h3>
-                                    <p class="govuk-body">
+                                    <p class="govuk-body" id="notification-message">
                                         <%- locals.flash.message %>
                                     </p>
                                 </div>
