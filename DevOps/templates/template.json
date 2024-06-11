@@ -123,6 +123,13 @@
                 "description": "Add app settings to support the display of warning messages for pirean services"
             }
         },
+        "pireanservicesactivelink": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Active link for services"
+            }
+        },
          "emailValidation": {
             "type": "bool",
             "defaultValue": true,
@@ -177,6 +184,7 @@
                             "SUBSCRIPTION_NAME": "[parameters('auditServiceBusSubscriptionName')]",
                             "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
                             "PIREAN_SERVICES": "[parameters('pireanServices')]",
+                            "PIREAN_SERVICES_ACTIVE_LNK": "[parameters('pireanservicesactivelink')]",
                             "emailValidation": "[parameters('emailValidation')]",
                             "WEBSITE_LOCAL_CACHE_OPTION": "Always",
                             "WEBSITE_LOCAL_CACHE_SIZEINMB": "2000"
@@ -210,6 +218,13 @@
                                         "[reference(resourceId(variables('frontDoorRg'),'Microsoft.Cdn/profiles', variables('frontDoorName')), '2022-11-01-preview').frontDoorId]"
                                     ]
                                 }
+                            },
+                            {
+                                "ipAddress": "AzureCloud",
+                                "action": "Allow",
+                                "tag": "ServiceTag",
+                                "name": "AzureCloud",
+                                "priority": 11
                             }
                         ]
                     }
