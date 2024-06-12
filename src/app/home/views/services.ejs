@@ -8,29 +8,27 @@
                 </div>
                 <div class="govuk-grid-column-two-thirds">
                     <% if (locals.isRequestServiceAllowed) { %>
-                    <h3 class="govuk-heading-m">
-                        Here you can access services associated with your account. Need a new service, form, role, or
-                        census? Request a service under the related actions menu.
-                    </h3>
+                        <h3 class="govuk-heading-m">
+                            Here you can access services associated with your account. Need a new service, form, role, or
+                            census? Request a service under the related actions menu.
+                        </h3>
                     <% } else { %>
-                    <h3 class="govuk-heading-m">
-                        Here you can access services associated with your account.
-                    </h3>
+                        <h3 class="govuk-heading-m">
+                            Here you can access services associated with your account.
+                        </h3>
                     <% } %>
                 </div>
             </div>
         </div>
     </div>
-    <% } %>
+<% } %>
 
-    <div class="govuk-width-container">
-        <div class="servicesv2">
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
-
-                    <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-                        <% if(locals.userPireanServices.length > 1)  {
-                        %>
+<div class="govuk-width-container">
+    <div class="servicesv2">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
+                <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
+                    <% if(locals.userPireanServices.length > 1)  { %>
                         <div class="govuk-warning-text">
                             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                             <strong class="govuk-warning-text__text">
@@ -48,141 +46,25 @@
                                 </p>
                             </strong>
                         </div>
-                        <%}%>
-                            <% if(locals.userPireanServices.length === 1)  { %>
-                            <div class="govuk-warning-text">
-                                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                                <strong class="govuk-warning-text__text">
-                                    <span class="govuk-warning-text__assistive">Warning</span>
-                                    <p>
-                                        <%=locals.userPireanServices[0].name%> is moving from IDAMS to DfE Sign-in.
-                                        Some roles and institutions are currently available on DfE Sign-in and others are on IDAMS. Sign in as normal by selecting your institution or role from the list within VYED. Depending on what you select from the list, you may have to use your IDAMS username and password to access.
-                                    </p>
-                                    <p>
-                                        After the move, you will be able to access VYED from this page without logging in again.
-                                    </p>
-                                </strong>
-                            </div>
-                            <%}%>
-                            <% if (locals.newAddedServiceBanner) { %>
-                              <%  locals.newAddedServiceBanner.forEach((item) => { %>
-                                <div id="notification-wrapper-service-added" class="govuk-notification-banner govuk-notification-banner--success"
-                                role="alert" aria-labelledby="govuk-notification-banner-title"
-                                data-module="govuk-notification-banner">
-                            <div class="govuk-notification-banner__header govuk-grid-row">
-                                <div class="govuk-grid-column-two-thirds">
-                                    <h2 class="govuk-notification-banner__title" id="notification-title">
-                                        Success
-                                    </h2>
-                                </div>
-                                <div class="govuk-grid-column-one-third">
-                                    <span class="close-button pull-right close_new_service" id="<%= item.id %>">x</span>
-                                </div>
-                            </div>
-                            <div class="govuk-notification-banner__content" id="notification-content">
-                                <h3 class="govuk-notification-banner__heading">
-                                    New Service Added: <%= item.serviceName %>
-                                </h3>
-                                <p class="govuk-body">
-                                    Select the service from the list below to access its functions and features.
+                    <%}%>
+                    <% if(locals.userPireanServices.length === 1) { %>
+                        <div class="govuk-warning-text">
+                            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                            <strong class="govuk-warning-text__text">
+                                <span class="govuk-warning-text__assistive">Warning</span>
+                                <p>
+                                    <%=locals.userPireanServices[0].name%> is moving from IDAMS to DfE Sign-in.
+                                    Some roles and institutions are currently available on DfE Sign-in and others are on IDAMS. Sign in as normal by selecting your institution or role from the list within VYED. Depending on what you select from the list, you may have to use your IDAMS username and password to access.
                                 </p>
-                            </div>
+                                <p>
+                                    After the move, you will be able to access VYED from this page without logging in again.
+                                </p>
+                            </strong>
                         </div>
-                        <%})%>
                     <% } %>
-                        <!-- Banner messages after completing an action (add service, edit service...) -->
-                        <% if(locals.showJobTitleBanner) { %>
-                            <div id="notification-wrapper-missing-jobtitle"
-                                class="govuk-notification-banner"
-                                role="region"
-                                aria-labelledby="govuk-notification-banner-title"
-                                data-module="govuk-notification-banner">
-                                <div class="govuk-notification-banner__header govuk-grid-row">
-                                    <div class="govuk-grid-column-two-thirds">
-                                        <h2 class="govuk-notification-banner__title" id="notification-title">
-                                           Important
-                                        </h2>
-                                    </div>
-                                    <div class="govuk-grid-column-one-third">
-                                        <span class="close-button pull-right" id="close-missing-jobtitle">x</span>
-                                    </div>
-                                </div>
-                                <div class="govuk-notification-banner__content" id="notification-content">
-                                    <h3 class="govuk-notification-banner__heading">
-                                        Provide information about your job title
-                                    </h3>
-                                    <p class="govuk-body">
-                                        This will help approvers at your organisation verify your identity.
-                                    </p>
-                                    <p>
-                                        <a class="govuk-link-bold" href="<%=locals.urls.profile%>/change-job-title">Update job title</a>
-                                    </p>
-                                </div>
-                            </div>
-                        <% } %>
-                        <!-- If user is an approver, and there are requests pending, show this banner -->
-                        <% if (locals.totalNumberOfAccessRequests && locals.totalNumberOfAccessRequests > 0) { %>
-                            <div id="notification-wrapper-approver-request"
-                                class="govuk-notification-banner"
-                                role="region"
-                                aria-labelledby="govuk-notification-banner-title"
-                                data-module="govuk-notification-banner">
-                                <div class="govuk-notification-banner__header govuk-grid-row">
-                                    <div class="govuk-grid-column-two-thirds">
-                                        <h2 class="govuk-notification-banner__title" id="notification-title">
-                                        Important
-                                        </h2>
-                                    </div>
-                                    <div class="govuk-grid-column-one-third">
-                                        <span class="close-button pull-right" id="close-requests-awaiting">x</span>
-                                    </div>
-                                </div>
-                                <div class="govuk-notification-banner__content" id="notification-content">
-                                    <h3 class="govuk-notification-banner__heading">
-                                        You have requests awaiting review
-                                    </h3>
-                                    <p>
-                                        <a class="govuk-link-bold" href="/access-requests">Go to requests</a>
-                                    </p>
-                                </div>
-                            </div>
-                        <% } %>
-                        <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
-                            <% if(locals.flash.title[0] !== 'Success') {%>
-                            <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner"
-                                role="alert" aria-labelledby="govuk-notification-banner-title"
-                                data-module="govuk-notification-banner">
-                                <% } else{ %>
-                                    <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
-                                    role="alert" aria-labelledby="govuk-notification-banner-title"
-                                    data-module="govuk-notification-banner">
-                                    <%}%>
-                                <div class="govuk-notification-banner__header govuk-grid-row">
-                                    <div class="govuk-grid-column-two-thirds">
-                                        <h2 class="govuk-notification-banner__title" id="notification-title">
-                                            <%= locals.flash.title %>
-                                        </h2>
-                                    </div>
-                                    <div class="govuk-grid-column-one-third">
-                                        <% if (locals.flash.heading.includes("New service added")){%>
-                                            <span class="close-button pull-right" id="close_new_service">x</span>
-                                        <%} else { %>
-                                        <span class="close-button pull-right" id="close">x</span>
-                                        <%}%>
-                                    </div>
-                                </div>
-                                <div class="govuk-notification-banner__content" id="notification-content">
-                                    <h3 class="govuk-notification-banner__heading">
-                                        <%= locals.flash.heading %>
-                                    </h3>
-                                    <p class="govuk-body">
-                                        <%- locals.flash.message %>
-                                    </p>
-                                </div>
-                            </div>
-                        <% } %>
-                        <% if (locals.passwordChangedBanner) { %>
-                            <div id="notification-wrapper-password-change" class="govuk-notification-banner govuk-notification-banner--success"
+                    <% if (locals.newAddedServiceBanner) { %>
+                        <%  locals.newAddedServiceBanner.forEach((item) => { %>
+                            <div id="notification-wrapper-service-added" class="govuk-notification-banner govuk-notification-banner--success"
                                 role="alert" aria-labelledby="govuk-notification-banner-title"
                                 data-module="govuk-notification-banner">
                                 <div class="govuk-notification-banner__header govuk-grid-row">
@@ -192,145 +74,280 @@
                                         </h2>
                                     </div>
                                     <div class="govuk-grid-column-one-third">
-                                        <span class="close-button pull-right" id="close-password-change">x</span>
+                                        <span class="close-button pull-right close_new_service" id="<%= item.id %>">x</span>
                                     </div>
                                 </div>
                                 <div class="govuk-notification-banner__content" id="notification-content">
                                     <h3 class="govuk-notification-banner__heading">
-                                        Password changed successfully
+                                        New Service Added: <%= item.serviceName %>
                                     </h3>
                                     <p class="govuk-body">
-                                        The password associated with your account has been updated.
+                                        Select the service from the list below to access its functions and features.
                                     </p>
                                 </div>
                             </div>
-                        <% } %>
+                        <% }) %>
+                    <% } %>
+                    <!-- Banner messages after completing an action (add service, edit service...) -->
+                    <% if(locals.showJobTitleBanner) { %>
+                        <div id="notification-wrapper-missing-jobtitle"
+                            class="govuk-notification-banner"
+                            role="region"
+                            aria-labelledby="govuk-notification-banner-title"
+                            data-module="govuk-notification-banner">
+                            <div class="govuk-notification-banner__header govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                                        Important
+                                    </h2>
+                                </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <span class="close-button pull-right" id="close-missing-jobtitle">x</span>
+                                </div>
+                            </div>
+                            <div class="govuk-notification-banner__content" id="notification-content">
+                                <h3 class="govuk-notification-banner__heading">
+                                    Provide information about your job title
+                                </h3>
+                                <p class="govuk-body">
+                                    This will help approvers at your organisation verify your identity.
+                                </p>
+                                <p>
+                                    <a class="govuk-link-bold" href="<%=locals.urls.profile%>/change-job-title">Update job title</a>
+                                </p>
+                            </div>
+                        </div>
+                    <% } %>
+                    <!-- If user is an approver, and there are requests pending, show this banner -->
+                    <% if (locals.totalNumberOfAccessRequests && locals.totalNumberOfAccessRequests > 0) { %>
+                        <div id="notification-wrapper-approver-request"
+                            class="govuk-notification-banner"
+                            role="region"
+                            aria-labelledby="govuk-notification-banner-title"
+                            data-module="govuk-notification-banner">
+                            <div class="govuk-notification-banner__header govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                                    Important
+                                    </h2>
+                                </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <span class="close-button pull-right" id="close-requests-awaiting">x</span>
+                                </div>
+                            </div>
+                            <div class="govuk-notification-banner__content" id="notification-content">
+                                <h3 class="govuk-notification-banner__heading">
+                                    You have requests awaiting review
+                                </h3>
+                                <p>
+                                    <a class="govuk-link-bold" href="/access-requests">Go to requests</a>
+                                </p>
+                            </div>
+                        </div>
+                    <% } %>
+                    <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
+                        <div id="notification-wrapper" 
+                            class="govuk-notification-banner <%= (locals.flash.title[0] !== 'Success') ? '' : 'govuk-notification-banner--success' %>"
+                            role="alert"
+                            aria-live="assertive"
+                            aria-labelledby="notification-title notification-heading notification-message"
+                            data-module="govuk-notification-banner">
+                            <div class="govuk-notification-banner__header govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                                        <%= locals.flash.title %>
+                                    </h2>
+                                </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <% if (locals.flash.heading.includes("New service added")){ %>
+                                        <span class="close-button pull-right" id="close_new_service">x</span>
+                                    <%} else { %>
+                                        <span class="close-button pull-right" id="close">x</span>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="govuk-notification-banner__content" id="notification-content">
+                                <h3 class="govuk-notification-banner__heading" id="notification-heading">
+                                    <%= locals.flash.heading %>
+                                </h3>
+                                <p class="govuk-body" id="notification-message">
+                                    <%- locals.flash.message %>
+                                </p>
+                            </div>
+                        </div>
+                    <% } %>
+                    <% if (locals.passwordChangedBanner) { %>
+                        <div id="notification-wrapper-password-change" 
+                            class="govuk-notification-banner govuk-notification-banner--success"
+                            role="alert" aria-labelledby="govuk-notification-banner-title"
+                            data-module="govuk-notification-banner">
+                            <div class="govuk-notification-banner__header govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <h2 class="govuk-notification-banner__title" id="notification-title">
+                                        Success
+                                    </h2>
+                                </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <span class="close-button pull-right" id="close-password-change">x</span>
+                                </div>
+                            </div>
+                            <div class="govuk-notification-banner__content" id="notification-content">
+                                <h3 class="govuk-notification-banner__heading">
+                                    Password changed successfully
+                                </h3>
+                                <p class="govuk-body">
+                                    The password associated with your account has been updated.
+                                </p>
+                            </div>
+                        </div>
+                    <% } %>
 
-                        <% if (locals.subServiceAddedBanners && locals.subServiceAddedBanners.length) {
-                            const singleSubServiceAdded = (subServiceAddedBanner) => subServiceAddedBanner?.subServiceName?.length === 1;
-
-                            locals.subServiceAddedBanners.forEach((subServiceAddedBanner) => { %>
-                              <div id="notification-wrapper-sub-service-added" class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                    <% if (locals.subServiceAddedBanners && locals.subServiceAddedBanners.length) {
+                        const singleSubServiceAdded = (subServiceAddedBanner) => subServiceAddedBanner?.subServiceName?.length === 1;
+                        locals.subServiceAddedBanners.forEach((subServiceAddedBanner) => { %>
+                            <div id="notification-wrapper-sub-service-added" 
+                                class="govuk-notification-banner govuk-notification-banner--success" role="alert" 
+                                aria-labelledby="govuk-notification-banner-title" 
+                                data-module="govuk-notification-banner">
                                 <div class="govuk-notification-banner__header govuk-grid-row">
-                                  <div class="govuk-grid-column-two-thirds">
-                                    <h2 class="govuk-notification-banner__title" id="notification-title">Success</h2>
-                                  </div>
-                                  <div class="govuk-grid-column-one-third">
-                                    <span class="close-button pull-right close-sub-service-added-banner" id="<%= subServiceAddedBanner.id %>">x</span>
-                                  </div>
+                                    <div class="govuk-grid-column-two-thirds">
+                                        <h2 class="govuk-notification-banner__title" id="notification-title">
+                                            Success
+                                        </h2>
+                                    </div>
+                                    <div class="govuk-grid-column-one-third">
+                                        <span class="close-button pull-right close-sub-service-added-banner" id="<%= subServiceAddedBanner.id %>">x</span>
+                                    </div>
                                 </div>
                                 <div class="govuk-notification-banner__content" id="notification-content">
-                                  <h3 class="govuk-notification-banner__heading">
-                                    <% if (singleSubServiceAdded(subServiceAddedBanner)) { %>
-                                      Sub-service added: <%= subServiceAddedBanner.subServiceName[0] %>
-                                    <% } else { %>
-                                      Multiple sub-services added
-                                    <% } %>
-                                  </h3>
-                                  <p class="govuk-body">
-                                    Select <%= subServiceAddedBanner.serviceName %> from the list below to access
-                                    <% if (singleSubServiceAdded(subServiceAddedBanner)) { %>
-                                      the sub-service functions and features.
-                                    <% } else { %>
-                                      each sub-service's functions and features.
-                                    <% } %>
-                                  </p>
+                                    <h3 class="govuk-notification-banner__heading">
+                                        <% if (singleSubServiceAdded(subServiceAddedBanner)) { %>
+                                            Sub-service added: <%= subServiceAddedBanner.subServiceName[0] %>
+                                        <% } else { %>
+                                            Multiple sub-services added
+                                        <% } %>
+                                    </h3>
+                                    <p class="govuk-body">
+                                        Select <%= subServiceAddedBanner.serviceName %> from the list below to access
+                                        <% if (singleSubServiceAdded(subServiceAddedBanner)) { %>
+                                            the sub-service functions and features.
+                                        <% } else { %>
+                                            each sub-service's functions and features.
+                                        <% } %>
+                                    </p>
                                 </div>
-                              </div>
-                            <% });
-                          } %>
-
-                        <%- include('./reviewUsers.ejs') %>
-                    </div>
-                    <!-- Show Task List version if it is enabled in config and user has no services -->
-                    <% if (services.length === 0) { %>
+                            </div>
+                        <% });} %>
+                    <%- include('./reviewUsers.ejs') %>
+                </div>
+                <!-- Show Task List version if it is enabled in config and user has no services -->
+                <% if (services.length === 0) { %>
+                <div>
+                    <h1 class="govuk-heading-xl">
+                        Set up your DfE Sign-in account
+                    </h1>
+                    <p class="govuk-body">Complete the following steps to finish setting up your account.</p>
                     <div>
-                        <h1 class="govuk-heading-xl">
-                            Set up your DfE Sign-in account
-                        </h1>
-                        <p class="govuk-body">Complete the following steps to finish setting up your account.</p>
-                        <div>
-                            <ol class="task-list">
-                                <li>
-                                    <h2 class="task-list-section">
-                                        <span class="task-list-section-number">1. </span> Verify your account
-                                    </h2>
-                                    <ul class="task-list-items">
-                                        <li class="task-list-item">
-                                            <p class="govuk-body task-name">
-                                                Verify your email address
-                                            </p>
-                                            <strong class="task-status govuk-tag">Completed</strong>
-                                        </li>
-                                        <li class="task-list-item">
-                                            <p class="govuk-body task-name">
-                                                Set password for account
-                                            </p>
-                                            <strong class="task-status govuk-tag">Completed</strong>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <h2 class="task-list-section">
-                                        <span class="task-list-section-number">2. </span> Connect to an organisation
-                                    </h2>
-                                    <ul class="task-list-items">
-                                        <li class="task-list-item">
-                                            <% if(!taskListStatus.hasOrgAssigned) { %>
+                        <ol class="task-list">
+                            <li>
+                                <h2 class="task-list-section">
+                                    <span class="task-list-section-number">1. </span> Verify your account
+                                </h2>
+                                <ul class="task-list-items">
+                                    <li class="task-list-item">
+                                        <p class="govuk-body task-name">
+                                            Verify your email address
+                                        </p>
+                                        <strong class="task-status govuk-tag">
+                                            Completed
+                                        </strong>
+                                    </li>
+                                    <li class="task-list-item">
+                                        <p class="govuk-body task-name">
+                                            Set password for account
+                                        </p>
+                                        <strong class="task-status govuk-tag">
+                                            Completed
+                                        </strong>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <h2 class="task-list-section">
+                                    <span class="task-list-section-number">2. </span> Connect to an organisation
+                                </h2>
+                                <ul class="task-list-items">
+                                    <li class="task-list-item">
+                                        <% if(!taskListStatus.hasOrgAssigned) { %>
                                             <a class="govuk-link-bold" href="/request-organisation/search">
                                                 Request access to an organisation
                                             </a>
-                                            <% } else { %>
+                                        <% } else { %>
                                             <p class="govuk-body task-name">
                                                 Request access to an organisation
                                             </p>
-                                            <% } %>
-                                            <% if(!taskListStatus.hasOrgAssigned) { %>
+                                        <% } %>
+                                        <% if(!taskListStatus.hasOrgAssigned) { %>
                                             <a class="govuk-button pull-right govuk-!-margin-0"
-                                                href="/request-organisation/search" role="button">Next Action</a>
-                                            <% } else { %>
-                                            <strong class="task-status govuk-tag">Completed</strong>
-                                            <% } %>
-                                        </li>
-                                        <li class="task-list-item">
-                                            <p class="govuk-body task-name">
-                                                Await approval from organisation
-                                            </p>
-                                            <% if(taskListStatus.hasRequestPending) { %>
-                                            <strong class="task-status govuk-tag govuk-tag--grey">Pending</strong>
-                                            <% } else if( taskListStatus.hasRequestRejected ) { %>
-                                            <strong class="task-status govuk-tag govuk-tag--red">Rejected</strong>
-                                            <% } else if( taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending && !taskListStatus.hasRequestRejected) { %>
-                                            <strong class="task-status govuk-tag">Approved</strong>
-                                            <% } %>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <!--   {% if action === "accepted" %}-->
-                                    <h2 class="task-list-section">
-                                        <span class="task-list-section-number">3. </span> Get access to services
-                                    </h2>
-                                    <ul class="task-list-items">
-                                        <% if (locals.isRequestServiceAllowed) { %>
+                                                href="/request-organisation/search" role="button">
+                                                Next Action
+                                            </a>
+                                        <% } else { %>
+                                            <strong class="task-status govuk-tag">
+                                                Completed
+                                            </strong>
+                                        <% } %>
+                                    </li>
+                                    <li class="task-list-item">
+                                        <p class="govuk-body task-name">
+                                            Await approval from organisation
+                                        </p>
+                                        <% if(taskListStatus.hasRequestPending) { %>
+                                            <strong class="task-status govuk-tag govuk-tag--grey">
+                                                Pending
+                                            </strong>
+                                        <% } else if( taskListStatus.hasRequestRejected ) { %>
+                                            <strong class="task-status govuk-tag govuk-tag--red">
+                                                Rejected
+                                            </strong>
+                                        <% } else if( taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending && !taskListStatus.hasRequestRejected) { %>
+                                            <strong class="task-status govuk-tag">
+                                                Approved
+                                            </strong>
+                                        <% } %>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <!--   {% if action === "accepted" %}-->
+                                <h2 class="task-list-section">
+                                    <span class="task-list-section-number">3. </span> Get access to services
+                                </h2>
+                                <ul class="task-list-items">
+                                    <% if (locals.isRequestServiceAllowed) { %>
                                         <li class="task-list-item">
                                             <p class="govuk-body task-name">
                                                 Request access to a service
                                             </p>
                                             <a class="govuk-button pull-right govuk-!-margin-0"
-                                                href="<%=locals.requestServicesRedirect%>" role="button">Request service</a>
+                                                href="<%=locals.requestServicesRedirect%>" role="button">
+                                                Request service
+                                            </a>
                                         </li>
-                                        <% } else  { %>
+                                    <% } else { %>
                                         <% if (taskListStatus.multiOrgDetails.orgs > 1 && taskListStatus.multiOrgDetails.approvers >= 1 &&
-                                                        !taskListStatus.approverForOrg) { %>
-                                        <li class="task-list-item">
-                                            <p class="govuk-body task-name">
-                                                Email organisation's approver for access to services
-                                                <br /> <a class="govuk-link-bold" href="/organisations">See my approvers</a>
-                                            </p>
-                                        </li>
-                                        <% } else if (approvers.length === 0 && taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending &&
-                                                        !taskListStatus.hasRequestRejected) { %>
+                                            !taskListStatus.approverForOrg) { %>
+                                            <li class="task-list-item">
+                                                <p class="govuk-body task-name">
+                                                    Email organisation's approver for access to services
+                                                    <br /> 
+                                                    <a class="govuk-link-bold" href="/organisations">
+                                                        See my approvers
+                                                    </a>
+                                                </p>
+                                            </li>
+                                    <% } else if (approvers.length === 0 && taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending &&
+                                        !taskListStatus.hasRequestRejected) { %>
                                         <!-- Add what if there are no approvers -->
                                         <li class="task-list-item">
                                             <p class="govuk-body task-name">
@@ -338,179 +355,203 @@
                                                 days)
                                             </p>
                                         </li>
-                                        <% } else if(taskListStatus.approverForOrg) { %>
+                                    <% } else if(taskListStatus.approverForOrg) { %>
                                         <li class="task-list-item">
-                                            <a class="govuk-link-bold" href='<%=locals.addServicesRedirect%>'>Add
-                                                services</a>
+                                            <a class="govuk-link-bold" href='<%=locals.addServicesRedirect%>'>
+                                                Add services
+                                            </a>
                                             <a class="govuk-button pull-right govuk-!-margin-0"
-                                                href='<%=locals.addServicesRedirect%>' role="button">Next Action</a>
+                                                href='<%=locals.addServicesRedirect%>' role="button">
+                                                Next Action
+                                            </a>
                                         </li>
-                                        <% } else { %>
+                                    <% } else { %>
                                         <li class="task-list-item">
                                             <p class="govuk-body task-name">
                                                 Email organisation's approver for access to services
                                             </p>
                                             <% if (approvers.length < 5) { %>
-                                            <ul>
-                                                <% for (let a = 0; a < approvers.length; a++) { %>
-                                                <li><a class="govuk-link-bold"
-                                                        href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %></a>
-                                                </li>
-                                                <% } %>
-                                            </ul>
+                                                <ul>
+                                                    <% for (let a = 0; a < approvers.length; a++) { %>
+                                                        <li>
+                                                            <a class="govuk-link-bold"
+                                                                href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %>
+                                                            </a>
+                                                        </li>
+                                                    <% } %>
+                                                </ul>
                                             <% } else { %>
-
-                                            </br></br>
-
-                                            <article class="organisation-services govuk-!-margin-bottom-0">
-                                                <section class="organisation">
-                                                    <div>
-                                                        <a href="" class="govuk-link-bold info-link"><%= approvers.length %>
-                                                            approvers</a>
-                                                    </div>
-                                                    <div class="meta js-hidden">
-                                                        <div class="approvers">
-                                                            <dl class="inline condensed small-dt">
-                                                                <ul>
-                                                                    <% for (let a = 0; a < approvers.length; a++) { %>
-                                                                    <li><a class="govuk-link-bold"
-                                                                            href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %></a>
-                                                                    </li>
-                                                                    <% } %>
-                                                                </ul>
-                                                            </dl>
+                                                </br></br>
+                                                <article class="organisation-services govuk-!-margin-bottom-0">
+                                                    <section class="organisation">
+                                                        <div>
+                                                            <a href="" class="govuk-link-bold info-link">
+                                                                <%= approvers.length %> approvers
+                                                            </a>
                                                         </div>
-                                                    </div>
-                                                </section>
-                                            </article>
-
+                                                        <div class="meta js-hidden">
+                                                            <div class="approvers">
+                                                                <dl class="inline condensed small-dt">
+                                                                    <ul>
+                                                                        <% for (let a = 0; a < approvers.length; a++) { %>
+                                                                            <li>
+                                                                                <a class="govuk-link-bold"
+                                                                                    href="mailto:<%=approvers[a].email%>">
+                                                                                    <%= approvers[a].email %>
+                                                                                </a>
+                                                                            </li>
+                                                                        <% } %>
+                                                                    </ul>
+                                                                </dl>
+                                                            </div>
+                                                        </div>
+                                                    </section>
+                                                </article>
                                             <% }%>
                                         </li>
-                                        <% } %>
-                                        <% }%>
-                                    </ul>
-                                </li>
-                            </ol>
-                        </div>
+                                    <% } %>
+                                 <% }%>
+                                </ul>
+                            </li>
+                        </ol>
                     </div>
-                    <!-- Show message if Task List version is disabled by config and user has no services -->
-                    <% } else if (services.length === 0)  { %>
+                </div>
+                 <!-- Show message if Task List version is disabled by config and user has no services -->
+                <% } else if (services.length === 0)  { %>
                     <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
                         <div class="empty-state">
                             <p class="govuk-body">You have no services assigned, please contact your <a
                                     class="govuk-link-bold" href="organisations">approver</a>.</p>
                         </div>
                     </div>
-                    <% } %>
-                </div>
-
-                <!-- Related actions -->
-                <div class="govuk-grid-column-one-third pull-right">
-                    <aside class="govuk-!-margin-top-9">
-                        <h2 class="govuk-heading-m">Related actions</h2>
-                        <ul class="govuk-list">
-                            <% if (locals.isApprover) { %>
-                            <li><a class="govuk-link-bold" href="<%=locals.addServicesRedirect%>">Add services to my
-                                    account</a> </li>
-                                    <% } %>
-                            <% if (locals.services.length > 0) { %>
-                            <li><a class="govuk-link-bold" href="<%=locals.editServicesRedirect%>">View and edit services on my
-                                    account</a> </li>
-                            <% if (locals.isApprover) { %>
-                            <li><a class="govuk-link-bold" href="<%=locals.removeServicesRedirect%>">Remove service from my
-                                    account</a> </li>
-                            <% } %>
-                            <% } %>
-                            <% if (locals.isRequestServiceAllowed) { %>
-                            <li><a class="govuk-link-bold" href="<%=locals.requestServicesRedirect%>">Request access to a
-                                    service</a></li>
-                            <% } %>
-                            <li><a class="govuk-link-bold" href="organisations">See approvers at an organisation</a></li>
-                            <li><a rel="noreferrer noopener" target="_blank" class="govuk-link-bold" href="<%=locals.urls.help%>/services">Help with services  (opens in new tab)</a></li>
-                        </ul>
-                    </aside>
-                </div>
-
-            </div>
-
-            <!-- Show services list if task list version is disabled or user is mapped to at least 1 service -->
-            <div class="govuk-grid-row">
-                <% if (services.length !== 0) { %>
-                <div class="govuk-grid-column-full-width">
-                    <table class="govuk-table">
-                        <thead class="govuk-table__head">
-                            <tr class="govuk-table__row">
-                                <th scope="col" class="govuk-table__header width-35">Service</th>
-                                <th scope="col" class="govuk-table__header width-65">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody class="govuk-table__body">
-                            <%
-                                const p_services = locals.pireanServices.map(element => {
-                                    return element.toLowerCase();
-                                });
-                                const p_services_active_lnk = locals.pireanServicesActiveLink.map(element => {
-                                    return element.toLowerCase();
-                                });
-                                    for (let s = 0; s < services.length; s++) {
-                                        const service = services[s];
-                                    %>
-                            <tr class="govuk-table__row">
-                                <td class="govuk-table__cell">
-                                    <p class="<%= service.disabled ? 'service-link-disabled' : 'service-link'%>">
-                                        <% if (service.disabled) { %>
-                                        <span class="date">Available: <%=service.date%></span>
-                                        <h3 class="govuk-heading-s"><%=service.name%></h3>
-                                    <% } else if(p_services.includes(service.name.toLowerCase()) && !p_services_active_lnk.includes(service.name.toLowerCase())){ %>
-                                    <h3 class="govuk-heading-s"><%=service.name%></h3>
-                                        <% } else { %>
-                                        <a href="<%=service.serviceUrl%>" class="govuk-link-bold"
-                                            target="_blank"><%=service.name%></a>
-                                        <% } %>
-                                    </p>
-                                </td>
-                                <td class="govuk-table__cell">
-                                    <% if (service.description) { %>
-                                    <p class="govuk-!-font-size-16"><%= service.description %></p>
-                                    <% } %>
-                                </td>
-                            </tr>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
                 <% } %>
             </div>
+
+            <!-- Related actions -->
+            <div class="govuk-grid-column-one-third pull-right">
+                <aside class="govuk-!-margin-top-9">
+                    <h2 class="govuk-heading-m">Related actions</h2>
+                    <ul class="govuk-list">
+                        <% if (locals.isApprover) { %>
+                            <li>
+                                <a class="govuk-link-bold" href="<%=locals.addServicesRedirect%>">
+                                    Add services to my account
+                                </a> 
+                            </li>
+                        <% } %>
+                        <% if (locals.services.length > 0) { %>
+                            <li>
+                                <a class="govuk-link-bold" href="<%=locals.editServicesRedirect%>">
+                                    View and edit services on my account
+                                </a> 
+                            </li>
+                            <% if (locals.isApprover) { %>
+                                <li>
+                                    <a class="govuk-link-bold" href="<%=locals.removeServicesRedirect%>">
+                                        Remove service from my account
+                                    </a> 
+                                </li>
+                            <% } %>
+                        <% } %>
+                        <% if (locals.isRequestServiceAllowed) { %>
+                            <li>
+                                <a class="govuk-link-bold" href="<%=locals.requestServicesRedirect%>">Request access to a
+                                service
+                                </a>
+                            </li>
+                        <% } %>
+                            <li>
+                                <a class="govuk-link-bold" href="organisations">
+                                    See approvers at an organisation
+                                </a>
+                            </li>
+                            <li>
+                                <a rel="noreferrer noopener" target="_blank" class="govuk-link-bold" href="<%=locals.urls.help%>/services">
+                                    Help with services  (opens in new tab)
+                                </a>
+                            </li>
+                    </ul>
+                </aside>
+            </div>
+
+        </div>
+
+        <!-- Show services list if task list version is disabled or user is mapped to at least 1 service -->
+        <div class="govuk-grid-row">
+            <% if (services.length !== 0) { %>
+            <div class="govuk-grid-column-full-width">
+                <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header width-35">Service</th>
+                            <th scope="col" class="govuk-table__header width-65">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        <%
+                            const p_services = locals.pireanServices.map(element => {
+                                return element.toLowerCase();
+                            });
+                            const p_services_active_lnk = locals.pireanServicesActiveLink.map(element => {
+                                return element.toLowerCase();
+                            });
+                                for (let s = 0; s < services.length; s++) {
+                                    const service = services[s];
+                                %>
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">
+                                <p class="<%= service.disabled ? 'service-link-disabled' : 'service-link'%>">
+                                    <% if (service.disabled) { %>
+                                    <span class="date">Available: <%=service.date%></span>
+                                    <h3 class="govuk-heading-s"><%=service.name%></h3>
+                                <% } else if(p_services.includes(service.name.toLowerCase()) && !p_services_active_lnk.includes(service.name.toLowerCase())){ %>
+                                <h3 class="govuk-heading-s"><%=service.name%></h3>
+                                    <% } else { %>
+                                        <a href="<%=service.serviceUrl%>" class="govuk-link-bold"
+                                        target="_blank"><%=service.name%></a>
+                                    <% } %>
+                                </p>
+                            </td>
+                            <td class="govuk-table__cell">
+                                <% if (service.description) { %>
+                                <p class="govuk-!-font-size-16"><%= service.description %></p>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <% } %>
         </div>
     </div>
-    <script>
-        $('#close-missing-jobtitle').on('click', () => {
-            $.ajax(`/close-missing-jobtitle`).done(() => {
-                const item = $('#notification-wrapper-missing-jobtitle')
+</div>
+<script>
+    $('#close-missing-jobtitle').on('click', () => {
+        $.ajax(`/close-missing-jobtitle`).done(() => {
+            const item = $('#notification-wrapper-missing-jobtitle')
+            item.remove();
+        });
+    })
+    $('.close-button.pull-right.close_new_service').on('click', function() {
+        const itemId = $(this).attr('id');
+        $.ajax(`/close-service-added/${itemId}`).done(() => {
+            $(this).remove();
+        });
+    })
+    $('#close-password-change').on('click', () => {
+        const item = $('#notification-wrapper-password-change')
+        if(item.length) {
+            $.ajax(`/close-password-change`).done(() => {
                 item.remove();
             });
-        })
-        $('.close-button.pull-right.close_new_service').on('click', function() {
-            const itemId = $(this).attr('id');
-            $.ajax(`/close-service-added/${itemId}`).done(() => {
-                $(this).remove();
-            });
-        })
-        $('#close-password-change').on('click', () => {
-            const item = $('#notification-wrapper-password-change')
-            if(item.length) {
-                $.ajax(`/close-password-change`).done(() => {
-                    item.remove();
-                });
-            }
-        })
-        $('.close-button.close-sub-service-added-banner').on('click', function() {
-        const itemId = $(this).attr('id');
-        if (itemId) {
+        }
+    })
+    $('.close-button.close-sub-service-added-banner').on('click', function() {
+    const itemId = $(this).attr('id');
+    if (itemId) {
         $.ajax(`/close-sub-service-added/${itemId}`).done(() => {
         $(this).remove();
-    });
-  }
+    });}
 });
-
-    </script>
+</script>
