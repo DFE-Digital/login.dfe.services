@@ -151,7 +151,10 @@
                                     <% if (organisation.approvers && organisation.approvers.length === 0) { %>
                                         No approvers
                                     <% } else if (organisation.approvers) { %>
-                                        <a class="govuk-link-bold govuk-link--no-visited-state toggle-open" href="">Show approvers</a>
+                                        <a class="govuk-link-bold govuk-link--no-visited-state toggle-open" href="">
+                                            Show approvers
+                                            <span class="govuk-visually-hidden">(for <%= organisation.name %>)</span>
+                                        </a>
                                         <div class="meta govuk-visually-hidden">
                                             <div class="approvers">
                                                 <dl class="inline condensed small-dt">
