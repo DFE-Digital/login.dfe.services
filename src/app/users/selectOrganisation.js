@@ -67,6 +67,23 @@ const setUserOrgs = (req) => {
   return { isApprover, hasDualPermission, isEndUser, isManage };
 };
 
+const buildSubHeader = (req) => {
+  const commonMessage = 'You are associated with more than 1 organisation. Select the organisation';
+  let actionMessage;
+
+  if (isRequestService(req) && !isUserApprover(req)) { // [REMOVE] NSA-8109 scenario 2
+    actionMessage = ' associated with the service you would like to request access to.';
+  } else if (isRequestService(req) && isUserApprover(req)) {  // [REMOVE] NSA-8109 scenario 3
+    actionMessage = ' associated with the service you would like to access.';
+  } else if (isOrganisationInvite(req) && isUserApprover(req)) { // [REMOVE] NSA-8109 scenario 4
+    actionMessage = ' you would like to invite another user to.';
+  } else { // [REMOVE] NSA-8109 default/ scenario 1
+    actionMessage = ' you would like to sign-in with.';
+  }
+
+  return `${commonMessage}${actionMessage}`;
+};
+
 const buildBackLink = (req) => {
   let backRedirect;
   const isManage = isUserManagement(req);
@@ -91,6 +108,7 @@ const get = async (req, res) => {
   const model = {
     csrfToken: req.csrfToken(),
     title: 'Select Organisation',
+    subHeader: buildSubHeader(req),
     organisations: req.userOrganisations,
     currentPage: 'users',
     selectedOrganisation: req.session.user ? req.session.user.organisation : null,
@@ -144,5 +162,5 @@ const post = async (req, res) => {
 
 module.exports = {
   get,
-  post,
+  post
 };

@@ -1,5 +1,4 @@
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
 jest.mock('login.dfe.dao', () => {
