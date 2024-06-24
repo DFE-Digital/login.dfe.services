@@ -12,14 +12,7 @@
                             Here you can access services associated with your account. Need a new service, form, role, or
                             census? Request a service under the related actions menu.
                         </h3>
-                        <h3 class="govuk-heading-m">
-                            Here you can access services associated with your account. Need a new service, form, role, or
-                            census? Request a service under the related actions menu.
-                        </h3>
                     <% } else { %>
-                        <h3 class="govuk-heading-m">
-                            Here you can access services associated with your account.
-                        </h3>
                         <h3 class="govuk-heading-m">
                             Here you can access services associated with your account.
                         </h3>
@@ -225,14 +218,6 @@
                                     <div class="govuk-grid-column-one-third">
                                         <span class="close-button pull-right close-sub-service-added-banner" id="<%= subServiceAddedBanner.id %>">x</span>
                                     </div>
-                                    <div class="govuk-grid-column-two-thirds">
-                                        <h2 class="govuk-notification-banner__title" id="notification-title">
-                                            Success
-                                        </h2>
-                                    </div>
-                                    <div class="govuk-grid-column-one-third">
-                                        <span class="close-button pull-right close-sub-service-added-banner" id="<%= subServiceAddedBanner.id %>">x</span>
-                                    </div>
                                 </div>
                                 <div class="govuk-notification-banner__content" id="notification-content">
                                     <h3 class="govuk-notification-banner__heading">
@@ -250,65 +235,7 @@
                                             each sub-service's functions and features.
                                         <% } %>
                                     </p>
-                                    <h3 class="govuk-notification-banner__heading">
-                                        <% if (singleSubServiceAdded(subServiceAddedBanner)) { %>
-                                            Sub-service added: <%= subServiceAddedBanner.subServiceName[0] %>
-                                        <% } else { %>
-                                            Multiple sub-services added
-                                        <% } %>
-                                    </h3>
-                                    <p class="govuk-body">
-                                        Select <%= subServiceAddedBanner.serviceName %> from the list below to access
-                                        <% if (singleSubServiceAdded(subServiceAddedBanner)) { %>
-                                            the sub-service functions and features.
-                                        <% } else { %>
-                                            each sub-service's functions and features.
-                                        <% } %>
-                                    </p>
                                 </div>
-                            </div>
-                        <% });} %>
-                    <%- include('./reviewUsers.ejs') %>
-                </div>
-                <!-- Show Task List version if it is enabled in config and user has no services -->
-                <% if (services.length === 0) { %>
-                <div>
-                    <h1 class="govuk-heading-xl">
-                        Set up your DfE Sign-in account
-                    </h1>
-                    <p class="govuk-body">Complete the following steps to finish setting up your account.</p>
-                    <div>
-                        <ol class="task-list">
-                            <li>
-                                <h2 class="task-list-section">
-                                    <span class="task-list-section-number">1. </span> Verify your account
-                                </h2>
-                                <ul class="task-list-items">
-                                    <li class="task-list-item">
-                                        <p class="govuk-body task-name">
-                                            Verify your email address
-                                        </p>
-                                        <strong class="task-status govuk-tag">
-                                            Completed
-                                        </strong>
-                                    </li>
-                                    <li class="task-list-item">
-                                        <p class="govuk-body task-name">
-                                            Set password for account
-                                        </p>
-                                        <strong class="task-status govuk-tag">
-                                            Completed
-                                        </strong>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>
-                                <h2 class="task-list-section">
-                                    <span class="task-list-section-number">2. </span> Connect to an organisation
-                                </h2>
-                                <ul class="task-list-items">
-                                    <li class="task-list-item">
-                                        <% if(!taskListStatus.hasOrgAssigned) { %>
                             </div>
                         <% });} %>
                     <%- include('./reviewUsers.ejs') %>
@@ -356,51 +283,12 @@
                                                 Request access to an organisation
                                             </a>
                                         <% } else { %>
-                                        <% } else { %>
                                             <p class="govuk-body task-name">
                                                 Request access to an organisation
                                             </p>
                                         <% } %>
                                         <% if(!taskListStatus.hasOrgAssigned) { %>
-                                        <% } %>
-                                        <% if(!taskListStatus.hasOrgAssigned) { %>
                                             <a class="govuk-button pull-right govuk-!-margin-0"
-                                                href="/request-organisation/search" role="button">
-                                                Next Action
-                                            </a>
-                                        <% } else { %>
-                                            <strong class="task-status govuk-tag">
-                                                Completed
-                                            </strong>
-                                        <% } %>
-                                    </li>
-                                    <li class="task-list-item">
-                                        <p class="govuk-body task-name">
-                                            Await approval from organisation
-                                        </p>
-                                        <% if(taskListStatus.hasRequestPending) { %>
-                                            <strong class="task-status govuk-tag govuk-tag--grey">
-                                                Pending
-                                            </strong>
-                                        <% } else if( taskListStatus.hasRequestRejected ) { %>
-                                            <strong class="task-status govuk-tag govuk-tag--red">
-                                                Rejected
-                                            </strong>
-                                        <% } else if( taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending && !taskListStatus.hasRequestRejected) { %>
-                                            <strong class="task-status govuk-tag">
-                                                Approved
-                                            </strong>
-                                        <% } %>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>
-                                <!--   {% if action === "accepted" %}-->
-                                <h2 class="task-list-section">
-                                    <span class="task-list-section-number">3. </span> Get access to services
-                                </h2>
-                                <ul class="task-list-items">
-                                    <% if (locals.isRequestServiceAllowed) { %>
                                                 href="/request-organisation/search" role="button">
                                                 Next Action
                                             </a>
@@ -445,25 +333,9 @@
                                                 href="<%=locals.requestServicesRedirect%>" role="button">
                                                 Request service
                                             </a>
-                                                href="<%=locals.requestServicesRedirect%>" role="button">
-                                                Request service
-                                            </a>
                                         </li>
                                     <% } else { %>
-                                    <% } else { %>
                                         <% if (taskListStatus.multiOrgDetails.orgs > 1 && taskListStatus.multiOrgDetails.approvers >= 1 &&
-                                            !taskListStatus.approverForOrg) { %>
-                                            <li class="task-list-item">
-                                                <p class="govuk-body task-name">
-                                                    Email organisation's approver for access to services
-                                                    <br /> 
-                                                    <a class="govuk-link-bold" href="/organisations">
-                                                        See my approvers
-                                                    </a>
-                                                </p>
-                                            </li>
-                                    <% } else if (approvers.length === 0 && taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending &&
-                                        !taskListStatus.hasRequestRejected) { %>
                                             !taskListStatus.approverForOrg) { %>
                                             <li class="task-list-item">
                                                 <p class="govuk-body task-name">
@@ -484,11 +356,7 @@
                                             </p>
                                         </li>
                                     <% } else if(taskListStatus.approverForOrg) { %>
-                                    <% } else if(taskListStatus.approverForOrg) { %>
                                         <li class="task-list-item">
-                                            <a class="govuk-link-bold" href='<%=locals.addServicesRedirect%>'>
-                                                Add services
-                                            </a>
                                             <a class="govuk-link-bold" href='<%=locals.addServicesRedirect%>'>
                                                 Add services
                                             </a>
@@ -496,26 +364,13 @@
                                                 href='<%=locals.addServicesRedirect%>' role="button">
                                                 Next Action
                                             </a>
-                                                href='<%=locals.addServicesRedirect%>' role="button">
-                                                Next Action
-                                            </a>
                                         </li>
-                                    <% } else { %>
                                     <% } else { %>
                                         <li class="task-list-item">
                                             <p class="govuk-body task-name">
                                                 Email organisation's approver for access to services
                                             </p>
                                             <% if (approvers.length < 5) { %>
-                                                <ul>
-                                                    <% for (let a = 0; a < approvers.length; a++) { %>
-                                                        <li>
-                                                            <a class="govuk-link-bold"
-                                                                href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %>
-                                                            </a>
-                                                        </li>
-                                                    <% } %>
-                                                </ul>
                                                 <ul>
                                                     <% for (let a = 0; a < approvers.length; a++) { %>
                                                         <li>
@@ -563,15 +418,6 @@
                 </div>
                  <!-- Show message if Task List version is disabled by config and user has no services -->
                 <% } else if (services.length === 0)  { %>
-                                    <% } %>
-                                 <% }%>
-                                </ul>
-                            </li>
-                        </ol>
-                    </div>
-                </div>
-                 <!-- Show message if Task List version is disabled by config and user has no services -->
-                <% } else if (services.length === 0)  { %>
                     <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
                         <div class="empty-state">
                             <p class="govuk-body">You have no services assigned, please contact your <a
@@ -600,11 +446,6 @@
                                 </a> 
                             </li>
                             <% if (locals.isApprover) { %>
-                                <li>
-                                    <a class="govuk-link-bold" href="<%=locals.removeServicesRedirect%>">
-                                        Remove service from my account
-                                    </a> 
-                                </li>
                                 <li>
                                     <a class="govuk-link-bold" href="<%=locals.removeServicesRedirect%>">
                                         Remove service from my account
@@ -709,51 +550,8 @@
     $('.close-button.close-sub-service-added-banner').on('click', function() {
     const itemId = $(this).attr('id');
     if (itemId) {
-                                        target="_blank"><%=service.name%></a>
-                                    <% } %>
-                                </p>
-                            </td>
-                            <td class="govuk-table__cell">
-                                <% if (service.description) { %>
-                                <p class="govuk-!-font-size-16"><%= service.description %></p>
-                                <% } %>
-                            </td>
-                        </tr>
-                        <% } %>
-                    </tbody>
-                </table>
-            </div>
-            <% } %>
-        </div>
-    </div>
-</div>
-<script>
-    $('#close-missing-jobtitle').on('click', () => {
-        $.ajax(`/close-missing-jobtitle`).done(() => {
-            const item = $('#notification-wrapper-missing-jobtitle')
-            item.remove();
-        });
-    })
-    $('.close-button.pull-right.close_new_service').on('click', function() {
-        const itemId = $(this).attr('id');
-        $.ajax(`/close-service-added/${itemId}`).done(() => {
-            $(this).remove();
-        });
-    })
-    $('#close-password-change').on('click', () => {
-        const item = $('#notification-wrapper-password-change')
-        if(item.length) {
-            $.ajax(`/close-password-change`).done(() => {
-                item.remove();
-            });
-        }
-    })
-    $('.close-button.close-sub-service-added-banner').on('click', function() {
-    const itemId = $(this).attr('id');
-    if (itemId) {
         $.ajax(`/close-sub-service-added/${itemId}`).done(() => {
         $(this).remove();
-    });}
     });}
 });
 </script>
