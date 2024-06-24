@@ -73,7 +73,7 @@ const buildSubHeader = (req) => {
 
   if (isRequestService(req) && !isUserApprover(req)) { // [REMOVE] NSA-8109 scenario 2
     actionMessage = ' associated with the service you would like to request access to.';
-  } else if (isRequestService(req) && isUserApprover(req)) {  // [REMOVE] NSA-8109 scenario 3
+  } else if (isAddService(req) && isUserApprover(req)) {  // [REMOVE] NSA-8109 scenario 3
     actionMessage = ' associated with the service you would like to access.';
   } else if (isOrganisationInvite(req) && isUserApprover(req)) { // [REMOVE] NSA-8109 scenario 4
     actionMessage = ' you would like to invite another user to.';
