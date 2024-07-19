@@ -10,7 +10,7 @@ npm install
 
 ### Run application
 
-This application requires redis to run.  The easiest way to run the following command to create an instance of redis using docker:
+This application requires redis to run.  The easiest way is to create an instance of redis using docker:
 
 ```
 docker run -d -p 6379:6379 redis
