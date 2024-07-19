@@ -8,9 +8,16 @@ Install deps
 npm install
 ```
 
+### Run application
+
+This application requires redis to run.  The easiest way to run the following command to create an instance of redis using docker:
+
+```
+docker run -d -p 6379:6379 redis
+```
+
 **Important note when running locally** - Connecting to local redis will fail unless `tls` is set to `false` in src/index.js L34.  Currently, even setting `tls=false` in the connection string doesn't help.  This will be fixed in the future, but for now this is a workaround for it.
 
-### Run application
 ```
 npm run dev
 ```
@@ -24,8 +31,6 @@ https://localhost:41012/
 ```
 npm run test
 ```
-
-
 
 ## Prerequisite
 ---
