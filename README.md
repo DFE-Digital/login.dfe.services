@@ -1,7 +1,36 @@
 # DfE Services
-[![Build Status](https://travis-ci.org/DFE-Digital/login.dfe.services.svg?branch=master)](https://travis-ci.org/DFE-Digital/login.dfe.services)
 [![tested with jest](https://img.shields.io/badge/tested_with-jest-99424f.svg)](https://github.com/facebook/jest)
 
+## Getting Started
+
+Install deps
+```
+npm install
+```
+
+### Run application
+
+This application requires redis to run.  The easiest way is to create an instance of redis using docker:
+
+```
+docker run -d -p 6379:6379 redis
+```
+
+**Important note when running locally** - Connecting to local redis will fail unless `tls` is set to `false` in src/index.js L34.  Currently, even setting `tls=false` in the connection string doesn't help.  This will be fixed in the future, but for now this is a workaround for it.
+
+```
+npm run dev
+```
+
+Once the application has started, you can view it in the browser by going to:
+```
+https://localhost:41012/
+```
+
+### Run tests
+```
+npm run test
+```
 
 ## Prerequisite
 ---
