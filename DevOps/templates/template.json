@@ -131,7 +131,7 @@
             }
         },
          "emailValidation": {
-            "type": "bool",
+            "type": "string",
             "defaultValue": true,
             "metadata": {
                 "description": "Enable black list of email "
