@@ -11,21 +11,21 @@
             <p class="govuk-body">To access your DfE online services, you'll either need:</p>
             <ul class="govuk-list govuk-list--bullet">
                 <li><strong>an existing DfE Sign-in account.</strong> This will be the email address and password you created when you first accessed DfE Sign-in.</li>
-                <li><strong>to create a DfE Sign-in account.</strong> If you haven't used DfE Sign-in before you'll need to <a class="govuk-link" href="<%=profileUrl%>/register">create a DfE Sign-in account</a>.</li>
+                <li><strong>to create a DfE Sign-in account.</strong> If you haven't used DfE Sign-in before you'll need to <a class="govuk-link" href="<%=profileUrl%>/register" aria-label="create a DfE Sign-in account">create a DfE Sign-in account</a>.</li>
             </ul>
-            <a href="/my-services" role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
+            <a href="/my-services" role="button" aria-label="Start now" tabindex="0" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
                 Start now
                 <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">
                     <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
                 </svg>
             </a>
-            <details class="govuk-details" data-module="govuk-details">
-                <summary class="govuk-details__summary">
+            <details class="govuk-details" data-module="govuk-details" role="group">
+                <summary class="govuk-details__summary" role="button" id="summary-button" aria-controls="details-content" aria-expanded="false">
                     <span class="govuk-details__summary-text">
                         Services accessed using DfE Sign-in
                     </span>
                 </summary>
-                <div class="govuk-details__text">
+                <div class="govuk-details__text" id="details-content" aria-hidden="true" aria-labelledby="summary-button">
                     <p class="govuk-body">
                         These DfE services are now accessed using your DfE Sign-in account.
                     </p>
