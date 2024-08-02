@@ -173,9 +173,9 @@ describe('when entering a new users details', () => {
     });
   });
 
-  it('then it should render view if email is a blacklisted email and environment is Production', async () => {
+  it('should render with error if emailValidation is undefined and the email address is a blacklisted email', async () => {
     req.body.email = 'blacklisted.domain@hotmail.com';
-    config.toggles.environmentName = 'pr';
+    process.env.emailValidation = 'true';
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
@@ -196,13 +196,36 @@ describe('when entering a new users details', () => {
     });
   });
 
-  it('then it should render view if email is a blacklisted email and environment is other than Production', async () => {
+  it('should render with error if emailValidation is True and the email address is a blacklisted email', async () => {
     req.body.email = 'blacklisted.domain@hotmail.com';
-    config.toggles.environmentName = 'dev';
-
+    process.env.emailValidation = 'true';
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('users/views/newUserDetails');
+    expect(res.render.mock.calls[0][1]).toEqual({
+      csrfToken: 'token',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'blacklisted.domain@hotmail.com',
+      backLink: backRedirect,
+      currentPage: 'users',
+      isDSIUser: false,
+      organisationId: 'org1',
+      uid: '',
+      validationMessages: {
+        email: 'This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.',
+      },
+    });
+  });
+
+  it('should redirect if emailValidation is False and the email address is a blacklisted email', async () => {
+    req.body.email = 'blacklisted.domain@hotmail.com';
+    process.env.emailValidation = 'false';
+    await postNewUserDetails(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe('organisation-permissions');
   });
 
   it('then it should render view if email already associated to a user in this org', async () => {
