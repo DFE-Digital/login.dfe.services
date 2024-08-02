@@ -175,7 +175,7 @@ describe('when entering a new users details', () => {
 
   it('should render with error if emailValidation is undefined and the email address is a blacklisted email', async () => {
     req.body.email = 'blacklisted.domain@hotmail.com';
-    process.env.emailValidation = 'true';
+    process.env.emailValidation = undefined;
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
