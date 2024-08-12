@@ -6,7 +6,7 @@
                 <% if (locals.isApprover || locals.hasDualPermission) { %>
                     Select your Organisation
                 <% } else { %>
-                    Select your Organisation                 
+                    Select your Organisation
                 <% } %>
             </h1>
 
@@ -46,19 +46,31 @@
                                         <%= org.organisation.id === selectedOrganisation ? 'checked': ''%>
                                         >
                                     <label class="govuk-label govuk-radios__label" for="<%= org.organisation.id %>">
-                                        <span class="govuk-label govuk-label--s">
-                                            <%= org.organisation.name %> <%=org.organisation.status ? `(${org.organisation.status.name})` : '' %>
-                                        </span>
+                                        <% if (org.organisation.category.id === "002" && org.organisation.LegalName) { %>
+                                            <span class="govuk-label govuk-label--s">
+                                                <%= org.organisation.LegalName %> <%=org.organisation.status ? `(${org.organisation.status.name})` : '' %>
+                                            </span>
+                                        <% } else { %>
+                                            <span class="govuk-label govuk-label--s">
+                                                <%= org.organisation.name %> <%=org.organisation.status ? `(${org.organisation.status.name})` : '' %>
+                                            </span>
+                                        <% } %>
                                         <% if (org.naturalIdentifiers) { %>
                                             <span class="govuk-hint govuk-label__hint" >
                                                 <%= org.naturalIdentifiers.join(', ') %>
                                             </span>
                                         <% } %>
                                         <br />
-                                        <% if (org.organisation.LegalName) { %>
+                                        <% if (org.organisation.category.id === "002" && org.organisation.LegalName) { %>
                                             <span class="govuk-hint govuk-label__hint" >
-                                                Legal Name:  <%= org.organisation.LegalName %>
+                                                Name:  <%= org.organisation.name %>
                                             </span>
+                                        <% } else { %>
+                                            <% if (org.organisation.LegalName) { %>
+                                                <span class="govuk-hint govuk-label__hint" >
+                                                    Legal Name:  <%= org.organisation.LegalName %>
+                                                </span>
+                                            <% } %>
                                         <% } %>
                                         <br />
                                         <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
