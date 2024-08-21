@@ -483,8 +483,9 @@
                 <table class="govuk-table">
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
-                            <th scope="col" class="govuk-table__header width-35">Service</th>
-                            <th scope="col" class="govuk-table__header width-65">Description</th>
+                            <th scope="col" class="govuk-table__header width-30">Service</th>
+                            <th scope="col" class="govuk-table__header width-48">Description</th>
+                            <th scope="col" class="govuk-table__header width-22">Organisations</th>
                         </tr>
                     </thead>
                     <tbody class="govuk-table__body">
@@ -516,6 +517,27 @@
                                 <% if (service.description) { %>
                                 <p class="govuk-!-font-size-16"><%= service.description %></p>
                                 <% } %>
+                            </td>
+                            <td class="govuk-table__cell">
+                                <div class="dfe-custom-details-component">
+                                    <details class="govuk-details govuk-!-font-size-16">
+                                        <summary class="govuk-details__summary">
+                                            <span class="govuk-details__summary-text" data-open="Hide organisations" data-close="Show organisations">
+                                            </span>
+                                        </summary>    
+                                        <div class="govuk-details__text" aria-live="polite" role="region" >
+                                            <ul>
+                                                <% if (service.organisations.length === 0) { %>
+                                                    <li>Organisations are managed by the service.</li>
+                                                <% } else { %>
+                                                    <% service.organisations.map((organisation) => { %>
+                                                        <li><%= organisation.name %></li>
+                                                    <% }) %>
+                                                <% } %>
+                                            </ul>
+                                        </div>
+                                    </details>
+                                </div>
                             </td>
                         </tr>
                         <% } %>
