@@ -7,14 +7,17 @@ const appCache = require('./../../infrastructure/helpers/AppCache');
 const { directories } = require('login.dfe.dao');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
-const uniqBy = require('lodash/uniqBy');
 const sortBy = require('lodash/sortBy');
 const {
   getOrganisationAndServiceForUser,
   getPendingRequestsAssociatedWithUser,
   getLatestRequestAssociatedWithUser,
 } = require('./../../infrastructure/organisations');
-const { fetchSubServiceAddedBanners, jobTitleBannerHandler, fetchNewServiceBanners } = require('../home/userBannersHandlers');
+const {
+  fetchSubServiceAddedBanners,
+  jobTitleBannerHandler,
+  fetchNewServiceBanners,
+} = require('../home/userBannersHandlers');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 const { getApproverOrgsFromReq, isUserEndUser, isLoginOver24 } = require('../users/utils');
@@ -22,7 +25,9 @@ const { actions } = require('../constans/actions');
 const flash = require('login.dfe.express-flash-2');
 
 const pireanServices = process.env.PIREAN_SERVICES ? process.env.PIREAN_SERVICES.split(',') : [];
-const pireanServicesActiveLink = process.env.PIREAN_SERVICES_ACTIVE_LNK ? process.env.PIREAN_SERVICES_ACTIVE_LNK.split(',') : [];
+const pireanServicesActiveLink = process.env.PIREAN_SERVICES_ACTIVE_LNK
+  ? process.env.PIREAN_SERVICES_ACTIVE_LNK.split(',')
+  : [];
 let user = null;
 
 const getAndMapServices = async (account, correlationId) => {
@@ -35,6 +40,7 @@ const getAndMapServices = async (account, correlationId) => {
     serviceUrl: '',
     roles: sa.roles,
     accessGrantedOn: sa.accessGrantedOn,
+    organisations: { id: sa.organisationId },
   }));
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
@@ -153,13 +159,36 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
   return { taskListStatus, approvers };
 };
 
+const getOrganisationsAndServices = async (services, account, correlationId) => {
+  const organisationDetails = (await getOrganisationAndServiceForUser(account.id, correlationId)) || [];
+  const organisationDetailsMap = new Map(
+    organisationDetails
+      .filter((org) => org.organisation.status.id > 0)
+      .map((org) => [org.organisation.id, org.organisation.name]),
+  );
+  const servicesMap = new Map();
+
+  services.forEach((service) => {
+    const organisationId = service.organisations.id;
+    const organisation = organisationDetailsMap.has(organisationId)
+      ? { id: organisationId, name: organisationDetailsMap.get(organisationId) }
+      : null;
+
+    if (!servicesMap.has(service.id)) {
+      servicesMap.set(service.id, { ...service, organisations: organisation ? [organisation] : [] });
+    } else if (organisation) {
+      servicesMap.get(service.id).organisations.push(organisation);
+    }
+  });
+
+  const uniqueServices = Array.from(servicesMap.values());
+  return uniqueServices;
+};
+
 const getServices = async (req, res) => {
   const account = Account.fromContext(req.user);
   const allServices = await getAndMapServices(account, req.id);
-  const services = uniqBy(
-    allServices.filter((x) => !x.hideService),
-    'id',
-  );
+  const services = await getOrganisationsAndServices(allServices, account, req.id);
   const approverRequests = req.organisationRequests || [];
   let taskListStatusAndApprovers;
   if (services.length <= 0) {
@@ -220,7 +249,7 @@ const getServices = async (req, res) => {
   const useJobTitleBanner = await directories.fetchUserBanners(req.user.id, 2);
   let showJobTitleBanner = !useJobTitleBanner && !jobTitle;
   //checks for first login if null they havn't logged in yet
-  if (user.claims.prev_login !== undefined && user.claims.prev_login !== null  && showJobTitleBanner) {
+  if (user.claims.prev_login !== undefined && user.claims.prev_login !== null && showJobTitleBanner) {
     //check last logged in if its within 24 hrs show banner
     const checkfor24 = isLoginOver24(user.claims.last_login, user.claims.prev_login);
     if (checkfor24) {
@@ -235,9 +264,9 @@ const getServices = async (req, res) => {
   // 4: "Sub-service added" banners fetch
   let subServiceAddedBanners = req.user.id ? await fetchSubServiceAddedBanners(req.user.id) : null;
   const checkfor24 = isLoginOver24(user.claims.last_login, user.claims.prev_login);
-  if(subServiceAddedBanners){
-    if(checkfor24){
-      subServiceAddedBanners.forEach((serviceItem) =>{
+  if (subServiceAddedBanners) {
+    if (checkfor24) {
+      subServiceAddedBanners.forEach((serviceItem) => {
         directories.deleteUserBanner(serviceItem.id);
       });
       subServiceAddedBanners = [];
@@ -260,15 +289,12 @@ const getServices = async (req, res) => {
   const userPireanServices = services.filter((value) => pireanServices.includes(value.name));
   const newServiceBanner = await fetchNewServiceBanners(req.user.id, 5);
   let newAddedServiceBanner = [];
-  if(newServiceBanner !== null && newServiceBanner !== undefined && newServiceBanner.length > 0)
-  {
-    if((res.locals.flash === undefined || res.locals.flash.title === undefined))
-    {
-
-      if(!checkfor24){
+  if (newServiceBanner !== null && newServiceBanner !== undefined && newServiceBanner.length > 0) {
+    if (res.locals.flash === undefined || res.locals.flash.title === undefined) {
+      if (!checkfor24) {
         newAddedServiceBanner = newServiceBanner;
-      }else{
-        newServiceBanner.forEach((serviceItem) =>{
+      } else {
+        newServiceBanner.forEach((serviceItem) => {
           directories.deleteUserBanner(serviceItem.id);
         });
       }
