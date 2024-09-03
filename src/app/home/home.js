@@ -22,16 +22,16 @@ const getAndMapExternalServices = async (correlationId) => {
 
 const displayEsfa = (externalServices) => {
   externalServices.map((service) => {
-      if (service.name === 'Digital Forms service') {
-          service.name = 'ESFA Digital Forms Service'
-      }
-      if (service.name === 'OPAFastForm') {
-          service.name = 'ESFA Digital Forms Service'
-      }
+    if (service.name === 'Digital Forms service') {
+      service.name = 'ESFA Digital Forms Service';
+    }
+    if (service.name === 'OPAFastForm') {
+      service.name = 'ESFA Digital Forms Service';
+    }
   });
 
   externalServices = sortBy(externalServices, 'name');
-  externalServices = uniqBy(externalServices, obj => obj.name);
+  externalServices = uniqBy(externalServices, (obj) => obj.name);
   return externalServices;
 };
 

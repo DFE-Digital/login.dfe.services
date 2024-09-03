@@ -23,13 +23,15 @@ jest.mock('login.dfe.dao', () => {
       list: async (pageNumber, pageSize) => {
         return {
           count: 10,
-        rows:[{
-         "id": "Service One",
-         "isExternalService": true,
-         "isMigrated": true,
-         "name": "Service One",
-      }],
-      };
+          rows: [
+            {
+              id: 'Service One',
+              isExternalService: true,
+              isMigrated: true,
+              name: 'Service One',
+            },
+          ],
+        };
       },
     },
   };
@@ -106,7 +108,9 @@ describe('when displaying current organisation and service mapping', () => {
     await home(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][1].chatBotUrl).toBe('https://askonline.education.gov.uk/chatbot/davina?regional=true');
+    expect(res.render.mock.calls[0][1].chatBotUrl).toBe(
+      'https://askonline.education.gov.uk/chatbot/davina?regional=true',
+    );
   });
 
   it('then it should include session expiry time in model', async () => {
