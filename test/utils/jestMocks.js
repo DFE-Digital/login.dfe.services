@@ -76,7 +76,9 @@ const mockAdapterConfig = () => {
     toggles: {
       useApproverJourney: true,
     },
-    hostingEnvironment: {},
+    hostingEnvironment: {
+      helpUrl: 'https://localhost:3001/help',
+    },
     loggerSettings: {},
     notifications: {},
     adapter: {

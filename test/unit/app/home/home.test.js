@@ -88,4 +88,31 @@ describe('when displaying current organisation and service mapping', () => {
       },
     ]);
   });
+  it('then it should include title in model', async () => {
+    await home(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][1].title).toBe('DfE Sign-in');
+  });
+
+  it('then it should include contact url in model', async () => {
+    await home(req, res);
+    console.log(res.render.mock.calls[0][1]);
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][1].helpUrl).toBe('https://localhost:3001/help');
+  });
+
+  it('then it should include chat bot url in model', async () => {
+    await home(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][1].chatBotUrl).toBe('https://askonline.education.gov.uk/chatbot/davina?regional=true');
+  });
+
+  it('then it should include session expiry time in model', async () => {
+    await home(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][1].sessionExpiryTime).toBe(20);
+  });
 });
