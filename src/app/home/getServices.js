@@ -70,6 +70,7 @@ const getAndMapServices = async (account, correlationId) => {
                 ? application.relyingParty.params[role.code]
                 : '',
             isRole: true,
+            organisations: { id: service.organisations.id },
           });
         }
         service.hideService = true;
@@ -168,18 +169,20 @@ const getOrganisationsAndServices = async (services, account, correlationId) => 
   );
   const servicesMap = new Map();
 
-  services.forEach((service) => {
-    const organisationId = service.organisations.id;
-    const organisation = organisationDetailsMap.has(organisationId)
-      ? { id: organisationId, name: organisationDetailsMap.get(organisationId) }
-      : null;
+  services
+    .filter((service) => !service.hideService)
+    .forEach((service) => {
+      const organisationId = service.organisations.id;
+      const organisation = organisationDetailsMap.has(organisationId)
+        ? { id: organisationId, name: organisationDetailsMap.get(organisationId) }
+        : null;
 
-    if (!servicesMap.has(service.id)) {
-      servicesMap.set(service.id, { ...service, organisations: organisation ? [organisation] : [] });
-    } else if (organisation) {
-      servicesMap.get(service.id).organisations.push(organisation);
-    }
-  });
+      if (!servicesMap.has(service.id)) {
+        servicesMap.set(service.id, { ...service, organisations: organisation ? [organisation] : [] });
+      } else if (organisation) {
+        servicesMap.get(service.id).organisations.push(organisation);
+      }
+    });
 
   const uniqueServices = Array.from(servicesMap.values());
   return uniqueServices;
