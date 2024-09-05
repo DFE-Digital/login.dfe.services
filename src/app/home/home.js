@@ -47,7 +47,7 @@ const home = async (req, res) => {
     loggedOut: true,
     profileUrl: config.hostingEnvironment.profileUrl,
     helpUrl: config.hostingEnvironment.helpUrl,
-    chatBotUrl: 'https://askonline.education.gov.uk/chatbot/davina?regional=true',
+    helpAssistantUrl: config.hostingEnvironment.helpAssistantUrl,
     sessionExpiryTime,
   });
 };

@@ -78,6 +78,7 @@ const mockAdapterConfig = () => {
     },
     hostingEnvironment: {
       helpUrl: 'https://localhost:3001/help',
+      helpAssistantUrl: 'https://localhost:3001/chatBot',
     },
     loggerSettings: {},
     notifications: {},

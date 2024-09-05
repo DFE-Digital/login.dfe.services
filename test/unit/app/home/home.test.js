@@ -99,17 +99,17 @@ describe('when displaying current organisation and service mapping', () => {
 
   it('then it should include contact url in model', async () => {
     await home(req, res);
-    console.log(res.render.mock.calls[0][1]);
+
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][1].helpUrl).toBe('https://localhost:3001/help');
   });
 
-  it('then it should include chat bot url in model', async () => {
+  it('then it should include help assistant url in model', async () => {
     await home(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][1].chatBotUrl).toBe(
-      'https://askonline.education.gov.uk/chatbot/davina?regional=true',
+    expect(res.render.mock.calls[0][1].helpAssistantUrl).toBe(
+      'https://localhost:3001/chatBot',
     );
   });
 
