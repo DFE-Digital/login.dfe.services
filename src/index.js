@@ -30,7 +30,7 @@ configSchema.validate();
 // Initialize client.
 const redisUrl = new URL(config.cookieSessionRedis.params.connectionString);
 const tlsParam = redisUrl.searchParams.get('tls');
-const tlsParamBoolean = (typeof tlsParam === 'string') ? (tls.toLowerCase() === 'true') : false;
+const tlsParamBoolean = (typeof tlsParam === 'string') ? (tlsParam.toLowerCase() === 'true') : false;
 let redisClient = createClient({
   url: config.cookieSessionRedis.params.connectionString,
   socket: {
