@@ -28,16 +28,19 @@ https.globalAgent.maxSockets = http.globalAgent.maxSockets = config.hostingEnvir
 configSchema.validate();
 
 // Initialize client.
+const redisUrl = new URL(config.cookieSessionRedis.params.connectionString);
+const tlsParam = redisUrl.searchParams.get('tls');
+const tlsParamBoolean = (typeof tlsParam === 'string') ? (tls.toLowerCase() === 'true') : false;
 let redisClient = createClient({
   url: config.cookieSessionRedis.params.connectionString,
   socket: {
-    tls: true
+    tls: tlsParamBoolean,
   }
 });
 
 // Initialize store.
 let redisStore = new RedisStore({
-  client: redisClient, 
+  client: redisClient,
   prefix: 'CookieSession:',
 });
 
