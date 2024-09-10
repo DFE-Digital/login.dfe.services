@@ -346,71 +346,71 @@
                                                     </a>
                                                 </p>
                                             </li>
-                                    <% } else if (approvers.length === 0 && taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending &&
-                                        !taskListStatus.hasRequestRejected) { %>
-                                        <!-- Add what if there are no approvers -->
-                                        <li class="task-list-item">
-                                            <p class="govuk-body task-name">
-                                                We are assigning your organisation's first approver (this may take up to 5
-                                                days)
-                                            </p>
-                                        </li>
-                                    <% } else if(taskListStatus.approverForOrg) { %>
-                                        <li class="task-list-item">
-                                            <a class="govuk-link-bold" href='<%=locals.addServicesRedirect%>'>
-                                                Add services
-                                            </a>
-                                            <a class="govuk-button pull-right govuk-!-margin-0"
-                                                href='<%=locals.addServicesRedirect%>' role="button">
-                                                Next Action
-                                            </a>
-                                        </li>
-                                    <% } else { %>
-                                        <li class="task-list-item">
-                                            <p class="govuk-body task-name">
-                                                Request access to a service
-                                            </p>
-                                            <% if (approvers.length < 5) { %>
-                                                <ul>
-                                                    <% for (let a = 0; a < approvers.length; a++) { %>
-                                                        <li>
-                                                            <a class="govuk-link-bold"
-                                                                href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %>
-                                                            </a>
-                                                        </li>
-                                                    <% } %>
-                                                </ul>
-                                            <% } else { %>
-                                                </br></br>
-                                                <article class="organisation-services govuk-!-margin-bottom-0">
-                                                    <section class="organisation">
-                                                        <div>
-                                                            <a href="" class="govuk-link-bold info-link">
-                                                                <%= approvers.length %> approvers
-                                                            </a>
-                                                        </div>
-                                                        <div class="meta js-hidden">
-                                                            <div class="approvers">
-                                                                <dl class="inline condensed small-dt">
-                                                                    <ul>
-                                                                        <% for (let a = 0; a < approvers.length; a++) { %>
-                                                                            <li>
-                                                                                <a class="govuk-link-bold"
-                                                                                    href="mailto:<%=approvers[a].email%>">
-                                                                                    <%= approvers[a].email %>
-                                                                                </a>
-                                                                            </li>
-                                                                        <% } %>
-                                                                    </ul>
-                                                                </dl>
+                                        <% } else if (approvers.length === 0 && taskListStatus.hasOrgAssigned && !taskListStatus.hasRequestPending &&
+                                            !taskListStatus.hasRequestRejected) { %>
+                                            <!-- Add what if there are no approvers -->
+                                            <li class="task-list-item">
+                                                <p class="govuk-body task-name">
+                                                    We are assigning your organisation's first approver (this may take up to 5
+                                                    days)
+                                                </p>
+                                            </li>
+                                        <% } else if(taskListStatus.approverForOrg) { %>
+                                            <li class="task-list-item">
+                                                <a class="govuk-link-bold" href='<%=locals.addServicesRedirect%>'>
+                                                    Add services
+                                                </a>
+                                                <a class="govuk-button pull-right govuk-!-margin-0"
+                                                    href='<%=locals.addServicesRedirect%>' role="button">
+                                                    Next Action
+                                                </a>
+                                            </li>
+                                        <% } else { %>
+                                            <li class="task-list-item">
+                                                <p class="govuk-body task-name">
+                                                    Request access to a service
+                                                </p>
+                                                <% if (approvers.length < 5) { %>
+                                                    <ul>
+                                                        <% for (let a = 0; a < approvers.length; a++) { %>
+                                                            <li>
+                                                                <a class="govuk-link-bold"
+                                                                    href="mailto:<%=approvers[a].email%>"><%= approvers[a].email %>
+                                                                </a>
+                                                            </li>
+                                                        <% } %>
+                                                    </ul>
+                                                <% } else { %>
+                                                    </br></br>
+                                                    <article class="organisation-services govuk-!-margin-bottom-0">
+                                                        <section class="organisation">
+                                                            <div>
+                                                                <a href="" class="govuk-link-bold info-link">
+                                                                    <%= approvers.length %> approvers
+                                                                </a>
                                                             </div>
-                                                        </div>
-                                                    </section>
-                                                </article>
-                                            <% }%>
-                                        </li>
-                                    <% } %>
-                                 <% }%>
+                                                            <div class="meta js-hidden">
+                                                                <div class="approvers">
+                                                                    <dl class="inline condensed small-dt">
+                                                                        <ul>
+                                                                            <% for (let a = 0; a < approvers.length; a++) { %>
+                                                                                <li>
+                                                                                    <a class="govuk-link-bold"
+                                                                                        href="mailto:<%=approvers[a].email%>">
+                                                                                        <%= approvers[a].email %>
+                                                                                    </a>
+                                                                                </li>
+                                                                            <% } %>
+                                                                        </ul>
+                                                                    </dl>
+                                                                </div>
+                                                            </div>
+                                                        </section>
+                                                    </article>
+                                                <% }%>
+                                            </li>
+                                        <% } %>
+                                    <% }%>
                                 </ul>
                             </li>
                         </ol>
