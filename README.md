@@ -10,13 +10,13 @@ npm install
 
 ### Run application
 
-This application requires redis to run.  The easiest way is to create an instance of redis using docker:
+This application requires redis to run.  If running locally, the easiest way is to create an instance of redis using docker:
 
 ```
 docker run -d -p 6379:6379 redis
 ```
 
-**Important note when running locally** - Connecting to local redis will fail unless `tls` is set to `false` in src/index.js L34.  Currently, even setting `tls=false` in the connection string doesn't help.  This will be fixed in the future, but for now this is a workaround for it.
+Once redis is running, start it with:
 
 ```
 npm run dev
