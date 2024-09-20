@@ -24,15 +24,10 @@ const { getApproverOrgsFromReq, isUserEndUser, isLoginOver24 } = require('../use
 const { actions } = require('../constans/actions');
 const flash = require('login.dfe.express-flash-2');
 
-const pireanServices = process.env.PIREAN_SERVICES ? process.env.PIREAN_SERVICES.split(',') : [];
-const pireanServicesActiveLink = process.env.PIREAN_SERVICES_ACTIVE_LNK
-  ? process.env.PIREAN_SERVICES_ACTIVE_LNK.split(',')
-  : [];
 let user = null;
 
 const getAndMapServices = async (account, correlationId) => {
   user = await Account.getById(account.id);
-  const isMigrated = user && user.claims ? user.claims.isMigrated : false;
   const serviceAccess = (await getServicesForUser(account.id, correlationId)) || [];
   let services = serviceAccess.map((sa) => ({
     id: sa.serviceId,
@@ -85,16 +80,6 @@ const getAndMapServices = async (account, correlationId) => {
     }
   }
 
-  // temporary disabled myesf service for users who were invited
-  if (isMigrated) {
-    services.push({
-      name: 'Manage Your Education and Skills Funding',
-      description:
-        "Use this service to: sign documents, view your funding allocations, view the funding you've received, manage apprenticeship details, and tell us about subcontractors",
-      disabled: true,
-      date: '18 March 2020',
-    });
-  }
   return sortBy(services, 'name');
 };
 
@@ -289,7 +274,6 @@ const getServices = async (req, res) => {
     },
   });
 
-  const userPireanServices = services.filter((value) => pireanServices.includes(value.name));
   const newServiceBanner = await fetchNewServiceBanners(req.user.id, 5);
   let newAddedServiceBanner = [];
   if (newServiceBanner !== null && newServiceBanner !== undefined && newServiceBanner.length > 0) {
@@ -320,9 +304,6 @@ const getServices = async (req, res) => {
     isRequestServiceAllowed,
     passwordChangedBanner,
     showJobTitleBanner,
-    pireanServices,
-    userPireanServices,
-    pireanServicesActiveLink,
     subServiceAddedBanners,
   });
 };
