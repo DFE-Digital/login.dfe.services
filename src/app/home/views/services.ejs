@@ -21,40 +21,6 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
                 <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-                    <% if(locals.userPireanServices.length > 1)  { %>
-                        <div class="govuk-warning-text">
-                            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                            <strong class="govuk-warning-text__text">
-                                <span class="govuk-warning-text__assistive">Warning</span>
-                                <p>
-                                    The following services are moving from IDAMS to DfE Sign-in. You can only access the services from this page once they have moved:
-                                    <ul class="govuk-list govuk-list--bullet">
-                                    <% for (let j = 0; j < locals.userPireanServices.length; j++) { %>
-                                        <li> <%=locals.userPireanServices[j].name; %> </li>
-                                    <% } %>
-                                    </ul>
-                                </p>
-                                <p>
-                                    All services will have moved from IDAMS to DfE Sign-in by mid-2024. If the service is not listed below, visit the <a href="https://logon.fasst.org.uk/">IDAMS sign in page</a> to access it.
-                                </p>
-                            </strong>
-                        </div>
-                    <%}%>
-                    <% if(locals.userPireanServices.length === 1) { %>
-                        <div class="govuk-warning-text">
-                            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                            <strong class="govuk-warning-text__text">
-                                <span class="govuk-warning-text__assistive">Warning</span>
-                                <p>
-                                    <%=locals.userPireanServices[0].name%> is moving from IDAMS to DfE Sign-in.
-                                    Some roles and institutions are currently available on DfE Sign-in and others are on IDAMS. Sign in as normal by selecting your institution or role from the list within VYED. Depending on what you select from the list, you may have to use your IDAMS username and password to access.
-                                </p>
-                                <p>
-                                    After the move, you will be able to access VYED from this page without logging in again.
-                                </p>
-                            </strong>
-                        </div>
-                    <% } %>
                     <% if (locals.newAddedServiceBanner) { %>
                         <%  locals.newAddedServiceBanner.forEach((item) => { %>
                             <div id="notification-wrapper-service-added" class="govuk-notification-banner govuk-notification-banner--success"
@@ -482,28 +448,15 @@
                         </tr>
                     </thead>
                     <tbody class="govuk-table__body">
-                        <%
-                            const p_services = locals.pireanServices.map(element => {
-                                return element.toLowerCase();
-                            });
-                            const p_services_active_lnk = locals.pireanServicesActiveLink.map(element => {
-                                return element.toLowerCase();
-                            });
-                                for (let s = 0; s < services.length; s++) {
-                                    const service = services[s];
-                                %>
+                    <%
+                        for (let s = 0; s < services.length; s++) {
+                            const service = services[s];
+                    %>
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">
-                                <p class="<%= service.disabled ? 'service-link-disabled' : 'service-link'%>">
-                                    <% if (service.disabled) { %>
-                                    <span class="date">Available: <%=service.date%></span>
-                                    <h3 class="govuk-heading-s"><%=service.name%></h3>
-                                <% } else if(p_services.includes(service.name.toLowerCase()) && !p_services_active_lnk.includes(service.name.toLowerCase())){ %>
-                                <h3 class="govuk-heading-s"><%=service.name%></h3>
-                                    <% } else { %>
-                                        <a href="<%=service.serviceUrl%>" class="govuk-link-bold"
-                                        target="_blank"><%=service.name%></a>
-                                    <% } %>
+                                <p class="service-link">
+                                    <a href="<%=service.serviceUrl%>" class="govuk-link-bold"
+                                    target="_blank"><%=service.name%></a>
                                 </p>
                             </td>
                             <td class="govuk-table__cell">
@@ -533,7 +486,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <% } %>
+                    <% } %>
                     </tbody>
                 </table>
             </div>
