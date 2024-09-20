@@ -116,20 +116,6 @@
                 "description": "Whether or not to include a staging deployment slot"
             }
         },
-         "pireanServices": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Add app settings to support the display of warning messages for pirean services"
-            }
-        },
-        "pireanservicesactivelink": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Active link for services"
-            }
-        },
          "emailValidation": {
             "type": "bool",
             "defaultValue": true,
@@ -183,8 +169,6 @@
                             "TOPIC_NAME": "[parameters('auditServiceBusTopicName')]",
                             "SUBSCRIPTION_NAME": "[parameters('auditServiceBusSubscriptionName')]",
                             "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
-                            "PIREAN_SERVICES": "[parameters('pireanServices')]",
-                            "PIREAN_SERVICES_ACTIVE_LNK": "[parameters('pireanservicesactivelink')]",
                             "emailValidation": "[parameters('emailValidation')]",
                             "WEBSITE_LOCAL_CACHE_OPTION": "Always",
                             "WEBSITE_LOCAL_CACHE_SIZEINMB": "2000"
