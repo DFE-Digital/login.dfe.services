@@ -46,16 +46,15 @@ npm run test
 10. Add aad shd app id to keyvault with name `aadshdappid` - added
 11. Add cdn Host Name to keyvault with name `cdnHostName` - added
 12. Add cdn Assets Version to keyvault with name `cdnAssetsVersion` - added
-13. Add pirean Services to keyvault with name `pireanServices` - added also in azure devops variable group
-14. Add Directories host name to keyvault with name `standaloneDirectoriesHostName` - added
-15. Add support host name to keyvault with name `standaloneSupportHostName` - added
-16. Add Devices host name to keyvault with name `standaloneDevicesHostName` - added
-17. Add Organisations host name to keyvault with name `standaloneOrganisationsHostName` - added
-18. Add Applications host name to keyvault with name `standaloneApplicationsHostName` - added
-19. Add Access host name to keyvault with name `standaloneAccessHostName` - added
-20. Add profile host name to keyvault with name `standaloneProfileHostName` - added
-21. Add services host name to keyvault with name `standaloneServicesHostName` - added
-22. Add Oidc host name to keyvault with name `standaloneOidcHostName` - added
-23. Add help host name to keyvault with name `standaloneHelpHostName` - added
-24. Add Interactions host name to keyvault with name `standaloneInteractionsHostName` - added
-25. Add service Id to keyvault with name `serviceId` - added
+13. Add Directories host name to keyvault with name `standaloneDirectoriesHostName` - added
+14. Add support host name to keyvault with name `standaloneSupportHostName` - added
+15. Add Devices host name to keyvault with name `standaloneDevicesHostName` - added
+16. Add Organisations host name to keyvault with name `standaloneOrganisationsHostName` - added
+17. Add Applications host name to keyvault with name `standaloneApplicationsHostName` - added
+18. Add Access host name to keyvault with name `standaloneAccessHostName` - added
+19. Add profile host name to keyvault with name `standaloneProfileHostName` - added
+20. Add services host name to keyvault with name `standaloneServicesHostName` - added
+21. Add Oidc host name to keyvault with name `standaloneOidcHostName` - added
+22. Add help host name to keyvault with name `standaloneHelpHostName` - added
+23. Add Interactions host name to keyvault with name `standaloneInteractionsHostName` - added
+24. Add service Id to keyvault with name `serviceId` - added
