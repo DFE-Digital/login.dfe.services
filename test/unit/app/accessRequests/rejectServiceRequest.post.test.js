@@ -1,4 +1,4 @@
-const { listRolesOfService, addUserService } = require('../../../../src/infrastructure/access');
+const { listRolesOfService } = require('../../../../src/infrastructure/access');
 const { mockRequest, mockResponse, mockAdapterConfig, mockLogger } = require('../../../utils/jestMocks');
 const { getAndMapServiceRequest, generateFlashMessages } = require('../../../../src/app/accessRequests/utils');
 const { post } = require('../../../../src/app/accessRequests/rejectServiceRequest');
@@ -201,6 +201,51 @@ describe('when reviewing a service request', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       validationMessages: {
         reason: 'Reason cannot be longer than 1000 characters',
+      },
+    });
+  });
+
+  it('then it should render error view if rejection reason has been provided with empty spaces', async () => {
+    req.body.reason = '   ';
+
+    await post(req, res);
+
+    expect(updateServiceRequest.mock.calls).toHaveLength(0);
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/rejectServiceRequest');
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      validationMessages: {
+        reason: 'Enter a reason for rejection',
+      },
+    });
+  });
+
+  it('then it should render error view if rejection reason has not been provided', async () => {
+    req.body.reason = '';
+
+    await post(req, res);
+
+    expect(updateServiceRequest.mock.calls).toHaveLength(0);
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/rejectServiceRequest');
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      validationMessages: {
+        reason: 'Enter a reason for rejection',
+      },
+    });
+  });
+
+  it('then it should render error view if rejection reason is null', async () => {
+    req.body.reason = null;
+
+    await post(req, res);
+
+    expect(updateServiceRequest.mock.calls).toHaveLength(0);
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/rejectServiceRequest');
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      validationMessages: {
+        reason: 'Enter a reason for rejection',
       },
     });
   });
