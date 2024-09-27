@@ -30,8 +30,10 @@ const getViewModel = (req) => {
 const validate = async (req) => {
   let model = getViewModel(req);
   model.request = await getAndMapServiceRequest(req.params.rid);
-  model.reason = req.body.reason;
-  if (model.reason.length > 1000) {
+  model.reason = req.body.reason?.trim() ?? '';
+  if (model.reason.length === 0) {
+    model.validationMessages.reason = 'Enter a reason for rejection';
+  } else if (model.reason.length > 1000) {
     model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
   }
   return model;
