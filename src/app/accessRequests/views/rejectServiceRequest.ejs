@@ -14,12 +14,13 @@
                     </legend>
 
                     <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>">
-                        <label class="govuk-label govuk-label--s" for="reason">Reason for rejection (optional) </label>
                         <% if (locals.validationMessages.reason !== undefined) { %>
                             <span id="validation-reason" class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.reason %>
                             </span>
-                        <% } %>
+                            <% } else { %>
+                                <label class="govuk-label govuk-label--s" for="reason">Reason for rejection</label>
+                            <% } %>
                         <textarea class="govuk-textarea govuk-!-width-full" rows="6" id="reason" name="reason"
                         <% if (locals.validationMessages.reason !== undefined) { %>
                                     aria-invalid="true" aria-describedby="validation-reason"

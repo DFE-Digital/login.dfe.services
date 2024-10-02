@@ -64,11 +64,24 @@
 
             <form method="post" id="form-deactivate" class="prevent-form-double-submission">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
-                    Reason for rejection (optional)
+                <h2 class="govuk-heading-m">
+                    Reason for rejection
                 </h2>
-                <p class="govuk-caption-l govuk-!-margin-top-0">Reason will be shared with requestee via email</p>
-                <textarea class="govuk-textarea govuk-!-width-full" rows="6" id="reason" name="reason"></textarea>
+                <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>">
+                    <p class="govuk-caption-m govuk-!-margin-bottom-1">This information will be shared with the requester via email.</p>
+                    
+                    <% if (locals.validationMessages.reason !== undefined) { %>
+                        <span id="validation-reason" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.reason %>
+                        </span>
+                    <% } %>
+
+                    <textarea class="govuk-textarea govuk-!-width-full" rows="6" id="reason" name="reason"
+                        <% if (locals.validationMessages.reason !== undefined) { %>
+                                    aria-invalid="true" aria-describedby="validation-reason"
+                                <% } %>
+                                    value="<%= locals.reason %>"></textarea>
+                </div>
                 <div class="govuk-button-group">
                     <button type="submit" class="govuk-button">Reject request</button>
                     <a href="/my-services" class="govuk-button govuk-button--secondary">Cancel</a>
