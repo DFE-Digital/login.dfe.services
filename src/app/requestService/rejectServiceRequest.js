@@ -16,6 +16,7 @@ const notificationClient = new NotificationClient({
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 
 const { getUserServiceRequestStatus, updateServiceRequest } = require('./utils.js');
+
 const getViewModel = async (req) => {
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const serviceId = req.params.sid;
@@ -111,8 +112,7 @@ const post = async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/my-services');
   }
-  let rejectReason = req.body.reason ? req.body.reason : "";
-
+  
   const model = await getViewModel(req)
   const roleIds = JSON.parse(decodeURIComponent(req.params.rids))
   const roles = roleIds || [];
@@ -127,6 +127,12 @@ const post = async (req, res) => {
 
   if (policyValidationResult.length > 0) {
     model.validationMessages.roles = policyValidationResult.map((x) => x.message)
+    return res.render('requestService/views/rejectServiceRequest', model)
+  }
+
+  const rejectReason = (req.body.reason ? req.body.reason : "").trim();
+  if (rejectReason.length > 1000 || rejectReason.length === 0) {
+    model.validationMessages.reason = rejectReason.length > 1000 ? 'Reason cannot be longer than 1000 characters' : 'Enter a reason for rejection' ;
     return res.render('requestService/views/rejectServiceRequest', model)
   }
 
