@@ -27,6 +27,7 @@ const get = async (req, res) => {
     reason: '',
     currentPage: 'organisations',
     validationMessages: {},
+    backLink: '/request-organisation/search',
   });
 };
 
@@ -39,10 +40,14 @@ const validate = async (req) => {
     reason: req.body.reason,
     currentPage: 'organisations',
     validationMessages: {},
+    backLink: '/request-organisation/search',
   };
-  if (model.reason.length > 1000) {
+  if (model.reason.trim().length === 0) {
+    model.validationMessages.reason = 'Enter a reason for request';
+  } else if (model.reason.length > 1000) {
     model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
   }
+
   if ((await getRequestsForOrganisation(req.session.organisationId, req.id)).length > requestLimit) {
     model.validationMessages.limitOrg = 'Organisation has reached the limit for requests';
   }
