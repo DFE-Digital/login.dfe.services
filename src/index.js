@@ -151,8 +151,8 @@ const init = async () => {
     session({
       name: 'session',
       store: redisStore,
-      resave: true,
-      saveUninitialized: true,
+      resave: false,
+      saveUninitialized: false,
       secret: config.hostingEnvironment.sessionSecret,
       maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
       cookie: {
