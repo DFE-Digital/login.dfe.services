@@ -79,6 +79,7 @@ const init = async () => {
   const self = "'self'";
   const allowedOrigin = '*.signin.education.gov.uk';
 
+
   const scriptSources = [self, "'unsafe-inline'", "'unsafe-eval'", allowedOrigin];
   const styleSources = [self, "'unsafe-inline'", allowedOrigin];
   const imgSources = [self, 'data:', 'blob:', allowedOrigin];
@@ -91,17 +92,22 @@ const init = async () => {
     fontSources.push('localhost');
   }
 
-  app.use(helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: [self],
-      scriptSrc: scriptSources,
-      styleSrc: styleSources,
-      imgSrc: imgSources,
-      fontSrc: fontSources,
-      connectSrc: [self],
-      formAction: [self, '*'],
-    },
-  }));
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: [self],
+          scriptSrc: scriptSources,
+          styleSrc: styleSources,
+          imgSrc: imgSources,
+          fontSrc: fontSources,
+          connectSrc: [self],
+          formAction: [self, '*'],
+        },
+      },
+      crossOriginOpenerPolicy: { policy: "unsafe-none" }, // crossOriginOpenerPolicy: false is ignored and unsafe-none is the default on MDM
+    }),
+  );
 
   logger.info('Set helmet filters');
 
