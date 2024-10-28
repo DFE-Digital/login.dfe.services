@@ -98,6 +98,34 @@ describe('when reviewing an organisation request', () => {
     res.mockResetAll();
   });
 
+  it('should render error view if a reason isn\'t provided', async () => {
+    req.body.reason = createString(0);
+
+    await post(req, res);
+
+    expect(sendUserOrganisationRequest.mock.calls).toHaveLength(0);
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('requestOrganisation/views/review');
+    expect(res.render.mock.calls[0][1]).toEqual({
+      csrfToken: 'token',
+      currentPage: 'organisations',
+      organisation: {
+        id: 'org1',
+        name: 'organisation two',
+        category: {
+          id: '001',
+          name: 'Establishment',
+        },
+      },
+      reason: req.body.reason,
+      title: 'Confirm Request - DfE Sign-in',
+      validationMessages: {
+        reason: 'Enter a reason for request',
+      },
+      backLink: '/request-organisation/search',
+    });
+  });
+
   it('then it should render error view if reason is too long', async () => {
     req.body.reason = createString(1001);
 
@@ -122,6 +150,7 @@ describe('when reviewing an organisation request', () => {
       validationMessages: {
         reason: 'Reason cannot be longer than 1000 characters',
       },
+      backLink: '/request-organisation/search',
     });
   });
 
@@ -194,6 +223,7 @@ describe('when reviewing an organisation request', () => {
         limitOrg: 'Organisation has reached the limit for requests',
         limit: 'A current request needs to be actioned before new requests can be made',
       },
+      backLink: '/request-organisation/search',
     });
   });
 
