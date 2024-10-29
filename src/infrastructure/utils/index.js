@@ -18,6 +18,20 @@ const isLoggedIn = (req, res, next) => {
   return res.status(302).redirect('/auth');
 };
 
+const addSessionRedirect = (req, res, next) => {
+  res.sessionRedirect = (redirectLocation) => {
+    req.session.save((error) => {
+      if (error) {
+        throw new Error(`Error saving session for request ${req.method} ${req.originalUrl}: ${error}`);
+      } else {
+        res.redirect(redirectLocation);
+      }
+    });
+  };
+
+  return next();
+};
+
 const isApprover = (req, res, next) => {
   if (req.userOrganisations) {
     const userApproverOrgs = req.userOrganisations.filter((x) => x.role.id === 10000);
@@ -105,6 +119,7 @@ const mapRole = (roleId) => {
 
 module.exports = {
   isLoggedIn,
+  addSessionRedirect,
   getUserEmail,
   getUserDisplayName,
   setUserContext,

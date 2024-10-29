@@ -166,7 +166,7 @@ const get = async (req, res) => {
   }
 
   const model = await getViewModel(req);
-   return renderAssociateRolesPage(req, res, model);
+  return renderAssociateRolesPage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -206,10 +206,10 @@ const post = async (req, res) => {
 
   if (currentService < req.session.user.services.length - 1) {
     const nextService = currentService + 1;
-    return res.redirect(`${req.session.user.services[nextService].serviceId}`);
+    return res.sessionRedirect(`${req.session.user.services[nextService].serviceId}`);
   } else {
     const nextLink = buildNextLink(req, selectedRoles);
-    return res.redirect(`${nextLink}`);
+    return res.sessionRedirect(`${nextLink}`);
   }
 };
 

@@ -112,7 +112,7 @@ const post = async (req, res) => {
     return renderAssociateRolesPage(req, res, model);
   }
 
-  return res.redirect(`/request-service/${req.params.orgId}/users/${req.user.sub}/confirm-request`);
+  return res.sessionRedirect(`/request-service/${req.params.orgId}/users/${req.user.sub}/confirm-request`);
 };
 
 module.exports = {

@@ -16,7 +16,7 @@ const path = require('path');
 const csurf = require('csurf');
 const flash = require('login.dfe.express-flash-2');
 const getPassportStrategy = require('./infrastructure/oidc');
-const { setUserContext, asyncMiddleware, setConfigContext } = require('./infrastructure/utils');
+const { setUserContext, asyncMiddleware, setConfigContext, addSessionRedirect } = require('./infrastructure/utils');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
@@ -163,6 +163,7 @@ const init = async () => {
     }),
   );
 
+  app.use(addSessionRedirect);
   app.use((req, res, next) => {
     req.session.now = Date.now();
     next();

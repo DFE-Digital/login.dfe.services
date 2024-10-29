@@ -305,7 +305,7 @@ describe('when adding services to a user', () => {
     req.body.service = ['service1'];
     await postAssociateServices(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`associate-services/${req.session.user.services[0].serviceId}`);
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(`associate-services/${req.session.user.services[0].serviceId}`);
   });
 });

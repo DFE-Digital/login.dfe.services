@@ -127,10 +127,10 @@ const post = async (req, res) => {
   if (model.isDSIUser) {
     req.session.user.uid = model.uid;
     return req.query.review
-      ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user?review=true`)
-      : res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`);
+      ? res.sessionRedirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user?review=true`)
+      : res.sessionRedirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`);
   } else {
-    return req.query.review ? res.redirect('confirm-new-user') : res.redirect('organisation-permissions');
+    return req.query.review ? res.sessionRedirect('confirm-new-user') : res.sessionRedirect('organisation-permissions');
   }
 };
 

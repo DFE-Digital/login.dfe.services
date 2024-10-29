@@ -68,7 +68,7 @@ const post = async (req, res) => {
   }
   req.session.user.permission = model.selectedLevel;
   const redirectLink = buildRedirectLink(req);
-  return res.redirect(redirectLink);
+  return res.sessionRedirect(redirectLink);
 };
 
 module.exports = {

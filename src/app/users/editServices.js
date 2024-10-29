@@ -165,7 +165,7 @@ const post = async (req, res) => {
      nexturl += '?manage_users=true';
     }
 
-  return res.redirect(nexturl);
+  return res.sessionRedirect(nexturl);
 };
 
 const saveRoleInSession = (req, selectedRoles) => {

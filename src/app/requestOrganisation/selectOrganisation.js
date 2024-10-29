@@ -85,7 +85,7 @@ const post = async (req, res) => {
       return res.render('requestOrganisation/views/search', model);
     }
     req.session.organisationId = req.body.selectedOrganisation;
-    return res.redirect('review');
+    return res.sessionRedirect('review');
   }
   return res.render('requestOrganisation/views/search', model);
 };

@@ -88,8 +88,8 @@ describe('when selecting the roles for a service', () => {
   it('then it should redirect to confirm user page if no more services', async () => {
     await postAssociateRoles(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/confirm-new-user`);
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/confirm-new-user`);
   });
 
   it('then it should transform selected roles in an array', async () => {
@@ -101,8 +101,8 @@ describe('when selecting the roles for a service', () => {
     await postAssociateRoles(req, res);
 
     const expectedRedirectUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/request-service/org1/users/user1/services/service1/roles/%5B%22selected-role-id%22%5D/sub-service-req-id-1/approve-roles-request`;
-    expect(res.redirect).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledWith(expectedRedirectUrl);
+    expect(res.sessionRedirect).toHaveBeenCalledTimes(1);
+    expect(res.sessionRedirect).toHaveBeenCalledWith(expectedRedirectUrl);
   });
 
   it('then it should get the users organisations if the user is active', async () => {
@@ -179,8 +179,8 @@ describe('when selecting the roles for a service', () => {
     req.session.user.uid = 'user1';
     await postAssociateRoles(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
       `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`,
     );
   });
@@ -200,8 +200,8 @@ describe('when selecting the roles for a service', () => {
     await postAssociateRoles(req, res);
 
     const expectedRedirectUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/access-requests/service-requests/service-req-id/services/service1/roles/role1`;
-    expect(res.redirect).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledWith(expectedRedirectUrl);
+    expect(res.sessionRedirect).toHaveBeenCalledTimes(1);
+    expect(res.sessionRedirect).toHaveBeenCalledWith(expectedRedirectUrl);
   });
 
   it('then it should redirect to "Review request" page when changing the service in a service request', async () => {
@@ -219,8 +219,8 @@ describe('when selecting the roles for a service', () => {
     await postAssociateRoles(req, res);
 
     const expectedRedirectUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/access-requests/service-requests/service-req-id/services/service1/roles/role1`;
-    expect(res.redirect).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledWith(expectedRedirectUrl);
+    expect(res.sessionRedirect).toHaveBeenCalledTimes(1);
+    expect(res.sessionRedirect).toHaveBeenCalledWith(expectedRedirectUrl);
   });
 
   it('then it should redirect to "Review request" page when changing the sub-service in a service request with correct path if no role selected', async () => {
@@ -238,8 +238,8 @@ describe('when selecting the roles for a service', () => {
     await postAssociateRoles(req, res);
 
     const expectedRedirectUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/access-requests/service-requests/service-req-id/services/service1/roles/null`;
-    expect(res.redirect).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledWith(expectedRedirectUrl);
+    expect(res.sessionRedirect).toHaveBeenCalledTimes(1);
+    expect(res.sessionRedirect).toHaveBeenCalledWith(expectedRedirectUrl);
   });
 
   it('then it should redirect to "Review request" page when changing the service in a service request with correct path if no role selected', async () => {
@@ -257,8 +257,8 @@ describe('when selecting the roles for a service', () => {
     await postAssociateRoles(req, res);
 
     const expectedRedirectUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/access-requests/service-requests/service-req-id/services/service1/roles/null`;
-    expect(res.redirect).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledWith(expectedRedirectUrl);
+    expect(res.sessionRedirect).toHaveBeenCalledTimes(1);
+    expect(res.sessionRedirect).toHaveBeenCalledWith(expectedRedirectUrl);
   });
 
   it('then it should redirect to "Review request" page when changing the sub-service in a sub-service request from email journey', async () => {
@@ -269,8 +269,8 @@ describe('when selecting the roles for a service', () => {
     await postAssociateRoles(req, res);
 
     const expectedRedirectUrl = `https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/request-service/org1/users/user1/services/service1/roles/%5B%5D/sub-service-req-id-1/approve-roles-request`;
-    expect(res.redirect).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledWith(expectedRedirectUrl);
+    expect(res.sessionRedirect).toHaveBeenCalledTimes(1);
+    expect(res.sessionRedirect).toHaveBeenCalledWith(expectedRedirectUrl);
   });
 
   it('then it should redirect to the next service if one exists', async () => {
@@ -286,8 +286,8 @@ describe('when selecting the roles for a service', () => {
     ];
     await postAssociateRoles(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('service2');
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe('service2');
   });
 
   it('then it should redirect to users list if no user in session', async () => {
