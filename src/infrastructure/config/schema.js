@@ -69,9 +69,16 @@ const adapterSchema = new SimpleSchema({
   },
 });
 
+const hostingEnvironmentSchema = new SimpleSchema({
+  csrfSecret: {
+    type: String,
+    optional: true,
+  },
+});
+
 const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
-  hostingEnvironment: schemas.hostingEnvironment,
+  hostingEnvironment: schemas.hostingEnvironment.extend(hostingEnvironmentSchema),
   identifyingParty: identifyingPartySchema,
   directories: schemas.apiClient,
   organisations: schemas.apiClient,

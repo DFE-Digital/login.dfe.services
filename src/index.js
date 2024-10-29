@@ -13,7 +13,7 @@ const moment = require('moment');
 const http = require('http');
 const https = require('https');
 const path = require('path');
-const csurf = require('csurf');
+const { doubleCsrf } = require('csrf-csrf');
 const flash = require('login.dfe.express-flash-2');
 const getPassportStrategy = require('./infrastructure/oidc');
 const { setUserContext, asyncMiddleware, setConfigContext } = require('./infrastructure/utils');
@@ -115,15 +115,8 @@ const init = async () => {
     app.set('trust proxy', 1);
   }
 
-  const csrf = csurf({
-    cookie: {
-      secure: true,
-      httpOnly: true,
-    },
-  });
-
   app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(cookieParser());
+  app.use(cookieParser(config.hostingEnvironment.sessionSecret));
   app.use(
     sanitization({
       sanitizer: (key, value) => {
@@ -160,6 +153,22 @@ const init = async () => {
   app.use((req, res, next) => {
     req.session.now = Date.now();
     next();
+  });
+
+  const { doubleCsrfProtection: csrf } = doubleCsrf({
+    getSecret: (req) => req.secret,
+    // eslint-disable-next-line no-underscore-dangle
+    getTokenFromRequest: (req) => req.body._csrf,
+    secret: config.hostingEnvironment.csrfSecret,
+    cookieName: '__host-csrf',
+    cookieOptions: {
+      sameSite: 'strict',
+      secure: true,
+      signed: true,
+    },
+    path: '/',
+    size: 64,
+    ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
   });
 
   app.use(flash());
