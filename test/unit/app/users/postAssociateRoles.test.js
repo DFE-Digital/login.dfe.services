@@ -1,4 +1,5 @@
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('login.dfe.policy-engine');
 jest.mock('./../../../../src/infrastructure/organisations', () => {
   return {
@@ -10,6 +11,7 @@ const { mockRequest, mockResponse, mockConfig } = require('./../../../utils/jest
 const PolicyEngine = require('login.dfe.policy-engine');
 const { actions } = require('../../../../src/app/constans/actions');
 const { getOrganisationAndServiceForUserV2 } = require('./../../../../src/infrastructure/organisations');
+const logger = require('./../../../../src/infrastructure/logger');
 
 const policyEngine = {
   validate: jest.fn(),
@@ -311,5 +313,31 @@ describe('when selecting the roles for a service', () => {
         roles: ['selections not valid'],
       },
     });
+  });
+
+  it('then it should redirect the user to /approvals/users and log a warning message if user services do not exist in the session', async () => {
+    req.session.user.services = undefined;
+    req.originalUrl = 'test/foo';
+    await postAssociateRoles(req, res);
+
+    expect(res.redirect).toHaveBeenCalledTimes(1);
+    expect(res.redirect).toHaveBeenCalledWith('/approvals/users');
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      `POST ${req.originalUrl} missing user session services, redirecting to approvals/users`,
+    );
+  });
+
+  it('then it should redirect the user to /approvals/users and log a warning message if user services are empty in the session', async () => {
+    req.session.user.services = [];
+    req.originalUrl = 'test/foo';
+    await postAssociateRoles(req, res);
+
+    expect(res.redirect).toHaveBeenCalledTimes(1);
+    expect(res.redirect).toHaveBeenCalledWith('/approvals/users');
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      `POST ${req.originalUrl} missing user session services, redirecting to approvals/users`,
+    );
   });
 });

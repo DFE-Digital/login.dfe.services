@@ -1,5 +1,6 @@
 jest.mock('login.dfe.policy-engine');
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/infrastructure/applications', () => {
   return {
     getApplication: jest.fn(),
@@ -9,6 +10,7 @@ jest.mock('./../../../../src/infrastructure/applications', () => {
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { getApplication } = require('./../../../../src/infrastructure/applications');
+const logger = require('./../../../../src/infrastructure/logger');
 
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
@@ -105,5 +107,31 @@ describe('when displaying the sub-services view', () => {
     await getRequestRoles(req, res);
     expect(getApplication.mock.calls).toHaveLength(1);
     expect(getApplication.mock.calls[0][0]).toBe('service1');
+  });
+
+  it('then it should redirect the user to /my-services and log a warning message if user services do not exist in the session', async () => {
+    req.session.user.services = undefined;
+    req.originalUrl = 'test/foo';
+    await getRequestRoles(req, res);
+
+    expect(res.redirect).toHaveBeenCalledTimes(1);
+    expect(res.redirect).toHaveBeenCalledWith('/my-services');
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      `GET ${req.originalUrl} missing user session services, redirecting to my-services`,
+    );
+  });
+
+  it('then it should redirect the user to /my-services and log a warning message if user services are empty in the session', async () => {
+    req.session.user.services = [];
+    req.originalUrl = 'test/foo';
+    await getRequestRoles(req, res);
+
+    expect(res.redirect).toHaveBeenCalledTimes(1);
+    expect(res.redirect).toHaveBeenCalledWith('/my-services');
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      `GET ${req.originalUrl} missing user session services, redirecting to my-services`,
+    );
   });
 });
