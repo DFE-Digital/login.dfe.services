@@ -163,7 +163,6 @@ const init = async () => {
     }),
   );
 
-  app.use(addSessionRedirect);
   app.use((req, res, next) => {
     req.session.now = Date.now();
     next();
@@ -208,8 +207,6 @@ const init = async () => {
   app.use(setUserContext);
   app.use(setConfigContext);
 
-  registerRoutes(app, csrf);
-
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer(
     {
       ...app.locals.urls,
@@ -217,6 +214,11 @@ const init = async () => {
     },
     config.hostingEnvironment.env === 'dev',
   );
+
+  app.use(addSessionRedirect(errorPageRenderer, logger));
+
+  registerRoutes(app, csrf);
+
   app.use(
     getErrorHandler({
       logger,

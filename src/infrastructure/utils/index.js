@@ -1,13 +1,11 @@
 'use strict';
 
 const config = require('./../config');
-const { getServicesForUser } = require('../../infrastructure/access');
 const {
   getOrganisationAndServiceForUserV2,
   getAllRequestsForApprover,
   getAllRequestsTypesForApprover,
 } = require('./../organisations');
-const APPROVER = 10000;
 
 const isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated() || req.originalUrl.startsWith('/signout?redirected=true')) {
@@ -18,18 +16,36 @@ const isLoggedIn = (req, res, next) => {
   return res.status(302).redirect('/auth');
 };
 
-const addSessionRedirect = (req, res, next) => {
-  res.sessionRedirect = (redirectLocation) => {
-    req.session.save((error) => {
-      if (error) {
-        throw new Error(`Error saving session for request ${req.method} ${req.originalUrl}: ${error}`);
-      } else {
-        res.redirect(redirectLocation);
-      }
-    });
-  };
+const addSessionRedirect = (errorPageRenderer, logger = console) => {
+  if (typeof errorPageRenderer !== 'function') {
+    throw new Error('addSessionRedirect errorPageRenderer must be a function');
+  }
 
-  return next();
+  if (typeof logger.error !== 'function') {
+    throw new Error('addSessionRedirect logger must have an error method');
+  }
+
+  return (req, res, next) => {
+    res.sessionRedirect = (redirectLocation) => {
+      if (typeof redirectLocation !== 'string') {
+        throw new Error('sessionRedirect redirect location must be a string');
+      }
+
+      req.session.save((error) => {
+        if (error) {
+          const initialError = error instanceof Error ? error.message : error;
+          const errorMessage = `Error saving session for request ${req.method} ${req.originalUrl}: ${initialError}`;
+          logger.error(errorMessage);
+          const { content, contentType } = errorPageRenderer(errorMessage);
+          return res.status(500).contentType(contentType).send(content);
+        } else {
+          res.redirect(redirectLocation);
+        }
+      });
+    };
+
+    return next();
+  };
 };
 
 const isApprover = (req, res, next) => {
