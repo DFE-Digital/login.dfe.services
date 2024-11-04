@@ -35,7 +35,13 @@ const addSessionRedirect = (errorPageRenderer, logger = console) => {
         if (error) {
           const initialError = error instanceof Error ? error.message : error;
           const errorMessage = `Error saving session for request ${req.method} ${req.originalUrl}: ${initialError}`;
-          logger.error(errorMessage);
+          logger.error(errorMessage, {
+            correlationId: req.id,
+            stack:
+              error instanceof Error
+                ? (error.stack ?? 'No stack trace provided on Error object')
+                : 'No stack trace available as error is not an Error instance',
+          });
           const { content, contentType } = errorPageRenderer(errorMessage);
           return res.status(500).contentType(contentType).send(content);
         } else {

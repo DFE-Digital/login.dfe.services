@@ -102,6 +102,10 @@ describe('When using the addSessionRedirect middleware', () => {
         expect(consoleMock).toHaveBeenCalledTimes(1);
         expect(consoleMock).toHaveBeenCalledWith(
           `Error saving session for request ${req.method} ${req.originalUrl}: ${value}`,
+          expect.objectContaining({
+            correlationId: expect.any(String),
+            stack: expect.any(String),
+          }),
         );
       },
     );
@@ -117,6 +121,91 @@ describe('When using the addSessionRedirect middleware', () => {
       expect(consoleMock).toHaveBeenCalledTimes(1);
       expect(consoleMock).toHaveBeenCalledWith(
         `Error saving session for request ${req.method} ${req.originalUrl}: ${error.message}`,
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          stack: expect.any(String),
+        }),
+      );
+    });
+
+    it.each([true, {}, [], 'test', 42, new Error('Test')])(
+      "Should log the request's correlation ID along with the error message if req.session.save returns a truthy value (%p)",
+      (value) => {
+        req.session.save.mockImplementation((callback) => callback(value));
+        req.method = 'POST';
+        req.originalUrl = '/testing/test/foo';
+        req.id = 'Testing 123';
+        addSessionRedirect(errorPageRenderer)(req, res, () => {});
+
+        res.sessionRedirect('/test');
+        expect(consoleMock).toHaveBeenCalledTimes(1);
+        expect(consoleMock).toHaveBeenCalledWith(
+          expect.any(String),
+          expect.objectContaining({
+            correlationId: req.id,
+            stack: expect.any(String),
+          }),
+        );
+      },
+    );
+
+    it.each([true, {}, [], 'test', 42])(
+      "Should log the error's stack trace as a sensible message if req.session.save returns a truthy value that isn't an Error instance (%p)",
+      (value) => {
+        req.session.save.mockImplementation((callback) => callback(value));
+        req.method = 'POST';
+        req.originalUrl = '/testing/test/foo';
+        addSessionRedirect(errorPageRenderer)(req, res, () => {});
+
+        res.sessionRedirect('/test');
+        expect(consoleMock).toHaveBeenCalledTimes(1);
+        expect(consoleMock).toHaveBeenCalledWith(
+          expect.any(String),
+          expect.objectContaining({
+            correlationId: expect.any(String),
+            stack: 'No stack trace available as error is not an Error instance',
+          }),
+        );
+      },
+    );
+
+    it("Should log the error's stack property if provided, if req.session.save returns an instance of Error", () => {
+      const testError = new Error('Testing 123');
+      testError.stack = 'foo';
+
+      req.session.save.mockImplementation((callback) => callback(testError));
+      req.method = 'POST';
+      req.originalUrl = '/testing/test/foo';
+      addSessionRedirect(errorPageRenderer)(req, res, () => {});
+
+      res.sessionRedirect('/test');
+      expect(consoleMock).toHaveBeenCalledTimes(1);
+      expect(consoleMock).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          stack: testError.stack,
+        }),
+      );
+    });
+
+    it("Should log the error's stack property was not provided, if req.session.save returns an instance of Error without a stack property", () => {
+      const testError = new Error('Testing 123');
+      testError.stack = undefined;
+
+      req.session.save.mockImplementation((callback) => callback(testError));
+      req.method = 'POST';
+      req.originalUrl = '/testing/test/foo';
+      addSessionRedirect(errorPageRenderer)(req, res, () => {});
+
+      res.sessionRedirect('/test');
+      expect(consoleMock).toHaveBeenCalledTimes(1);
+      expect(consoleMock).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          stack: 'No stack trace provided on Error object',
+        }),
       );
     });
 
