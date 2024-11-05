@@ -95,7 +95,7 @@ const post = async (req, res) => {
     res.flash('heading', `Your request has been sent to the DfE Sign-in Helpdesk.`);
     res.flash('message', `There are no approvers at ${req.body.organisationName} so your request has been forwarded to the DfE Sign-in Helpdesk.`);
   }
-  return res.redirect('/organisations');
+  return res.sessionRedirect('/organisations');
 };
 
 module.exports = {

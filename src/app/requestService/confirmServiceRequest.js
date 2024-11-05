@@ -26,6 +26,11 @@ const get = async (req, res) => {
     return res.redirect('/my-services');
   }
 
+  if (!Array.isArray(req.session.user.services) || req.session.user.services.length === 0) {
+    logger.warn(`GET ${req.originalUrl} missing user session services, redirecting to my-services`);
+    return res.redirect('/my-services');
+  }
+
   const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const services = req.session.user.services.map((service) => ({
     id: service.serviceId,
@@ -66,6 +71,11 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
+    return res.redirect('/my-services');
+  }
+
+  if (!Array.isArray(req.session.user.services) || req.session.user.services.length === 0) {
+    logger.warn(`POST ${req.originalUrl} missing user session services, redirecting to my-services`);
     return res.redirect('/my-services');
   }
 

@@ -16,7 +16,7 @@ const path = require('path');
 const csurf = require('csurf');
 const flash = require('login.dfe.express-flash-2');
 const getPassportStrategy = require('./infrastructure/oidc');
-const { setUserContext, asyncMiddleware, setConfigContext } = require('./infrastructure/utils');
+const { setUserContext, setConfigContext, addSessionRedirect } = require('./infrastructure/utils');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
@@ -151,8 +151,8 @@ const init = async () => {
     session({
       name: 'session',
       store: redisStore,
-      resave: true,
-      saveUninitialized: true,
+      resave: false,
+      saveUninitialized: false,
       secret: config.hostingEnvironment.sessionSecret,
       maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
       cookie: {
@@ -207,16 +207,18 @@ const init = async () => {
   app.use(setUserContext);
   app.use(setConfigContext);
 
-  registerRoutes(app, csrf);
-
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer(
     {
-      help: config.hostingEnvironment.helpUrl,
-      assets: assetsUrl,
+      ...app.locals.urls,
       assetsVersion: config.assets.version,
     },
     config.hostingEnvironment.env === 'dev',
   );
+
+  app.use(addSessionRedirect(errorPageRenderer, logger));
+
+  registerRoutes(app, csrf);
+
   app.use(
     getErrorHandler({
       logger,

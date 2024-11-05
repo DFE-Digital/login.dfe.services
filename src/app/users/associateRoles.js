@@ -14,6 +14,7 @@ const { getOrganisationAndServiceForUserV2 } = require('./../../infrastructure/o
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 const { actions } = require('../constans/actions');
+const logger = require('../../infrastructure/logger');
 
 const renderAssociateRolesPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
@@ -165,12 +166,22 @@ const get = async (req, res) => {
     return res.redirect('/approvals/users');
   }
 
+  if (!Array.isArray(req.session.user.services) || req.session.user.services.length === 0) {
+    logger.warn(`GET ${req.originalUrl} missing user session services, redirecting to approvals/users`);
+    return res.redirect('/approvals/users');
+  }
+
   const model = await getViewModel(req);
-   return renderAssociateRolesPage(req, res, model);
+  return renderAssociateRolesPage(req, res, model);
 };
 
 const post = async (req, res) => {
   if (!req.session.user) {
+    return res.redirect('/approvals/users');
+  }
+
+  if (!Array.isArray(req.session.user.services) || req.session.user.services.length === 0) {
+    logger.warn(`POST ${req.originalUrl} missing user session services, redirecting to approvals/users`);
     return res.redirect('/approvals/users');
   }
 
@@ -206,10 +217,10 @@ const post = async (req, res) => {
 
   if (currentService < req.session.user.services.length - 1) {
     const nextService = currentService + 1;
-    return res.redirect(`${req.session.user.services[nextService].serviceId}`);
+    return res.sessionRedirect(`${req.session.user.services[nextService].serviceId}`);
   } else {
     const nextLink = buildNextLink(req, selectedRoles);
-    return res.redirect(`${nextLink}`);
+    return res.sessionRedirect(`${nextLink}`);
   }
 };
 

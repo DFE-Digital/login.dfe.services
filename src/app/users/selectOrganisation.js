@@ -35,7 +35,7 @@ const handleRedirectAfterOrgSelected = (req, res, model, isApprover, isManage) =
 
   if (isAddService(req) || isRequestService(req)) {
     if (isApproverForSelectedOrg) {
-      return res.redirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
+      return res.sessionRedirect(`/approvals/${model.selectedOrganisation}/users/${req.user.sub}/associate-services`);
     }
 
     if (isApprover && !isManage) {
@@ -47,11 +47,11 @@ const handleRedirectAfterOrgSelected = (req, res, model, isApprover, isManage) =
         `Because you are not an approver at this organisation, you will need to request access to a service in order to use it. This request will be sent to approvers at <b>${selectedOrg[0].organisation.name}</b>.`,
       );
     }
-    return res.redirect(`/request-service/${model.selectedOrganisation}/users/${req.user.sub}`);
+    return res.sessionRedirect(`/request-service/${model.selectedOrganisation}/users/${req.user.sub}`);
   } else if (isOrganisationInvite(req)) {
-    return res.redirect(`/approvals/${model.selectedOrganisation}/users/new-user`);
+    return res.sessionRedirect(`/approvals/${model.selectedOrganisation}/users/new-user`);
   } else if (isViewOrganisationRequests(req)) {
-    return res.redirect(`/access-requests/${model.selectedOrganisation}/requests`);
+    return res.sessionRedirect(`/access-requests/${model.selectedOrganisation}/requests`);
   } else {
     return res.redirect(`/approvals/users`);
   }

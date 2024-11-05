@@ -173,13 +173,13 @@ const post = async (req, res) => {
           }
         } else {
           saveRoleInSession(req, selectedRoles);
-          return res.redirect(`${req.params.sid}/confirm-edit-roles-request`);
+          return res.sessionRedirect(`${req.params.sid}/confirm-edit-roles-request`);
         }
       }
     } else {
       saveRoleInSession(req, selectedRoles);
 
-      return res.redirect(`${req.params.sid}/confirm-edit-roles-request`);
+      return res.sessionRedirect(`${req.params.sid}/confirm-edit-roles-request`);
     }
   }
 };

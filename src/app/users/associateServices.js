@@ -229,7 +229,7 @@ const post = async (req, res) => {
   }
 
   if (req.session.user.isInvite && model.selectedServices.length === 0) {
-    return res.redirect(
+    return res.sessionRedirect(
       req.params.uid
         ? `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-details`
         : `/approvals/${req.params.orgId}/users/confirm-new-user`,
@@ -242,14 +242,14 @@ const post = async (req, res) => {
   const isReviewServiceReqAmendServiceUrl = isReviewServiceReqAmendService(req);
 
   if(isRemoveUserServiceUrl) {
-    return res.redirect(`services/${service}/remove-service?manage_users=true&action=${actions.REMOVE_SERVICE}`);
+    return res.sessionRedirect(`services/${service}/remove-service?manage_users=true&action=${actions.REMOVE_SERVICE}`);
   }
   else if(isEditServiceUrl) {
-    return res.redirect(`services/${service}?manage_users=true&action=${actions.EDIT_SERVICE}`);
+    return res.sessionRedirect(`services/${service}?manage_users=true&action=${actions.EDIT_SERVICE}`);
   } else if (isReviewServiceReqAmendServiceUrl) {
-    return res.redirect(`associate-services/${service}?action=${actions.REVIEW_SERVICE_REQ_SERVICE}`);
+    return res.sessionRedirect(`associate-services/${service}?action=${actions.REVIEW_SERVICE_REQ_SERVICE}`);
   }
-  return res.redirect(`associate-services/${service}`);
+  return res.sessionRedirect(`associate-services/${service}`);
 };
 
 module.exports = {

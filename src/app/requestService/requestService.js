@@ -178,7 +178,9 @@ const post = async (req, res) => {
   }
 
   const service = req.session.user.services[0].serviceId;
-  return res.redirect(`/request-service/${req.session.user.organisation}/users/${req.user.sub}/services/${service}`);
+  return res.sessionRedirect(
+    `/request-service/${req.session.user.organisation}/users/${req.user.sub}/services/${service}`,
+  );
 };
 
 module.exports = {

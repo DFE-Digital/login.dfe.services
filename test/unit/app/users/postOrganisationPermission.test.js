@@ -94,15 +94,15 @@ describe('when select the organisation permission level', () => {
 
   it('then it should redirect to the associate-services page if the selection is not reviewed and it is valid', async () => {
     await postOrganisationPermission(req, res);
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`associate-services`);
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(`associate-services`);
   });
 
   it('then it should redirect to the confirm new user page if the selection is reviewed and it is valid', async () => {
     req.query.review = 'true';
 
     await postOrganisationPermission(req, res);
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`confirm-new-user`);
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(`confirm-new-user`);
   });
 });

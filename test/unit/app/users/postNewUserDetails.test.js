@@ -224,8 +224,8 @@ describe('when entering a new users details', () => {
     process.env.emailValidation = 'false';
     await postNewUserDetails(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('organisation-permissions');
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe('organisation-permissions');
   });
 
   it('then it should render view if email already associated to a user in this org', async () => {
@@ -323,8 +323,8 @@ describe('when entering a new users details', () => {
 
     await postNewUserDetails(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
       `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`,
     );
   });
@@ -344,8 +344,8 @@ describe('when entering a new users details', () => {
 
     await postNewUserDetails(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
       `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user`,
     );
   });
@@ -373,8 +373,8 @@ describe('when entering a new users details', () => {
 
     await postNewUserDetails(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
       `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-user?review=true`,
     );
   });

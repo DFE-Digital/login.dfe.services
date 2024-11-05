@@ -133,7 +133,7 @@ describe('when displaying the request edit service view', () => {
   it('then it should redirect to confirmEditRolesRequest page if selection meet requirements of service', async () => {
     await postRequestEditRoles(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`service1/confirm-edit-roles-request`);
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(`service1/confirm-edit-roles-request`);
   });
 });
