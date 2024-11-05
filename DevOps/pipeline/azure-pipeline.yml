@@ -6,12 +6,12 @@ resources:
       type: github
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.devops
-      ref: main
+      ref: feature/DSI-7328
     - repository: config
       type: github
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.dsi-config
-      ref: main
+      ref: feature/DSI-7328
 
 trigger:
   branches:
@@ -108,85 +108,88 @@ stages:
       AppDeploy: ${{ not(parameters.InfrDeploy) }}
 
   - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
-    - template: pipeline/build.yml@devopsTemplates
+    - template: pipeline/buildAzureAppServices.yml@devopsTemplates
       parameters:
+        ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
+          serviceConnection: $(devServiceConnection)
+        ${{ elseif eq(var.key, 'pr') }}:
+          serviceConnection: $(prodServiceConnection)
+        ${{ else }}:
+          serviceConnection: $(testServiceConnection)
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
-        environmentNames:
+        ContRegServer:
           - ${{ if eq(variables.tran, 'true') }}:
-            - tran
+            - $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
           - ${{ if eq(variables.dev, 'true') }}:
-            - dev
+            - $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
           - ${{ if eq(variables.test, 'true') }}:
-            - test
+            - $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
           - ${{ if eq(variables.pp, 'true') }}:
-            - pp
+            - $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
           - ${{ if eq(variables.pr, 'true') }}:
-            - pr
-        pm2ProcessFileName: process.json
+            - $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io
         nodeVersionSpec: '18.17.0'
-        npmInstCmd: 'install --force --json --no-package-lock'
-        npmPruneFixCmd: 'install --production --json --force --no-package-lock'
 
 
-- ${{ each location in parameters.location }}:
-  - ${{ each var in variables }}:
-    - ${{ if in(var.key, 'tran','dev','test','pp','pr') }}:
-      - ${{ if eq(var.value, 'true') }}:
-        - ${{ if or(and(in(var.key, 'tran','pp','pr'),eq(location, 'northeurope')),and(in(var.key, 'tran','dev','test','pp','pr'),eq(location, 'westeurope'))) }}:
-          - stage: Deployment_${{var.key}}_${{location}}
-            displayName: "Deployment [${{var.key}}] ${{location}}"
-            ${{ if eq(location,'westeurope') }}:
-              dependsOn: 
-              - scanBuildApp
-              condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-            ${{ if eq(location,'northeurope') }}:
-              ${{ if eq(length(parameters.location), 2) }}:
-                dependsOn: 
-                - scanBuildApp
-                - Deployment_${{var.key}}_westeurope
-                condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-              ${{ else }}:
-                dependsOn: 
-                - scanBuildApp
-                condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-            variables:
-            - name: environmentId
-              ${{ if eq(var.key, 'tran') }}:
-                value: d03
-              ${{ if eq(var.key, 'dev') }}:
-                value: d01
-              ${{ if eq(var.key, 'test') }}:
-                value: t01
-              ${{ if eq(var.key, 'pp') }}:
-                value: t02
-              ${{ if eq(var.key, 'pr') }}:
-                value: p01
-            jobs:
-            - template: pipeline/deployment.yml@devopsTemplates
-              parameters:
-                ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
-                  serviceConnection: $(devServiceConnection)
-                ${{ elseif eq(var.key, 'pr') }}:
-                  serviceConnection: $(prodServiceConnection)
-                ${{ else }}:
-                  serviceConnection: $(testServiceConnection)
-                environmentName: ${{var.key}}
-                applicationShortName: ${{variables.applicationShortName}}
-                applicationFullName: ${{variables.applicationFullName}}
-                releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
-                InfrDeploy: ${{parameters.InfrDeploy}}
-                deploymentLocation: ${{location}}
-                runtimeStack: NODE|18-lts
-                pm2ProcessFileName: process.json
-                gitCheck: ${{parameters.gitCheck}}
+# - ${{ each location in parameters.location }}:
+#   - ${{ each var in variables }}:
+#     - ${{ if in(var.key, 'tran','dev','test','pp','pr') }}:
+#       - ${{ if eq(var.value, 'true') }}:
+#         - ${{ if or(and(in(var.key, 'tran','pp','pr'),eq(location, 'northeurope')),and(in(var.key, 'tran','dev','test','pp','pr'),eq(location, 'westeurope'))) }}:
+#           - stage: Deployment_${{var.key}}_${{location}}
+#             displayName: "Deployment [${{var.key}}] ${{location}}"
+#             ${{ if eq(location,'westeurope') }}:
+#               dependsOn: 
+#               - scanBuildApp
+#               condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+#             ${{ if eq(location,'northeurope') }}:
+#               ${{ if eq(length(parameters.location), 2) }}:
+#                 dependsOn: 
+#                 - scanBuildApp
+#                 - Deployment_${{var.key}}_westeurope
+#                 condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+#               ${{ else }}:
+#                 dependsOn: 
+#                 - scanBuildApp
+#                 condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+#             variables:
+#             - name: environmentId
+#               ${{ if eq(var.key, 'tran') }}:
+#                 value: d03
+#               ${{ if eq(var.key, 'dev') }}:
+#                 value: d01
+#               ${{ if eq(var.key, 'test') }}:
+#                 value: t01
+#               ${{ if eq(var.key, 'pp') }}:
+#                 value: t02
+#               ${{ if eq(var.key, 'pr') }}:
+#                 value: p01
+#             jobs:
+#             - template: pipeline/deployment.yml@devopsTemplates
+#               parameters:
+#                 ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
+#                   serviceConnection: $(devServiceConnection)
+#                 ${{ elseif eq(var.key, 'pr') }}:
+#                   serviceConnection: $(prodServiceConnection)
+#                 ${{ else }}:
+#                   serviceConnection: $(testServiceConnection)
+#                 environmentName: ${{var.key}}
+#                 applicationShortName: ${{variables.applicationShortName}}
+#                 applicationFullName: ${{variables.applicationFullName}}
+#                 releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
+#                 InfrDeploy: ${{parameters.InfrDeploy}}
+#                 deploymentLocation: ${{location}}
+#                 runtimeStack: NODE|18-lts
+#                 pm2ProcessFileName: process.json
+#                 gitCheck: ${{parameters.gitCheck}}
           
-          - ${{ if and(eq(var.key, 'pr'),eq(location, 'westeurope')) }}:
-            - stage: branchPrTag
-              displayName: "GitHub PR & Release Branch Tag"
-              dependsOn: 
-              - Deployment_${{var.key}}_${{location}}
-              jobs:
-              - template:  pipeline/tagCreation.yml@devopsTemplates
-                parameters:
-                  applicationName: ${{variables.applicationFullName}}
+#           - ${{ if and(eq(var.key, 'pr'),eq(location, 'westeurope')) }}:
+#             - stage: branchPrTag
+#               displayName: "GitHub PR & Release Branch Tag"
+#               dependsOn: 
+#               - Deployment_${{var.key}}_${{location}}
+#               jobs:
+#               - template:  pipeline/tagCreation.yml@devopsTemplates
+#                 parameters:
+#                   applicationName: ${{variables.applicationFullName}}
