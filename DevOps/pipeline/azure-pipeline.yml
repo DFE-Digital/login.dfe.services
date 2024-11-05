@@ -110,7 +110,7 @@ stages:
   - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
     - template: pipeline/buildAzureAppServices.yml@devopsTemplates
       parameters:
-        ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
+        ${{ if or(eq(variables.tran, 'true'), eq(variables.dev, 'true')) }}:
           serviceConnection: $(devServiceConnection)
         ${{ elseif eq(var.key, 'pr') }}:
           serviceConnection: $(prodServiceConnection)
@@ -119,13 +119,9 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServer:
-          - ${{ if eq(variables.tran, 'true') }}:
+          - ${{ if or(eq(variables.tran, 'true'), eq(variables.dev, 'true')) }}:
             - $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
-          - ${{ if eq(variables.dev, 'true') }}:
-            - $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
-          - ${{ if eq(variables.test, 'true') }}:
-            - $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
-          - ${{ if eq(variables.pp, 'true') }}:
+          - ${{ if or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}:
             - $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
           - ${{ if eq(variables.pr, 'true') }}:
             - $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io
