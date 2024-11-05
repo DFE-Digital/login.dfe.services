@@ -118,7 +118,7 @@ stages:
           serviceConnection: $(testServiceConnection)
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
-        ContRegServer:
+        ContRegServers:
           - ${{ if or(eq(variables.tran, 'true'), eq(variables.dev, 'true')) }}:
             - $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
           - ${{ if or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}:
