@@ -110,12 +110,6 @@ stages:
   - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
     - template: pipeline/buildAzureAppServices.yml@devopsTemplates
       parameters:
-        ${{ if or(eq(variables.tran, 'true'), eq(variables.dev, 'true')) }}:
-          serviceConnection: $(devServiceConnection)
-        ${{ elseif eq(var.key, 'pr') }}:
-          serviceConnection: $(prodServiceConnection)
-        ${{ else }}:
-          serviceConnection: $(testServiceConnection)
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
