@@ -32,6 +32,14 @@ parameters:
   default:
     - westeurope
     - northeurope
+- name: shaUse
+  type: boolean
+  displayName: "Use Self Host agent"
+  default: true
+- name: slotDeploy
+  type: boolean
+  displayName: "Slot Deployment"
+  default: false
 - name: InfrDeploy
   type: boolean
   displayName: 'Infrastrucure Deployment only'
@@ -73,15 +81,15 @@ variables:
   ${{ if eq(parameters.tran, 'true') }}:
     value: true
   ${{ else }}:
-    value: false
+    value: true
 - name: dev
   ${{ if or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}:
-    value: true
+    value: false
   ${{ else }}:
     value: false
 - name: test
   ${{ if or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}:
-    value: true
+    value: false
   ${{ else }}:
     value: false
 - name: pp
@@ -122,64 +130,60 @@ stages:
         nodeVersionSpec: '18.17.0'
 
 
-# - ${{ each location in parameters.location }}:
-#   - ${{ each var in variables }}:
-#     - ${{ if in(var.key, 'tran','dev','test','pp','pr') }}:
-#       - ${{ if eq(var.value, 'true') }}:
-#         - ${{ if or(and(in(var.key, 'tran','pp','pr'),eq(location, 'northeurope')),and(in(var.key, 'tran','dev','test','pp','pr'),eq(location, 'westeurope'))) }}:
-#           - stage: Deployment_${{var.key}}_${{location}}
-#             displayName: "Deployment [${{var.key}}] ${{location}}"
-#             ${{ if eq(location,'westeurope') }}:
-#               dependsOn: 
-#               - scanBuildApp
-#               condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-#             ${{ if eq(location,'northeurope') }}:
-#               ${{ if eq(length(parameters.location), 2) }}:
-#                 dependsOn: 
-#                 - scanBuildApp
-#                 - Deployment_${{var.key}}_westeurope
-#                 condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-#               ${{ else }}:
-#                 dependsOn: 
-#                 - scanBuildApp
-#                 condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-#             variables:
-#             - name: environmentId
-#               ${{ if eq(var.key, 'tran') }}:
-#                 value: d03
-#               ${{ if eq(var.key, 'dev') }}:
-#                 value: d01
-#               ${{ if eq(var.key, 'test') }}:
-#                 value: t01
-#               ${{ if eq(var.key, 'pp') }}:
-#                 value: t02
-#               ${{ if eq(var.key, 'pr') }}:
-#                 value: p01
-#             jobs:
-#             - template: pipeline/deployment.yml@devopsTemplates
-#               parameters:
-#                 ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
-#                   serviceConnection: $(devServiceConnection)
-#                 ${{ elseif eq(var.key, 'pr') }}:
-#                   serviceConnection: $(prodServiceConnection)
-#                 ${{ else }}:
-#                   serviceConnection: $(testServiceConnection)
-#                 environmentName: ${{var.key}}
-#                 applicationShortName: ${{variables.applicationShortName}}
-#                 applicationFullName: ${{variables.applicationFullName}}
-#                 releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
-#                 InfrDeploy: ${{parameters.InfrDeploy}}
-#                 deploymentLocation: ${{location}}
-#                 runtimeStack: NODE|18-lts
-#                 pm2ProcessFileName: process.json
-#                 gitCheck: ${{parameters.gitCheck}}
+- ${{ each location in parameters.location }}:
+  - ${{ each var in variables }}:
+    - ${{ if in(var.key, 'tran','dev','test','pp','pr') }}:
+      - ${{ if eq(var.value, 'true') }}:
+        - ${{ if or(and(in(var.key, 'tran','pp','pr'),eq(location, 'northeurope')),and(in(var.key, 'tran','dev','test','pp','pr'),eq(location, 'westeurope'))) }}:
+          - stage: Deployment_${{var.key}}_${{location}}
+            displayName: "Deployment [${{var.key}}] ${{location}}"
+            ${{ if eq(location,'westeurope') }}:
+              dependsOn: 
+              - scanBuildApp
+              condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+            ${{ if eq(location,'northeurope') }}:
+              dependsOn: 
+              - scanBuildApp
+              condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+            variables:
+            - name: environmentId
+              ${{ if eq(var.key, 'tran') }}:
+                value: d03
+              ${{ if eq(var.key, 'dev') }}:
+                value: d01
+              ${{ if eq(var.key, 'test') }}:
+                value: t01
+              ${{ if eq(var.key, 'pp') }}:
+                value: t02
+              ${{ if eq(var.key, 'pr') }}:
+                value: p01
+            jobs:
+            - template: pipeline/deployAzureAppServices.yml@devopsTemplates
+              parameters:
+                ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
+                  serviceConnection: $(devServiceConnection)
+                ${{ elseif eq(var.key, 'pr') }}:
+                  serviceConnection: $(prodServiceConnection)
+                ${{ else }}:
+                  serviceConnection: $(testServiceConnection)
+                environmentName: ${{var.key}}
+                applicationShortName: ${{variables.applicationShortName}}
+                applicationFullName: ${{variables.applicationFullName}}
+                releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
+                InfrDeploy: ${{parameters.InfrDeploy}}
+                deploymentLocation: ${{location}}
+                gitCheck: ${{parameters.gitCheck}}
+                tierPlan: prestier-g3
+                shaUse: ${{parameters.shaUse}}
+                slotDeploy: ${{parameters.slotDeploy}}
+                appRepoName: ${{variables.applicationFullName}}
           
-#           - ${{ if and(eq(var.key, 'pr'),eq(location, 'westeurope')) }}:
-#             - stage: branchPrTag
-#               displayName: "GitHub PR & Release Branch Tag"
-#               dependsOn: 
-#               - Deployment_${{var.key}}_${{location}}
-#               jobs:
-#               - template:  pipeline/tagCreation.yml@devopsTemplates
-#                 parameters:
-#                   applicationName: ${{variables.applicationFullName}}
+          - ${{ if and(eq(var.key, 'pr'),eq(location, 'westeurope')) }}:
+            - stage: branchPrTag
+              displayName: "GitHub PR & Release Branch Tag"
+              dependsOn: 
+              - Deployment_${{var.key}}_${{location}}
+              jobs:
+              - template:  pipeline/tagCreation.yml@devopsTemplates
+                parameters:
+                  applicationName: ${{variables.applicationFullName}}
