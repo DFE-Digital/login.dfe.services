@@ -4,6 +4,7 @@ const { isMultipleRolesAllowed, RoleSelectionConstraintCheck } = require('../use
 const { getApplication } = require('../../infrastructure/applications');
 const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
 const PolicyEngine = require('login.dfe.policy-engine');
+const logger = require('../../infrastructure/logger');
 const policyEngine = new PolicyEngine(config);
 const renderAssociateRolesPage = (_req, res, model) => {
   return res.render('requestService/views/requestRoles', model);
@@ -74,12 +75,22 @@ const get = async (req, res) => {
     return res.redirect('/my-services');
   }
 
+  if (!Array.isArray(req.session.user.services) || req.session.user.services.length === 0) {
+    logger.warn(`GET ${req.originalUrl} missing user session services, redirecting to my-services`);
+    return res.redirect('/my-services');
+  }
+
   const model = await getViewModel(req);
   return renderAssociateRolesPage(req, res, model);
 };
 
 const post = async (req, res) => {
   if (!req.session.user) {
+    return res.redirect('/my-services');
+  }
+
+  if (!Array.isArray(req.session.user.services) || req.session.user.services.length === 0) {
+    logger.warn(`POST ${req.originalUrl} missing user session services, redirecting to my-services`);
     return res.redirect('/my-services');
   }
 
@@ -112,7 +123,7 @@ const post = async (req, res) => {
     return renderAssociateRolesPage(req, res, model);
   }
 
-  return res.redirect(`/request-service/${req.params.orgId}/users/${req.user.sub}/confirm-request`);
+  return res.sessionRedirect(`/request-service/${req.params.orgId}/users/${req.user.sub}/confirm-request`);
 };
 
 module.exports = {

@@ -1,5 +1,6 @@
 jest.mock('login.dfe.policy-engine');
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/infrastructure/applications', () => {
   return {
     getApplication: jest.fn(),
@@ -25,6 +26,7 @@ const { getApplication } = require('./../../../../src/infrastructure/application
 const { getOrganisationAndServiceForUserV2 } = require('./../../../../src/infrastructure/organisations');
 const { actions } = require('../../../../src/app/constans/actions');
 const { RoleSelectionConstraintCheck } = require('../../../../src/app/users/utils');
+const logger = require('./../../../../src/infrastructure/logger');
 
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
@@ -108,16 +110,6 @@ describe('when displaying the associate roles view', () => {
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       name: 'test name',
-    });
-  });
-
-  it('then it include an emty array for selectedRoles when no user services in the session', async () => {
-
-    req.session.user.services = [];
-    await getAssociateRoles(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      selectedRoles: [],
     });
   });
 
@@ -310,7 +302,12 @@ describe('when displaying the associate roles view', () => {
   it('then the "Back" link should redirect to service request review summary page when ammending a sub-service for approving - email journey', async () => {
     req.query.action = actions.REQUEST_SERVICE;
     req.session.user = {
-      services: [],
+      services: [
+        {
+          serviceId: 'service1',
+          roles: ['role-id-1'],
+        },
+      ],
       serviceId: 'service-1',
       roleIds: ['role-id-1'],
     };
@@ -324,7 +321,12 @@ describe('when displaying the associate roles view', () => {
     req.query.action = actions.REQUEST_SUB_SERVICE;
     req.session.subServiceReqId = 'sub-service-req-id-1';
     req.session.user = {
-      services: [],
+      services: [
+        {
+          serviceId: 'service1',
+          roles: ['role-id-1'],
+        },
+      ],
       serviceId: 'service-1',
       roleIds: ['role-id-1'],
     };
@@ -361,5 +363,31 @@ describe('when displaying the associate roles view', () => {
 
     await getAssociateRoles(req, res);
     expect(RoleSelectionConstraintCheck).toHaveBeenCalled();
+  });
+
+  it('then it should redirect the user to /approvals/users and log a warning message if user services do not exist in the session', async () => {
+    req.session.user.services = undefined;
+    req.originalUrl = 'test/foo';
+    await getAssociateRoles(req, res);
+
+    expect(res.redirect).toHaveBeenCalledTimes(1);
+    expect(res.redirect).toHaveBeenCalledWith('/approvals/users');
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      `GET ${req.originalUrl} missing user session services, redirecting to approvals/users`,
+    );
+  });
+
+  it('then it should redirect the user to /approvals/users and log a warning message if user services are empty in the session', async () => {
+    req.session.user.services = [];
+    req.originalUrl = 'test/foo';
+    await getAssociateRoles(req, res);
+
+    expect(res.redirect).toHaveBeenCalledTimes(1);
+    expect(res.redirect).toHaveBeenCalledWith('/approvals/users');
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      `GET ${req.originalUrl} missing user session services, redirecting to approvals/users`,
+    );
   });
 });

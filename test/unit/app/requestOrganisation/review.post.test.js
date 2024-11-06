@@ -254,7 +254,7 @@ describe('when reviewing an organisation request', () => {
   it('then it should redirect to organisations', async () => {
     await post(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(`/organisations`);
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(`/organisations`);
   });
 });

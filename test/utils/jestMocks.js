@@ -145,13 +145,21 @@ const mockRequest = (customRequest = {}) => {
 };
 const mockResponse = () => {
   return {
-    render: jest.fn(),
-    redirect: jest.fn(),
+    contentType: jest.fn(),
     flash: jest.fn(),
+    redirect: jest.fn(),
+    render: jest.fn(),
+    send: jest.fn(),
+    sessionRedirect: jest.fn(),
+    status: jest.fn(),
     mockResetAll: function () {
-      this.render.mockReset().mockReturnValue(this);
-      this.redirect.mockReset().mockReturnValue(this);
+      this.contentType.mockReset().mockReturnValue(this);
       this.flash.mockReset().mockReturnValue(this);
+      this.redirect.mockReset().mockReturnValue(this);
+      this.render.mockReset().mockReturnValue(this);
+      this.send.mockReset().mockReturnValue(this);
+      this.sessionRedirect.mockReset().mockReturnValue(this);
+      this.status.mockReset().mockReturnValue(this);
     },
   };
 };

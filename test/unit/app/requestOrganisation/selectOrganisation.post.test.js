@@ -114,8 +114,8 @@ describe('when showing the searching for a organisation', () => {
 
     await post(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('review');
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe('review');
     expect(res.render.mock.calls).toHaveLength(0);
   });
 

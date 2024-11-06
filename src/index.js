@@ -16,7 +16,7 @@ const path = require('path');
 const { doubleCsrf } = require('csrf-csrf');
 const flash = require('login.dfe.express-flash-2');
 const getPassportStrategy = require('./infrastructure/oidc');
-const { setUserContext, asyncMiddleware, setConfigContext } = require('./infrastructure/utils');
+const { setUserContext, setConfigContext, addSessionRedirect } = require('./infrastructure/utils');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
@@ -79,6 +79,7 @@ const init = async () => {
   const self = "'self'";
   const allowedOrigin = '*.signin.education.gov.uk';
 
+
   const scriptSources = [self, "'unsafe-inline'", "'unsafe-eval'", allowedOrigin];
   const styleSources = [self, "'unsafe-inline'", allowedOrigin];
   const imgSources = [self, 'data:', 'blob:', allowedOrigin];
@@ -91,17 +92,22 @@ const init = async () => {
     fontSources.push('localhost');
   }
 
-  app.use(helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: [self],
-      scriptSrc: scriptSources,
-      styleSrc: styleSources,
-      imgSrc: imgSources,
-      fontSrc: fontSources,
-      connectSrc: [self],
-      formAction: [self, '*'],
-    },
-  }));
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: [self],
+          scriptSrc: scriptSources,
+          styleSrc: styleSources,
+          imgSrc: imgSources,
+          fontSrc: fontSources,
+          connectSrc: [self],
+          formAction: [self, '*'],
+        },
+      },
+      crossOriginOpenerPolicy: { policy: "unsafe-none" }, // crossOriginOpenerPolicy: false is ignored and unsafe-none is the default on MDM
+    }),
+  );
 
   logger.info('Set helmet filters');
 
@@ -138,8 +144,8 @@ const init = async () => {
     session({
       name: 'session',
       store: redisStore,
-      resave: true,
-      saveUninitialized: true,
+      resave: false,
+      saveUninitialized: false,
       secret: config.hostingEnvironment.sessionSecret,
       maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
       cookie: {
@@ -210,16 +216,18 @@ const init = async () => {
   app.use(setUserContext);
   app.use(setConfigContext);
 
-  registerRoutes(app, csrf);
-
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer(
     {
-      help: config.hostingEnvironment.helpUrl,
-      assets: assetsUrl,
+      ...app.locals.urls,
       assetsVersion: config.assets.version,
     },
     config.hostingEnvironment.env === 'dev',
   );
+
+  app.use(addSessionRedirect(errorPageRenderer, logger));
+
+  registerRoutes(app, csrf);
+
   app.use(
     getErrorHandler({
       logger,
