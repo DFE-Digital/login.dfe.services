@@ -6,7 +6,7 @@ const {
 } = require('../../../../src/app/accessRequests/utils');
 const { updateServiceRequest } = require('../../../../src/app/requestService/utils');
 const { post } = require('../../../../src/app/accessRequests/reviewSubServiceRequest');
-const NotificationClient = require('login.dfe.notifications.client');
+
 const sendAccessRequest = jest.fn();
 
 const Account = require('../../../../src/infrastructure/account');

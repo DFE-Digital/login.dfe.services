@@ -8,7 +8,7 @@ const config = require('./../../infrastructure/config');
 const { getById, updateIndex } = require('./../../infrastructure/search');
 const { waitForIndexToUpdate } = require('../users/utils');
 const { getAndMapOrgRequest } = require('./utils');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,

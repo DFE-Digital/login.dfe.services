@@ -3,7 +3,7 @@ jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../u
 jest.mock('login.dfe.dao', () => require('./../../../utils/jestMocks').mockDao());
 jest.mock('./../../../../src/app/accessRequests/utils');
 jest.mock('./../../../../src/infrastructure/organisations');
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { post } = require('./../../../../src/app/accessRequests/rejectOrganisationRequest');
@@ -12,7 +12,7 @@ const { updateRequestById } = require('./../../../../src/infrastructure/organisa
 const { getAndMapOrgRequest } = require('./../../../../src/app/accessRequests/utils');
 const logger = require('./../../../../src/infrastructure/logger');
 
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const sendAccessRequest = jest.fn();
 NotificationClient.mockImplementation(() => {
   return {

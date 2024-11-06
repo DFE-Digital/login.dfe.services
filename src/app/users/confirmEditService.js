@@ -3,7 +3,7 @@ const logger = require('./../../infrastructure/logger');
 const { getSingleServiceForUser, isUserManagement } = require('./utils');
 const { listRolesOfService, updateUserService, updateInvitationService } = require('./../../infrastructure/access');
 const config = require('./../../infrastructure/config');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
 
 const renderConfirmEditServicePage = (req, res, model) => {

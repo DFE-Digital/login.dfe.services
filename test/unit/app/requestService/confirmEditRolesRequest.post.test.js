@@ -3,7 +3,7 @@ const { getSingleServiceForUser } = require('../../../../src/app/users/utils');
 const { listRolesOfService } = require('../../../../src/infrastructure/access');
 const { createServiceRequest } = require('../../../../src/app/requestService/utils');
 const { v4: uuid } = require('uuid');
-const notificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const logger = require('../../../../src/infrastructure/logger');
 const { checkForActiveRequests } = require('../../../../src/app/requestService/utils');
 
@@ -23,7 +23,7 @@ jest.mock('../../../../src/app/requestService/utils', () => {
 });
 
 jest.mock('../../../../src/app/users/utils');
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 
 describe('When confirming and submiting a sub-service request', () => {
   let req;
@@ -118,7 +118,7 @@ describe('When confirming and submiting a sub-service request', () => {
     res = mockResponse();
     postConfirmEditRolesRequest = require('../../../../src/app/requestService/confirmEditRolesRequest').post;
     sendSubServiceRequestToApproversStub = jest.fn();
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendSubServiceRequestToApprovers: sendSubServiceRequestToApproversStub,
     }));
 

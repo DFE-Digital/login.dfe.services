@@ -6,7 +6,7 @@ const logger = require('../../infrastructure/logger');
 const config = require('../../infrastructure/config');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { getUserServiceRequestStatus, updateServiceRequest } = require('./utils.js');
 

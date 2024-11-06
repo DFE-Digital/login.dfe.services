@@ -1,8 +1,7 @@
 const { mockRequest, mockResponse, mockAdapterConfig } = require('../../../utils/jestMocks');
 const { getSubServiceRequestVieModel, getAndMapServiceRequest } = require('../../../../src/app/accessRequests/utils');
-const {updateServiceRequest} = require('../../../../src/app/requestService/utils');
-const {get } = require('../../../../src/app/accessRequests/rejectSubServiceRequest');
-const NotificationClient = require('login.dfe.notifications.client');
+const { updateServiceRequest } = require('../../../../src/app/requestService/utils');
+const { get } = require('../../../../src/app/accessRequests/rejectSubServiceRequest');
 const sendAccessRequest = jest.fn();
 
 const Account = require('../../../../src/infrastructure/account');

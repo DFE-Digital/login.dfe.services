@@ -29,8 +29,8 @@ const {
 } = require('./../../../../src/infrastructure/organisations');
 const { getById, updateIndex } = require('./../../../../src/infrastructure/search');
 
-jest.mock('login.dfe.notifications.client');
-const notificationClient = require('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 describe('when editing organisation permission level', () => {
   let req;
@@ -132,7 +132,7 @@ describe('when editing organisation permission level', () => {
     ]);
 
     sendUserPermissionChangedStub = jest.fn();
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendUserPermissionChanged: sendUserPermissionChangedStub,
     }));
   });
