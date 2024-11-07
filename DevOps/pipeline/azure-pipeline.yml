@@ -173,6 +173,7 @@ stages:
                 InfrDeploy: ${{parameters.InfrDeploy}}
                 deploymentLocation: ${{location}}
                 gitCheck: ${{parameters.gitCheck}}
+                tier: presentation
                 tierPlan: prestier-g3
                 shaUse: true
                 slotDeploy: ${{parameters.slotDeploy}}
