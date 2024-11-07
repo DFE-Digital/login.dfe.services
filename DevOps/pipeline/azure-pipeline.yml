@@ -39,7 +39,7 @@ parameters:
 - name: slotDeploy
   type: boolean
   displayName: "Slot Deployment"
-  default: false
+  default: true
 - name: InfrDeploy
   type: boolean
   displayName: 'Infrastrucure Deployment only'
@@ -174,7 +174,7 @@ stages:
                 deploymentLocation: ${{location}}
                 gitCheck: ${{parameters.gitCheck}}
                 tierPlan: prestier-g3
-                shaUse: ${{parameters.shaUse}}
+                shaUse: true
                 slotDeploy: ${{parameters.slotDeploy}}
                 appRepoName: ${{variables.applicationFullName}}
           
