@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const Path = require('path');
-import config from '../../../config/services.js';
+const config = require('../../../config/services.js');
 
 const getSettingsObject = (settings) => {
   try {
