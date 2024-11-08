@@ -1,17 +1,14 @@
 const { mockRequest, mockResponse, mockAdapterConfig } = require('../../../utils/jestMocks');
 const { getSubServiceRequestVieModel, getAndMapServiceRequest, getNewRoleDetails } = require('../../../../src/app/accessRequests/utils');
-const {updateServiceRequest} = require('../../../../src/app/requestService/utils');
-const {post } = require('../../../../src/app/accessRequests/rejectSubServiceRequest');
-//const { checkCacheForAllServices } = require('../../../../src/infrastructure/helpers/allServicesAppCache');
-//const NotificationClient = require('login.dfe.notifications.client');
-
+const { updateServiceRequest } = require('../../../../src/app/requestService/utils');
+const { post } = require('../../../../src/app/accessRequests/rejectSubServiceRequest');
 
 const Account = require('../../../../src/infrastructure/account');
 //jest.mock('login.dfe.policy-engine');
 jest.mock('../../../../src/infrastructure/config', () => {
   return mockAdapterConfig()
 });
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 const sendAccessRequest = jest.fn();
 jest.mock('../../../../src/infrastructure/logger', () => require('../../../utils/jestMocks').mockLogger());
 jest.mock('./../../../../src/infrastructure/account', () => ({

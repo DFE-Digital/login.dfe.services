@@ -5,7 +5,7 @@ const { getSingleServiceForUser, waitForIndexToUpdate, isUserManagement, isRemov
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 const { getById, updateIndex } = require('./../../infrastructure/search');
 const config = require('./../../infrastructure/config');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const { isServiceEmailNotificationAllowed } = require('./../../infrastructure/applications');
 const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
 const { actions } = require('../constans/actions');

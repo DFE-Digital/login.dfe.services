@@ -84,8 +84,8 @@ const { getById, updateIndex, createIndex } = require('./../../../../src/infrast
 const Account = require('./../../../../src/infrastructure/account');
 const logger = require('./../../../../src/infrastructure/logger');
 
-jest.mock('login.dfe.notifications.client');
-const notificationClient = require('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 describe('when inviting a new user', () => {
   let req;
@@ -268,7 +268,7 @@ describe('when inviting a new user', () => {
     sendServiceAddedStub = jest.fn();
     sendServiceRequestApprovedStub = jest.fn();
 
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendUserAddedToOrganisation: sendUserAddedToOrganisationStub,
       sendServiceAdded: sendServiceAddedStub,
       sendServiceRequestApproved: sendServiceRequestApprovedStub,

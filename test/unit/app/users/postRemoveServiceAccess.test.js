@@ -51,7 +51,7 @@ jest.mock('./../../../../src/infrastructure/search', () => {
   };
 });
 
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 const logger = require('./../../../../src/infrastructure/logger');
 const { getUserDetails, getSingleServiceForUser, isUserManagement } = require('./../../../../src/app/users/utils');
 const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../../../src/infrastructure/access');

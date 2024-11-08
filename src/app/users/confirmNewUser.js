@@ -16,7 +16,7 @@ const { waitForIndexToUpdate, isSelfManagement } = require('./utils');
 const Account = require('./../../infrastructure/account');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const { checkCacheForAllServices } = require('./../../infrastructure/helpers/allServicesAppCache');
 const { actions } = require('../constans/actions');
 

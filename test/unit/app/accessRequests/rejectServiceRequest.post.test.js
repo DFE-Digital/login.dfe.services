@@ -7,7 +7,7 @@ const PolicyEngine = require('login.dfe.policy-engine');
 
 const logger = require('./../../../../src/infrastructure/logger');
 
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const sendServiceRequestRejected = jest.fn();
 NotificationClient.mockImplementation(() => {
   return {
@@ -16,7 +16,7 @@ NotificationClient.mockImplementation(() => {
 });
 
 jest.mock('login.dfe.policy-engine');
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 
 jest.mock('../../../../src/infrastructure/logger', () => mockLogger());
 

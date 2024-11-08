@@ -5,7 +5,7 @@ jest.mock('./../../../../src/infrastructure/helpers/allServicesAppCache');
 jest.mock('login.dfe.dao', () => require('../../../utils/jestMocks').mockDao());
 jest.mock('./../../../../src/app/requestService/utils');
 jest.mock('uuid');
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const logger = require('./../../../../src/infrastructure/logger');

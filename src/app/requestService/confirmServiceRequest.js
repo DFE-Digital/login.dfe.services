@@ -5,7 +5,7 @@ const config = require('../../infrastructure/config');
 const { checkForActiveRequests } = require('./utils');
 const { v4: uuid } = require('uuid');
 const { createServiceRequest } = require('./utils');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,
 });

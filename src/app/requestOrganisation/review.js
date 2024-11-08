@@ -9,7 +9,7 @@ const {
   getApproversForOrganisation,
 } = require('./../../infrastructure/organisations');
 
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,

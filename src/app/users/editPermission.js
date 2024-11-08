@@ -10,7 +10,7 @@ const logger = require('./../../infrastructure/logger');
 const { getUserDetails, waitForIndexToUpdate } = require('./utils');
 const { mapRole } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 const get = async (req, res) => {
   const user = await getUserDetails(req);

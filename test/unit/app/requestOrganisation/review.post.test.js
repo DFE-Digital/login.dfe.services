@@ -2,7 +2,7 @@ jest.mock('./../../../../src/infrastructure/config', () => require('./../../../u
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 
 jest.mock('./../../../../src/infrastructure/organisations');
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 
 const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
 const { post } = require('./../../../../src/app/requestOrganisation/review');
@@ -16,7 +16,7 @@ const {
 } = require('./../../../../src/infrastructure/organisations');
 const logger = require('./../../../../src/infrastructure/logger');
 
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const sendUserOrganisationRequest = jest.fn();
 NotificationClient.mockImplementation(() => {
   return {
