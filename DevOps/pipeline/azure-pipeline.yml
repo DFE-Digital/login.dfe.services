@@ -72,7 +72,7 @@ parameters:
 variables:
 - group: dsi-global
 - name: applicationShortName
-  value: 'svc1'
+  value: 'svc'
 - name: applicationFullName
   value: 'services'
 - name: numberOfWorkers
