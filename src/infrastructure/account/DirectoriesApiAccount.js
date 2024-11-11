@@ -55,7 +55,6 @@ const mapInvitationEntity = (entity) => {
       : undefined;
 
   let device;
-  let oldCredentials;
 
   if (entity.callbacks && entity.callbacks.length > 0) {
     callbacks = entity.callbacks.map((cbEntity) => ({
@@ -72,15 +71,6 @@ const mapInvitationEntity = (entity) => {
     };
   }
 
-  if (entity.previousUsername || entity.previousPassword || entity.previousSalt) {
-    oldCredentials = {
-      username: entity.previousUsername,
-      password: entity.previousPassword,
-      salt: entity.previousSalt,
-      source: 'EAS',
-    };
-  }
-
   return {
     firstName: entity.firstName,
     lastName: entity.lastName,
@@ -90,7 +80,6 @@ const mapInvitationEntity = (entity) => {
     callbacks,
     overrides,
     device,
-    oldCredentials,
     code: entity.code,
     id: entity.id,
     last_login: entity.last_login,
