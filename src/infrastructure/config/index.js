@@ -191,6 +191,6 @@ const config = {
   }
 }
 
-process.env.settings = config;
+process.env['settings'] = config;
 
 module.exports = config;
