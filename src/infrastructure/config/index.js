@@ -1,3 +1,7 @@
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
 const config = {
   loggerSettings: {
     logLevel: "debug",
@@ -183,14 +187,26 @@ const config = {
     type: "redis",
     params: {
       connectionString: process.env.REDIS_CONN + "/3?tls=true"
-      }
+    }
   },
   assets: {
     url: process.env.CDN_HOST_NAME,
-      version: process.env.CDN_ASSETS_VERSION
+    version: process.env.CDN_ASSETS_VERSION
   }
+};
+
+// Persist configuration to a temporary file and then point the `settings` environment
+// variable to the path of the temporary file. The `login.dfe.dao` package can then load
+// this configuration.
+function mimicLegacySettings(config) {
+  // TODO: This can be improved by refactoring the `login.dfe.dao` package.
+  const tempDirectoryPath = fs.mkdtempSync(path.join(os.tmpdir(), 'config-'));
+  const tempConfigFilePath = Path.join(tempDirectoryPath, 'config.json');
+
+  fs.writeFileSync(tempConfigFilePath, JSON.stringify(config), { encoding: 'utf8' });
+  process.env.settings = tempConfigFilePath;
 }
 
-process.env['settings'] = config;
+mimicLegacySettings(config);
 
 module.exports = config;
