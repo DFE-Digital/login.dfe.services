@@ -201,7 +201,7 @@ const config = {
 function mimicLegacySettings(config) {
   // TODO: This can be improved by refactoring the `login.dfe.dao` package.
   const tempDirectoryPath = fs.mkdtempSync(path.join(os.tmpdir(), 'config-'));
-  const tempConfigFilePath = Path.join(tempDirectoryPath, 'config.json');
+  const tempConfigFilePath = path.join(tempDirectoryPath, 'config.json');
 
   fs.writeFileSync(tempConfigFilePath, JSON.stringify(config), { encoding: 'utf8' });
   process.env.settings = tempConfigFilePath;
