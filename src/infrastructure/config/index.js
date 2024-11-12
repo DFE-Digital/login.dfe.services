@@ -7,7 +7,7 @@ const config = {
     logLevel: "debug",
     applicationName: "Services",
     auditDb: {
-      host: process.env.PLATFORM_GLOBAL_SERVERNAME,
+      host: process.env.PLATFORM_GLOBAL_SERVER_NAME,
       username: process.env.SVC_SIGNIN_ADT,
       password: process.env.SVC_SIGNIN_ADTPASSWORD,
       dialect: "mssql",
@@ -119,7 +119,7 @@ const config = {
     }
   },
   database: {
-    host: process.env.PLATFORM_GLOBAL_SERVERNAME,
+    host: process.env.PLATFORM_GLOBAL_SERVER_NAME,
     username: process.env.SVC_SIGNIN_ORG,
     password: process.env.SVC_SIGNIN_ORGPASSWORD,
     dialect: "mssql",
@@ -153,7 +153,7 @@ const config = {
   adapter: {
     type: "sequelize",
     directories: {
-      host: process.env.PLATFORM_GLOBAL_SERVERNAME,
+      host: process.env.PLATFORM_GLOBAL_SERVER_NAME,
       username: process.env.SVC_SIGNIN_DIR,
       password: process.env.SVC_SIGNIN_DIR_PASSWORD,
       dialect: "mssql",
@@ -168,7 +168,7 @@ const config = {
       }
     },
     organisation: {
-      host: process.env.PLATFORM_GLOBAL_SERVERNAME,
+      host: process.env.PLATFORM_GLOBAL_SERVER_NAME,
       username: process.env.SVC_SIGNIN_ORG,
       password: process.env.SVC_SIGNIN_ORG_PASSWORD,
       dialect: "mssql",
