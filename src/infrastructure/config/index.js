@@ -54,7 +54,7 @@ const config = {
       url: "https://" + process.env.STANDALONE_DIRECTORIES_HOST_NAME,
       auth: {
         type: "aad",
-        tenant: process.env.PLATFORM_GLOBAL_TENANTDOMAIN,
+        tenant: process.env.PLATFORM_GLOBAL_TENANT_DOMAIN,
         authorityHostUrl: process.env.TENANT_URL,
         clientId: process.env.AAD_SHD_CLIENT_ID,
         clientSecret: process.env.AAD_SHD_CLIENT_SECRET,
@@ -68,7 +68,7 @@ const config = {
       url: "https://" + process.env.STANDALONE_ORGANISATIONS_HOST_NAME,
       auth: {
         type: "aad",
-        tenant: process.env.PLATFORM_GLOBAL_TENANTDOMAIN,
+        tenant: process.env.PLATFORM_GLOBAL_TENANT_DOMAIN,
         authorityHostUrl: process.env.TENANT_URL,
         clientId: process.env.AAD_SHD_CLIENT_ID,
         clientSecret: process.env.AAD_SHD_CLIENT_SECRET,
@@ -96,7 +96,7 @@ const config = {
       url: "https://" + process.env.STANDALONE_APPLICATIONS_HOST_NAME,
       auth: {
         type: "aad",
-        tenant: process.env.PLATFORM_GLOBAL_TENANTDOMAIN,
+        tenant: process.env.PLATFORM_GLOBAL_TENANT_DOMAIN,
         authorityHostUrl: process.env.TENANT_URL,
         clientId: process.env.AAD_SHD_CLIENT_ID,
         clientSecret: process.env.AAD_SHD_CLIENT_SECRET,
@@ -121,7 +121,7 @@ const config = {
   database: {
     host: process.env.PLATFORM_GLOBAL_SERVER_NAME,
     username: process.env.SVC_SIGNIN_ORG,
-    password: process.env.SVC_SIGNIN_ORGPASSWORD,
+    password: process.env.SVC_SIGNIN_ORG_PASSWORD,
     dialect: "mssql",
     name: process.env.PLATFORM_GLOBAL_ORGANISATIONSDATABASE_NAME,
     encrypt: true,
