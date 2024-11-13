@@ -2,6 +2,8 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
+require('dotenv').config();
+
 const config = {
   loggerSettings: {
     logLevel: "debug",
