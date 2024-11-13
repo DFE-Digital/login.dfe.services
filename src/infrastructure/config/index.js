@@ -11,9 +11,9 @@ const config = {
     auditDb: {
       host: process.env.PLATFORM_GLOBAL_SERVER_NAME,
       username: process.env.SVC_SIGNIN_ADT,
-      password: process.env.SVC_SIGNIN_ADTPASSWORD,
+      password: process.env.SVC_SIGNIN_ADT_PASSWORD,
       dialect: "mssql",
-      name: process.env.PLATFORM_GLOBAL_AUDITDATABASE_NAME,
+      name: process.env.PLATFORM_GLOBAL_AUDIT_DATABASE_NAME,
       encrypt: true,
       schema: "dbo",
       pool: {
@@ -125,7 +125,7 @@ const config = {
     username: process.env.SVC_SIGNIN_ORG,
     password: process.env.SVC_SIGNIN_ORG_PASSWORD,
     dialect: "mssql",
-    name: process.env.PLATFORM_GLOBAL_ORGANISATIONSDATABASE_NAME,
+    name: process.env.PLATFORM_GLOBAL_ORGANISATIONS_DATABASE_NAME,
     encrypt: true,
     schema: "dbo",
     pool: {
