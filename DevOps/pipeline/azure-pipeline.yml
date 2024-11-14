@@ -121,7 +121,7 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ if or(or(eq(variables.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'feature')) }}:
+          - ${{ if or(or(eq(variables.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'feature'))) }}:
             - $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
           - ${{ if or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}:
             - $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
