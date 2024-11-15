@@ -1,10 +1,10 @@
 jest.mock('login.dfe.policy-engine');
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 
-const NotificationClient = require('login.dfe.notifications.client');
-const {updateServiceRequest} = require('../../../../src/app/requestService/utils');
+const { NotificationClient } = require('login.dfe.jobs-client');
+const { updateServiceRequest } = require('../../../../src/app/requestService/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
 const { checkCacheForAllServices } = require('./../../../../src/infrastructure/helpers/allServicesAppCache');
 const { getUserDetails } = require('../../../../src/app/users/utils');

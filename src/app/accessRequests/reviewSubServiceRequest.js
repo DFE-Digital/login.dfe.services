@@ -13,7 +13,7 @@ const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructu
 const { actions } = require('../constans/actions');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 const validate = async (req) => {
   const buildmodel = await getAndMapServiceRequest(req.params.rid);

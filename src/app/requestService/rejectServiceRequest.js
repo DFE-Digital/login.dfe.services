@@ -8,7 +8,7 @@ const config = require('../../infrastructure/config');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,
 });

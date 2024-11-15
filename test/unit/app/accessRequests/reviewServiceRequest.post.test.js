@@ -4,12 +4,12 @@ const { getAndMapServiceRequest, generateFlashMessages } = require('../../../../
 const { post } = require('../../../../src/app/accessRequests/reviewServiceRequest');
 const { getUserServiceRequestStatus, updateServiceRequest } = require('../../../../src/app/requestService/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const logger = require('./../../../../src/infrastructure/logger');
 const { createUserBanners } = require('../../../../src/app/home/userBannersHandlers');
 
 jest.mock('login.dfe.policy-engine');
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 
 jest.mock('../../../../src/infrastructure/logger', () => mockLogger());
 

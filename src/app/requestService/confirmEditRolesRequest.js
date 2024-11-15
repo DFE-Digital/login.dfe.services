@@ -5,7 +5,7 @@ const { createServiceRequest } = require('./utils');
 const { listRolesOfService } = require('./../../infrastructure/access');
 const { checkForActiveRequests } = require('./utils');
 const config = require('../../infrastructure/config');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
 const { v4: uuid } = require('uuid');
 

@@ -11,8 +11,8 @@ jest.mock('./../../../../src/infrastructure/access', () => {
 });
 
 jest.mock('./../../../../src/app/users/utils');
-jest.mock('login.dfe.notifications.client');
-const notificationClient = require('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const logger = require('./../../../../src/infrastructure/logger');
 const { getSingleServiceForUser, isUserManagement } = require('./../../../../src/app/users/utils');
 const {
@@ -107,7 +107,7 @@ describe('when editing a service for a user', () => {
     res = mockResponse();
     postConfirmEditService = require('./../../../../src/app/users/confirmEditService').post;
     sendServiceAddedStub = jest.fn();
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendServiceAdded: sendServiceAddedStub,
     }));
   });

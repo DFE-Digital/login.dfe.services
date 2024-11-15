@@ -7,11 +7,11 @@ const { createSubServiceAddedBanners } = require('../../../../src/app/home/userB
 const { getUserServiceRequestStatus, updateServiceRequest } = require('../../../../src/app/requestService/utils');
 const { getOrganisationPermissionLevel } = require('../../../../src/app/accessRequests/utils');
 const PolicyEngine = require('login.dfe.policy-engine');
-const notificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const logger = require('./../../../../src/infrastructure/logger');
 
 jest.mock('login.dfe.policy-engine');
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 jest.mock('../../../../src/app/users/utils');
 jest.mock('../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
 jest.mock('../../../../src/infrastructure/access', () => {
@@ -162,7 +162,7 @@ describe('When approving a sub service request', () => {
 
     postApproveRolesRequest = require('../../../../src/app/requestService/approveRolesRequest').post;
     sendSubServiceRequestApproved = jest.fn();
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendSubServiceRequestApproved,
     }));
   });

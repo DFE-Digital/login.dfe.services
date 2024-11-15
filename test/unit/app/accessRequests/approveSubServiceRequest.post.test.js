@@ -9,12 +9,12 @@ const { updateServiceRequest } = require('../../../../src/app/requestService/uti
 const { createSubServiceAddedBanners } = require('../../../../src/app/home/userBannersHandlers');
 const { post } = require('../../../../src/app/accessRequests/reviewSubServiceRequest');
 const { isServiceEmailNotificationAllowed } = require('../../../../src/infrastructure/applications');
-const notificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const sendAccessRequest = jest.fn();
 
 const Account = require('../../../../src/infrastructure/account');
 jest.mock('login.dfe.policy-engine');
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 jest.mock('../../../../src/infrastructure/config', () => {
   return mockAdapterConfig();
 });
@@ -233,7 +233,7 @@ describe('When reviewing a sub-service request for approving', () => {
     getNewRoleDetails.mockReturnValue(listRoles);
 
     sendSubServiceRequestApproved = jest.fn();
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendSubServiceRequestApproved,
     }));
 
