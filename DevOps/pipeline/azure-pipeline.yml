@@ -154,10 +154,10 @@ stages:
   displayName: "Scan tools & Build"
   jobs:
 
-  - template:  pipeline/scanTools.yml@devopsTemplates
-    parameters:
-      npmInstCmd: 'install --force --json --no-package-lock'
-      AppDeploy: ${{ not(parameters.InfrDeploy) }}
+  # - template:  pipeline/scanTools.yml@devopsTemplates
+  #   parameters:
+  #     npmInstCmd: 'install --force --json --no-package-lock'
+  #     AppDeploy: ${{ not(parameters.InfrDeploy) }}
 
   - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
     - template: pipeline/buildAzureAppServices.yml@devopsTemplates
@@ -167,7 +167,8 @@ stages:
         ContRegServers:
           - ${{ each env in split(variables.environmentsMetadata, '|') }}:
             - ${{ if contains(env, 'ContRegServerPush= true') }}:
-              - ${{ replace(split(env,'\n')[7],'ContRegServer= ','')}}
+              - ${{ replace(split(env,'\n')[6],'ContRegServer= ','')}}
+              - ${{ split(env,'\n') }}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
 
