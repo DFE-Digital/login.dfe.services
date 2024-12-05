@@ -102,7 +102,7 @@ variables:
       code= 'd03',
       serviceConnection= $(devServiceConnection),
       location= 'northeurope,westeurope',
-      ContRegServerPush= ${{ or(or(eq(parameters.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }},
+      ContRegServerPush= ${{ or(or(eq(parameters.tran, 'true'), eq(parameters.dev, 'true')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }},
       ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io,
       pool= Self-hosted Dev,
       selfHostCode= d03
@@ -112,7 +112,7 @@ variables:
       code= d01,
       serviceConnection= $(devServiceConnection),
       location= 'westeurope',
-      ContRegServerPush= ${{ or(or(eq(parameters.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }},
+      ContRegServerPush= ${{ or(or(eq(parameters.tran, 'true'), eq(parameters.dev, 'true')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }},
       ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io,
       pool= Self-hosted Dev,
       selfHostCode= d03
@@ -167,7 +167,7 @@ stages:
         ContRegServers:
           - ${{ each env in split(variables.environmentsMetadata, '|') }}:
             - ${{env}}
-            - ${{ if containsValue(env, 'ContRegServerPush= True') }}:
+            - ${{ if contains(env, 'ContRegServerPush= True') }}:
               - ${{ replace(split(env,',')[6],'ContRegServer= ','')}}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
