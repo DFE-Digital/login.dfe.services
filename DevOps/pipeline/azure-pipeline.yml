@@ -103,16 +103,16 @@ variables:
       serviceConnection= $(devServiceConnection),
       location= 'northeurope,westeurope',
       ContRegServerPush= ${{ or(or(eq(parameters.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }},
-      ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
-      pool= Self-hosted Dev
+      ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io,
+      pool= Self-hosted Dev,
       selfHostCode= d03
       |
-      name= dev
-      deploy= ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
-      code= d01
-      serviceConnection= $(devServiceConnection)
-      location= 'westeurope'
-      ContRegServerPush= ${{ or(or(eq(parameters.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }}
+      name= dev,
+      deploy= ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }},
+      code= d01,
+      serviceConnection= $(devServiceConnection),
+      location= 'westeurope',
+      ContRegServerPush= ${{ or(or(eq(parameters.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }},
       ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io,
       pool= Self-hosted Dev,
       selfHostCode= d03
@@ -127,7 +127,7 @@ variables:
       pool= Self-hosted Test,
       selfHostCode= t02
       |
-      name= pp
+      name= pp,
       deploy= ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables.SourceVersionMessage,'Upgrade to version'))) }},
       code= t02,
       serviceConnection= $(testServiceConnection),
@@ -137,7 +137,7 @@ variables:
       pool= Self-hosted Test,
       selfHostCode= t02
       |
-      name= pr
+      name= pr,
       deploy= ${{ or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }},
       code= p01,
       serviceConnection= $(prodServiceConnection),
