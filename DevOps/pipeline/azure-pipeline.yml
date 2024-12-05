@@ -112,7 +112,7 @@ variables:
       code= d01,
       serviceConnection= $(devServiceConnection),
       location= 'westeurope',
-      ContRegServerPush= ${{ or(or(or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }},
+      ContRegServerPush= ${{ or(or(or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')), and(contains(variables.SourceVersionMessage,'Merge pull request')), contains(variables.SourceVersionMessage,'feature')) }},
       ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io,
       pool= Self-hosted Dev,
       selfHostCode= d03
