@@ -77,6 +77,8 @@ variables:
   value: 'services'
 - name: numberOfWorkers
   value: 1
+- name: SourceVersionMessage
+  value: variables['Build.SourceVersionMessage']
 # - name: tran
 #   value: ${{ eq(parameter.tran, 'true') }}
 # - name: dev
@@ -99,7 +101,7 @@ variables:
       code= "d03"
       serviceConnection= $(devServiceConnection)
       location= "northeurope,westeurope"
-      ContRegServerPush= ${{ or(or(eq(variables.tran, "true"), eq(variables.dev, "true")), and(contains(variables["Build.SourceVersionMessage"],"Merge pull request"), contains(variables["Build.SourceVersionMessage"],"feature"))) }}
+      ContRegServerPush= ${{ or(or(eq(parameters.tran, "true"), eq(variables.dev, "true")), and(contains(variables.SourceVersionMessage,"Merge pull request"), contains(variables.SourceVersionMessage,"feature"))) }}
       ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
       pool= Self-hosted Dev
       selfHostCode= d03
@@ -109,7 +111,7 @@ variables:
       code= d01
       serviceConnection= $(devServiceConnection)
       location= "westeurope"
-      ContRegServerPush= ${{ or(or(eq(variables.tran, "true"), eq(variables.dev, "true")), and(contains(variables["Build.SourceVersionMessage"],"Merge pull request"), contains(variables["Build.SourceVersionMessage"],"feature"))) }}
+      ContRegServerPush= ${{ or(or(eq(parameters.tran, "true"), eq(variables.dev, "true")), and(contains(variables.SourceVersionMessage,"Merge pull request"), contains(variables.SourceVersionMessage,"feature"))) }}
       ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
       pool= Self-hosted Dev
       selfHostCode= d03
@@ -119,17 +121,17 @@ variables:
       code= t01
       serviceConnection= $(testServiceConnection)
       location= "westeurope"
-      ContRegServerPush= ${{ or(eq(variables.test, "true"), eq(variables.pp, "true")) }}
+      ContRegServerPush= ${{ or(eq(parameters.test, "true"), eq(variables.pp, "true")) }}
       ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
       pool= Self-hosted Test
       selfHostCode= t02
       |
       name= pp
-      deploy= ${{ and(or(eq(parameters.pp, "true"), contains(variables["Build.SourceBranch"],"main")), not(contains(variables["Build.SourceVersionMessage"],"Upgrade to version"))) }}
+      deploy= ${{ and(or(eq(parameters.pp, "true"), contains(variables["Build.SourceBranch"],"main")), not(contains(variables.SourceVersionMessage,"Upgrade to version"))) }}
       code= t02
       serviceConnection= $(testServiceConnection)
       location= "northeurope,westeurope"
-      ContRegServerPush= ${{ or(eq(variables.test, "true"), eq(variables.pp, "true")) }}
+      ContRegServerPush= ${{ or(eq(parameters.test, "true"), eq(variables.pp, "true")) }}
       ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
       pool= Self-hosted Test
       selfHostCode= t02
@@ -139,7 +141,7 @@ variables:
       code= p01
       serviceConnection= $(prodServiceConnection)
       location= "northeurope,westeurope"
-      ContRegServerPush= ${{ or(eq(variables.pr, "true"), and(contains(variables["Build.SourceVersionMessage"],"Merge pull request"), contains(variables["Build.SourceVersionMessage"],"release"))) }}
+      ContRegServerPush= ${{ or(eq(parameters.pr, "true"), and(contains(variables.SourceVersionMessage,"Merge pull request"), contains(variables.SourceVersionMessage,"release"))) }}
       ContRegServer= $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io
       pool= Self-hosted Prod
       selfHostCode= p01'
