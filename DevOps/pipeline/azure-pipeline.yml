@@ -96,7 +96,7 @@ variables:
 # - name: ContRegServerProd
 #   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
 - name: environmentsMetadata
-  value: >-
+  value: >
       name= tran,
       deploy= ${{ or(eq(parameters.tran, 'true'), contains(variables['Build.SourceBranch'],'feature')) }},
       code= 'd03',
@@ -165,7 +165,7 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each env in split(variables.environmentsMetadata, '|') }}:
+          - ${{ each env in split(replace(variables.environmentsMetadata,'\n',','), ',|,') }}:
             - ${{ if contains(env, 'ContRegServerPush= True') }}:
               - ${{ replace(split(env,',')[6],'ContRegServer= ','')}}
         nodeVersionSpec: '18.17.0'
