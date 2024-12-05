@@ -167,7 +167,7 @@ stages:
         ContRegServers:
           - ${{ each env in split(variables.environmentsMetadata, '|') }}:
             - ${{ split(replace(env,'`n',','),',')[6] }}
-            - ${{ if contains($env, 'ContRegServerPush= true') }}:
+            - ${{ if contains(env, 'ContRegServerPush= true') }}:
               - ${{ replace(split(env,'`n')[6],'ContRegServer= ','')}}
               - ${{ split(env,'\n') }}
         nodeVersionSpec: '18.17.0'
