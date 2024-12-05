@@ -77,31 +77,72 @@ variables:
   value: 'services'
 - name: numberOfWorkers
   value: 1
-- name: tran
-  ${{ if eq(parameters.tran, 'true') }}:
-    value: true
-  ${{ else }}:
-    value: true
-- name: dev
-  ${{ if or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}:
-    value: false
-  ${{ else }}:
-    value: false
-- name: test
-  ${{ if or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}:
-    value: false
-  ${{ else }}:
-    value: false
-- name: pp
-  ${{ if and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}:
-    value: true
-  ${{ else }}:
-    value: false
-- name: pr
-  ${{ if or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }}:
-    value: true
-  ${{ else }}:
-    value: false
+# - name: tran
+#   value: ${{ eq(parameter.tran, 'true') }}
+# - name: dev
+#   value: ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
+# - name: test
+#   value: ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
+# - name: pp
+#   value: ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
+# - name: pr
+#   value: ${{ or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }}
+# - name: ContRegServerDev
+#   value: ${{ or(or(eq(variables.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'feature'))) }}
+# - name: ContRegServerTest
+#   value: ${{ or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}
+# - name: ContRegServerProd
+#   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
+- name: environmentsMetadata
+  value: 'name= tran
+      deploy= ${{ eq(parameters.tran, "true") }}
+      code= "d03"
+      serviceConnection= $(devServiceConnection)
+      location= "northeurope,westeurope"
+      ContRegServerPush= ${{ or(or(eq(variables.tran, "true"), eq(variables.dev, "true")), and(contains(variables["Build.SourceVersionMessage"],"Merge pull request"), contains(variables["Build.SourceVersionMessage"],"feature"))) }}
+      ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
+      pool= Self-hosted Dev
+      selfHostCode= d03
+      |
+      name= dev
+      deploy= ${{ or(eq(parameters.dev, "true"), contains(variables["Build.SourceBranch"],"feature")) }}
+      code= d01
+      serviceConnection= $(devServiceConnection)
+      location= "westeurope"
+      ContRegServerPush= ${{ or(or(eq(variables.tran, "true"), eq(variables.dev, "true")), and(contains(variables["Build.SourceVersionMessage"],"Merge pull request"), contains(variables["Build.SourceVersionMessage"],"feature"))) }}
+      ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
+      pool= Self-hosted Dev
+      selfHostCode= d03
+      |
+      name= test
+      deploy= ${{ or(eq(parameters.test, "true"), contains(variables["Build.SourceBranch"],"feature")) }}
+      code= t01
+      serviceConnection= $(testServiceConnection)
+      location= "westeurope"
+      ContRegServerPush= ${{ or(eq(variables.test, "true"), eq(variables.pp, "true")) }}
+      ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
+      pool= Self-hosted Test
+      selfHostCode= t02
+      |
+      name= pp
+      deploy= ${{ and(or(eq(parameters.pp, "true"), contains(variables["Build.SourceBranch"],"main")), not(contains(variables["Build.SourceVersionMessage"],"Upgrade to version"))) }}
+      code= t02
+      serviceConnection= $(testServiceConnection)
+      location= "northeurope,westeurope"
+      ContRegServerPush= ${{ or(eq(variables.test, "true"), eq(variables.pp, "true")) }}
+      ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
+      pool= Self-hosted Test
+      selfHostCode= t02
+      |
+      name= pr
+      deploy= ${{ or(eq(parameters.pr, "true"), contains(variables["Build.SourceBranch"],"release")) }}
+      code= p01
+      serviceConnection= $(prodServiceConnection)
+      location= "northeurope,westeurope"
+      ContRegServerPush= ${{ or(eq(variables.pr, "true"), and(contains(variables["Build.SourceVersionMessage"],"Merge pull request"), contains(variables["Build.SourceVersionMessage"],"release"))) }}
+      ContRegServer= $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io
+      pool= Self-hosted Prod
+      selfHostCode= p01'
 
 stages:
 
@@ -121,71 +162,59 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ if or(or(eq(variables.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'feature'))) }}:
-            - $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
-          - ${{ if or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}:
-            - $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
-          - ${{ if or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}:
-            - $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io
+          - ${{ each env in split(variables.environmentsMetadata, '|') }}:
+            - ${{ if contains(env, 'ContRegServerPush= true') }}:
+              - ${{ replace(split(env,'\n')[7],'ContRegServer= ','')}}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
 
 
-- ${{ each location in parameters.location }}:
-  - ${{ each var in variables }}:
-    - ${{ if in(var.key, 'tran','dev','test','pp','pr') }}:
-      - ${{ if eq(var.value, 'true') }}:
-        - ${{ if or(and(in(var.key, 'tran','pp','pr'),eq(location, 'northeurope')),and(in(var.key, 'tran','dev','test','pp','pr'),eq(location, 'westeurope'))) }}:
-          - stage: Deployment_${{var.key}}_${{location}}
-            displayName: "Deployment [${{var.key}}] ${{location}}"
-            ${{ if eq(location,'westeurope') }}:
-              dependsOn: 
-              - scanBuildApp
-              condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-            ${{ if eq(location,'northeurope') }}:
-              dependsOn: 
-              - scanBuildApp
-              condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-            variables:
-            - name: environmentId
-              ${{ if eq(var.key, 'tran') }}:
-                value: d03
-              ${{ if eq(var.key, 'dev') }}:
-                value: d01
-              ${{ if eq(var.key, 'test') }}:
-                value: t01
-              ${{ if eq(var.key, 'pp') }}:
-                value: t02
-              ${{ if eq(var.key, 'pr') }}:
-                value: p01
-            jobs:
-            - template: pipeline/deployAzureAppServices.yml@devopsTemplates
-              parameters:
-                ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
-                  serviceConnection: $(devServiceConnection)
-                ${{ elseif eq(var.key, 'pr') }}:
-                  serviceConnection: $(prodServiceConnection)
-                ${{ else }}:
-                  serviceConnection: $(testServiceConnection)
-                environmentName: ${{var.key}}
-                applicationShortName: ${{variables.applicationShortName}}
-                applicationFullName: ${{variables.applicationFullName}}
-                releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
-                InfrDeploy: ${{parameters.InfrDeploy}}
-                deploymentLocation: ${{location}}
-                gitCheck: ${{parameters.gitCheck}}
-                tier: presentation
-                tierPlan: prestier-g3
-                shaUse: true
-                slotDeploy: ${{parameters.slotDeploy}}
-                appRepoName: ${{variables.applicationFullName}}
-          
-          - ${{ if and(eq(var.key, 'pr'),eq(location, 'westeurope')) }}:
-            - stage: branchPrTag
-              displayName: "GitHub PR & Release Branch Tag"
-              dependsOn: 
-              - Deployment_${{var.key}}_${{location}}
-              jobs:
-              - template:  pipeline/tagCreation.yml@devopsTemplates
-                parameters:
-                  applicationName: ${{variables.applicationFullName}}
+# - ${{ each location in parameters.location }}:
+#   - ${{ each var in variables }}:
+#     - ${{ if and(in(var.key, 'tran','dev','test','pp','pr'), eq(var.value, 'true')) }}:
+#       - ${{ if or(and(in(var.key, 'tran','pp','pr'),eq(location, 'northeurope')),and(in(var.key, 'tran','dev','test','pp','pr'),eq(location, 'westeurope'))) }}:
+#         - stage: Deployment_${{var.key}}_${{location}}
+#           displayName: "Deployment [${{var.key}}] ${{location}}"
+#           dependsOn: 
+#           - scanBuildApp
+#           condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+#           variables:
+#           - name: secRegionId
+#             value: neu-
+#           jobs:
+#           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
+#             parameters:
+#               ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
+#                 serviceConnection: $(devServiceConnection)
+#                 pool: Self-hosted Dev
+#                 selfHostCode: d03
+#               ${{ elseif eq(var.key, 'pr') }}:
+#                 serviceConnection: $(prodServiceConnection)
+#                 pool: Self-hosted Prod
+#                 selfHostCode: p01
+#               ${{ else }}:
+#                 serviceConnection: $(testServiceConnection)
+#                 pool: Self-hosted Test
+#                 selfHostCode: t02
+#               environmentName: ${{var.key}}
+#               applicationShortName: ${{variables.applicationShortName}}
+#               applicationFullName: ${{variables.applicationFullName}}
+#               releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
+#               InfrDeploy: ${{parameters.InfrDeploy}}
+#               deploymentLocation: ${{location}}
+#               gitCheck: ${{parameters.gitCheck}}
+#               tier: presentation
+#               tierPlan: prestier-g3
+#               shaUse: true
+#               slotDeploy: ${{parameters.slotDeploy}}
+#               appRepoName: ${{variables.applicationFullName}}
+        
+#         - ${{ if and(eq(var.key, 'pr'),eq(location, 'westeurope')) }}:
+#           - stage: branchPrTag
+#             displayName: "GitHub PR & Release Branch Tag"
+#             dependsOn: 
+#             - Deployment_${{var.key}}_${{location}}
+#             jobs:
+#             - template:  pipeline/tagCreation.yml@devopsTemplates
+#               parameters:
+#                 applicationName: ${{variables.applicationFullName}}
