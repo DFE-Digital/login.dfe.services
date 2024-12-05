@@ -166,9 +166,9 @@ stages:
         custRegAuth: $(custRegAuth)
         ContRegServers:
           - ${{ each env in split(variables.environmentsMetadata, '|') }}:
-            - ${{ split(replace(${{env}},'\r\n',','),',')[6] }}
-            - ${{ if contains(${{env}}, 'ContRegServerPush= true') }}:
-              - ${{ replace(split(env,'\n')[6],'ContRegServer= ','')}}
+            - ${{ split(replace(env,'`n',','),',')[6] }}
+            - ${{ if contains($env, 'ContRegServerPush= true') }}:
+              - ${{ replace(split(env,'`n')[6],'ContRegServer= ','')}}
               - ${{ split(env,'\n') }}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
