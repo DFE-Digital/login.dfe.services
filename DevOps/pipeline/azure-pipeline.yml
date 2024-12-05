@@ -97,54 +97,54 @@ variables:
 #   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
 - name: environmentsMetadata
   value: >
-      name= tran,
-      deploy= ${{ or(eq(parameters.tran, 'true'), contains(variables['Build.SourceBranch'],'feature')) }},
-      code= 'd03',
-      serviceConnection= $(devServiceConnection),
-      location= 'northeurope,westeurope',
-      ContRegServerPush= ${{ or(or(eq(parameters.tran, 'true'), contains(variables['Build.SourceBranch'],'feature')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }},
-      ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io,
-      pool= Self-hosted Dev,
+      name: tran
+      deploy= ${{ or(eq(parameters.tran, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
+      code= 'd03'
+      serviceConnection= $(devServiceConnection)
+      location= 'northeurope,westeurope'
+      ContRegServerPush= ${{ or(or(eq(parameters.tran, 'true'), contains(variables['Build.SourceBranch'],'feature')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }}
+      ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
+      pool= Self-hosted Dev
       selfHostCode= d03
       |
       name= dev,
-      deploy= ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }},
-      code= d01,
-      serviceConnection= $(devServiceConnection),
-      location= 'westeurope',
-      ContRegServerPush= ${{ or(or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }},
-      ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io,
-      pool= Self-hosted Dev,
+      deploy= ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
+      code= d01
+      serviceConnection= $(devServiceConnection)
+      location= 'westeurope'
+      ContRegServerPush= ${{ or(or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'feature'))) }}
+      ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
+      pool= Self-hosted Dev
       selfHostCode= d03
       |
       name= test,
-      deploy= ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }},
-      code= t01,
-      serviceConnection= $(testServiceConnection),
-      location= 'westeurope',
-      ContRegServerPush= ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }},
-      ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io,
-      pool= Self-hosted Test,
+      deploy= ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
+      code= t01
+      serviceConnection= $(testServiceConnection)
+      location= 'westeurope'
+      ContRegServerPush= ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
+      ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
+      pool= Self-hosted Test
       selfHostCode= t02
       |
-      name= pp,
-      deploy= ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables.SourceVersionMessage,'Upgrade to version'))) }},
-      code= t02,
-      serviceConnection= $(testServiceConnection),
-      location= 'northeurope,westeurope',
-      ContRegServerPush= ${{ or(contains(variables['Build.SourceBranch'],'main'), eq(variables.pp, 'true')) }},
-      ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io,
-      pool= Self-hosted Test,
+      name= pp
+      deploy= ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables.SourceVersionMessage,'Upgrade to version'))) }}
+      code= t02
+      serviceConnection= $(testServiceConnection)
+      location= 'northeurope,westeurope'
+      ContRegServerPush= ${{ or(contains(variables['Build.SourceBranch'],'main'), eq(variables.pp, 'true')) }}
+      ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
+      pool= Self-hosted Test
       selfHostCode= t02
       |
-      name= pr,
-      deploy= ${{ or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }},
-      code= p01,
-      serviceConnection= $(prodServiceConnection),
-      location= 'northeurope,westeurope',
-      ContRegServerPush= ${{ or(or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'release'))) }},
-      ContRegServer= $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io,
-      pool= Self-hosted Prod,
+      name= pr
+      deploy= ${{ or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }}
+      code= p01
+      serviceConnection= $(prodServiceConnection)
+      location= 'northeurope,westeurope'
+      ContRegServerPush= ${{ or(or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')), and(contains(variables.SourceVersionMessage,'Merge pull request'), contains(variables.SourceVersionMessage,'release'))) }}
+      ContRegServer= $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io
+      pool= Self-hosted Prod
       selfHostCode= p01
 
 stages:
@@ -167,7 +167,7 @@ stages:
         ContRegServers:
           - ${{ each env in split(variables.environmentsMetadata, '\n') }}:
             - ${{ if contains(env, 'ContRegServerPush= True') }}:
-              - ${{ replace(split(env,', ')[6],'ContRegServer= ','')}}
+              - ${{ replace(split(env,'\n')[6],'ContRegServer= ','')}}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
 
