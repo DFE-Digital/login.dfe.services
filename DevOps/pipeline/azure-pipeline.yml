@@ -98,7 +98,7 @@ variables:
 - name: environmentsMetadata
   value: |
       name= tran,
-      deploy: ${{ eq(parameters.tran, 'true') }},
+      deploy: ${{ or(eq(parameters.tran, 'true'), contains(variables['Build.SourceBranch'],'feature')) }},
       code= 'd03',
       serviceConnection= $(devServiceConnection),
       location= 'northeurope,westeurope',
