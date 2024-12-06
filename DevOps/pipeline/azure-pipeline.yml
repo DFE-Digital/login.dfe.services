@@ -51,7 +51,8 @@ parameters:
 - name: dev
   type: boolean
   displayName: 'Dev Deployment'
-  default: ${{ if contains(variables['Build.SourceBranch'],'feature')}} true
+  default: ${{ if contains(variables['Build.SourceBranch'],'feature') }} ? true 
+  : false
 - name: test
   type: boolean
   displayName: 'Test Deployment'
