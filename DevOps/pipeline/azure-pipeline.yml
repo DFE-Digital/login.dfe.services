@@ -70,15 +70,17 @@ parameters:
   default: false
 
 variables:
-  environmentMetadata1:
-    - name: tran
-      deploy: test
-      code: 'd03'
-      serviceConnection: test
-      location: 'northeuropewesteurope'
-      ContRegServerPush: test
-      ContRegServer: test
-      pool: Self-hosted Dev
+  environments: 
+    - name: dev
+      url: dev.example.com
+      requiresApproval: false
+    - name: staging
+      url: staging.example.com
+      requiresApproval: true
+    - name: prod
+      url: prod.example.com
+      requiresApproval: true
+
 # - group: dsi-global
 # - name: applicationShortName
 #   value: 'svc'
