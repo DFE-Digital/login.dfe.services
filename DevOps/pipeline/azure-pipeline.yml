@@ -115,7 +115,6 @@ stages:
         custRegAuth: $(custRegAuth)
         ContRegServers:
           - $[ each env in split(variables.environmentsMetadata, ' | ') ]:
-            - $[env]
             - $[ if contains(env, 'ContRegServerPush= True') ]:
               - $[replace(split(env,',')[6],'ContRegServer= ','')]
         nodeVersionSpec: '18.17.0'
