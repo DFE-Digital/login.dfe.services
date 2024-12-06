@@ -79,22 +79,22 @@ variables:
 #   value: 1
 # - name: SourceVersionMessage
 #   value: variables['Build.SourceVersionMessage']
-# - name: tran
-#   value: ${{ eq(parameters.tran, 'true') }}
-# - name: dev
-#   value: ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
-# - name: test
-#   value: ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
-# - name: pp
-#   value: ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
-# - name: pr
-#   value: ${{ or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }}
-# - name: ContRegServerDev
-#   value: ${{ or(or(eq(variables.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'feature'))) }}
-# - name: ContRegServerTest
-#   value: ${{ or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}
-# - name: ContRegServerProd
-#   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
+- name: tran
+  value: ${{ eq(parameters.tran, 'true') }}
+- name: dev
+  value: ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
+- name: test
+  value: ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
+- name: pp
+  value: ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
+- name: pr
+  value: ${{ or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }}
+- name: ContRegServerDev
+  value: ${{ or(or(eq(variables.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'feature'))) }}
+- name: ContRegServerTest
+  value: ${{ or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}
+- name: ContRegServerProd
+  value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
 - name: tran
   value: "deploy: $(tran), code: 'd03', serviceConnection: $(devServiceConnection), location: 'northeuropewesteurope', pool: Self-hosted Dev, ContRegServerPush: $(ContRegServerDev), ContRegServer: $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io"
 # - name: dev
@@ -153,7 +153,7 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each env in split(variables.tran,', ') }}:
+          - ${{ each env in split(replace(variables.tran,':','=')', ') }}:
             - ${{env}}
             - ${{ if env.ContRegServerPush }}:
               - ${{env.ContRegServerPush}}
