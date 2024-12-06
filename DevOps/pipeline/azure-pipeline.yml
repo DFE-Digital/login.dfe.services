@@ -70,15 +70,15 @@ parameters:
   default: false
 
 variables:
-# - group: dsi-global
-# - name: applicationShortName
-#   value: 'svc'
-# - name: applicationFullName
-#   value: 'services'
-# - name: numberOfWorkers
-#   value: 1
-# - name: SourceVersionMessage
-#   value: variables['Build.SourceVersionMessage']
+- group: dsi-global
+- name: applicationShortName
+  value: 'svc'
+- name: applicationFullName
+  value: 'services'
+- name: numberOfWorkers
+  value: 1
+- name: SourceVersionMessage
+  value: variables['Build.SourceVersionMessage']
 # - name: tran
 #   value: ${{ eq(parameters.tran, 'true') }}
 # - name: dev
