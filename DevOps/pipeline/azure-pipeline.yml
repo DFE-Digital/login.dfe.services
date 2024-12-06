@@ -153,7 +153,7 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each envs in split(split(variables.tran,' | '),',') }}:
+          - ${{ each envs in split(variables.tran,' | ') }}:
             - ${{ each env in split(envs,', ') }}:
               - ${{env}}
             - ${{ if env.ContRegServerPush }}:
