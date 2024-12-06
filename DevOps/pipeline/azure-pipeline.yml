@@ -154,7 +154,7 @@ stages:
         custRegAuth: $(custRegAuth)
         ContRegServers:
           - ${{ each envs in split(variables.tran,' | ') }}:
-            - ${{ each env in split(envs,', ') }}:
+            - ${{ each env in split(replace(envs,'= ',':'),', ') }}:
               - ${{env}}
             # - ${{ if env.ContRegServerPush }}:
             #   - ${{env.ContRegServerPush}}
