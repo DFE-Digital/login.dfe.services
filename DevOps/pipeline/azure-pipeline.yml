@@ -51,20 +51,19 @@ parameters:
 - name: dev
   type: boolean
   displayName: 'Dev Deployment'
-  default: ${{ if contains(variables['Build.SourceBranch'],'feature') }} ? true 
-  : false
+  default: ${{ contains(variables['Build.SourceBranch'],'feature') }}
 - name: test
   type: boolean
   displayName: 'Test Deployment'
-  default:  ${{ if contains(variables['Build.SourceBranch'],'feature')}} true
+  default:  ${{ contains(variables['Build.SourceBranch'],'feature') }}
 - name: pp
   type: boolean
   displayName: 'Pre-Prod Deployment'
-  default: ${{ if and(contains(variables['Build.SourceBranch'],'main'), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }} true
+  default: ${{ and(contains(variables['Build.SourceBranch'],'main'), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
 - name: pr
   type: boolean
   displayName: 'Prod Deployment'
-  default: ${{ if contains(variables['Build.SourceBranch'],'release') }} true
+  default: ${{ contains(variables['Build.SourceBranch'],'release') }} true
 - name: gitCheck
   type: boolean
   displayName: 'Bypass Git Check in Test'
