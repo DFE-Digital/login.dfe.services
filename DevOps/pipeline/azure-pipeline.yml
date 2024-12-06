@@ -160,7 +160,7 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each env in variables.tan }}:
+          - ${{ each env in split(variables.tan,'\n') }}:
             - ${{env}}
             - ${{ if env.ContRegServerPush }}:
               - ${{env.ContRegServerPush}}
