@@ -63,7 +63,7 @@ parameters:
 - name: pr
   type: boolean
   displayName: 'Prod Deployment'
-  default: ${{ contains(variables['Build.SourceBranch'],'release') }}
+  default: $[ contains(variables['Build.SourceBranch'],'release') ]
 - name: gitCheck
   type: boolean
   displayName: 'Bypass Git Check in Test'
