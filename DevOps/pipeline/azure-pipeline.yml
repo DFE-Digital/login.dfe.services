@@ -144,7 +144,7 @@ parameters:
 - name: environmentsMetadata 
   type: object
   default: 
-    $(tran)
+    ${{variables.tran}}
 
 
 stages:
