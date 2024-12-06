@@ -59,7 +59,7 @@ parameters:
 - name: pp
   type: boolean
   displayName: 'Pre-Prod Deployment'
-  default: ${{ and(contains(variables['Build.SourceBranch'],'main', not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
+  default: ${{ and(contains(variables['Build.SourceBranch'],'main'), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
 - name: pr
   type: boolean
   displayName: 'Prod Deployment'
