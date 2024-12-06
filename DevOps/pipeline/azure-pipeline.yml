@@ -68,6 +68,8 @@ parameters:
   type: boolean
   displayName: 'Bypass Git Check in Test'
   default: false
+- name: mySecretParam 
+default: ${{ variables['environmentsMetadata']}}
 
 variables:
 - group: dsi-global
@@ -132,7 +134,7 @@ variables:
 #   ContRegServer: $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io
 #   pool: Self-hosted Prod
 #   selfHostCode: p01
-  
+
 
 stages:
 
