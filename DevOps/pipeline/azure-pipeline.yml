@@ -97,7 +97,7 @@ variables:
   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
 - name: tran
   value: |
-    name= tran, deploy= '$(tran)', code= 'd03', serviceConnection= '$(devServiceConnection)', location= 'northeurope, westeurope', ContRegServerPush= '$(ContRegServerDev)', ContRegServer= '$(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io', pool= 'Self-hosted Dev' | name= dev, deploy= $(dev), code= d01, serviceConnection= $(devServiceConnection), location= 'westeurope', ContRegServerPush= $(ContRegServerDev), ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io, pool= Self-hosted Dev, selfHostCode= d03 | name= test, deploy= $(test), code= t01, serviceConnection= $(testServiceConnection), location= 'westeurope', ContRegServerPush= $(ContRegServerTest), ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io, pool= Self-hosted Test, selfHostCode= t02 | name= pp, deploy= $(pp), code= t02, serviceConnection= $(testServiceConnection), location= 'northeurope, westeurope', ContRegServerPush= $(ContRegServerTest), ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io, pool= Self-hosted Test, selfHostCode= t02 | name= pr, deploy= $(pr), code= p01, serviceConnection= $(prodServiceConnection), location= 'northeurope, westeurope', ContRegServerPush= $(ContRegServerProd), ContRegServer= $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io, pool= Self-hosted Prod, selfHostCode= p01
+    name= tran, deploy= $(tran), code= 'd03', serviceConnection= $(devServiceConnection), location= 'northeurope, westeurope', ContRegServerPush= $(ContRegServerDev), ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io, pool= Self-hosted Dev | name= dev, deploy= $(dev), code= d01, serviceConnection= $(devServiceConnection), location= 'westeurope', ContRegServerPush= $(ContRegServerDev), ContRegServer= $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io, pool= Self-hosted Dev, selfHostCode= d03 | name= test, deploy= $(test), code= t01, serviceConnection= $(testServiceConnection), location= 'westeurope', ContRegServerPush= $(ContRegServerTest), ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io, pool= Self-hosted Test, selfHostCode= t02 | name= pp, deploy= $(pp), code= t02, serviceConnection= $(testServiceConnection), location= 'northeurope, westeurope', ContRegServerPush= $(ContRegServerTest), ContRegServer= $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io, pool= Self-hosted Test, selfHostCode= t02 | name= pr, deploy= $(pr), code= p01, serviceConnection= $(prodServiceConnection), location= 'northeurope, westeurope', ContRegServerPush= $(ContRegServerProd), ContRegServer= $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io, pool= Self-hosted Prod, selfHostCode= p01
 #   deploy: $(dev)
 #   code: d01
 #   serviceConnection: $(devServiceConnection)
@@ -153,7 +153,7 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each env in split(variables.tran,' | ') }}:
+          - ${{ each env in split(split(variables.tran,' | '),', ') }}:
             - ${{env}}
             - ${{ if env.ContRegServerPush }}:
               - ${{env.ContRegServerPush}}
