@@ -167,9 +167,9 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each envs in parameters.environmentsMetadata }}:
+          - ${{ each envs in parameters.environmentsMetadata.environmentsMetadata }}:
             #- ${{ if envs.ContRegServerPush }}:
-            - ${{envs.environmentsMetadata}}
+            - ${{envs.name}}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
 
