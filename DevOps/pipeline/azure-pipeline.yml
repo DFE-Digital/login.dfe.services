@@ -169,7 +169,7 @@ stages:
         ContRegServers:
           - ${{ each envs in parameters.environmentsMetadata }}:
             #- ${{ if envs.ContRegServerPush }}:
-            - ${{envs.ContRegServer}}
+            - ${{envs.environmentsMetadata}}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
 
