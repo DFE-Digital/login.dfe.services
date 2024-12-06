@@ -156,8 +156,8 @@ stages:
           - ${{ each envs in split(variables.tran,' | ') }}:
             - ${{ each env in split(envs,', ') }}:
               - ${{env}}
-            - ${{ if env.ContRegServerPush }}:
-              - ${{env.ContRegServerPush}}
+            # - ${{ if env.ContRegServerPush }}:
+            #   - ${{env.ContRegServerPush}}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
 
