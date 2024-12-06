@@ -95,7 +95,7 @@ variables:
   value: ${{ or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}
 - name: ContRegServerProd
   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
-  environmentMetadata1: 
+- environmentMetadata1: 
     - name: tran
       deploy: $(tran)
       code: 'd03'
