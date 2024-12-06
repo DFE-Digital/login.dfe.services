@@ -168,7 +168,7 @@ stages:
         custRegAuth: $(custRegAuth)
         ContRegServers:
           - ${{ each envs in parameters.environmentsMetadata }}:
-            - ${{env}}
+            - ${{envs}}
             # - ${{ if env.ContRegServerPush }}:
             #   - ${{env.ContRegServerPush}}
         nodeVersionSpec: '18.17.0'
