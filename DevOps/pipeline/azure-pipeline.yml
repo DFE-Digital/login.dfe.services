@@ -70,32 +70,32 @@ parameters:
   default: false
 
 variables:
-- group: dsi-global
-- name: applicationShortName
-  value: 'svc'
-- name: applicationFullName
-  value: 'services'
-- name: numberOfWorkers
-  value: 1
-- name: SourceVersionMessage
-  value: variables['Build.SourceVersionMessage']
-- name: tran
-  value: ${{ eq(parameters.tran, 'true') }}
-- name: dev
-  value: ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
-- name: test
-  value: ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
-- name: pp
-  value: ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
-- name: pr
-  value: ${{ or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }}
-- name: ContRegServerDev
-  value: ${{ or(or(eq(variables.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'feature'))) }}
-- name: ContRegServerTest
-  value: ${{ or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}
-- name: ContRegServerProd
-  value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
-- environmentMetadata1: 
+# - group: dsi-global
+# - name: applicationShortName
+#   value: 'svc'
+# - name: applicationFullName
+#   value: 'services'
+# - name: numberOfWorkers
+#   value: 1
+# - name: SourceVersionMessage
+#   value: variables['Build.SourceVersionMessage']
+# - name: tran
+#   value: ${{ eq(parameters.tran, 'true') }}
+# - name: dev
+#   value: ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
+# - name: test
+#   value: ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
+# - name: pp
+#   value: ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
+# - name: pr
+#   value: ${{ or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }}
+# - name: ContRegServerDev
+#   value: ${{ or(or(eq(variables.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'feature'))) }}
+# - name: ContRegServerTest
+#   value: ${{ or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}
+# - name: ContRegServerProd
+#   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
+  environmentMetadata1: 
     - name: tran
       deploy: $(tran)
       code: 'd03'
@@ -113,7 +113,33 @@ variables:
       ContRegServer: $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
       pool: Self-hosted Dev
       selfHostCode: d03
-
+    - name: test
+      deploy: $(test)
+      code: t01
+      serviceConnection: $(testServiceConnection)
+      location: 'westeurope'
+      ContRegServerPush: $(ContRegServerTest)
+      ContRegServer: $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
+      pool: Self-hosted Test
+      selfHostCode: t02
+    - name: pp
+      deploy: $(pp)
+      code: t02
+      serviceConnection: $(testServiceConnection)
+      location: 'northeuropewesteurope'
+      ContRegServerPush: $(ContRegServerTest)
+      ContRegServer: $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
+      pool: Self-hosted Test
+      selfHostCode: t02
+    - name: pr
+      deploy: $(pr)
+      code: p01
+      serviceConnection: $(prodServiceConnection)
+      location: 'northeuropewesteurope'
+      ContRegServerPush: $(ContRegServerProd)
+      ContRegServer: $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io
+      pool: Self-hosted Prod
+      selfHostCode: p01
   
 
 stages:
