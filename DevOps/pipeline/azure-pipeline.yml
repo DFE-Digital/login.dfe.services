@@ -95,6 +95,26 @@ variables:
   value: ${{ or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}
 - name: ContRegServerProd
   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
+  environmentMetadata1: 
+    - name: tran
+      deploy: $(tran)
+      code: 'd03'
+      serviceConnection: $(devServiceConnection)
+      location: 'northeuropewesteurope'
+      ContRegServerPush: $(ContRegServerDev)
+      ContRegServer: $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
+      pool: Self-hosted Dev
+    - name: dev
+      deploy: $(dev)
+      code: d01
+      serviceConnection: $(devServiceConnection)
+      location: 'westeurope'
+      ContRegServerPush: $(ContRegServerDev)
+      ContRegServer: $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
+      pool: Self-hosted Dev
+      selfHostCode: d03
+
+  
 
 stages:
 
@@ -114,10 +134,8 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each env in split(variables['environmentsMetadata'], ' | ') }}:
-            - ${{env}}
-            - ${ environmentsMetadata }
-            - ${{ if contains(env, 'ContRegServerPush= True') }}:
+          - ${{ each env in variables.environmentsMetadata }}:
+            - ${{ if env.ContRegServerPush }}:
               - ${{replace(split(env,',')[6],'ContRegServer= ','')}}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
