@@ -144,8 +144,7 @@ parameters:
 - name: environmentsMetadata 
   type: object
   default: 
-    environmentsMetadata: 
-      variables['environmentsMetadata']
+    $(tran)
 
 
 stages:
@@ -166,7 +165,7 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each envs in parameters.environmentsMetadata.environmentsMetadata }}:
+          - ${{ each envs in parameters.environmentsMetadata }}:
             #- ${{ if envs.ContRegServerPush }}:
             - ${{envs.name}}
         nodeVersionSpec: '18.17.0'
