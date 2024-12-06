@@ -70,7 +70,9 @@ parameters:
   default: false
 - name: environmentsMetadata 
   type: object
-  default: $(tran)
+  default: 
+    environmentsMetadata: 
+      $(tran)
 
 variables:
 - group: dsi-global
