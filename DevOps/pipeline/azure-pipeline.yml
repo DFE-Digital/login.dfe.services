@@ -51,15 +51,15 @@ parameters:
 - name: dev
   type: boolean
   displayName: 'Dev Deployment'
-  default: ${{contains(variables['Build.SourceBranch'],'feature')}}
+  default: $[contains(variables['Build.SourceBranch'],'feature')]
 - name: test
   type: boolean
   displayName: 'Test Deployment'
-  default:  ${{contains(variables['Build.SourceBranch'],'feature')}}
+  default: $[contains(variables['Build.SourceBranch'],'feature')]
 - name: pp
   type: boolean
   displayName: 'Pre-Prod Deployment'
-  default: ${{ and(contains(variables['Build.SourceBranch'],'main'), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
+  default: $[ and(contains(variables['Build.SourceBranch'],'main'), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) ]
 - name: pr
   type: boolean
   displayName: 'Prod Deployment'
