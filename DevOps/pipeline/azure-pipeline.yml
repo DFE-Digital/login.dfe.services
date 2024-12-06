@@ -96,14 +96,8 @@ variables:
 # - name: ContRegServerProd
 #   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
 - name: tran
-  value: >
-    deploy: $(tran)
-    code: 'd03'
-    serviceConnection: $(devServiceConnection)
-    location: 'northeuropewesteurope'
-    ContRegServerPush: $(ContRegServerDev)
-    ContRegServer: $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
-    pool: Self-hosted Dev
+  value: "deploy: $(tran), code: 'd03', serviceConnection: $(devServiceConnection), location: 'northeuropewesteurope', pool: Self-hosted Dev,
+   ContRegServerPush: $(ContRegServerDev), ContRegServer: $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io"
 # - name: dev
 #   deploy: $(dev)
 #   code: d01
@@ -160,7 +154,7 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each env in split(variables.tan,'\n') }}:
+          - ${{ each env in split(variables.tan,', ') }}:
             - ${{env}}
             - ${{ if env.ContRegServerPush }}:
               - ${{env.ContRegServerPush}}
