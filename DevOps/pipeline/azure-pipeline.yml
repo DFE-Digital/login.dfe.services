@@ -69,7 +69,7 @@ parameters:
   displayName: 'Bypass Git Check in Test'
   default: false
 - name: mySecretParam 
-default: ${{ variables['environmentsMetadata']}}
+  default: ${{ variables['environmentsMetadata']}}
 
 variables:
 - group: dsi-global
