@@ -72,7 +72,7 @@ parameters:
   type: object
   default: 
     environmentsMetadata: 
-      - $(environmentsMetadata)
+      variables['environmentsMetadata']
 
 variables:
 - group: dsi-global
