@@ -70,15 +70,15 @@ parameters:
   default: false
 
 variables:
-# - group: dsi-global
-# - name: applicationShortName
-#   value: 'svc'
-# - name: applicationFullName
-#   value: 'services'
-# - name: numberOfWorkers
-#   value: 1
-# - name: SourceVersionMessage
-#   value: variables['Build.SourceVersionMessage']
+- group: dsi-global
+- name: applicationShortName
+  value: 'svc'
+- name: applicationFullName
+  value: 'services'
+- name: numberOfWorkers
+  value: 1
+- name: SourceVersionMessage
+  value: variables['Build.SourceVersionMessage']
 - name: tran
   value: ${{ eq(parameters.tran, 'true') }}
 - name: dev
@@ -153,7 +153,7 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each envs in split(variables.tran,' | ') }}:
+          - ${{ each envs in split(variables.environmentsMetadata,' | ') }}:
             - ${{ each env in split(replace(envs,'= ',':\ '),', ') }}:
               - ${{env}}
             # - ${{ if env.ContRegServerPush }}:
