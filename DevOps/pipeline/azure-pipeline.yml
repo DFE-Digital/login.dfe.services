@@ -114,7 +114,7 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each env in split(variables.environmentsMetadata, ' | ') }}:
+          - $[ each env in split(variables.environmentsMetadata, ' | ') ]:
             - ${{env}}
             - $(environmentsMetadata)
             - ${{ if contains(env, 'ContRegServerPush= True') }}:
