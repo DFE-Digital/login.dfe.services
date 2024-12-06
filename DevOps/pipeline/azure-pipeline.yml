@@ -25,55 +25,6 @@ pr:
     include:
     - main
 
-parameters:
-- name: location
-  type: object
-  displayName: 'Deployment locations (- westeurope & - northeurope)'
-  default:
-    - westeurope
-    - northeurope
-- name: shaUse
-  type: boolean
-  displayName: "Use Self Host agent"
-  default: true
-- name: slotDeploy
-  type: boolean
-  displayName: "Slot Deployment"
-  default: true
-- name: InfrDeploy
-  type: boolean
-  displayName: 'Infrastrucure Deployment only'
-  default: false
-- name: tran
-  type: boolean
-  displayName: 'Transformation Deployment'
-  default: false
-- name: dev
-  type: boolean
-  displayName: 'Dev Deployment'
-  default: false
-- name: test
-  type: boolean
-  displayName: 'Test Deployment'
-  default: false
-- name: pp
-  type: boolean
-  displayName: 'Pre-Prod Deployment'
-  default: false
-- name: pr
-  type: boolean
-  displayName: 'Prod Deployment'
-  default: false
-- name: gitCheck
-  type: boolean
-  displayName: 'Bypass Git Check in Test'
-  default: false
-- name: environmentsMetadata 
-  type: object
-  default: 
-    environmentsMetadata: 
-      variables['environmentsMetadata']
-
 variables:
 - group: dsi-global
 - name: applicationShortName
@@ -147,6 +98,54 @@ variables:
       pool: Self-hosted Prod
       selfHostCode: p01
 
+parameters:
+- name: location
+  type: object
+  displayName: 'Deployment locations (- westeurope & - northeurope)'
+  default:
+    - westeurope
+    - northeurope
+- name: shaUse
+  type: boolean
+  displayName: "Use Self Host agent"
+  default: true
+- name: slotDeploy
+  type: boolean
+  displayName: "Slot Deployment"
+  default: true
+- name: InfrDeploy
+  type: boolean
+  displayName: 'Infrastrucure Deployment only'
+  default: false
+- name: tran
+  type: boolean
+  displayName: 'Transformation Deployment'
+  default: false
+- name: dev
+  type: boolean
+  displayName: 'Dev Deployment'
+  default: false
+- name: test
+  type: boolean
+  displayName: 'Test Deployment'
+  default: false
+- name: pp
+  type: boolean
+  displayName: 'Pre-Prod Deployment'
+  default: false
+- name: pr
+  type: boolean
+  displayName: 'Prod Deployment'
+  default: false
+- name: gitCheck
+  type: boolean
+  displayName: 'Bypass Git Check in Test'
+  default: false
+- name: environmentsMetadata 
+  type: object
+  default: 
+    environmentsMetadata: 
+      variables['environmentsMetadata']
 
 
 stages:
