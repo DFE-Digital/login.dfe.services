@@ -133,7 +133,7 @@ parameters:
   displayName: 'Bypass Git Check in Test'
   default: false
 - name: mySecretParam 
-  default: ${{ variables['environmentsMetadata']}}
+  default: $(environmentsMetadata')
 
 
 stages:
