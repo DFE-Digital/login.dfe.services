@@ -157,7 +157,7 @@ stages:
                 serviceConnection: $(testServiceConnection)
                 shaPool: Self-hosted Test
                 shaCode: t02
-              devOpsEnv: $(secRegionId)${{var.key}}
+              devOpsEnv: ${{variables.secRegionId}}${{var.key}}
               environmentName: ${{var.key}}
               applicationShortName: ${{variables.applicationShortName}}
               applicationFullName: ${{variables.applicationFullName}}
