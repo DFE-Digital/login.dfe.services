@@ -107,10 +107,10 @@ stages:
   displayName: "Scan tools & Build"
   jobs:
 
-  # - template:  pipeline/scanTools.yml@devopsTemplates
-  #   parameters:
-  #     npmInstCmd: 'install --force --json --no-package-lock'
-  #     AppDeploy: ${{ not(parameters.InfrDeploy) }}
+  - template:  pipeline/scanTools.yml@devopsTemplates
+    parameters:
+      npmInstCmd: 'install --force --json --no-package-lock'
+      AppDeploy: ${{ not(parameters.InfrDeploy) }}
 
   - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
     - template: pipeline/buildAzureAppServices.yml@devopsTemplates
@@ -118,59 +118,63 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each envs in parameters.environmentsMetadata }}:
-            #- ${{ if envs.ContRegServerPush }}:
-            - ${{envs.ContRegServer}}
+          - ${{ if eq(variables.ContRegServerDev, 'true') }}:
+            - $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
+          - ${{ if eq(variables.ContRegServerTest, 'true') }}:
+            - $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
+          - ${{ if eq(variables.ContRegServerProd, 'true') }}:
+            - $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
 
 
-# - ${{ each location in parameters.location }}:
-#   - ${{ each var in variables }}:
-#     - ${{ if and(in(var.key, 'tran','dev','test','pp','pr'), eq(var.value, 'true')) }}:
-#       - ${{ if or(and(in(var.key, 'tran','pp','pr'),eq(location, 'northeurope')),and(in(var.key, 'tran','dev','test','pp','pr'),eq(location, 'westeurope'))) }}:
-#         - stage: Deployment_${{var.key}}_${{location}}
-#           displayName: "Deployment [${{var.key}}] ${{location}}"
-#           dependsOn: 
-#           - scanBuildApp
-#           condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-#           variables:
-#           - name: secRegionId
-#             value: neu-
-#           jobs:
-#           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
-#             parameters:
-#               ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
-#                 serviceConnection: $(devServiceConnection)
-#                 pool: Self-hosted Dev
-#                 selfHostCode: d03
-#               ${{ elseif eq(var.key, 'pr') }}:
-#                 serviceConnection: $(prodServiceConnection)
-#                 pool: Self-hosted Prod
-#                 selfHostCode: p01
-#               ${{ else }}:
-#                 serviceConnection: $(testServiceConnection)
-#                 pool: Self-hosted Test
-#                 selfHostCode: t02
-#               environmentName: ${{var.key}}
-#               applicationShortName: ${{variables.applicationShortName}}
-#               applicationFullName: ${{variables.applicationFullName}}
-#               releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
-#               InfrDeploy: ${{parameters.InfrDeploy}}
-#               deploymentLocation: ${{location}}
-#               gitCheck: ${{parameters.gitCheck}}
-#               tier: presentation
-#               tierPlan: prestier-g3
-#               shaUse: true
-#               slotDeploy: ${{parameters.slotDeploy}}
-#               appRepoName: ${{variables.applicationFullName}}
+- ${{ each location in parameters.location }}:
+  - ${{ each var in variables }}:
+      - ${{ if and(or(and(in(var.key, 'tran','pp','pr'),eq(location, 'northeurope')),and(in(var.key, 'tran','dev','test','pp','pr'),eq(location, 'westeurope'))), eq(var.value, 'true')) }}:
+        - stage: Deployment_${{var.key}}_${{location}}
+          displayName: "Deployment [${{var.key}}] ${{location}}"
+          dependsOn: 
+          - scanBuildApp
+          condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+          variables:
+          ${{ if eq(location, 'westeurope') }}:
+            - name: secRegionId
+              value: ""
+          jobs:
+          - template: pipeline/deployAzureAppServices.yml@devopsTemplates
+            parameters:
+              ${{ if in(var.key, 'tran', 'dev') }}:
+                serviceConnection: $(devServiceConnection)
+                shaPool: Self-hosted Dev
+                shaCode: d03
+              ${{ elseif eq(var.key, 'pr') }}:
+                serviceConnection: $(prodServiceConnection)
+                shaPool: Self-hosted Prod
+                shaCode: p01
+              ${{ else }}:
+                serviceConnection: $(testServiceConnection)
+                pool: Self-hosted Test
+                selfHostCode: t02
+              devOpsEnv: $(secRegionId)${{var.key}}
+              environmentName: ${{var.key}}
+              applicationShortName: ${{variables.applicationShortName}}
+              applicationFullName: ${{variables.applicationFullName}}
+              releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
+              InfrDeploy: ${{parameters.InfrDeploy}}
+              deploymentLocation: ${{location}}
+              gitCheck: ${{parameters.gitCheck}}
+              tier: presentation
+              tierPlan: prestier-g3
+              shaUse: true
+              slotDeploy: ${{parameters.slotDeploy}}
+              appRepoName: ${{variables.applicationFullName}}
         
-#         - ${{ if and(eq(var.key, 'pr'),eq(location, 'westeurope')) }}:
-#           - stage: branchPrTag
-#             displayName: "GitHub PR & Release Branch Tag"
-#             dependsOn: 
-#             - Deployment_${{var.key}}_${{location}}
-#             jobs:
-#             - template:  pipeline/tagCreation.yml@devopsTemplates
-#               parameters:
-#                 applicationName: ${{variables.applicationFullName}}
+        - ${{ if and(eq(var.key, 'pr'),eq(location, 'westeurope')) }}:
+          - stage: branchPrTag
+            displayName: "GitHub PR & Release Branch Tag"
+            dependsOn: 
+            - Deployment_${{var.key}}_${{location}}
+            jobs:
+            - template:  pipeline/tagCreation.yml@devopsTemplates
+              parameters:
+                applicationName: ${{variables.applicationFullName}}
