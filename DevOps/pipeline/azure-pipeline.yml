@@ -96,6 +96,8 @@ variables:
   value: ${{ or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}
 - name: ContRegServerProd
   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
+- name: environmentId
+  value: d03
 
 
 
@@ -143,16 +145,17 @@ stages:
             ${{ else }}:
               value: $(secondRegionId)
           - name: environmentId
-            ${{ if eq(var.key, 'tran') }}:
-              value: d03
-            ${{ if eq(var.key, 'dev') }}:
-              value: d01
-            ${{ if eq(var.key, 'test') }}:
-              value: t01
-            ${{ if eq(var.key, 'pp') }}:
-              value: t02
-            ${{ if eq(var.key, 'pr') }}:
-              value: p01
+            value: variables['${{var.key}}environmentId']
+            # ${{ if eq(var.key, 'tran') }}:
+            #   value: d03
+            # ${{ if eq(var.key, 'dev') }}:
+            #   value: d01
+            # ${{ if eq(var.key, 'test') }}:
+            #   value: t01
+            # ${{ if eq(var.key, 'pp') }}:
+            #   value: t02
+            # ${{ if eq(var.key, 'pr') }}:
+            #   value: p01
           jobs:
           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
             parameters:
