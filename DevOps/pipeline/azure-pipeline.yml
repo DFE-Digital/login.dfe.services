@@ -145,7 +145,7 @@ stages:
             ${{ else }}:
               value: $(secondRegionId)
           - name: environmentId
-            value: variables['${{var.key}}environmentId']
+            value: ${{ variables['${{var.key}}environmentId']}}
             # ${{ if eq(var.key, 'tran') }}:
             #   value: d03
             # ${{ if eq(var.key, 'dev') }}:
