@@ -137,7 +137,7 @@ stages:
           - scanBuildApp
           condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
           variables:
-            ${{ if eq(location, 'westeurope') }}:
+            - ${{ if eq(location, 'westeurope') }}:
               - name: secRegionId
                 value: ""
           jobs:
