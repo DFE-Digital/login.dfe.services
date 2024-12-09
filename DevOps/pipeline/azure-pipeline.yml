@@ -138,7 +138,7 @@ stages:
           condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
           variables:
             ${{ if eq(location, 'westeurope') }}:
-              secRegionId: ''  
+              secRegionId: ' '
           jobs:
           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
             parameters:
