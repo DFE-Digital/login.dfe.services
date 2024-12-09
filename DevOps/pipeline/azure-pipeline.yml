@@ -138,8 +138,8 @@ stages:
           condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
           variables:
           - ${{ if eq(location, 'westeurope') }}:
-            - name: secRegionId3
-              value: 'test'
+            - name: secRegionId
+              value: ''
           jobs:
           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
             parameters:
@@ -155,7 +155,7 @@ stages:
                 serviceConnection: $(testServiceConnection)
                 shaPool: Self-hosted Test
                 shaCode: t02
-              devOpsEnv: $(secRegionId3)${{var.key}}
+              devOpsEnv: ${{variables.secRegionId}}${{var.key}}
               environmentName: ${{var.key}}
               applicationShortName: ${{variables.applicationShortName}}
               applicationFullName: ${{variables.applicationFullName}}
