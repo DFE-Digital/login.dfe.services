@@ -97,8 +97,6 @@ variables:
   value: ${{ or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}
 - name: ContRegServerProd
   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
-- name: ServConName
-  value: ${{ format('{0}{1}', 'tran', 'ServCon') }}
 
 
 
@@ -127,7 +125,7 @@ stages:
             - $(platformGlobalIdentifier)$(ppShaCode)$(platformGlobalName)shdcr.azurecr.io
           - ${{ if eq(variables.ContRegServerProd, 'true') }}:
             - $(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io
-        nodeVersionSpec: $(${{variables.ServConName}})
+        nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
 
 
@@ -147,14 +145,12 @@ stages:
               value: $(secondRegionId)
           - name: environmentId
             value: $[variables['${{var.key}}EnvId']]
-          - name: ServConName
-            value: ${{ format('{0}{1}', var.key, 'ServCon')}}
           jobs:
           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
             parameters:
-              serviceConnection: ${{variables[variables.ServConName]}}
-              shaPool: $[variables['${{var.key}}ShaPool']]
-              shaCode: $[variables['${{var.key}}ShaCode']]
+              serviceConnection: $(${{format('{0}{1}', var.key, 'ServCon'}})
+              shaPool: $(${{format('{0}{1}', var.key, 'ShaPool'}})
+              shaCode: $(${{format('{0}{1}', var.key, 'ShaCode'}})
               devOpsEnv: ${{variables.secRegionId}}${{var.key}}
               environmentName: ${{var.key}}
               applicationShortName: ${{variables.applicationShortName}}
