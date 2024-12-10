@@ -145,12 +145,10 @@ stages:
               value: $(secondRegionId)
           - name: environmentId
             value: $[variables['${{var.key}}EnvId']]
-          - name: serviceConnection
-            value: ${{variables['${{var.key}}ServiceConnection']}}
           jobs:
           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
             parameters:
-              serviceConnection: $(serviceConnection)
+              serviceConnection: ${{variables['${{var.key}}ServiceConnection']}}
               shaPool: $[variables['${{var.key}}ShaPool']]
               shaCode: $[variables['${{var.key}}ShaCode']]
               devOpsEnv: ${{variables.secRegionId}}${{var.key}}
