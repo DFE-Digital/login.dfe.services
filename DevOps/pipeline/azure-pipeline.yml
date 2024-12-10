@@ -181,7 +181,7 @@ stages:
           #       pm2ProcessFileName: process.json
           #       gitCheck: ${{parameters.gitCheck}}
           
-          - ${{ if and(eq(var.key, 'tran'),eq(location, 'westeurope')) }}:
+          - ${{ if and(eq(var.key, 'dev'),eq(location, 'westeurope')) }}:
             - stage: branchPrTag
               displayName: "GitHub Release Branch Creation"
               # dependsOn: 
