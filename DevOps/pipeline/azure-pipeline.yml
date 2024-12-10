@@ -148,7 +148,7 @@ stages:
           jobs:
           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
             parameters:
-              serviceConnection: $[variables['${{var.key}}ServiceConnection']]
+              serviceConnection: ${{variables['${{var.key}}ServiceConnection']}}
               shaPool: $[variables['${{var.key}}ShaPool']]
               shaCode: $[variables['${{var.key}}ShaCode']]
               devOpsEnv: ${{variables.secRegionId}}${{var.key}}
