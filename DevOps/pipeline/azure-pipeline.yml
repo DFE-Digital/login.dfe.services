@@ -98,7 +98,7 @@ variables:
 - name: ContRegServerProd
   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
 - name: ServConName
-  value: ${ {format('{0}{1}', var.key, 'ServCon') }}
+  value: ${ {format('{0}{1}', tran, 'ServCon') }}
 
 
 
