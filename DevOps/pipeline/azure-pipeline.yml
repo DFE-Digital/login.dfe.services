@@ -72,6 +72,7 @@ parameters:
 
 variables:
 - group: dsi-global
+- group: dsi-envs-list
 - name: applicationShortName
   value: 'svc'
 - name: applicationFullName
@@ -119,11 +120,11 @@ stages:
         custRegAuth: $(custRegAuth)
         ContRegServers:
           - ${{ if eq(variables.ContRegServerDev, 'true') }}:
-            - $(platformGlobalIdentifier)d03$(platformGlobalName)shdcr.azurecr.io
+            - $(platformGlobalIdentifier)$(tranShaCode)$(platformGlobalName)shdcr.azurecr.io
           - ${{ if eq(variables.ContRegServerTest, 'true') }}:
-            - $(platformGlobalIdentifier)t02$(platformGlobalName)shdcr.azurecr.io
+            - $(platformGlobalIdentifier)$(ppShaCode)$(platformGlobalName)shdcr.azurecr.io
           - ${{ if eq(variables.ContRegServerProd, 'true') }}:
-            - $(platformGlobalIdentifier)p01$(platformGlobalName)shdcr.azurecr.io
+            - $(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
 
@@ -144,31 +145,12 @@ stages:
               value: $(secondRegionId)
           - name: environmentId
             value: $[variables['${{var.key}}EnvId']]
-            # ${{ if eq(var.key, 'tran') }}:
-            #   value: d03
-            # ${{ if eq(var.key, 'dev') }}:
-            #   value: d01
-            # ${{ if eq(var.key, 'test') }}:
-            #   value: t01
-            # ${{ if eq(var.key, 'pp') }}:
-            #   value: t02
-            # ${{ if eq(var.key, 'pr') }}:
-            #   value: p01
           jobs:
           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
             parameters:
-              ${{ if in(var.key, 'tran', 'dev') }}:
-                serviceConnection: $(devServiceConnection)
-                shaPool: Self-hosted Dev
-                shaCode: d03
-              ${{ elseif eq(var.key, 'pr') }}:
-                serviceConnection: $(prodServiceConnection)
-                shaPool: Self-hosted Prod
-                shaCode: p01
-              ${{ else }}:
-                serviceConnection: $(testServiceConnection)
-                shaPool: Self-hosted Test
-                shaCode: t02
+              serviceConnection: $[variables['${{var.key}}ServiceConnection']]
+              shaPool: $[variables['${{var.key}}ShaPool']]
+              shaCode: $[variables['${{var.key}}ShaCode']]
               devOpsEnv: ${{variables.secRegionId}}${{var.key}}
               environmentName: ${{var.key}}
               applicationShortName: ${{variables.applicationShortName}}
