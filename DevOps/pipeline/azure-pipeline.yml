@@ -146,7 +146,7 @@ stages:
           - name: environmentId
             value: $[variables['${{var.key}}EnvId']]
           - name: serviceConnection
-            value: $[variables['${{var.key}}ServiceConnection']]
+            value: ${{variables['${{var.key}}ServiceConnection']}}
           jobs:
           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
             parameters:
