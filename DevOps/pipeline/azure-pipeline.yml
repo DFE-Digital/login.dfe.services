@@ -147,12 +147,14 @@ stages:
             value: $[variables['${{var.key}}EnvId']]
           - name: ServConName
             value: ${{ format('{0}{1}', var.key, 'ServCon') }}
+          - name: ShaCodeName
+            value: ${{ format('{0}{1}', var.key, 'ShaCode') }}
           jobs:
           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
             parameters:
               serviceConnection: $(${{variables.ServConName}})
               shaPool: $[variables['${{var.key}}ShaPool']]
-              shaCode: ${{variables['${{var.key}}ShaCode']}}
+              shaCode: $(${{variables.ShaCodeName}})
               devOpsEnv: ${{variables.secRegionId}}${{var.key}}
               environmentName: ${{var.key}}
               applicationShortName: ${{variables.applicationShortName}}
