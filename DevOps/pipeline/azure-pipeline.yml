@@ -127,7 +127,7 @@ stages:
             - $(platformGlobalIdentifier)$(ppShaCode)$(platformGlobalName)shdcr.azurecr.io
           - ${{ if eq(variables.ContRegServerProd, 'true') }}:
             - $(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io
-        nodeVersionSpec: ${{ variables['ServConName'] }}
+        nodeVersionSpec: ${{ variables['variables['ServConName']'] }}
         prMsg: variables['Build.SourceVersionMessage'] 
 
 
@@ -152,7 +152,7 @@ stages:
           jobs:
           - template: pipeline/deployAzureAppServices.yml@devopsTemplates
             parameters:
-              serviceConnection: ${{variables['ServConName']}}
+              serviceConnection: ${{variables['variables['ServConName']']}}
               shaPool: $[variables['${{var.key}}ShaPool']]
               shaCode: $[variables['${{var.key}}ShaCode']]
               devOpsEnv: ${{variables.secRegionId}}${{var.key}}
