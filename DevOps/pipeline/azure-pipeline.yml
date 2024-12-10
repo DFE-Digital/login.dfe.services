@@ -152,7 +152,7 @@ stages:
             parameters:
               serviceConnection: $(${{variables.ServConName}})
               shaPool: $[variables['${{var.key}}ShaPool']]
-              shaCode: $[variables['${{var.key}}ShaCode']]
+              shaCode: ${{variables['${{var.key}}ShaCode']}}
               devOpsEnv: ${{variables.secRegionId}}${{var.key}}
               environmentName: ${{var.key}}
               applicationShortName: ${{variables.applicationShortName}}
