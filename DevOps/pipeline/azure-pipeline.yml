@@ -127,7 +127,7 @@ stages:
             - $(platformGlobalIdentifier)$(ppShaCode)$(platformGlobalName)shdcr.azurecr.io
           - ${{ if eq(variables.ContRegServerProd, 'true') }}:
             - $(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io
-        nodeVersionSpec: ${{ variables[variables.ServConName] }}
+        nodeVersionSpec: ${{ variables['${{variables.ServConName}}'] }}
         prMsg: variables['Build.SourceVersionMessage'] 
 
 
