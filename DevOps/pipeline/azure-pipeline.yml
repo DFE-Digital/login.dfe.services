@@ -119,9 +119,9 @@ stages:
         custRegAuth: $(custRegAuth)
         ContRegServers:
           - ${{ each location in parameters.location }}:
-            - ${{variables['dsi-envs-list'][location]}}
+            - $(${{location}})
             - ${{ each env in split(variables['dsi-envs-list'][location],',') }}:
-              - ${{env}}
+              - $(${{env}})
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
 
