@@ -118,7 +118,8 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         ContRegServers:
-          - ${{ each location in variables['dsi-envs-list'] }}:
+          - ${{ each location in parameters.location }}:
+            - ${{variables['dsi-envs-list'][location]}}
             - ${{ each env in split(variables['dsi-envs-list'][location],',') }}:
               - ${{env}}
         nodeVersionSpec: '18.17.0'
