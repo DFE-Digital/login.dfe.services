@@ -119,7 +119,7 @@ stages:
         custRegAuth: $(custRegAuth)
         ContRegServers:
           - ${{ each location in parameters.location }}:
-            - ${{variables['${{location}}']}}
+            - ${{$(${{location}})}}
             - ${{ each env in split(variables.northeurope,',') }}:
               - ${{env}}
         nodeVersionSpec: '18.17.0'
