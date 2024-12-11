@@ -130,8 +130,8 @@ stages:
 
 
 - ${{ each location in parameters.location }}:
-  - ${{ each var in variables }}:
-      - ${{ if and(or(and(in(var.key, 'tran','pp','pr'),eq(location, 'northeurope')),and(in(var.key, 'tran','dev','test','pp','pr'),eq(location, 'westeurope'))), eq(var.value, 'true')) }}:
+  - ${{ each var in split(${{ variables[location],',') }} }}:
+      - ${{ if eq(variables[var], 'true') }}:
         - stage: Deployment_${{var.key}}_${{location}}
           displayName: "Deployment [${{var.key}}] ${{location}}"
           dependsOn: 
