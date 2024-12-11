@@ -106,30 +106,30 @@ variables:
 
 stages:
 
-# Code Scans & Build the artifact for deployment
-- stage: scanBuildApp
-  displayName: "Scan tools & Build"
-  jobs:
+  # Code Scans & Build the artifact for deployment
+  - stage: scanBuildApp
+    displayName: "Scan tools & Build"
+    jobs:
 
-  - template:  pipeline/scanTools.yml@devopsTemplates
-    parameters:
-      npmInstCmd: 'install --force --json --no-package-lock'
-      AppDeploy: ${{ not(parameters.InfrDeploy) }}
-
-  - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
-    - template: pipeline/buildAzureAppServices.yml@devopsTemplates
+    - template:  pipeline/scanTools.yml@devopsTemplates
       parameters:
-        applicationName: ${{variables.applicationFullName}}
-        custRegAuth: $(custRegAuth)
-        ContRegServers:
-          - ${{ if eq(variables.ContRegServerDev, 'true') }}:
-            - $(platformGlobalIdentifier)$(tranShaCode)$(platformGlobalName)shdcr.azurecr.io
-          - ${{ if eq(variables.ContRegServerTest, 'true') }}:
-            - $(platformGlobalIdentifier)$(ppShaCode)$(platformGlobalName)shdcr.azurecr.io
-          - ${{ if eq(variables.ContRegServerProd, 'true') }}:
-            - $(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io
-        nodeVersionSpec: '18.17.0'
-        prMsg: variables['Build.SourceVersionMessage'] 
+        npmInstCmd: 'install --force --json --no-package-lock'
+        AppDeploy: ${{ not(parameters.InfrDeploy) }}
+
+    - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
+      - template: pipeline/buildAzureAppServices.yml@devopsTemplates
+        parameters:
+          applicationName: ${{variables.applicationFullName}}
+          custRegAuth: $(custRegAuth)
+          ContRegServers:
+            - ${{ if eq(variables.ContRegServerDev, 'true') }}:
+              - $(platformGlobalIdentifier)$(tranShaCode)$(platformGlobalName)shdcr.azurecr.io
+            - ${{ if eq(variables.ContRegServerTest, 'true') }}:
+              - $(platformGlobalIdentifier)$(ppShaCode)$(platformGlobalName)shdcr.azurecr.io
+            - ${{ if eq(variables.ContRegServerProd, 'true') }}:
+              - $(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io
+          nodeVersionSpec: '18.17.0'
+          prMsg: variables['Build.SourceVersionMessage'] 
 
 
   - ${{ each location in parameters.location }}:           
