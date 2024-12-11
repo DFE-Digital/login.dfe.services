@@ -120,7 +120,7 @@ stages:
         ContRegServers:
           - ${{ each location in parameters.location }}:
             - ${{variables['${{location}}']}}
-            - ${{ each env in split(variables['northeurope'],',') }}:
+            - ${{ each env in split(variables.northeurope,',') }}:
               - ${{env}}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
