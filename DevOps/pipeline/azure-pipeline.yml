@@ -124,7 +124,8 @@ stages:
           - ${{ each location in parameters.location }}:
             - ${{location}}
             - ${{each env in split(variables[location],',') }}:
-              - ${{env}}
+              - ${{ if eq(variables[env], 'true') }}:
+                - ${{env}}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
 
