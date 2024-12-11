@@ -119,7 +119,7 @@ stages:
         custRegAuth: $(custRegAuth)
         ContRegServers:
           - ${{ each location in parameters.location }}:
-            - ${{each env in location}}:
+            - ${{each env in $(location)}}:
               - ${{env}}
         nodeVersionSpec: '18.17.0'
         prMsg: variables['Build.SourceVersionMessage'] 
