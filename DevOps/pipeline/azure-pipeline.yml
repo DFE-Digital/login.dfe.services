@@ -120,7 +120,6 @@ stages:
         ContRegServers:
           - ${{ each location in parameters.location }}:
             - $(${{location}})
-            - ${{variables[location]}}
             - ${{ each env in split('$(${{location}})',',') }}:
               - $(${{env}})
         nodeVersionSpec: '18.17.0'
