@@ -1,9 +1,13 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
+const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
+jest.mock("./../../../../src/infrastructure/config", () =>
+  require("./../../../utils/jestMocks").mockConfig(),
+);
+jest.mock("./../../../../src/infrastructure/logger", () =>
+  require("./../../../utils/jestMocks").mockLogger(),
+);
 
-jest.mock('./../../../../src/infrastructure/account', () => ({
+jest.mock("./../../../../src/infrastructure/account", () => ({
   getByEmail: jest.fn(),
   getById: jest.fn(),
   getInvitationByEmail: jest.fn(),
@@ -11,19 +15,19 @@ jest.mock('./../../../../src/infrastructure/account', () => ({
   updateInvite: jest.fn(),
 }));
 
-jest.mock('./../../../../src/infrastructure/search', () => {
+jest.mock("./../../../../src/infrastructure/search", () => {
   return {
     updateIndex: jest.fn(),
   };
 });
-jest.mock('./../../../../src/app/users/utils');
+jest.mock("./../../../../src/app/users/utils");
 
-const Account = require('./../../../../src/infrastructure/account');
-const { updateIndex } = require('./../../../../src/infrastructure/search');
-const logger = require('./../../../../src/infrastructure/logger');
-const config = require('../../../../src/infrastructure/config');
+const Account = require("./../../../../src/infrastructure/account");
+const { updateIndex } = require("./../../../../src/infrastructure/search");
+const logger = require("./../../../../src/infrastructure/logger");
+const config = require("../../../../src/infrastructure/config");
 
-describe('when resending an invitation', () => {
+describe("when resending an invitation", () => {
   let req;
   let res;
 
@@ -32,36 +36,36 @@ describe('when resending an invitation', () => {
   beforeEach(() => {
     req = mockRequest();
     req.params = {
-      uid: 'user1',
-      orgId: 'org1',
-      sid: 'service1',
+      uid: "user1",
+      orgId: "org1",
+      sid: "service1",
     };
     req.session = {
       user: {
-        email: 'test@test.com',
-        firstName: 'test',
-        lastName: 'name',
-        uid: 'userid',
+        email: "test@test.com",
+        firstName: "test",
+        lastName: "name",
+        uid: "userid",
       },
     };
     req.user = {
-      sub: 'user1',
-      email: 'user.one@unit.test',
+      sub: "user1",
+      email: "user.one@unit.test",
       organisations: [
         {
           organisation: {
-            id: 'organisationId',
-            name: 'organisationName',
+            id: "organisationId",
+            name: "organisationName",
           },
           role: {
             id: 0,
-            name: 'category name',
+            name: "category name",
           },
         },
       ],
     };
     req.body = {
-      email: 'johndoe@someschool.com',
+      email: "johndoe@someschool.com",
     };
     res = mockResponse();
 
@@ -69,215 +73,231 @@ describe('when resending an invitation', () => {
     Account.getById.mockReset().mockReturnValue(null);
     Account.getInvitationByEmail.mockReset().mockReturnValue(null);
 
-    postResendInvitation = require('./../../../../src/app/users/resendInvitation').post;
+    postResendInvitation =
+      require("./../../../../src/app/users/resendInvitation").post;
   });
 
-  it('then it should include user details in session', async () => {
+  it("then it should include user details in session", async () => {
     await postResendInvitation(req, res);
 
     expect(req.session.user).not.toBeNull();
-    expect(req.session.user.firstName).toBe('test');
-    expect(req.session.user.lastName).toBe('name');
-    expect(req.session.user.email).toBe('johndoe@someschool.com');
+    expect(req.session.user.firstName).toBe("test");
+    expect(req.session.user.lastName).toBe("name");
+    expect(req.session.user.email).toBe("johndoe@someschool.com");
   });
 
-  it('then it should render view if email not entered', async () => {
-    req.body.email = '';
+  it("then it should render view if email not entered", async () => {
+    req.body.email = "";
 
     await postResendInvitation(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/confirmResendInvitation');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "users/views/confirmResendInvitation",
+    );
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      email: '',
+      csrfToken: "token",
+      email: "",
       user: {
-        name: 'test name',
+        name: "test name",
       },
       backLink: true,
-      currentPage: 'users',
+      currentPage: "users",
       noChangedEmail: false,
-      uid: 'user1',
+      uid: "user1",
       validationMessages: {
-        email: 'Please enter an email address',
+        email: "Please enter an email address",
       },
     });
   });
 
-  it('then it should render view if email not a valid email address', async () => {
-    req.body.email = 'not-an-email';
+  it("then it should render view if email not a valid email address", async () => {
+    req.body.email = "not-an-email";
 
     await postResendInvitation(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/confirmResendInvitation');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "users/views/confirmResendInvitation",
+    );
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      email: 'not-an-email',
+      csrfToken: "token",
+      email: "not-an-email",
       user: {
-        name: 'test name',
+        name: "test name",
       },
       backLink: true,
-      currentPage: 'users',
+      currentPage: "users",
       noChangedEmail: false,
-      uid: 'user1',
+      uid: "user1",
       validationMessages: {
-        email: 'Please enter a valid email address',
+        email: "Please enter a valid email address",
       },
     });
   });
 
-  it('then it should render view if email is a blacklisted email and environment is Production', async () => {
-    req.body.email = 'blacklisted.domain@hotmail.com';
+  it("then it should render view if email is a blacklisted email and environment is Production", async () => {
+    req.body.email = "blacklisted.domain@hotmail.com";
 
     await postResendInvitation(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/confirmResendInvitation');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "users/views/confirmResendInvitation",
+    );
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      email: 'blacklisted.domain@hotmail.com',
+      csrfToken: "token",
+      email: "blacklisted.domain@hotmail.com",
       user: {
-        name: 'test name',
+        name: "test name",
       },
       backLink: true,
-      currentPage: 'users',
+      currentPage: "users",
       noChangedEmail: false,
-      uid: 'user1',
+      uid: "user1",
       validationMessages: {
-        email: 'This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.',
+        email:
+          "This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.",
       },
     });
   });
 
-  it('then it should render view if email is a blacklisted email and environment is other than Production', async () => {
-    req.body.email = 'blacklisted.domain@hotmail.com';
-    config.toggles.environmentName = 'dev';
+  it("then it should render view if email is a blacklisted email and environment is other than Production", async () => {
+    req.body.email = "blacklisted.domain@hotmail.com";
+    config.toggles.environmentName = "dev";
 
     await postResendInvitation(req, res);
 
     expect(res.render.mock.calls).toHaveLength(0);
   });
 
-  it('then it should render view if email already associated to a user', async () => {
+  it("then it should render view if email already associated to a user", async () => {
     Account.getById.mockReturnValue({
       claims: {
-        sub: 'user1',
+        sub: "user1",
       },
     });
     Account.getByEmail.mockReturnValue({
       claims: {
-        sub: 'user1',
+        sub: "user1",
       },
     });
 
     await postResendInvitation(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/confirmResendInvitation');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "users/views/confirmResendInvitation",
+    );
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      email: 'johndoe@someschool.com',
+      csrfToken: "token",
+      email: "johndoe@someschool.com",
       user: {
-        name: 'test name',
+        name: "test name",
       },
       backLink: true,
-      currentPage: 'users',
+      currentPage: "users",
       noChangedEmail: false,
-      uid: 'user1',
+      uid: "user1",
       validationMessages: {
-        email: 'A DfE Sign-in user already exists with that email address',
+        email: "A DfE Sign-in user already exists with that email address",
       },
     });
   });
 
-  it('then it should render view if email already associated to a invitation', async () => {
+  it("then it should render view if email already associated to a invitation", async () => {
     Account.getInvitationByEmail.mockReturnValue({
-      id: 'inv1',
+      id: "inv1",
     });
 
     await postResendInvitation(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/confirmResendInvitation');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "users/views/confirmResendInvitation",
+    );
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      email: 'johndoe@someschool.com',
+      csrfToken: "token",
+      email: "johndoe@someschool.com",
       user: {
-        name: 'test name',
+        name: "test name",
       },
       backLink: true,
-      currentPage: 'users',
+      currentPage: "users",
       noChangedEmail: false,
-      uid: 'user1',
+      uid: "user1",
       validationMessages: {
-        email: 'A DfE Sign-in user already exists with that email address',
+        email: "A DfE Sign-in user already exists with that email address",
       },
     });
   });
 
-  it('then it should update invite with new email if email changed', async () => {
-    req.params.uid = 'inv-user1';
+  it("then it should update invite with new email if email changed", async () => {
+    req.params.uid = "inv-user1";
 
     await postResendInvitation(req, res);
 
     expect(Account.updateInvite.mock.calls).toHaveLength(1);
-    expect(Account.updateInvite.mock.calls[0][0]).toBe('user1');
-    expect(Account.updateInvite.mock.calls[0][1]).toBe('johndoe@someschool.com');
+    expect(Account.updateInvite.mock.calls[0][0]).toBe("user1");
+    expect(Account.updateInvite.mock.calls[0][1]).toBe(
+      "johndoe@someschool.com",
+    );
   });
 
-  it('then it should update the search index with the new email if email changed', async () => {
+  it("then it should update the search index with the new email if email changed", async () => {
     await postResendInvitation(req, res);
     expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toBe('user1');
+    expect(updateIndex.mock.calls[0][0]).toBe("user1");
     expect(updateIndex.mock.calls[0][1]).toEqual(null);
-    expect(updateIndex.mock.calls[0][2]).toEqual('johndoe@someschool.com');
+    expect(updateIndex.mock.calls[0][2]).toEqual("johndoe@someschool.com");
     expect(updateIndex.mock.calls[0][3]).toEqual(null);
-    expect(updateIndex.mock.calls[0][4]).toEqual('correlationId');
+    expect(updateIndex.mock.calls[0][4]).toEqual("correlationId");
   });
 
-  it('then it should resend invite if email not changed', async () => {
-    req.params.uid = 'inv-user1';
-    req.body.email = 'test@test.com';
+  it("then it should resend invite if email not changed", async () => {
+    req.params.uid = "inv-user1";
+    req.body.email = "test@test.com";
     await postResendInvitation(req, res);
 
     expect(Account.resendInvitation.mock.calls).toHaveLength(1);
-    expect(Account.resendInvitation.mock.calls[0][0]).toBe('user1');
+    expect(Account.resendInvitation.mock.calls[0][0]).toBe("user1");
   });
 
-  it('then it should should audit resent invitation', async () => {
+  it("then it should should audit resent invitation", async () => {
     await postResendInvitation(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      'user.one@unit.test (id: user1) resent invitation email to johndoe@someschool.com (id: userid)',
+      "user.one@unit.test (id: user1) resent invitation email to johndoe@someschool.com (id: userid)",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
-      type: 'approver',
-      subType: 'resent-invitation',
-      userId: 'user1',
-      userEmail: 'user.one@unit.test',
-      invitedUser: 'userid',
-      invitedUserEmail: 'johndoe@someschool.com',
+      type: "approver",
+      subType: "resent-invitation",
+      userId: "user1",
+      userEmail: "user.one@unit.test",
+      invitedUser: "userid",
+      invitedUserEmail: "johndoe@someschool.com",
     });
   });
 
-  it('then it should redirect to user details', async () => {
+  it("then it should redirect to user details", async () => {
     await postResendInvitation(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe(`/approvals/users`);
   });
 
-  it('then a flash message is shown to the user', async () => {
+  it("then a flash message is shown to the user", async () => {
     await postResendInvitation(req, res);
 
     expect(res.flash.mock.calls).toHaveLength(3);
-    expect(res.flash.mock.calls[0][0]).toBe('title');
+    expect(res.flash.mock.calls[0][0]).toBe("title");
     expect(res.flash.mock.calls[0][1]).toBe(`Success`);
     expect(res.flash.mock.calls[1][0]).toBe(`heading`);
     expect(res.flash.mock.calls[1][1]).toBe(`Invitation email sent`);
     expect(res.flash.mock.calls[2][0]).toBe(`message`);
-    expect(res.flash.mock.calls[2][1]).toBe(`Invitation email sent to: ${req.body.email}`);
+    expect(res.flash.mock.calls[2][1]).toBe(
+      `Invitation email sent to: ${req.body.email}`,
+    );
   });
 });

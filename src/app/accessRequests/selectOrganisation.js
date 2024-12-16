@@ -1,5 +1,5 @@
-'use strict';
-const { getApproverOrgsFromReq } = require('../users/utils');
+"use strict";
+const { getApproverOrgsFromReq } = require("../users/utils");
 
 const getNaturalIdentifiers = async (req) => {
   req.userOrganisations = getApproverOrgsFromReq(req);
@@ -32,7 +32,10 @@ const mapOrganisationsWithRequest = async (req) => {
     );
     for (let i = 0; i < orgsWithRequests.length; i++) {
       const org = orgsWithRequests[i];
-      org.requestCount = req.organisationRequests.reduce((a, c) => (c.org_id === org.organisation.id ? ++a : a), 0);
+      org.requestCount = req.organisationRequests.reduce(
+        (a, c) => (c.org_id === org.organisation.id ? ++a : a),
+        0,
+      );
     }
   } else {
     orgsWithRequests = req.userOrganisations;
@@ -43,14 +46,14 @@ const mapOrganisationsWithRequest = async (req) => {
 const get = async (req, res) => {
   const orgs = await mapOrganisationsWithRequest(req);
 
-  return res.render('accessRequests/views/selectOrganisation', {
+  return res.render("accessRequests/views/selectOrganisation", {
     csrfToken: req.csrfToken(),
-    title: 'Select Organisation - DfE Sign-in',
+    title: "Select Organisation - DfE Sign-in",
     organisations: orgs,
     selectedOrganisation: null,
     backLink: true,
     validationMessages: {},
-    currentPage: 'requests',
+    currentPage: "requests",
   });
 };
 
@@ -58,14 +61,16 @@ const post = async (req, res) => {
   const selectedOrg = req.body.selectedOrganisation;
   if (selectedOrg === undefined || selectedOrg === null) {
     const orgs = await mapOrganisationsWithRequest(req);
-    return res.render('accessRequests/views/selectOrganisation', {
+    return res.render("accessRequests/views/selectOrganisation", {
       csrfToken: req.csrfToken(),
-      title: 'Select Organisation - DfE Sign-in',
+      title: "Select Organisation - DfE Sign-in",
       organisations: orgs,
       selectedOrganisation: selectedOrg,
       backLink: true,
-      validationMessages: { selectedOrganisation: 'An organisation must be selected' },
-      currentPage: 'requests',
+      validationMessages: {
+        selectedOrganisation: "An organisation must be selected",
+      },
+      currentPage: "requests",
     });
   }
   return res.redirect(`/access-requests/requests`);

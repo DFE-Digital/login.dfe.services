@@ -1,6 +1,6 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
+const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 
-describe('when posting the existing user view', () => {
+describe("when posting the existing user view", () => {
   let req;
   let res;
 
@@ -9,30 +9,30 @@ describe('when posting the existing user view', () => {
   beforeEach(() => {
     req = mockRequest();
     req.params = {
-      uid: 'user1',
-      orgId: 'org1',
-      sid: 'service1',
+      uid: "user1",
+      orgId: "org1",
+      sid: "service1",
     };
     req.session = {
       user: {
-        email: 'test@test.com',
-        firstName: 'test',
-        lastName: 'name',
-        uid: 'userid',
+        email: "test@test.com",
+        firstName: "test",
+        lastName: "name",
+        uid: "userid",
       },
     };
     req.user = {
-      sub: 'user1',
-      email: 'user.one@unit.test',
+      sub: "user1",
+      email: "user.one@unit.test",
       organisations: [
         {
           organisation: {
-            id: 'organisationId',
-            name: 'organisationName',
+            id: "organisationId",
+            name: "organisationName",
           },
           role: {
             id: 0,
-            name: 'category name',
+            name: "category name",
           },
         },
       ],
@@ -40,21 +40,22 @@ describe('when posting the existing user view', () => {
     req.userOrganisations = [
       {
         organisation: {
-          id: 'organisationId',
-          name: 'organisationName',
+          id: "organisationId",
+          name: "organisationName",
         },
         role: {
           id: 0,
-          name: 'category name',
+          name: "category name",
         },
       },
     ];
     res = mockResponse();
 
-    postConfirmExistingUser = require('./../../../../src/app/users/confirmExistingUser').post;
+    postConfirmExistingUser =
+      require("./../../../../src/app/users/confirmExistingUser").post;
   });
 
-  it('then it should redirect to organisation permissions', async () => {
+  it("then it should redirect to organisation permissions", async () => {
     await postConfirmExistingUser(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
@@ -63,8 +64,8 @@ describe('when posting the existing user view', () => {
     );
   });
 
-  it('then it should redirect to confirm details', async () => {
-    req.query.review = 'true';
+  it("then it should redirect to confirm details", async () => {
+    req.query.review = "true";
     await postConfirmExistingUser(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);

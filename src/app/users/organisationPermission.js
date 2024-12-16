@@ -11,9 +11,13 @@ const buildBackLink = (req) => {
 const buildRedirectLink = (req) => {
   if (req.session.user.isInvite) {
     if (req.params.uid) {
-      req.query.review ? (continueRedirect = 'confirm-details') : (continueRedirect = 'associate-services');
+      req.query.review
+        ? (continueRedirect = "confirm-details")
+        : (continueRedirect = "associate-services");
     } else {
-      req.query.review ? (continueRedirect = 'confirm-new-user') : (continueRedirect = 'associate-services');
+      req.query.review
+        ? (continueRedirect = "confirm-new-user")
+        : (continueRedirect = "associate-services");
     }
     return continueRedirect;
   }
@@ -21,18 +25,20 @@ const buildRedirectLink = (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/approvals/users');
+    return res.redirect("/approvals/users");
   }
-  const { organisation } = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
+  const { organisation } = req.userOrganisations.find(
+    (x) => x.organisation.id === req.params.orgId,
+  );
 
-  return res.render('users/views/organisationPermission', {
+  return res.render("users/views/organisationPermission", {
     csrfToken: req.csrfToken(),
     backLink: buildBackLink(req),
     user: `${req.session.user.firstName} ${req.session.user.lastName}`,
     organisation,
     selectedLevel: req.session.user.permission || 0,
     validationMessages: {},
-    currentPage: 'users',
+    currentPage: "users",
   });
 };
 
@@ -45,26 +51,28 @@ const validate = async (req) => {
     user: `${req.session.user.firstName} ${req.session.user.lastName}`,
     selectedLevel: isNaN(level) ? undefined : level,
     validationMessages: {},
-    currentPage: 'users',
+    currentPage: "users",
   };
 
   if (model.selectedLevel === undefined || model.selectedLevel === null) {
-    model.validationMessages.selectedLevel = 'Please select a permission level';
-  } else if (validPermissionLevels.find((x) => x === model.selectedLevel) === undefined) {
-    model.validationMessages.selectedLevel = 'Please select a permission level';
+    model.validationMessages.selectedLevel = "Please select a permission level";
+  } else if (
+    validPermissionLevels.find((x) => x === model.selectedLevel) === undefined
+  ) {
+    model.validationMessages.selectedLevel = "Please select a permission level";
   }
   return model;
 };
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/approvals/users');
+    return res.redirect("/approvals/users");
   }
   const model = await validate(req);
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return res.render('users/views/organisationPermission', model);
+    return res.render("users/views/organisationPermission", model);
   }
   req.session.user.permission = model.selectedLevel;
   const redirectLink = buildRedirectLink(req);

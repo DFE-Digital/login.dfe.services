@@ -1,17 +1,23 @@
-'use strict';
-const config = require('../../infrastructure/config');
-const { getAllServicesForUserInOrg } = require('../users/utils');
-const PolicyEngine = require('login.dfe.policy-engine');
-const { getOrganisationAndServiceForUserV2 } = require('../../infrastructure/organisations');
-const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
-const { recordRequestServiceBannerAck } = require('../../infrastructure/helpers/common');
-const { actions } = require('../constans/actions');
-const { checkForActiveRequests } = require('./utils');
+"use strict";
+const config = require("../../infrastructure/config");
+const { getAllServicesForUserInOrg } = require("../users/utils");
+const PolicyEngine = require("login.dfe.policy-engine");
+const {
+  getOrganisationAndServiceForUserV2,
+} = require("../../infrastructure/organisations");
+const {
+  checkCacheForAllServices,
+} = require("../../infrastructure/helpers/allServicesAppCache");
+const {
+  recordRequestServiceBannerAck,
+} = require("../../infrastructure/helpers/common");
+const { actions } = require("../constans/actions");
+const { checkForActiveRequests } = require("./utils");
 
 const policyEngine = new PolicyEngine(config);
 
 const renderAssociateServicesPage = (_req, res, model) => {
-  return res.render('requestService/views/requestService', model);
+  return res.render("requestService/views/requestService", model);
 };
 
 const buildBackLink = (req) => {
@@ -19,7 +25,7 @@ const buildBackLink = (req) => {
   if (req.session.user) {
     const orgCount = req.session.user.orgCount;
     if (orgCount === 1) {
-      backRedirect = '/my-services';
+      backRedirect = "/my-services";
     }
   }
   return backRedirect;
@@ -30,19 +36,32 @@ const getAllAvailableServices = async (req) => {
   let externalServices = allServices.services.filter(
     (x) =>
       x.isExternalService === true &&
-      !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideApprover === 'true'),
+      !(
+        x.relyingParty &&
+        x.relyingParty.params &&
+        x.relyingParty.params.hideApprover === "true"
+      ),
   );
   if (req.params.uid) {
-    const allUserServicesInOrg = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
-    externalServices = externalServices.filter((ex) => !allUserServicesInOrg.find((as) => as.id === ex.id));
+    const allUserServicesInOrg = await getAllServicesForUserInOrg(
+      req.params.uid,
+      req.params.orgId,
+      req.id,
+    );
+    externalServices = externalServices.filter(
+      (ex) => !allUserServicesInOrg.find((as) => as.id === ex.id),
+    );
   }
   const servicesNotAvailableThroughPolicies = [];
   const userOrganisations =
-    req.params.uid && !req.params.uid.startsWith('inv-')
+    req.params.uid && !req.params.uid.startsWith("inv-")
       ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
       : undefined;
   const userAccessToSpecifiedOrganisation = userOrganisations
-    ? userOrganisations.find((x) => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase())
+    ? userOrganisations.find(
+        (x) =>
+          x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase(),
+      )
     : undefined;
   for (let i = 0; i < externalServices.length; i++) {
     const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
@@ -55,7 +74,9 @@ const getAllAvailableServices = async (req) => {
       servicesNotAvailableThroughPolicies.push(externalServices[i].id);
     }
   }
-  return externalServices.filter((x) => !servicesNotAvailableThroughPolicies.find((y) => x.id === y));
+  return externalServices.filter(
+    (x) => !servicesNotAvailableThroughPolicies.find((y) => x.id === y),
+  );
 };
 
 const get = async (req, res) => {
@@ -66,17 +87,21 @@ const get = async (req, res) => {
   //Recording request-a-service banner acknowledgement by end-user
   await recordRequestServiceBannerAck(req.session.user.uid);
 
-  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
+  const organisationDetails = req.userOrganisations.find(
+    (x) => x.organisation.id === req.params.orgId,
+  );
 
   const externalServices = await getAllAvailableServices(req);
 
   const model = {
     csrfToken: req.csrfToken(),
-    name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
+    name: req.session.user
+      ? `${req.session.user.firstName} ${req.session.user.lastName}`
+      : "",
     user: req.session.user,
     validationMessages: {},
     backLink: buildBackLink(req),
-    currentPage: 'services',
+    currentPage: "services",
     organisationDetails,
     services: externalServices,
     selectedServices: req.session.user.services || [],
@@ -87,7 +112,9 @@ const get = async (req, res) => {
 };
 
 const validate = async (req) => {
-  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
+  const organisationDetails = req.userOrganisations.find(
+    (x) => x.organisation.id === req.params.orgId,
+  );
   const externalServices = await getAllAvailableServices(req);
   // TODO make selectedServices non array (selectedService) and refactor all code related to array in this file and in the EJS template
   let selectedServices = [];
@@ -97,10 +124,12 @@ const validate = async (req) => {
     selectedServices = [req.body.service];
   }
   const model = {
-    name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
+    name: req.session.user
+      ? `${req.session.user.firstName} ${req.session.user.lastName}`
+      : "",
     user: req.session.user,
     backLink: buildBackLink(req),
-    currentPage: 'services',
+    currentPage: "services",
     organisationDetails,
     services: externalServices,
     selectedServices,
@@ -108,56 +137,69 @@ const validate = async (req) => {
     validationMessages: {},
   };
   if (model.selectedServices.length < 1) {
-    model.validationMessages.services = 'Select a service to continue';
+    model.validationMessages.services = "Select a service to continue";
   }
   if (
     model.selectedServices &&
-    model.selectedServices.filter((sid) => !externalServices.find((s) => s.id.toLowerCase() === sid.toLowerCase()))
-      .length > 0
+    model.selectedServices.filter(
+      (sid) =>
+        !externalServices.find((s) => s.id.toLowerCase() === sid.toLowerCase()),
+    ).length > 0
   ) {
-    model.validationMessages.services = 'A service was selected that is no longer available';
+    model.validationMessages.services =
+      "A service was selected that is no longer available";
   }
   return model;
 };
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/my-services');
+    return res.redirect("/my-services");
   }
 
   let selectServiceID = req.body.service;
-  let orgdetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
+  let orgdetails = req.userOrganisations.find(
+    (x) => x.organisation.id === req.params.orgId,
+  );
   let isRequests = await checkForActiveRequests(
     orgdetails,
     selectServiceID,
     req.params.orgId,
     req.session.user.uid,
     req.id,
-    'service',
+    "service",
   );
   if (isRequests !== undefined) {
     const allServices = await checkCacheForAllServices(req.id);
-    const serviceDetails = allServices.services.find((x) => x.id === selectServiceID);
+    const serviceDetails = allServices.services.find(
+      (x) => x.id === selectServiceID,
+    );
     const place = config.hostingEnvironment.helpUrl;
     if (!Array.isArray(isRequests)) {
       res.csrfToken = req.csrfToken();
-      res.flash('title', `Important`);
-      res.flash('heading', `Service already requested: ${serviceDetails.name}`);
+      res.flash("title", `Important`);
+      res.flash("heading", `Service already requested: ${serviceDetails.name}`);
       res.flash(
-        'message',
+        "message",
         `Your request has been sent to Approvers at ${orgdetails.organisation.name} on ${new Date(
           isRequests,
         ).toLocaleDateString(
-          'EN-GB',
+          "EN-GB",
         )}. <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
       );
     } else {
       res.csrfToken = req.csrfToken();
-      res.flash('title', `Important`);
-      res.flash('heading', `Your request cannot be completed as you have no approvers at this organisation`);
-      res.flash('message', `Please <a href='${place}/contact-us'>Contact us</a> for help.`);
+      res.flash("title", `Important`);
+      res.flash(
+        "heading",
+        `Your request cannot be completed as you have no approvers at this organisation`,
+      );
+      res.flash(
+        "message",
+        `Please <a href='${place}/contact-us'>Contact us</a> for help.`,
+      );
     }
-    return res.redirect('/my-services');
+    return res.redirect("/my-services");
   }
   const model = await validate(req);
 

@@ -1,20 +1,22 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
+const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
+jest.mock("./../../../../src/infrastructure/config", () =>
+  require("./../../../utils/jestMocks").mockConfig(),
+);
 
-jest.mock('login.dfe.dao', () => {
+jest.mock("login.dfe.dao", () => {
   return {
     directories: {
       fetchUserBanners: async (_userId, _bannerId) => {
-        return null
+        return null;
       },
       createUserBanners: async (_userId, _bannerId) => {
-        return Promise.resolve(true)
-      }
-    }
+        return Promise.resolve(true);
+      },
+    },
   };
 });
 
-describe('when displaying the multiple organisation selection', () => {
+describe("when displaying the multiple organisation selection", () => {
   let req;
   let res;
 
@@ -23,17 +25,17 @@ describe('when displaying the multiple organisation selection', () => {
   beforeEach(() => {
     req = mockRequest();
     req.user = {
-      sub: 'user1',
-      email: 'user.one@unit.test',
+      sub: "user1",
+      email: "user.one@unit.test",
       organisations: [
         {
           organisation: {
-            id: 'organisationId',
-            name: 'organisationName',
+            id: "organisationId",
+            name: "organisationName",
           },
           role: {
             id: 0,
-            name: 'category name',
+            name: "category name",
           },
         },
       ],
@@ -41,12 +43,12 @@ describe('when displaying the multiple organisation selection', () => {
     req.userOrganisations = [
       {
         organisation: {
-          id: 'organisationId',
-          name: 'organisationName',
+          id: "organisationId",
+          name: "organisationName",
         },
         role: {
           id: 0,
-          name: 'category name',
+          name: "category name",
         },
       },
     ];
@@ -55,21 +57,24 @@ describe('when displaying the multiple organisation selection', () => {
     };
     res = mockResponse();
 
-    getMultipleOrgSelection = require('./../../../../src/app/users/selectOrganisation').get;
+    getMultipleOrgSelection =
+      require("./../../../../src/app/users/selectOrganisation").get;
   });
 
-  it('then it should return the multiple orgs view', async () => {
+  it("then it should return the multiple orgs view", async () => {
     await getMultipleOrgSelection(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/selectOrganisationRedesigned');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "users/views/selectOrganisationRedesigned",
+    );
   });
 
-  it('then it should include csrf token in model', async () => {
+  it("then it should include csrf token in model", async () => {
     await getMultipleOrgSelection(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      csrfToken: 'token',
+      csrfToken: "token",
     });
   });
 });

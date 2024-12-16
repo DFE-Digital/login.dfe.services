@@ -1,15 +1,15 @@
-'use strict';
+"use strict";
 
 const {
   getOrganisationAndServiceForUser,
   getPendingRequestsAssociatedWithUser,
   getAllRequestsTypesForApprover,
-} = require('./../../infrastructure/organisations');
-const Account = require('./../../infrastructure/account');
-const flatten = require('lodash/flatten');
-const uniq = require('lodash/uniq');
-const sortBy = require('lodash/sortBy');
-const config = require('./../../infrastructure/config');
+} = require("./../../infrastructure/organisations");
+const Account = require("./../../infrastructure/account");
+const flatten = require("lodash/flatten");
+const uniq = require("lodash/uniq");
+const sortBy = require("lodash/sortBy");
+const config = require("./../../infrastructure/config");
 
 const getApproversDetails = async (organisations) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
@@ -22,13 +22,19 @@ const getApproversDetails = async (organisations) => {
 };
 
 const getAndMapOrganisationsAndServices = async (account, correlationId) => {
-  const organisations = await getOrganisationAndServiceForUser(account.id, correlationId);
+  const organisations = await getOrganisationAndServiceForUser(
+    account.id,
+    correlationId,
+  );
   const allApprovers = await getApproversDetails(organisations, correlationId);
 
   return organisations.map((organisation) => {
     const approvers = organisation.approvers
       .map((approverId) => {
-        return allApprovers.find((x) => x.claims.sub.toLowerCase() === approverId.user_id.toLowerCase());
+        return allApprovers.find(
+          (x) =>
+            x.claims.sub.toLowerCase() === approverId.user_id.toLowerCase(),
+        );
       })
       .filter((x) => x);
 
@@ -48,7 +54,10 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
 };
 
 const getAndMapPendingRequests = async (account, correlationId) => {
-  const pendingUserRequests = await getPendingRequestsAssociatedWithUser(account.id, correlationId);
+  const pendingUserRequests = await getPendingRequestsAssociatedWithUser(
+    account.id,
+    correlationId,
+  );
   return pendingUserRequests.map((org) => ({
     id: org.org_id,
     name: org.org_name,
@@ -77,20 +86,29 @@ const disableRequestOrgLink = async (orgRequests, organisations) => {
 
 const organisations = async (req, res) => {
   const account = Account.fromContext(req.user);
-  const organisations = await getAndMapOrganisationsAndServices(account, req.id);
+  const organisations = await getAndMapOrganisationsAndServices(
+    account,
+    req.id,
+  );
   const organisationRequests = await getAndMapPendingRequests(account, req.id);
   const allOrgs = organisations.concat(organisationRequests);
-  const sortedOrgs = sortBy(allOrgs, 'name');
+  const sortedOrgs = sortBy(allOrgs, "name");
   const approverRequests = req.organisationRequests || [];
-  const disableReqOrgLink = await disableRequestOrgLink(organisationRequests, organisations);
-  const { totalNumberOfRecords } = await getAllRequestsTypesForApprover(req.user.sub, req.id);
+  const disableReqOrgLink = await disableRequestOrgLink(
+    organisationRequests,
+    organisations,
+  );
+  const { totalNumberOfRecords } = await getAllRequestsTypesForApprover(
+    req.user.sub,
+    req.id,
+  );
   const totalNumberOfAccessRequests = totalNumberOfRecords;
 
-  return res.render('organisations/views/organisations', {
-    title: 'Organisations',
+  return res.render("organisations/views/organisations", {
+    title: "Organisations",
     user: account,
     organisations: sortedOrgs,
-    currentPage: 'organisations',
+    currentPage: "organisations",
     approverRequests,
     disableReqOrgLink,
     totalNumberOfAccessRequests,

@@ -1,7 +1,11 @@
-'use strict';
+"use strict";
 
-const { services, organisation } = require('login.dfe.dao');
-const { getOrgNaturalIdentifiers, isRemoveService, isOrgEndUser } = require('./utils');
+const { services, organisation } = require("login.dfe.dao");
+const {
+  getOrgNaturalIdentifiers,
+  isRemoveService,
+  isOrgEndUser,
+} = require("./utils");
 
 const buildAdditionalOrgDetails = (serviceOrganisations) => {
   for (const serviceOrg of serviceOrganisations) {
@@ -16,13 +20,13 @@ const buildAdditionalOrgDetails = (serviceOrganisations) => {
 
 const buildPageTitle = (req) => {
   if (isRemoveService(req)) {
-    return 'Remove which service?';
+    return "Remove which service?";
   }
-  return 'Which service do you want to view or edit?';
+  return "Which service do you want to view or edit?";
 };
 
 const renderSelectServiceWithOrganisationPage = (req, res, model) => {
-  res.render('users/views/selectServiceWithOrganisation', model);
+  res.render("users/views/selectServiceWithOrganisation", model);
 };
 
 const buildRedirectURL = (req, serviceOrgDetails) => {
@@ -34,14 +38,16 @@ const buildRedirectURL = (req, serviceOrgDetails) => {
   } else {
     redirectURL = `/approvals/${serviceOrgDetails.Organisation.id}/users/${req.user.sub}/services/${serviceOrgDetails.Service.id}`;
     if (isRemoveService(req)) {
-      redirectURL += '/remove-service';
+      redirectURL += "/remove-service";
     }
   }
   return redirectURL;
 };
 
 const filterHiddenOrganisations = (serviceOrganisations) => {
-  return serviceOrganisations.filter((serviceOrg) => serviceOrg.Organisation.Status !== 0);
+  return serviceOrganisations.filter(
+    (serviceOrg) => serviceOrg.Organisation.Status !== 0,
+  );
 };
 
 const listVisibleServiceOrganisations = async (req) => {
@@ -50,13 +56,16 @@ const listVisibleServiceOrganisations = async (req) => {
     const filterByApproverRole = isRemoveRequest ? true : false;
 
     // get visible service for all orgs for this user: checking isExternalService, hideApprover
-    const allServiceOrganisations = await services.getFilteredUserServicesWithOrganisation(
-      req.user.sub,
-      filterByApproverRole,
-    );
+    const allServiceOrganisations =
+      await services.getFilteredUserServicesWithOrganisation(
+        req.user.sub,
+        filterByApproverRole,
+      );
 
     // filter services associated with hidden oranisations (ID only services)
-    const serviceOrganisations = filterHiddenOrganisations(allServiceOrganisations);
+    const serviceOrganisations = filterHiddenOrganisations(
+      allServiceOrganisations,
+    );
     return buildAdditionalOrgDetails(serviceOrganisations);
   } catch (error) {
     throw new Error(error);
@@ -70,10 +79,12 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     title: buildPageTitle(req),
     serviceOrganisations,
-    currentPage: 'services',
-    selectedServiceOrganisation: req.session.user ? req.session.user.serviceOrganisation : null,
+    currentPage: "services",
+    selectedServiceOrganisation: req.session.user
+      ? req.session.user.serviceOrganisation
+      : null,
     validationMessages: {},
-    backLink: '/my-services',
+    backLink: "/my-services",
     action: req.query.action,
   };
 
@@ -84,15 +95,18 @@ const validate = (req) => {
   const selectedServiceOrganisation = req.body.selectedServiceOrganisation;
   const model = {
     title: buildPageTitle(req),
-    currentPage: 'services',
+    currentPage: "services",
     selectedServiceOrganisation,
     validationMessages: {},
-    backLink: '/my-services',
+    backLink: "/my-services",
     action: req.query.action,
   };
 
-  if (model.selectedServiceOrganisation === undefined || model.selectedServiceOrganisation === null) {
-    model.validationMessages.serviceOrganisation = 'Please select a service';
+  if (
+    model.selectedServiceOrganisation === undefined ||
+    model.selectedServiceOrganisation === null
+  ) {
+    model.validationMessages.serviceOrganisation = "Please select a service";
   }
   return model;
 };

@@ -1,29 +1,29 @@
-const { getAndMapOrgRequest } = require('./utils');
-const { updateRequestById } = require('./../../infrastructure/organisations');
-const logger = require('./../../infrastructure/logger');
-const config = require('./../../infrastructure/config');
-const { NotificationClient } = require('login.dfe.jobs-client');
+const { getAndMapOrgRequest } = require("./utils");
+const { updateRequestById } = require("./../../infrastructure/organisations");
+const logger = require("./../../infrastructure/logger");
+const config = require("./../../infrastructure/config");
+const { NotificationClient } = require("login.dfe.jobs-client");
 
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,
 });
 
 const get = async (req, res) => {
-  return res.render('accessRequests/views/rejectOrganisationRequest', {
+  return res.render("accessRequests/views/rejectOrganisationRequest", {
     csrfToken: req.csrfToken(),
-    title: 'Reason for rejection - DfE Sign-in',
+    title: "Reason for rejection - DfE Sign-in",
     backLink: `/access-requests/organisation-requests/${req.params.rid}`,
     cancelLink: `/access-requests/requests`,
-    reason: '',
+    reason: "",
     validationMessages: {},
-    currentPage: 'requests',
+    currentPage: "requests",
   });
 };
 
 const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const model = {
-    title: 'Reason for rejection - DfE Sign-in',
+    title: "Reason for rejection - DfE Sign-in",
     backLink: `/access-requests/organisation-requests/${req.params.rid}`,
     cancelLink: `/access-requests/requests`,
     reason: req.body.reason,
@@ -31,7 +31,8 @@ const validate = async (req) => {
     validationMessages: {},
   };
   if (model.reason.length > 1000) {
-    model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
+    model.validationMessages.reason =
+      "Reason cannot be longer than 1000 characters";
   } else if (model.request.approverEmail) {
     model.validationMessages.reason = `Request already actioned by ${model.request.approverEmail}`;
   }
@@ -43,12 +44,19 @@ const post = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return res.render('accessRequests/views/rejectOrganisationRequest', model);
+    return res.render("accessRequests/views/rejectOrganisationRequest", model);
   }
 
   // patch request with rejection
   const actionedDate = Date.now();
-  await updateRequestById(model.request.id, -1, req.user.sub, model.reason, actionedDate, req.id);
+  await updateRequestById(
+    model.request.id,
+    -1,
+    req.user.sub,
+    model.reason,
+    actionedDate,
+    req.id,
+  );
 
   //send rejected email
   await notificationClient.sendAccessRequest(
@@ -61,20 +69,23 @@ const post = async (req, res) => {
 
   //audit organisation rejected
   logger.audit({
-    type: 'approver',
-    subType: 'rejected-org',
+    type: "approver",
+    subType: "rejected-org",
     userId: req.user.sub,
     editedUser: model.request.user_id,
     reason: model.reason,
-    currentPage: 'requests',
+    currentPage: "requests",
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`,
   });
 
-  res.flash('title', `Success`);
-  res.flash('heading', `Request rejected: Organisation access`);
-  res.flash('message', `${model.request.usersName} cannot access your organisation.`);
+  res.flash("title", `Success`);
+  res.flash("heading", `Request rejected: Organisation access`);
+  res.flash(
+    "message",
+    `${model.request.usersName} cannot access your organisation.`,
+  );
 
   return res.redirect(`/access-requests/requests`);
 };

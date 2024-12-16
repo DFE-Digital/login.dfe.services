@@ -1,35 +1,53 @@
-const { listRolesOfService, addUserService } = require('../../../../src/infrastructure/access');
-const { mockRequest, mockResponse, mockAdapterConfig, mockLogger } = require('../../../utils/jestMocks');
-const { getAndMapServiceRequest, generateFlashMessages } = require('../../../../src/app/accessRequests/utils');
-const { post } = require('../../../../src/app/accessRequests/reviewServiceRequest');
-const { getUserServiceRequestStatus, updateServiceRequest } = require('../../../../src/app/requestService/utils');
-const PolicyEngine = require('login.dfe.policy-engine');
-const { NotificationClient } = require('login.dfe.jobs-client');
-const logger = require('./../../../../src/infrastructure/logger');
-const { createUserBanners } = require('../../../../src/app/home/userBannersHandlers');
+const {
+  listRolesOfService,
+  addUserService,
+} = require("../../../../src/infrastructure/access");
+const {
+  mockRequest,
+  mockResponse,
+  mockAdapterConfig,
+  mockLogger,
+} = require("../../../utils/jestMocks");
+const {
+  getAndMapServiceRequest,
+  generateFlashMessages,
+} = require("../../../../src/app/accessRequests/utils");
+const {
+  post,
+} = require("../../../../src/app/accessRequests/reviewServiceRequest");
+const {
+  getUserServiceRequestStatus,
+  updateServiceRequest,
+} = require("../../../../src/app/requestService/utils");
+const PolicyEngine = require("login.dfe.policy-engine");
+const { NotificationClient } = require("login.dfe.jobs-client");
+const logger = require("./../../../../src/infrastructure/logger");
+const {
+  createUserBanners,
+} = require("../../../../src/app/home/userBannersHandlers");
 
-jest.mock('login.dfe.policy-engine');
-jest.mock('login.dfe.jobs-client');
+jest.mock("login.dfe.policy-engine");
+jest.mock("login.dfe.jobs-client");
 
-jest.mock('../../../../src/infrastructure/logger', () => mockLogger());
+jest.mock("../../../../src/infrastructure/logger", () => mockLogger());
 
-jest.mock('../../../../src/infrastructure/config', () => {
+jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
 
-jest.mock('login.dfe.dao', () => require('../../../utils/jestMocks').mockDao());
-jest.mock('../../../../src/app/accessRequests/utils');
+jest.mock("login.dfe.dao", () => require("../../../utils/jestMocks").mockDao());
+jest.mock("../../../../src/app/accessRequests/utils");
 
-jest.mock('../../../../src/infrastructure/access', () => {
+jest.mock("../../../../src/infrastructure/access", () => {
   return {
     addUserService: jest.fn(),
     listRolesOfService: jest.fn(),
   };
 });
-jest.mock('../../../../src/app/home/userBannersHandlers', () => {
+jest.mock("../../../../src/app/home/userBannersHandlers", () => {
   return { createUserBanners: jest.fn() };
 });
-jest.mock('../../../../src/app/requestService/utils', () => {
+jest.mock("../../../../src/app/requestService/utils", () => {
   return {
     getUserServiceRequestStatus: jest.fn(),
     updateServiceRequest: jest.fn(),
@@ -49,87 +67,87 @@ const policyEngine = {
 };
 
 const approvedReqMock = {
-  endUsersGivenName: 'John',
-  endUsersFamilyName: 'Doe',
-  endUsersEmail: 'john.doe@education.co.uk',
-  approverName: 'Jane Doe',
-  approverEmail: 'jane.doe@education',
+  endUsersGivenName: "John",
+  endUsersFamilyName: "Doe",
+  endUsersEmail: "john.doe@education.co.uk",
+  approverName: "Jane Doe",
+  approverEmail: "jane.doe@education",
   organisation: {
-    id: 'organisation-id',
-    name: 'Test Organisation',
+    id: "organisation-id",
+    name: "Test Organisation",
   },
   dataValues: {
-    id: 'request-id',
-    user_id: 'end-user-id',
-    service_id: 'service-id',
-    role_ids: 'role-id-1',
-    organisation_id: 'organisation-id',
-    request_type: 'service',
+    id: "request-id",
+    user_id: "end-user-id",
+    service_id: "service-id",
+    role_ids: "role-id-1",
+    organisation_id: "organisation-id",
+    request_type: "service",
     status: 1,
     reason: null,
-    actioned_by: 'approver-user-id',
-    actioned_reason: 'Approve',
+    actioned_by: "approver-user-id",
+    actioned_reason: "Approve",
     actioned_at: null,
-    createdAt: '2023-05-22T13:52:48.944Z',
-    updatedAt: '2023-05-24T13:52:48.944Z',
+    createdAt: "2023-05-22T13:52:48.944Z",
+    updatedAt: "2023-05-24T13:52:48.944Z",
   },
 };
 
 const rejectedReqMock = {
-  endUsersGivenName: 'John',
-  endUsersFamilyName: 'Doe',
-  endUsersEmail: 'john.doe@education.co.uk',
-  approverName: 'Jane Doe',
-  approverEmail: 'jane.doe@education',
+  endUsersGivenName: "John",
+  endUsersFamilyName: "Doe",
+  endUsersEmail: "john.doe@education.co.uk",
+  approverName: "Jane Doe",
+  approverEmail: "jane.doe@education",
   organisation: {
-    id: 'organisation-id',
-    name: 'Test Organisation',
+    id: "organisation-id",
+    name: "Test Organisation",
   },
   dataValues: {
-    id: 'request-id',
-    user_id: 'end-user-id',
-    service_id: 'service-id',
-    role_ids: 'role-id-1',
-    organisation_id: 'organisation-id',
-    request_type: 'service',
+    id: "request-id",
+    user_id: "end-user-id",
+    service_id: "service-id",
+    role_ids: "role-id-1",
+    organisation_id: "organisation-id",
+    request_type: "service",
     status: -1,
-    reason: 'Rejection reason',
-    actioned_by: 'approver-user-id',
-    actioned_reason: 'Reject',
+    reason: "Rejection reason",
+    actioned_by: "approver-user-id",
+    actioned_reason: "Reject",
     actioned_at: null,
-    createdAt: '2023-05-22T13:52:48.944Z',
-    updatedAt: '2023-05-24T13:52:48.944Z',
+    createdAt: "2023-05-22T13:52:48.944Z",
+    updatedAt: "2023-05-24T13:52:48.944Z",
   },
 };
 
-describe('when reviewing a service request', () => {
+describe("when reviewing a service request", () => {
   let req;
   let res;
   beforeEach(() => {
     req = mockRequest({
       user: {
-        sub: 'approver-user-id',
-        given_name: 'Jane',
-        family_name: 'Doe',
-        email: 'jane.doe@education',
+        sub: "approver-user-id",
+        given_name: "Jane",
+        family_name: "Doe",
+        email: "jane.doe@education",
       },
       params: {
-        rid: 'request-id',
-        orgId: 'organisation-id',
-        uid: 'end-user-id',
-        sid: 'service-id',
-        rolesIds: 'role-id-1',
+        rid: "request-id",
+        orgId: "organisation-id",
+        uid: "end-user-id",
+        sid: "service-id",
+        rolesIds: "role-id-1",
       },
-      body: { selectedResponse: 'approve}' },
+      body: { selectedResponse: "approve}" },
     });
 
     res = mockResponse();
 
     generateFlashMessages.mockReset().mockReturnValue({
-      title: 'Important',
-      heading: 'Service request already approved: Test service',
+      title: "Important",
+      heading: "Service request already approved: Test service",
       message:
-        'jane.doe@education has already responded to the service request.<br>John Doe has received an email to tell them their request has been approved. No further action is needed.',
+        "jane.doe@education has already responded to the service request.<br>John Doe has received an email to tell them their request has been approved. No further action is needed.",
     });
 
     getUserServiceRequestStatus.mockReset().mockReturnValue(0);
@@ -142,50 +160,52 @@ describe('when reviewing a service request', () => {
     });
 
     getAndMapServiceRequest.mockReset().mockReturnValue({
-      endUsersGivenName: 'John',
-      endUsersFamilyName: 'Doe',
-      endUsersEmail: 'john.doe@education.co.uk',
-      approverName: '',
-      approverEmail: '',
+      endUsersGivenName: "John",
+      endUsersFamilyName: "Doe",
+      endUsersEmail: "john.doe@education.co.uk",
+      approverName: "",
+      approverEmail: "",
       organisation: {
-        id: 'organisation-id',
-        name: 'Test Organisation',
+        id: "organisation-id",
+        name: "Test Organisation",
       },
       dataValues: {
-        id: 'request-id',
-        user_id: 'end-user-id',
-        service_id: 'service-id',
-        role_ids: 'role-id-1',
-        organisation_id: 'organisation-id',
-        request_type: 'service',
+        id: "request-id",
+        user_id: "end-user-id",
+        service_id: "service-id",
+        role_ids: "role-id-1",
+        organisation_id: "organisation-id",
+        request_type: "service",
         status: 0,
         reason: null,
         actioned_by: null,
-        actioned_reason: 'Pending',
+        actioned_reason: "Pending",
         actioned_at: null,
-        createdAt: '2023-05-22T13:52:48.944Z',
-        updatedAt: '2023-05-22T13:52:48.944Z',
+        createdAt: "2023-05-22T13:52:48.944Z",
+        updatedAt: "2023-05-22T13:52:48.944Z",
       },
     });
 
     listRolesOfService.mockReset().mockReturnValue([
       {
-        id: 'role-id-1',
-        name: 'Test role one',
+        id: "role-id-1",
+        name: "Test role one",
       },
       {
-        id: 'role-id-2',
-        name: 'Test role two',
+        id: "role-id-2",
+        name: "Test role two",
       },
     ]);
     policyEngine.validate.mockReset().mockReturnValue([]);
-    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
-      rolesAvailableToUser: ['role1-id-1'],
-    });
+    policyEngine.getPolicyApplicationResultsForUser
+      .mockReset()
+      .mockReturnValue({
+        rolesAvailableToUser: ["role1-id-1"],
+      });
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
   });
 
-  it('then it should render error message if no response selected', async () => {
+  it("then it should render error message if no response selected", async () => {
     req.body.selectedResponse = null;
     req.params.rid = 1;
 
@@ -194,48 +214,52 @@ describe('when reviewing a service request', () => {
     expect(addUserService.mock.calls).toHaveLength(0);
     expect(updateServiceRequest.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/reviewServiceRequest');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "accessRequests/views/reviewServiceRequest",
+    );
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      validationMessages: { selectedResponse: 'Approve or Reject must be selected' },
+      validationMessages: {
+        selectedResponse: "Approve or Reject must be selected",
+      },
     });
   });
 
-  it('then it should redirect to requests page and display a flash message if service request already actioned', async () => {
-    req.body.selectedResponse = 'reject';
+  it("then it should redirect to requests page and display a flash message if service request already actioned", async () => {
+    req.body.selectedResponse = "reject";
     getAndMapServiceRequest.mockReset().mockReturnValue(approvedReqMock);
     await post(req, res);
     expect(generateFlashMessages.mock.calls).toHaveLength(1);
-    expect(generateFlashMessages.mock.calls[0][0]).toBe('service');
+    expect(generateFlashMessages.mock.calls[0][0]).toBe("service");
     expect(generateFlashMessages.mock.calls[0][1]).toBe(1);
-    expect(generateFlashMessages.mock.calls[0][2]).toBe('jane.doe@education');
-    expect(generateFlashMessages.mock.calls[0][3]).toBe('John');
-    expect(generateFlashMessages.mock.calls[0][4]).toBe('Doe');
-    expect(generateFlashMessages.mock.calls[0][5]).toBe('Test Service');
+    expect(generateFlashMessages.mock.calls[0][2]).toBe("jane.doe@education");
+    expect(generateFlashMessages.mock.calls[0][3]).toBe("John");
+    expect(generateFlashMessages.mock.calls[0][4]).toBe("Doe");
+    expect(generateFlashMessages.mock.calls[0][5]).toBe("Test Service");
     expect(res.redirect.mock.calls[0][0]).toBe(`/access-requests/requests`);
   });
 
-  it('then it should redirect to rejection page if reject', async () => {
-    req.body.selectedResponse = 'reject';
+  it("then it should redirect to rejection page if reject", async () => {
+    req.body.selectedResponse = "reject";
     await post(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe(
-      '/access-requests/service-requests/request-id/services/service-id/roles/role-id-1/rejected',
+      "/access-requests/service-requests/request-id/services/service-id/roles/role-id-1/rejected",
     );
   });
 
-  it('then it should update the service request status to approved', async () => {
+  it("then it should update the service request status to approved", async () => {
     await post(req, res);
     expect(createUserBanners.mock.calls).toHaveLength(1);
-    expect(createUserBanners.mock.calls[0][0]).toBe('end-user-id');
+    expect(createUserBanners.mock.calls[0][0]).toBe("end-user-id");
     expect(updateServiceRequest.mock.calls).toHaveLength(1);
-    expect(updateServiceRequest.mock.calls[0][0]).toBe('request-id');
+    expect(updateServiceRequest.mock.calls[0][0]).toBe("request-id");
     expect(updateServiceRequest.mock.calls[0][1]).toBe(1);
-    expect(updateServiceRequest.mock.calls[0][2]).toBe('approver-user-id');
+    expect(updateServiceRequest.mock.calls[0][2]).toBe("approver-user-id");
     expect(updateServiceRequest.mock.calls[0][3]).toBe(undefined);
   });
 
-  it('then it should redirect to request page and generate flash message if request already approved', async () => {
+  it("then it should redirect to request page and generate flash message if request already approved", async () => {
     getUserServiceRequestStatus.mockReset();
     updateServiceRequest.mockReset().mockReturnValue({
       success: false,
@@ -246,17 +270,17 @@ describe('when reviewing a service request', () => {
 
     await post(req, res);
     expect(generateFlashMessages.mock.calls).toHaveLength(1);
-    expect(generateFlashMessages.mock.calls[0][0]).toBe('service');
+    expect(generateFlashMessages.mock.calls[0][0]).toBe("service");
     expect(generateFlashMessages.mock.calls[0][1]).toBe(1);
-    expect(generateFlashMessages.mock.calls[0][2]).toBe('jane.doe@education');
-    expect(generateFlashMessages.mock.calls[0][3]).toBe('John');
-    expect(generateFlashMessages.mock.calls[0][4]).toBe('Doe');
-    expect(generateFlashMessages.mock.calls[0][5]).toBe('Test Service');
+    expect(generateFlashMessages.mock.calls[0][2]).toBe("jane.doe@education");
+    expect(generateFlashMessages.mock.calls[0][3]).toBe("John");
+    expect(generateFlashMessages.mock.calls[0][4]).toBe("Doe");
+    expect(generateFlashMessages.mock.calls[0][5]).toBe("Test Service");
     expect(res.flash.mock.calls).toHaveLength(3);
     expect(res.redirect.mock.calls[0][0]).toBe(`/access-requests/requests`);
   });
 
-  it('then it should redirect to request page and generate flash message if request already rejected', async () => {
+  it("then it should redirect to request page and generate flash message if request already rejected", async () => {
     getUserServiceRequestStatus.mockReset();
     updateServiceRequest.mockReset().mockReturnValue({
       success: false,
@@ -267,26 +291,26 @@ describe('when reviewing a service request', () => {
 
     await post(req, res);
     expect(generateFlashMessages.mock.calls).toHaveLength(1);
-    expect(generateFlashMessages.mock.calls[0][0]).toBe('service');
+    expect(generateFlashMessages.mock.calls[0][0]).toBe("service");
     expect(generateFlashMessages.mock.calls[0][1]).toBe(-1);
-    expect(generateFlashMessages.mock.calls[0][2]).toBe('jane.doe@education');
-    expect(generateFlashMessages.mock.calls[0][3]).toBe('John');
-    expect(generateFlashMessages.mock.calls[0][4]).toBe('Doe');
-    expect(generateFlashMessages.mock.calls[0][5]).toBe('Test Service');
+    expect(generateFlashMessages.mock.calls[0][2]).toBe("jane.doe@education");
+    expect(generateFlashMessages.mock.calls[0][3]).toBe("John");
+    expect(generateFlashMessages.mock.calls[0][4]).toBe("Doe");
+    expect(generateFlashMessages.mock.calls[0][5]).toBe("Test Service");
     expect(res.redirect.mock.calls[0][0]).toBe(`/access-requests/requests`);
   });
 
-  it('then it should map user to service and selected sub-services', async () => {
+  it("then it should map user to service and selected sub-services", async () => {
     await post(req, res);
     expect(addUserService.mock.calls).toHaveLength(1);
-    expect(addUserService.mock.calls[0][0]).toBe('end-user-id');
-    expect(addUserService.mock.calls[0][1]).toEqual('service-id');
-    expect(addUserService.mock.calls[0][2]).toBe('organisation-id');
-    expect(addUserService.mock.calls[0][3]).toEqual(['role-id-1']);
-    expect(addUserService.mock.calls[0][4]).toBe('request-id');
+    expect(addUserService.mock.calls[0][0]).toBe("end-user-id");
+    expect(addUserService.mock.calls[0][1]).toEqual("service-id");
+    expect(addUserService.mock.calls[0][2]).toBe("organisation-id");
+    expect(addUserService.mock.calls[0][3]).toEqual(["role-id-1"]);
+    expect(addUserService.mock.calls[0][4]).toBe("request-id");
   });
 
-  it('then it should send the audit logs for service request approved', async () => {
+  it("then it should send the audit logs for service request approved", async () => {
     await post(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
@@ -294,26 +318,28 @@ describe('when reviewing a service request', () => {
       'jane.doe@education (approverId: approver-user-id) approved service (serviceId: service-id) and roles (roleIds: ["role-id-1"]) and organisation (orgId: organisation-id) for end user (endUserId: end-user-id) - requestId (reqId: request-id)',
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
-      subType: 'access-request-approved',
-      type: 'services',
-      userEmail: 'jane.doe@education',
-      userId: 'approver-user-id',
+      subType: "access-request-approved",
+      type: "services",
+      userEmail: "jane.doe@education",
+      userId: "approver-user-id",
     });
   });
 
-  it('then it should redirect to access request page and display a success message', async () => {
+  it("then it should redirect to access request page and display a success message", async () => {
     await post(req, res);
 
     expect(res.flash.mock.calls).toHaveLength(3);
-    expect(res.flash.mock.calls[0][0]).toBe('title');
-    expect(res.flash.mock.calls[0][0]).toBe('title');
-    expect(res.flash.mock.calls[0][1]).toBe('Success');
-    expect(res.flash.mock.calls[1][0]).toBe('heading');
-    expect(res.flash.mock.calls[1][1]).toBe('Service access request approved');
-    expect(res.flash.mock.calls[2][0]).toBe('message');
-    expect(res.flash.mock.calls[2][1]).toBe('John Doe has been added to Test Service.');
+    expect(res.flash.mock.calls[0][0]).toBe("title");
+    expect(res.flash.mock.calls[0][0]).toBe("title");
+    expect(res.flash.mock.calls[0][1]).toBe("Success");
+    expect(res.flash.mock.calls[1][0]).toBe("heading");
+    expect(res.flash.mock.calls[1][1]).toBe("Service access request approved");
+    expect(res.flash.mock.calls[2][0]).toBe("message");
+    expect(res.flash.mock.calls[2][1]).toBe(
+      "John Doe has been added to Test Service.",
+    );
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/access-requests/requests');
+    expect(res.redirect.mock.calls[0][0]).toBe("/access-requests/requests");
   });
 });

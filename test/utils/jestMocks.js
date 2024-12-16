@@ -1,48 +1,48 @@
-'use strict';
+"use strict";
 
 const mockConfig = () => {
   return {
     hostingEnvironment: {
-      env: 'test-run',
-      serviceId: '28388aeb-431b-49bc-9480-8db1b0bdd6e1',
-      host: 'localhost',
-      port: '3000',
-      helpUrl: 'https://localhost:3001/help',
+      env: "test-run",
+      serviceId: "28388aeb-431b-49bc-9480-8db1b0bdd6e1",
+      host: "localhost",
+      port: "3000",
+      helpUrl: "https://localhost:3001/help",
     },
     loggerSettings: {},
     organisations: {
-      type: 'static',
+      type: "static",
     },
     access: {
-      type: 'static',
+      type: "static",
     },
     search: {
-      type: 'static',
+      type: "static",
     },
     applications: {
-      type: 'static',
+      type: "static",
     },
     directories: {
-      type: 'static',
+      type: "static",
     },
     notifications: {
-      connectionString: 'test',
+      connectionString: "test",
     },
     organisationRequests: {
       requestLimit: 3,
     },
     toggles: {
       useApproverJourney: true,
-      environmentName: 'pr',
+      environmentName: "pr",
     },
     database: {
-      host: 'host',
-      username: 'user',
-      password: 'password',
-      dialect: 'mssql',
-      name: 'db',
+      host: "host",
+      username: "user",
+      password: "password",
+      dialect: "mssql",
+      name: "db",
       encrypt: true,
-      schema: 'dbo',
+      schema: "dbo",
       pool: {
         max: 100,
         min: 0,
@@ -56,42 +56,42 @@ const mockConfig = () => {
 const mockAdapterConfig = () => {
   return {
     organisations: {
-      type: 'api',
+      type: "api",
     },
     access: {
-      type: 'static',
+      type: "static",
     },
     search: {
-      type: 'static',
+      type: "static",
     },
     applications: {
-      type: 'static',
+      type: "static",
     },
     directories: {
-      type: 'static',
+      type: "static",
       service: {
-        url: 'http://unit.test.local',
+        url: "http://unit.test.local",
       },
     },
     toggles: {
       useApproverJourney: true,
     },
     hostingEnvironment: {
-      helpUrl: 'https://localhost:3001/help',
-      helpAssistantUrl: 'https://localhost:3001/chatBot',
+      helpUrl: "https://localhost:3001/help",
+      helpAssistantUrl: "https://localhost:3001/chatBot",
     },
     loggerSettings: {},
     notifications: {},
     adapter: {
-      type: 'sequelize',
+      type: "sequelize",
       directories: {
-        host: 'host',
-        username: 'user',
-        password: 'pass',
-        dialect: 'mssql',
-        name: 'db-name',
+        host: "host",
+        username: "user",
+        password: "pass",
+        dialect: "mssql",
+        name: "db-name",
         encrypt: true,
-        schema: 'dbo',
+        schema: "dbo",
         pool: {
           max: 100,
           min: 0,
@@ -100,13 +100,13 @@ const mockAdapterConfig = () => {
         },
       },
       organisation: {
-        host: 'host',
-        username: 'user',
-        password: 'pass',
-        dialect: 'mssql',
-        name: 'db-name',
+        host: "host",
+        username: "user",
+        password: "pass",
+        dialect: "mssql",
+        name: "db-name",
         encrypt: true,
-        schema: 'dbo',
+        schema: "dbo",
         pool: {
           max: 100,
           min: 0,
@@ -131,13 +131,13 @@ const mockRequest = (customRequest = {}) => {
   return Object.assign(
     {
       params: {
-        uuid: '123-abc',
+        uuid: "123-abc",
       },
-      id: 'correlationId',
+      id: "correlationId",
       session: {},
       body: {},
       query: {},
-      csrfToken: jest.fn().mockReturnValue('token'),
+      csrfToken: jest.fn().mockReturnValue("token"),
       isAuthenticated: jest.fn().mockReturnValue(true),
     },
     customRequest,
@@ -172,24 +172,24 @@ const mockDao = () => {
           count: 10,
           rows: [
             {
-              id: 'service1',
+              id: "service1",
               isExternalService: true,
               isMigrated: true,
-              name: 'Service One',
+              name: "Service One",
             },
             {
-              id: 'service2',
+              id: "service2",
               isExternalService: true,
               isMigrated: true,
-              name: 'Service two',
+              name: "Service two",
             },
           ],
         };
       },
       getById: async (sid) => {
         return {
-          id: 'service-id',
-          name: 'Test Service',
+          id: "service-id",
+          name: "Test Service",
         };
       },
     },

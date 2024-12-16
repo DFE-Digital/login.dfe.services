@@ -1,9 +1,13 @@
-jest.mock('login.dfe.policy-engine');
-jest.mock('./../../../../src/infrastructure/config', () => require('../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/logger', () => require('../../../utils/jestMocks').mockLogger());
-jest.mock('./../../../../src/app/users/utils');
-jest.mock('./../../../../src/infrastructure/organisations');
-jest.mock('login.dfe.dao', () => {
+jest.mock("login.dfe.policy-engine");
+jest.mock("./../../../../src/infrastructure/config", () =>
+  require("../../../utils/jestMocks").mockConfig(),
+);
+jest.mock("./../../../../src/infrastructure/logger", () =>
+  require("../../../utils/jestMocks").mockLogger(),
+);
+jest.mock("./../../../../src/app/users/utils");
+jest.mock("./../../../../src/infrastructure/organisations");
+jest.mock("login.dfe.dao", () => {
   return {
     services: {
       list: async (pageNumber, pageSize) => {
@@ -11,16 +15,16 @@ jest.mock('login.dfe.dao', () => {
           count: 10,
           rows: [
             {
-              id: 'service1',
+              id: "service1",
               isExternalService: true,
               isMigrated: true,
-              name: 'Service One',
+              name: "Service One",
             },
             {
-              id: 'service2',
+              id: "service2",
               isExternalService: true,
               isMigrated: true,
-              name: 'Service two',
+              name: "Service two",
             },
           ],
         };
@@ -37,25 +41,29 @@ jest.mock('login.dfe.dao', () => {
   };
 });
 
-const { mockRequest, mockResponse } = require('../../../utils/jestMocks');
-const { getAllServicesForUserInOrg } = require('../../../../src/app/users/utils');
-const { checkForActiveRequests } = require('../../../../src/app/requestService/utils');
+const { mockRequest, mockResponse } = require("../../../utils/jestMocks");
+const {
+  getAllServicesForUserInOrg,
+} = require("../../../../src/app/users/utils");
+const {
+  checkForActiveRequests,
+} = require("../../../../src/app/requestService/utils");
 const {
   getOrganisationAndServiceForUserV2,
   getNonPagedRequestsTypesForApprover,
-} = require('../../../../src/infrastructure/organisations');
-jest.mock('../../../../src/infrastructure/organisations', () => {
+} = require("../../../../src/infrastructure/organisations");
+jest.mock("../../../../src/infrastructure/organisations", () => {
   return {
     getNonPagedRequestsTypesForApprover: jest.fn(),
     getOrganisationAndServiceForUserV2: jest.fn(),
   };
 });
-jest.mock('../../../../src/app/requestService/utils', () => {
+jest.mock("../../../../src/app/requestService/utils", () => {
   return {
     checkForActiveRequests: jest.fn(),
   };
 });
-const PolicyEngine = require('login.dfe.policy-engine');
+const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
 };
@@ -63,23 +71,23 @@ const policyEngine = {
 const requestservices = {
   requests: [
     {
-      id: 'request1',
-      user_id: 'user1',
-      service_id: 'service1',
-      organisation_id: 'organisationId',
-      role_ids: 'role1, role2',
-      status: '0',
+      id: "request1",
+      user_id: "user1",
+      service_id: "service1",
+      organisation_id: "organisationId",
+      role_ids: "role1, role2",
+      status: "0",
       actioned_by: null,
       actioned_reason: null,
       reason: null,
       createdAt: new Date(),
       updatedAt: new Date(),
-      request_type: 'service',
+      request_type: "service",
     },
   ],
 };
 
-describe('when posting service and the request has already been requested', () => {
+describe("when posting service and the request has already been requested", () => {
   let req;
   let res;
   let post;
@@ -87,89 +95,89 @@ describe('when posting service and the request has already been requested', () =
   beforeEach(() => {
     req = mockRequest();
     req.params = {
-      uid: 'user1',
-      orgId: 'organisationId',
-      sid: 'service1',
+      uid: "user1",
+      orgId: "organisationId",
+      sid: "service1",
     };
-    req.body = { service: 'service1' };
+    req.body = { service: "service1" };
     req.session = {
       organisationDetails: [
         {
-          approvers: [{ user_id: 'user2' }],
+          approvers: [{ user_id: "user2" }],
           organisation: {
-            id: 'organisationId',
-            name: 'organisationName',
-            approvers: [{ user_id: 'user2' }],
+            id: "organisationId",
+            name: "organisationName",
+            approvers: [{ user_id: "user2" }],
           },
           role: {
             id: 0,
-            name: 'category name',
+            name: "category name",
           },
         },
       ],
       user: {
-        email: 'test@test.com',
-        firstName: 'test',
-        lastName: 'name',
+        email: "test@test.com",
+        firstName: "test",
+        lastName: "name",
         services: [
           {
-            serviceId: 'service1',
+            serviceId: "service1",
             roles: [],
           },
         ],
       },
     };
     req.user = {
-      sub: 'user1',
-      email: 'user.one@unit.test',
+      sub: "user1",
+      email: "user.one@unit.test",
       services: [
         {
-          serviceId: 'service1',
+          serviceId: "service1",
           roles: [],
         },
       ],
       organisations: [
         {
-          approvers: [{ user_id: 'user2' }],
+          approvers: [{ user_id: "user2" }],
           organisation: {
-            id: 'organisationId',
-            name: 'organisationName',
-            approvers: [{ user_id: 'user2' }],
+            id: "organisationId",
+            name: "organisationName",
+            approvers: [{ user_id: "user2" }],
           },
           role: {
             id: 0,
-            name: 'category name',
+            name: "category name",
           },
         },
       ],
     };
-    req.selectServiceID = { selectServiceID: 'service1' };
+    req.selectServiceID = { selectServiceID: "service1" };
     req.organisationDetails = [
       {
-        approvers: [{ user_id: 'user2' }],
+        approvers: [{ user_id: "user2" }],
         organisation: {
-          id: 'organisationId',
-          name: 'organisationName',
-          approvers: [{ user_id: 'user2' }],
+          id: "organisationId",
+          name: "organisationName",
+          approvers: [{ user_id: "user2" }],
         },
         role: {
           id: 0,
-          name: 'category name',
+          name: "category name",
         },
       },
     ];
-    req.serviceDetails = { name: 'service name' };
+    req.serviceDetails = { name: "service name" };
     req.userOrganisations = [
       {
-        approvers: [{ user_id: 'user2' }],
+        approvers: [{ user_id: "user2" }],
         organisation: {
-          id: 'organisationId',
-          name: 'organisationName',
-          approvers: [{ user_id: 'user2' }],
+          id: "organisationId",
+          name: "organisationName",
+          approvers: [{ user_id: "user2" }],
         },
         role: {
           id: 0,
-          name: 'category name',
+          name: "category name",
         },
       },
     ];
@@ -179,7 +187,7 @@ describe('when posting service and the request has already been requested', () =
     getOrganisationAndServiceForUserV2.mockReturnValue([
       {
         organisation: {
-          id: 'organisationId',
+          id: "organisationId",
         },
       },
     ]);
@@ -192,28 +200,30 @@ describe('when posting service and the request has already been requested', () =
     getAllServicesForUserInOrg.mockReset();
     getAllServicesForUserInOrg.mockReturnValue([
       {
-        id: 'service1',
-        dateActivated: '10/10/2018',
-        name: 'service name',
-        status: 'active',
+        id: "service1",
+        dateActivated: "10/10/2018",
+        name: "service name",
+        status: "active",
         isExternalService: true,
       },
     ]);
 
-    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
-      policiesAppliedForUser: [],
-      rolesAvailableToUser: [],
-      serviceAvailableToUser: true,
-    });
+    policyEngine.getPolicyApplicationResultsForUser
+      .mockReset()
+      .mockReturnValue({
+        policiesAppliedForUser: [],
+        rolesAvailableToUser: [],
+        serviceAvailableToUser: true,
+      });
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
-    post = require('../../../../src/app/requestService/requestService').post;
+    post = require("../../../../src/app/requestService/requestService").post;
   });
 
-  it('then it should display the my service page', async () => {
+  it("then it should display the my service page", async () => {
     await post(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/my-services');
+    expect(res.redirect.mock.calls[0][0]).toBe("/my-services");
   });
 });

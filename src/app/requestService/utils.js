@@ -1,14 +1,16 @@
-const { services } = require('login.dfe.dao');
-const { getNonPagedRequestsTypesForApprover } = require('../../infrastructure/organisations');
+const { services } = require("login.dfe.dao");
+const {
+  getNonPagedRequestsTypesForApprover,
+} = require("../../infrastructure/organisations");
 const mapUserServiceRequestStatus = (status) => {
   if (status === 0) {
-    return { id: 0, description: 'Pending' };
+    return { id: 0, description: "Pending" };
   }
   if (status === -1) {
-    return { id: -1, description: 'Rejected' };
+    return { id: -1, description: "Rejected" };
   }
   if (status === 1) {
-    return { id: 1, description: 'Approved' };
+    return { id: 1, description: "Approved" };
   }
 };
 
@@ -21,14 +23,28 @@ const getUserServiceRequestStatus = async (reqId) => {
 //extend the method to search for all instances of
 //a service request by the user_id and organisation_id that contains any role selected
 // overload a param called roleid's to empty list
-const getLastRequestDate = async (organisationDetails, selectServiceID, orgId, uid, reqId, requestType, roleIds) => {
+const getLastRequestDate = async (
+  organisationDetails,
+  selectServiceID,
+  orgId,
+  uid,
+  reqId,
+  requestType,
+  roleIds,
+) => {
   const approvers = organisationDetails.approvers;
   if (approvers !== undefined && approvers.length > 0) {
     const approverId = approvers[0];
-    const requestservices = await getNonPagedRequestsTypesForApprover(approverId.user_id, reqId);
+    const requestservices = await getNonPagedRequestsTypesForApprover(
+      approverId.user_id,
+      reqId,
+    );
     if (requestservices !== undefined) {
       let inRequest = requestservices.requests.filter(
-        (x) => x.service_id === selectServiceID && x.org_id === orgId && x.user_id === uid,
+        (x) =>
+          x.service_id === selectServiceID &&
+          x.org_id === orgId &&
+          x.user_id === uid,
       );
       if (inRequest !== undefined && inRequest.length > 0) {
         inRequest = inRequest.sort(function (o) {
@@ -53,11 +69,17 @@ const checkForActiveRequests = async (
   const approvers = organisationDetails.approvers;
   if (approvers !== undefined && approvers.length > 0) {
     const approverId = approvers[0];
-    const requestservices = await getNonPagedRequestsTypesForApprover(approverId.user_id, reqId);
+    const requestservices = await getNonPagedRequestsTypesForApprover(
+      approverId.user_id,
+      reqId,
+    );
     if (requestservices !== undefined) {
-      if (requestType !== 'subservice') {
+      if (requestType !== "subservice") {
         let inRequest = requestservices.requests.filter(
-          (x) => x.service_id === selectServiceID && x.org_id === orgId && x.user_id === uid,
+          (x) =>
+            x.service_id === selectServiceID &&
+            x.org_id === orgId &&
+            x.user_id === uid,
         );
         if (inRequest !== undefined && inRequest.length > 0) {
           return inRequest[0].created_date;
@@ -65,14 +87,17 @@ const checkForActiveRequests = async (
       } else {
         let AlreadyRequestedRoles = [];
         let RequestedRoles = requestservices.requests.filter(
-          (x) => x.service_id === selectServiceID && x.org_id === orgId && x.user_id === uid,
+          (x) =>
+            x.service_id === selectServiceID &&
+            x.org_id === orgId &&
+            x.user_id === uid,
         );
         if (RequestedRoles !== undefined && RequestedRoles.length > 0) {
           ///test each roleId to see if it in this array
           let checkList = [];
           RequestedRoles.forEach((item) => {
-            if (item.role_ids.includes(',')) {
-              let tempArr = item.role_ids.split(',');
+            if (item.role_ids.includes(",")) {
+              let tempArr = item.role_ids.split(",");
               tempArr.forEach((numString) => {
                 checkList.push(numString);
               });
@@ -80,7 +105,9 @@ const checkForActiveRequests = async (
               checkList.push(item.role_ids);
             }
           });
-          checkList = checkList.filter((value, index, array) => array.indexOf(value) === index);
+          checkList = checkList.filter(
+            (value, index, array) => array.indexOf(value) === index,
+          );
           if (checkList.length !== totalServiceCount) {
             checkList.forEach((chid) => {
               roleIds.forEach((rid) => {
@@ -90,7 +117,9 @@ const checkForActiveRequests = async (
               });
             });
             //return unique items
-            return AlreadyRequestedRoles.filter((value, index, array) => array.indexOf(value) === index);
+            return AlreadyRequestedRoles.filter(
+              (value, index, array) => array.indexOf(value) === index,
+            );
           } else return checkList;
         }
       }
@@ -114,7 +143,15 @@ const updateServiceRequest = async (reqId, statusId, approverId, reason) => {
   return result;
 };
 
-const createServiceRequest = async (reqId, userId, serviceId, rolesIds, organisationId, statusId, requestType) => {
+const createServiceRequest = async (
+  reqId,
+  userId,
+  serviceId,
+  rolesIds,
+  organisationId,
+  statusId,
+  requestType,
+) => {
   const status = mapUserServiceRequestStatus(statusId);
   return await services.putUserServiceRequest({
     id: reqId,

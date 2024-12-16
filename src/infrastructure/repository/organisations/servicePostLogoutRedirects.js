@@ -1,9 +1,9 @@
-const Sequelize = require('sequelize').default;
+const Sequelize = require("sequelize").default;
 const Op = Sequelize.Op;
 
 const define = (db, schema) => {
   const model = db.define(
-    'servicePostLogoutRedirectUris',
+    "servicePostLogoutRedirectUris",
     {
       serviceId: {
         type: Sequelize.UUID,
@@ -16,18 +16,18 @@ const define = (db, schema) => {
     },
     {
       timestamps: false,
-      tableName: 'servicePostLogoutRedirectUris',
+      tableName: "servicePostLogoutRedirectUris",
       schema,
     },
   );
-  model.removeAttribute('id');
+  model.removeAttribute("id");
   return model;
 };
 
 const extend = () => {};
 
 module.exports = {
-  name: 'servicePostLogoutRedirects',
+  name: "servicePostLogoutRedirects",
   define,
   extend,
 };

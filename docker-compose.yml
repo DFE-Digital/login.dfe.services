@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.4"
 
 services:
   login.dfe.ervices:
@@ -8,5 +8,5 @@ services:
       dockerfile: ./Docker/Dockerfile
     environment:
       NODE_ENV: development
-      settings: ./config/login.dfe.services.local.json 
+      settings: ./config/login.dfe.services.local.json
     command: ["node", "src/index.js"]

@@ -1,13 +1,15 @@
-'use strict';
+"use strict";
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/approvals/users');
+    return res.redirect("/approvals/users");
   }
-  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
-  return res.render('users/views/confirmExistingUser', {
+  const organisationDetails = req.userOrganisations.find(
+    (x) => x.organisation.id === req.params.orgId,
+  );
+  return res.render("users/views/confirmExistingUser", {
     backLink: `/approvals/${req.params.orgId}/users/new-user`,
-    currentPage: 'users',
+    currentPage: "users",
     csrfToken: req.csrfToken(),
     user: req.session.user,
     organisationDetails,
@@ -16,11 +18,15 @@ const get = async (req, res) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/approvals/users');
+    return res.redirect("/approvals/users");
   }
   return req.query.review
-    ? res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`)
-    : res.redirect(`/approvals/${req.params.orgId}/users/${req.session.user.uid}/organisation-permissions`);
+    ? res.redirect(
+        `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`,
+      )
+    : res.redirect(
+        `/approvals/${req.params.orgId}/users/${req.session.user.uid}/organisation-permissions`,
+      );
 };
 
 module.exports = {
