@@ -1,4 +1,3 @@
-"use strict";
 const { getApproverOrgsFromReq } = require("../users/utils");
 
 const getNaturalIdentifiers = async (req) => {

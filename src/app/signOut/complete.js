@@ -1,5 +1,3 @@
-"use strict";
-
 const complete = (req, res) => {
   res.redirect("/");
 };

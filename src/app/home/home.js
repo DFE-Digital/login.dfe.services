@@ -1,5 +1,3 @@
-"use strict";
-
 const uniqBy = require("lodash/uniqBy");
 const sortBy = require("lodash/sortBy");
 const config = require("../../infrastructure/config");

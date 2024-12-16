@@ -1,4 +1,3 @@
-"use strict";
 const logger = require("./../../infrastructure/logger");
 const { getSingleServiceForUser, isUserManagement } = require("./utils");
 const {

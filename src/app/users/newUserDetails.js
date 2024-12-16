@@ -1,4 +1,3 @@
-"use strict";
 const Account = require("./../../infrastructure/account");
 const {
   getOrganisationAndServiceForUser,

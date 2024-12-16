@@ -1,4 +1,3 @@
-"use strict";
 const { listRolesOfService } = require("../../infrastructure/access");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");

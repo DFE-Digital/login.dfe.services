@@ -1,4 +1,3 @@
-"use strict";
 const { emailPolicy } = require("login.dfe.validation");
 const Account = require("./../../infrastructure/account");
 const logger = require("./../../infrastructure/logger");

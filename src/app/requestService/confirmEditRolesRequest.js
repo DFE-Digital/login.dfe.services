@@ -1,4 +1,3 @@
-"use strict";
 const logger = require("../../../src/infrastructure/logger");
 const { getSingleServiceForUser } = require("../../../src/app/users/utils");
 const { createServiceRequest } = require("./utils");

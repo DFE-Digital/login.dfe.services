@@ -1,4 +1,3 @@
-"use strict";
 const {
   isServiceEmailNotificationAllowed,
 } = require("./../../infrastructure/applications");

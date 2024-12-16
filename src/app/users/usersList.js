@@ -1,4 +1,3 @@
-"use strict";
 const { mapUserStatus } = require("./../../infrastructure/utils");
 const {
   getAllUsersForOrg,

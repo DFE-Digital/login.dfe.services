@@ -1,4 +1,3 @@
-"use strict";
 const { getById } = require("./../../infrastructure/search");
 const { mapUserStatus } = require("./../../infrastructure/utils");
 const {

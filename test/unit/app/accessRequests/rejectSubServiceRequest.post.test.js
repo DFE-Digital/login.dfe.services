@@ -205,26 +205,24 @@ describe("When reviewing a sub-service request for rejecting", () => {
     res = mockResponse();
     sendAccessRequest.mockReset();
 
-    Account.getById
-      .mockReset()
-      .mockReturnValue([
-        {
-          claims: {
-            sub: "user-id-1",
-            given_name: "User",
-            family_name: "One",
-            email: "user.one@unit.tests",
-          },
+    Account.getById.mockReset().mockReturnValue([
+      {
+        claims: {
+          sub: "user-id-1",
+          given_name: "User",
+          family_name: "One",
+          email: "user.one@unit.tests",
         },
-        {
-          claims: {
-            sub: "user-id-2",
-            given_name: "User",
-            family_name: "Two",
-            email: "user.two@unit.tests",
-          },
+      },
+      {
+        claims: {
+          sub: "user-id-2",
+          given_name: "User",
+          family_name: "Two",
+          email: "user.two@unit.tests",
         },
-      ]);
+      },
+    ]);
 
     updateServiceRequest.mockReset();
     updateServiceRequest.mockReturnValue((request = { success: true }));

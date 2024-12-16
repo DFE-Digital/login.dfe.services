@@ -120,26 +120,24 @@ describe("when displaying the pending access requests for approver ", () => {
       totalNumberOfRecords: 3,
     });
 
-    Account.getUsersById
-      .mockReset()
-      .mockReturnValue([
-        {
-          claims: {
-            sub: "user-id-1",
-            given_name: "User",
-            family_name: "One",
-            email: "user.one@unit.tests",
-          },
+    Account.getUsersById.mockReset().mockReturnValue([
+      {
+        claims: {
+          sub: "user-id-1",
+          given_name: "User",
+          family_name: "One",
+          email: "user.one@unit.tests",
         },
-        {
-          claims: {
-            sub: "user-id-2",
-            given_name: "User",
-            family_name: "Two",
-            email: "user.two@unit.tests",
-          },
+      },
+      {
+        claims: {
+          sub: "user-id-2",
+          given_name: "User",
+          family_name: "Two",
+          email: "user.two@unit.tests",
         },
-      ]);
+      },
+    ]);
 
     //const { get, post } = require('./../../../../src/app/accessRequests/getAllRequestsForApproval');
     const {

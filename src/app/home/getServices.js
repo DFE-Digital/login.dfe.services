@@ -1,5 +1,3 @@
-"use strict";
-
 const { getServicesForUser } = require("./../../infrastructure/access");
 const { getApplication } = require("./../../infrastructure/applications");
 const Account = require("./../../infrastructure/account");

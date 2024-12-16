@@ -1,5 +1,3 @@
-"use strict";
-
 const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/approvals/users");

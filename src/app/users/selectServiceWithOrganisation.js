@@ -1,5 +1,3 @@
-"use strict";
-
 const { services, organisation } = require("login.dfe.dao");
 const {
   getOrgNaturalIdentifiers,

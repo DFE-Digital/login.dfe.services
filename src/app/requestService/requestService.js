@@ -1,4 +1,3 @@
-"use strict";
 const config = require("../../infrastructure/config");
 const { getAllServicesForUserInOrg } = require("../users/utils");
 const PolicyEngine = require("login.dfe.policy-engine");

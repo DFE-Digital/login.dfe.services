@@ -1,5 +1,3 @@
-"use strict";
-
 const { format, transports, createLogger, addColors } = require("winston");
 const { combine, prettyPrint, errors, simple } = format;
 const config = require("./../config");

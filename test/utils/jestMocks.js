@@ -1,5 +1,3 @@
-"use strict";
-
 const mockConfig = () => {
   return {
     hostingEnvironment: {

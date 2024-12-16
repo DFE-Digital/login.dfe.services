@@ -121,38 +121,36 @@ describe("when displaying the users services", () => {
     });
 
     getServicesForUser.mockReset().mockReturnValue(userAccess);
-    getOrganisationAndServiceForUser
-      .mockReset()
-      .mockReturnValue([
-        {
-          organisation: {
-            id: "org1",
-            name: "Organisation 1",
-            status: { id: 1 },
-          },
+    getOrganisationAndServiceForUser.mockReset().mockReturnValue([
+      {
+        organisation: {
+          id: "org1",
+          name: "Organisation 1",
+          status: { id: 1 },
         },
-        {
-          organisation: {
-            id: "org2",
-            name: "Organisation 2",
-            status: { id: 1 },
-          },
+      },
+      {
+        organisation: {
+          id: "org2",
+          name: "Organisation 2",
+          status: { id: 1 },
         },
-        {
-          organisation: {
-            id: "org3",
-            name: "Organisation 3",
-            status: { id: 0 },
-          },
+      },
+      {
+        organisation: {
+          id: "org3",
+          name: "Organisation 3",
+          status: { id: 0 },
         },
-        {
-          organisation: {
-            id: "org4",
-            name: "Organisation 4",
-            status: { id: 1 },
-          },
+      },
+      {
+        organisation: {
+          id: "org4",
+          name: "Organisation 4",
+          status: { id: 1 },
         },
-      ]);
+      },
+    ]);
     getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue([]);
     getLatestRequestAssociatedWithUser.mockReset().mockReturnValue(undefined);
 
