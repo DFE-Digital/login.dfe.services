@@ -24,7 +24,6 @@ const {
   isLoginOver24,
 } = require("../users/utils");
 const { actions } = require("../constans/actions");
-const flash = require("login.dfe.express-flash-2");
 
 let user = null;
 
@@ -169,7 +168,7 @@ const getOrganisationsAndServices = async (
   correlationId,
 ) => {
   const organisationDetails =
-    (await getOrganisationAndServiceForUser(account.id, correlationId)) || [];
+    (await getOrganisationAndServiceForUser(account.id)) || [];
   const organisationDetailsMap = new Map(
     organisationDetails
       .filter((org) => org.organisation.status.id > 0)

@@ -6,9 +6,6 @@ const {
 const {
   getSingleServiceForUser,
 } = require("./../../../../src/app/users/utils");
-const {
-  checkCacheForAllServices,
-} = require("./../../../../src/infrastructure/helpers/allServicesAppCache");
 
 jest.mock("./../../../../src/infrastructure/logger", () =>
   require("./../../../utils/jestMocks").mockLogger(),
@@ -29,7 +26,7 @@ jest.mock("./../../../../src/infrastructure/config", () => {
 jest.mock("login.dfe.dao", () => {
   return {
     services: {
-      list: async (pageNumber, pageSize) => {
+      list: async () => {
         return {
           count: 10,
           rows: [

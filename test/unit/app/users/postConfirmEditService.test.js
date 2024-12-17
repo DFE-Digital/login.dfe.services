@@ -28,6 +28,8 @@ const {
   listRolesOfService,
 } = require("./../../../../src/infrastructure/access");
 
+const sendServiceAdded = jest.fn();
+
 describe("when editing a service for a user", () => {
   let req;
   let res;
@@ -114,9 +116,9 @@ describe("when editing a service for a user", () => {
     res = mockResponse();
     postConfirmEditService =
       require("./../../../../src/app/users/confirmEditService").post;
-    sendServiceAddedStub = jest.fn();
+    sendServiceAdded.mockReset();
     NotificationClient.mockReset().mockImplementation(() => ({
-      sendServiceAdded: sendServiceAddedStub,
+      sendServiceAdded,
     }));
   });
 
@@ -174,11 +176,11 @@ describe("when editing a service for a user", () => {
   it("then it should send an email notification to user when service added", async () => {
     await postConfirmEditService(req, res);
 
-    expect(sendServiceAddedStub.mock.calls).toHaveLength(1);
+    expect(sendServiceAdded.mock.calls).toHaveLength(1);
 
-    expect(sendServiceAddedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
-    expect(sendServiceAddedStub.mock.calls[0][1]).toBe(expectedFirstName);
-    expect(sendServiceAddedStub.mock.calls[0][2]).toBe(expectedLastName);
+    expect(sendServiceAdded.mock.calls[0][0]).toBe(expectedEmailAddress);
+    expect(sendServiceAdded.mock.calls[0][1]).toBe(expectedFirstName);
+    expect(sendServiceAdded.mock.calls[0][2]).toBe(expectedLastName);
   });
 
   describe("when we are under manage-users", () => {

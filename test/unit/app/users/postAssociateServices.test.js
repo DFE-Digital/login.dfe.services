@@ -29,7 +29,7 @@ jest.mock("./../../../../src/infrastructure/config", () => {
 jest.mock("login.dfe.dao", () => {
   return {
     organisation: {
-      getOrganisationsForUserIncludingServices: async (ids) => {
+      getOrganisationsForUserIncludingServices: async () => {
         return [
           {
             organisation: {
@@ -157,7 +157,7 @@ jest.mock("login.dfe.dao", () => {
       },
     },
     services: {
-      list: async (pageNumber, pageSize) => {
+      list: async () => {
         return {
           count: 10,
           rows: [

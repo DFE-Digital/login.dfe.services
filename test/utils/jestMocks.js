@@ -165,7 +165,7 @@ const mockResponse = () => {
 const mockDao = () => {
   return {
     services: {
-      list: async (pageNumber, pageSize) => {
+      list: async () => {
         return {
           count: 10,
           rows: [
@@ -184,7 +184,7 @@ const mockDao = () => {
           ],
         };
       },
-      getById: async (sid) => {
+      getById: async () => {
         return {
           id: "service-id",
           name: "Test Service",

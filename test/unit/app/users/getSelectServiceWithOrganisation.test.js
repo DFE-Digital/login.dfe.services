@@ -16,8 +16,6 @@ jest.mock("login.dfe.dao", () => {
   };
 });
 
-const dao = require("login.dfe.dao");
-
 const { actions } = require("../../../../src/app/constans/actions");
 
 describe("when displaying the select service with organisation page", () => {

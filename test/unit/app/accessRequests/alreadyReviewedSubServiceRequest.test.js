@@ -103,32 +103,7 @@ const flashMessages = {
   heading: `Sub-service request already Approved: accademic organisatioon`,
   message: `user.one@unit.tests has already responded to the Sub-service request.<br>User One has received an email to tell them their request has been Approved. No further action is needed.`,
 };
-const model = {
-  _changed: 0,
-  _options: null,
-  _previousDataValues: null,
-  approverEmail: "",
-  approverName: "",
-  dataValues: {
-    id: "request1",
-    actioned_by: "user1",
-    actioned_at: null,
-    actioned_reason: "Approved",
-    createdAt: new Date(),
-    organisation_id: "org1",
-    reason: "",
-    role_ids: "role1",
-    service_id: "service1",
-    status: 1,
-    updatedAt: new Date(),
-    user_id: "endUser1",
-  },
-  endUsersEmail: "b@b.gov.uk",
-  endUsersFamilyName: "b",
-  endUsersGvenName: "b",
-  isNewRecord: false,
-  organisation: { id: "org1", name: "accademic organisatioon" },
-};
+
 const request = {
   _changed: 0,
   _options: null,

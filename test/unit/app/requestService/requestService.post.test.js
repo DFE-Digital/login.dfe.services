@@ -10,7 +10,7 @@ jest.mock("./../../../../src/infrastructure/organisations");
 jest.mock("login.dfe.dao", () => {
   return {
     services: {
-      list: async (pageNumber, pageSize) => {
+      list: async () => {
         return {
           count: 10,
           rows: [
@@ -31,10 +31,10 @@ jest.mock("login.dfe.dao", () => {
       },
     },
     directories: {
-      fetchUserBanners: async (_userId, _bannerId) => {
+      fetchUserBanners: async () => {
         return null;
       },
-      createUserBanners: async (_userId, _bannerId) => {
+      createUserBanners: async () => {
         return Promise.resolve(true);
       },
     },
@@ -224,7 +224,5 @@ describe("when posting service and the request has already been requested", () =
   it("then it should display the select service page", async () => {
     await post(req, res);
     expect(res.render.mock.calls).toHaveLength(1);
-    //expect(res.redirect.mock.calls).toHaveLength(1);
-    //expect(res.redirect.mock.calls[0][0]).toBe('/request-service/organisationId/users/user1/services/service1');
   });
 });

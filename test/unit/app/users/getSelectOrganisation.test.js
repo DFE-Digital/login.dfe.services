@@ -6,10 +6,10 @@ jest.mock("./../../../../src/infrastructure/config", () =>
 jest.mock("login.dfe.dao", () => {
   return {
     directories: {
-      fetchUserBanners: async (_userId, _bannerId) => {
+      fetchUserBanners: async () => {
         return null;
       },
-      createUserBanners: async (_userId, _bannerId) => {
+      createUserBanners: async () => {
         return Promise.resolve(true);
       },
     },

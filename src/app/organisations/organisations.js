@@ -7,7 +7,6 @@ const Account = require("./../../infrastructure/account");
 const flatten = require("lodash/flatten");
 const uniq = require("lodash/uniq");
 const sortBy = require("lodash/sortBy");
-const config = require("./../../infrastructure/config");
 
 const getApproversDetails = async (organisations) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));

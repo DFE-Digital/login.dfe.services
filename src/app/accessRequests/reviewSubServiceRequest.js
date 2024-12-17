@@ -102,7 +102,7 @@ const get = async (req, res) => {
 const post = async (req, res) => {
   const model = await validate(req);
   const request = await getAndMapServiceRequest(req.params.rid);
-  if (request.dataValues.status === -1 || 1) {
+  if (request.dataValues.status === -1 || request.dataValues.status === 1) {
     const alreadyActioned = await getSubServiceRequestVieModel(
       request,
       req.id,
@@ -152,7 +152,7 @@ const post = async (req, res) => {
       req.user.sub,
       model.reason,
     );
-    requestedIds = [];
+    let requestedIds = [];
     model.viewModel.role_ids.forEach((element) => {
       requestedIds.push(element.id);
     });

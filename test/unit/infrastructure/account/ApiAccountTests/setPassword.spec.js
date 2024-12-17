@@ -11,7 +11,7 @@ const { fetchApi } = require("login.dfe.async-retry");
 jest.mock("login.dfe.dao", () => {
   return {
     directories: {
-      getUsers: async (ids) => {
+      getUsers: async () => {
         return [
           {
             email: "kevin.lewis@hq.local",
@@ -19,7 +19,7 @@ jest.mock("login.dfe.dao", () => {
           },
         ];
       },
-      changePassword: async (uid, password) => {
+      changePassword: async () => {
         return {
           email: "kevin.lewis@hq.local",
           sub: "F47D8673-8861-4A95-8286-000403EED219",

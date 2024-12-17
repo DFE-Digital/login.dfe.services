@@ -5,7 +5,6 @@ const {
 } = require("./../../infrastructure/organisations");
 const { emailPolicy } = require("login.dfe.validation");
 const { actions } = require("../constans/actions");
-const config = require("../../infrastructure/config");
 
 const { getApproverOrgsFromReq } = require("./utils");
 

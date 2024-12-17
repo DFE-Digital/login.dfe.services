@@ -1,5 +1,3 @@
-const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
-
 jest.mock("login.dfe.async-retry", () => ({
   fetchApi: jest.fn(),
 }));
@@ -20,7 +18,7 @@ jest.mock("./../../../../src/infrastructure/config", () => {
 jest.mock("login.dfe.dao", () => {
   return {
     organisation: {
-      getOrganisationsForUserIncludingServices: async (ids) => {
+      getOrganisationsForUserIncludingServices: async () => {
         return [
           {
             organisation: {
@@ -146,7 +144,7 @@ jest.mock("login.dfe.dao", () => {
           },
         ];
       },
-      getUsersAssociatedWithOrganisation: async (orgId) => {
+      getUsersAssociatedWithOrganisation: async () => {
         return [
           {
             id: "05A8B9E2-3550-4655-875D-01B017EC2555",
@@ -154,7 +152,7 @@ jest.mock("login.dfe.dao", () => {
           },
         ];
       },
-      deleteUserOrganisation: async (orgId, userId) => {
+      deleteUserOrganisation: async () => {
         return true;
       },
     },
@@ -164,14 +162,9 @@ jest.mock("login.dfe.dao", () => {
 const { fetchApi } = require("login.dfe.async-retry");
 
 describe("when getting all users in an organisation", () => {
-  let req;
-  let res;
   let apiCall;
 
   beforeEach(() => {
-    req = mockRequest();
-    res = mockResponse();
-
     fetchApi.mockReset();
     fetchApi.mockReturnValue([
       {

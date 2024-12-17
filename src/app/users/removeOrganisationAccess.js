@@ -9,7 +9,6 @@ const {
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getOrganisationAndServiceForUser,
-  getOrganisationAndServiceForInvitation,
 } = require("./../../infrastructure/organisations");
 const {
   removeServiceFromUser,
@@ -124,7 +123,7 @@ const post = async (req, res) => {
     const deletedOrganisation = userOrgs.filter(
       (x) => x.organisation.id === organisationId,
     );
-    var orgName = organisationDetails.organisation.name;
+    orgName = organisationDetails.organisation.name;
     if (
       deletedOrganisation[0]?.["numericIdentifier"] &&
       deletedOrganisation[0]?.["textIdentifier"]

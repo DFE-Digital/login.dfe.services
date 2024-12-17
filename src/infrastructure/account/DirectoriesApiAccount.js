@@ -116,13 +116,9 @@ class DirectoriesApiAccount extends Account {
   }
 
   static async getInvitationByEmail(email) {
-    try {
-      let entity = await invitation.findInvitationForEmail(email, true);
-      let mappedEntity = mapInvitationEntity(entity);
-      return mappedEntity;
-    } catch (ex) {
-      throw ex;
-    }
+    let entity = await invitation.findInvitationForEmail(email, true);
+    let mappedEntity = mapInvitationEntity(entity);
+    return mappedEntity;
   }
 
   async validatePassword(password) {
@@ -136,11 +132,7 @@ class DirectoriesApiAccount extends Account {
 
   async setPassword(password) {
     const uid = this.claims.sub;
-    try {
-      return await directories.changePassword(uid, password);
-    } catch (ex) {
-      throw ex;
-    }
+    return await directories.changePassword(uid, password);
   }
 
   static async getUsersById(ids) {
@@ -152,12 +144,8 @@ class DirectoriesApiAccount extends Account {
       idList = ids.split(",");
     }
 
-    try {
-      let users = await directories.getUsers(idList);
-      return users.map((a) => new DirectoriesApiAccount(a));
-    } catch (ex) {
-      throw ex;
-    }
+    let users = await directories.getUsers(idList);
+    return users.map((a) => new DirectoriesApiAccount(a));
   }
 
   static async createInvite(
@@ -170,49 +158,33 @@ class DirectoriesApiAccount extends Account {
     orgName,
     isApprover,
   ) {
-    try {
-      const response = await invitation.postInvitation({
-        firstName,
-        lastName,
-        email,
-        originClientId,
-        originRedirectUri,
-        approverEmail,
-        orgName,
-        isApprover,
-      });
-      return response ? response.id : null;
-    } catch (ex) {
-      throw ex;
-    }
+    const response = await invitation.postInvitation({
+      firstName,
+      lastName,
+      email,
+      originClientId,
+      originRedirectUri,
+      approverEmail,
+      orgName,
+      isApprover,
+    });
+    return response ? response.id : null;
   }
 
   static async updateInvite(id, email) {
-    try {
-      await invitation.patchInvitation({ id: id, email: email });
-      return true;
-    } catch (ex) {
-      throw ex;
-    }
+    await invitation.patchInvitation({ id: id, email: email });
+    return true;
   }
 
   static async resendInvitation(id) {
-    try {
-      await invitation.resendInvitation(id);
-      return true;
-    } catch (ex) {
-      throw ex;
-    }
+    await invitation.resendInvitation(id);
+    return true;
   }
 
   static async getInvitationById(id) {
-    try {
-      let entity = await invitation.getInvitationById(id);
-      let mappedEntity = mapInvitationEntity(entity);
-      return mappedEntity;
-    } catch (ex) {
-      throw ex;
-    }
+    let entity = await invitation.getInvitationById(id);
+    let mappedEntity = mapInvitationEntity(entity);
+    return mappedEntity;
   }
 }
 

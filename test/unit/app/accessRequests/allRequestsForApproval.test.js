@@ -8,10 +8,7 @@ jest.mock("./../../../../src/infrastructure/logger", () =>
 jest.mock("login.dfe.dao", () =>
   require("./../../../utils/jestMocks").mockDao(),
 );
-const {
-  get,
-  post,
-} = require("../../../../src/app/accessRequests/getAllRequestsForApproval");
+
 jest.mock("./../../../../src/infrastructure/account", () => ({
   fromContext: jest.fn(),
   getUsersById: jest.fn(),
@@ -222,7 +219,6 @@ describe("when displaying the pending access requests for approver ", () => {
             name: "Pending",
           },
           userName: "User Two",
-          user_id: "user-id-2",
           usersEmail: "user.two@unit.tests",
         },
         {
@@ -240,7 +236,6 @@ describe("when displaying the pending access requests for approver ", () => {
             name: "Pending",
           },
           userName: "User Two",
-          user_id: "user-id-2",
           usersEmail: "user.two@unit.tests",
         },
       ],

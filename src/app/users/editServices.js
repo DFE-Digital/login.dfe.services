@@ -1,4 +1,3 @@
-const _ = require("lodash");
 const config = require("./../../infrastructure/config");
 const {
   isUserManagement,
@@ -199,17 +198,6 @@ const saveRoleInSession = (req, selectedRoles) => {
   req.session.service = {
     roles: selectedRoles,
   };
-};
-
-const haveRolesNotBeenUpdated = (req, selectedRoles) => {
-  // This function is not used!
-  if (req.session.service && req.session.service.roles) {
-    return _.isEqual(
-      req.session.service.roles.map((item) => item.id).sort(),
-      selectedRoles.sort(),
-    );
-  }
-  return true;
 };
 
 module.exports = {

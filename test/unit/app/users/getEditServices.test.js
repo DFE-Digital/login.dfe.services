@@ -30,17 +30,7 @@ const user = {
   firstName: "test",
   lastName: "name",
 };
-const service = {
-  name: "Service One",
-  relyingParty: {
-    service_home: "http://service.one/login",
-    redirect_uris: ["http://service.one/login/cb"],
-    params: {
-      maximumRolesAllowed: null,
-      minimumRolesRequired: null,
-    },
-  },
-};
+
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
 };

@@ -72,10 +72,7 @@ const createServiceAddedBanners = async (endUserId, serviceName) => {
     await createUserBanners(endUserId, 5, bannerDetails);
   } catch (error) {
     throw new Error(
-      `Failed to create the 'Service added' banner for the user with ID [${endUserId}], service [${serviceName}], and sub-services: ${rolesName.join(
-        ", ",
-      )} - ${error}.
-      `,
+      `Failed to create the 'Service added' banner for the user with ID [${endUserId}], service [${serviceName}] - ${error}.`,
     );
   }
 };
@@ -138,9 +135,8 @@ const fetchSubServiceAddedBanners = async (userId) => {
 };
 
 const closeSubServiceAddedBanner = async (req, res) => {
+  const { bannerId } = req.params;
   try {
-    const { bannerId } = req.params;
-
     if (!bannerId) {
       return res.redirect("/my-services");
     }

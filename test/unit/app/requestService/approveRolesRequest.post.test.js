@@ -76,6 +76,8 @@ const policyEngine = {
   validate: jest.fn(),
 };
 
+const sendSubServiceRequestApproved = jest.fn();
+
 describe("When approving a sub service request", () => {
   let req;
   let res;
@@ -184,7 +186,7 @@ describe("When approving a sub service request", () => {
 
     postApproveRolesRequest =
       require("../../../../src/app/requestService/approveRolesRequest").post;
-    sendSubServiceRequestApproved = jest.fn();
+    sendSubServiceRequestApproved.mockReset();
     NotificationClient.mockReset().mockImplementation(() => ({
       sendSubServiceRequestApproved,
     }));

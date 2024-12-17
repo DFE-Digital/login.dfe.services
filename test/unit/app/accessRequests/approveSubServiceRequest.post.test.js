@@ -153,11 +153,11 @@ const model = {
 };
 jest.mock("../../../../src/app/users/utils");
 
+const sendSubServiceRequestApproved = jest.fn();
+
 describe("When reviewing a sub-service request for approving", () => {
   let req;
   let res;
-
-  let postSubServiceRequest;
 
   beforeEach(() => {
     req = mockRequest({
@@ -244,7 +244,7 @@ describe("When reviewing a sub-service request for approving", () => {
     });
 
     updateServiceRequest.mockReset();
-    updateServiceRequest.mockReturnValue((request = { success: true }));
+    updateServiceRequest.mockReturnValue({ success: true });
 
     getAndMapServiceRequest.mockReset();
     getAndMapServiceRequest.mockReturnValue(model);
@@ -255,13 +255,10 @@ describe("When reviewing a sub-service request for approving", () => {
     getNewRoleDetails.mockReset();
     getNewRoleDetails.mockReturnValue(listRoles);
 
-    sendSubServiceRequestApproved = jest.fn();
+    sendSubServiceRequestApproved.mockReset();
     NotificationClient.mockReset().mockImplementation(() => ({
       sendSubServiceRequestApproved,
     }));
-
-    postSubServiceRequest =
-      require("../../../../src/app/accessRequests/reviewSubServiceRequest").post;
   });
 
   it("then it should check if email notification is allowed for service", async () => {

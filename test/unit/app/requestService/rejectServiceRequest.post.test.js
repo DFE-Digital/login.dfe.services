@@ -126,7 +126,7 @@ describe("when posting a service rejection", () => {
     });
 
     updateServiceRequest.mockReset();
-    updateServiceRequest.mockReturnValue((request = { success: true }));
+    updateServiceRequest.mockReturnValue({ success: true });
 
     policyEngine.validate.mockReset().mockReturnValue([]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);

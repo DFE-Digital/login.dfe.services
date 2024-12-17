@@ -65,7 +65,6 @@ const {
   get: getResendInvitation,
   post: postResendInvitation,
 } = require("./resendInvitation");
-const { getApproverOrgsFromReq } = require("./utils");
 
 const router = express.Router({ mergeParams: true });
 

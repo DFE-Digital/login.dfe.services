@@ -190,7 +190,7 @@ describe("When reviewing a sub-service request for rejection", () => {
     ]);
 
     updateServiceRequest.mockReset();
-    updateServiceRequest.mockReturnValue((request = { success: true }));
+    updateServiceRequest.mockReturnValue({ success: true });
 
     getAndMapServiceRequest.mockReset();
     getAndMapServiceRequest.mockReturnValue(model);

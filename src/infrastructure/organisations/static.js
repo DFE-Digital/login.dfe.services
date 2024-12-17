@@ -1,19 +1,16 @@
-const getOrganisationAndServiceForUser = async (userId, correlationId) => {
+const getOrganisationAndServiceForUser = async () => {
   return Promise.resolve([]);
 };
 
-const getOrganisationAndServiceForUserV2 = async (userId, correlationId) => {
+const getOrganisationAndServiceForUserV2 = async () => {
   return Promise.resolve([]);
 };
 
-const getOrganisationAndServiceForInvitation = async (
-  invitationId,
-  correlationId,
-) => {
+const getOrganisationAndServiceForInvitation = async () => {
   return Promise.resolve([]);
 };
 
-const getOrganisationUsersForApproval = async (userId) => {
+const getOrganisationUsersForApproval = async () => {
   return Promise.resolve([
     {
       org_id: "60EEAA8D-D21D-44E9-BF10-6220E841FDAB",
@@ -28,11 +25,11 @@ const getOrganisationUsersForApproval = async (userId) => {
   ]);
 };
 
-const putUserInOrganisation = async (userId, orgId, role, correlationId) => {
+const putUserInOrganisation = async () => {
   return Promise.resolve();
 };
 
-const getAllUsersForOrganisation = async (orgId, correlationId) => {
+const getAllUsersForOrganisation = async () => {
   return Promise.resolve([
     {
       id: "60EEAA8D-D21D-44E9-BF10-6220E841FDAB",
@@ -46,32 +43,19 @@ const getAllUsersForOrganisation = async (orgId, correlationId) => {
   ]);
 };
 
-const getOrganisationById = async (orgId, correlationId) => {
+const getOrganisationById = async () => {
   return Promise.resolve({});
 };
 
-const deleteInvitationOrganisation = async (
-  invitationId,
-  organisationId,
-  correlationId,
-) => {
+const deleteInvitationOrganisation = async () => {
   return Promise.resolve();
 };
 
-const deleteUserOrganisation = async (
-  userId,
-  organisationId,
-  correlationId,
-) => {
+const deleteUserOrganisation = async () => {
   return Promise.resolve();
 };
 
-const putInvitationInOrganisation = async (
-  invitationId,
-  orgId,
-  role,
-  correlationId,
-) => {
+const putInvitationInOrganisation = async () => {
   return Promise.resolve();
 };
 
@@ -98,47 +82,35 @@ const searchOrganisations = async (
   return getPageOfOrganisations(pageNumber, correlationId);
 };
 
-const createUserOrganisationRequest = async (
-  userId,
-  orgId,
-  reason,
-  correlationId,
-) => {
+const createUserOrganisationRequest = async () => {
   return Promise.resolve();
 };
 
-const getAllRequestsForApprover = async (userId, correlationId) => {
+const getAllRequestsForApprover = async () => {
   return Promise.resolve();
 };
 
-const getRequestsForOrganisation = async (organisationId, correlationId) => {
+const getRequestsForOrganisation = async () => {
   return Promise.resolve();
 };
 
-const getRequestById = async (requestId, correlationId) => {
+const getRequestById = async () => {
   return Promise.resolve();
 };
 
-const updateRequestById = async (
-  requestId,
-  status,
-  actionedBy,
-  actionedReason,
-  actionedAt,
-  correlationId,
-) => {
+const updateRequestById = async () => {
   return Promise.resolve();
 };
 
-const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
+const getPendingRequestsAssociatedWithUser = async () => {
   return Promise.resolve();
 };
 
-const getApproversForOrganisation = async (organisationId, correlationId) => {
+const getApproversForOrganisation = async () => {
   return Promise.resolve();
 };
 
-const getLatestRequestAssociatedWithUser = async (userId, correlationId) => {
+const getLatestRequestAssociatedWithUser = async () => {
   return Promise.resolve();
 };
 
@@ -146,12 +118,7 @@ const getCategories = async () => {
   return Promise.resolve();
 };
 
-const getAllRequestsTypesForApprover = async (
-  userId,
-  pageSize,
-  pageNumber,
-  correlationId,
-) => {
+const getAllRequestsTypesForApprover = async () => {
   return Promise.resolve();
 };
 

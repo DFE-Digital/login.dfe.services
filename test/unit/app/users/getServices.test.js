@@ -18,7 +18,7 @@ jest.mock("./../../../../src/infrastructure/config", () => {
 jest.mock("login.dfe.dao", () => {
   return {
     services: {
-      list: async (pageNumber, pageSize) => {
+      list: async () => {
         return {
           count: 10,
           rows: [
@@ -163,9 +163,6 @@ describe("when displaying the users services", () => {
 
     expect(mockGetOrganisationAndServiceForUser.mock.calls).toHaveLength(1);
     expect(mockGetOrganisationAndServiceForUser.mock.calls[0][0]).toBe("user1");
-    expect(mockGetOrganisationAndServiceForUser.mock.calls[0][1]).toBe(
-      "correlationId",
-    );
   });
 
   it("then it should return the services view", async () => {

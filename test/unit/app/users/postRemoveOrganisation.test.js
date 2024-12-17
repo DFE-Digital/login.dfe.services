@@ -10,7 +10,7 @@ jest.mock("./../../../../src/infrastructure/organisations", () => {
   return {
     deleteInvitationOrganisation: jest.fn(),
     deleteUserOrganisation: jest.fn(),
-    getOrganisationAndServiceForUser: jest.fn((uid) => []),
+    getOrganisationAndServiceForUser: jest.fn(() => []),
   };
 });
 
@@ -43,6 +43,8 @@ const {
   getById,
   updateIndex,
 } = require("./../../../../src/infrastructure/search");
+
+const sendUserRemovedFromOrganisationStub = jest.fn();
 
 describe("when removing organisation access", () => {
   let req;
@@ -122,7 +124,7 @@ describe("when removing organisation access", () => {
     res = mockResponse();
     postRemoveOrganisationAccess =
       require("./../../../../src/app/users/removeOrganisationAccess").post;
-    sendUserRemovedFromOrganisationStub = jest.fn();
+    sendUserRemovedFromOrganisationStub.mockReset();
     NotificationClient.mockReset().mockImplementation(() => ({
       sendUserRemovedFromOrganisation: sendUserRemovedFromOrganisationStub,
     }));

@@ -1,4 +1,3 @@
-const _ = require("lodash");
 const config = require("./../../infrastructure/config");
 const {
   getSingleServiceForUser,

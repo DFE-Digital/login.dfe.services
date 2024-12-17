@@ -33,6 +33,8 @@ jest.mock("../../../../src/app/requestService/utils", () => {
 jest.mock("../../../../src/app/users/utils");
 jest.mock("login.dfe.jobs-client");
 
+const sendSubServiceRequestToApprovers = jest.fn();
+
 describe("When confirming and submiting a sub-service request", () => {
   let req;
   let res;
@@ -127,9 +129,9 @@ describe("When confirming and submiting a sub-service request", () => {
     res = mockResponse();
     postConfirmEditRolesRequest =
       require("../../../../src/app/requestService/confirmEditRolesRequest").post;
-    sendSubServiceRequestToApproversStub = jest.fn();
+    sendSubServiceRequestToApprovers.mockReset();
     NotificationClient.mockReset().mockImplementation(() => ({
-      sendSubServiceRequestToApprovers: sendSubServiceRequestToApproversStub,
+      sendSubServiceRequestToApprovers,
     }));
 
     uuid.mockImplementation(() => {
@@ -180,30 +182,26 @@ describe("When confirming and submiting a sub-service request", () => {
   it("then it should send an email notification to all Approvers at the organisation with the request", async () => {
     await postConfirmEditRolesRequest(req, res);
 
-    expect(sendSubServiceRequestToApproversStub.mock.calls).toHaveLength(1);
+    expect(sendSubServiceRequestToApprovers.mock.calls).toHaveLength(1);
 
-    expect(sendSubServiceRequestToApproversStub.mock.calls[0][0]).toBe("test");
-    expect(sendSubServiceRequestToApproversStub.mock.calls[0][1]).toBe("name");
-    expect(sendSubServiceRequestToApproversStub.mock.calls[0][2]).toBe(
+    expect(sendSubServiceRequestToApprovers.mock.calls[0][0]).toBe("test");
+    expect(sendSubServiceRequestToApprovers.mock.calls[0][1]).toBe("name");
+    expect(sendSubServiceRequestToApprovers.mock.calls[0][2]).toBe(
       "user.one@unit.test",
     );
-    expect(sendSubServiceRequestToApproversStub.mock.calls[0][3]).toBe("org1");
-    expect(sendSubServiceRequestToApproversStub.mock.calls[0][4]).toBe(
+    expect(sendSubServiceRequestToApprovers.mock.calls[0][3]).toBe("org1");
+    expect(sendSubServiceRequestToApprovers.mock.calls[0][4]).toBe(
       "organisationName",
     );
-    expect(sendSubServiceRequestToApproversStub.mock.calls[0][5]).toBe(
+    expect(sendSubServiceRequestToApprovers.mock.calls[0][5]).toBe(
       "service name",
     );
-    expect(sendSubServiceRequestToApproversStub.mock.calls[0][6]).toStrictEqual(
-      ["role_name"],
-    );
-    expect(sendSubServiceRequestToApproversStub.mock.calls[0][7]).toBe(
-      rejectUrl,
-    );
-    expect(sendSubServiceRequestToApproversStub.mock.calls[0][8]).toBe(
-      approveUrl,
-    );
-    expect(sendSubServiceRequestToApproversStub.mock.calls[0][9]).toBe(helpUrl);
+    expect(sendSubServiceRequestToApprovers.mock.calls[0][6]).toStrictEqual([
+      "role_name",
+    ]);
+    expect(sendSubServiceRequestToApprovers.mock.calls[0][7]).toBe(rejectUrl);
+    expect(sendSubServiceRequestToApprovers.mock.calls[0][8]).toBe(approveUrl);
+    expect(sendSubServiceRequestToApprovers.mock.calls[0][9]).toBe(helpUrl);
   });
 
   it("then it should audit log that sub-service request has been submitted", async () => {

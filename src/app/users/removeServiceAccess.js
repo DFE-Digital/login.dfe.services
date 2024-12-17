@@ -15,9 +15,6 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   isServiceEmailNotificationAllowed,
 } = require("./../../infrastructure/applications");
-const {
-  checkCacheForAllServices,
-} = require("../../infrastructure/helpers/allServicesAppCache");
 const { actions } = require("../constans/actions");
 
 const renderRemoveServicePage = (req, res, model) => {

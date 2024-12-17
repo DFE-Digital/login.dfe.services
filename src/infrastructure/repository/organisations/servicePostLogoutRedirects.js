@@ -1,5 +1,4 @@
 const Sequelize = require("sequelize").default;
-const Op = Sequelize.Op;
 
 const define = (db, schema) => {
   const model = db.define(

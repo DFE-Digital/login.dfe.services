@@ -9,7 +9,6 @@ jest.mock("./../../../../src/infrastructure/logger", () =>
 jest.mock("./../../../../src/app/users/utils");
 
 const {
-  getUserDetails,
   getAllServicesForUserInOrg,
 } = require("./../../../../src/app/users/utils");
 

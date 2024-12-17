@@ -2,12 +2,8 @@ const logger = require("../../../src/infrastructure/logger");
 const { getSingleServiceForUser } = require("../../../src/app/users/utils");
 const { createServiceRequest } = require("./utils");
 const { listRolesOfService } = require("./../../infrastructure/access");
-const { checkForActiveRequests } = require("./utils");
 const config = require("../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
-const {
-  isServiceEmailNotificationAllowed,
-} = require("../../../src/infrastructure/applications");
 const { v4: uuid } = require("uuid");
 
 const renderConfirmEditRolesPage = (res, model) => {
@@ -88,7 +84,6 @@ const post = async (req, res) => {
   const uid = req.params.uid;
   const organisationId = req.params.orgId;
   const serviceId = req.params.sid;
-  const isEmailAllowed = await isServiceEmailNotificationAllowed();
   const service = await getSingleServiceForUser(
     uid,
     organisationId,

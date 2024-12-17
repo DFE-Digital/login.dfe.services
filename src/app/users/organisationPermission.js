@@ -1,4 +1,5 @@
 const buildBackLink = (req) => {
+  let backRedirect;
   if (req.session.user.isInvite) {
     req.params.uid
       ? (backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/confirm-user`)
@@ -9,6 +10,7 @@ const buildBackLink = (req) => {
 };
 
 const buildRedirectLink = (req) => {
+  let continueRedirect;
   if (req.session.user.isInvite) {
     if (req.params.uid) {
       req.query.review

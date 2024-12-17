@@ -6,7 +6,6 @@ const {
 const {
   checkCacheForAllServices,
 } = require("../../infrastructure/helpers/allServicesAppCache");
-const Account = require("./../../infrastructure/account");
 const {
   getOrganisationAndServiceForUser,
   getOrganisationAndServiceForInvitation,
@@ -15,16 +14,6 @@ const {
 const action = async (req, res) => {
   const user = await getUserDetails(req);
   const isInvitation = req.params.uid.startsWith("inv-");
-  const userMigratedDetails = isInvitation
-    ? await Account.getInvitationById(req.params.uid.substr(4))
-    : await Account.getById(req.params.uid);
-  let isMigrated;
-  if (userMigratedDetails) {
-    isMigrated = userMigratedDetails.claims
-      ? userMigratedDetails.claims.isMigrated
-      : userMigratedDetails.isMigrated;
-  }
-
   const approverOrgs = getApproverOrgsFromReq(req);
   let userOrgs;
   if (isInvitation) {

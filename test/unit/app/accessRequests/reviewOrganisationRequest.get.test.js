@@ -8,11 +8,7 @@ jest.mock("login.dfe.dao", () =>
   require("./../../../utils/jestMocks").mockDao(),
 );
 jest.mock("./../../../../src/app/accessRequests/utils");
-const {
-  mockRequest,
-  mockResponse,
-  mockDao,
-} = require("./../../../utils/jestMocks");
+const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 const {
   getAndMapOrgRequest,
 } = require("./../../../../src/app/accessRequests/utils");

@@ -29,7 +29,6 @@ jest.mock("../../../../src/app/requestService/utils", () => {
   return {
     createServiceRequest: jest.fn(),
     checkForActiveRequests: jest.fn(),
-    getLastRequestDate: jest.fn(),
   };
 });
 describe("when displaying the request edit service view", () => {

@@ -25,7 +25,6 @@ const {
   getOrganisationAndServiceForInvitation,
 } = require("./../../../../src/infrastructure/organisations");
 const Account = require("./../../../../src/infrastructure/account");
-const config = require("../../../../src/infrastructure/config");
 
 describe("when entering a new users details", () => {
   let req;

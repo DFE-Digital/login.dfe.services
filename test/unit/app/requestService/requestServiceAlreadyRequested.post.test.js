@@ -10,7 +10,7 @@ jest.mock("./../../../../src/infrastructure/organisations");
 jest.mock("login.dfe.dao", () => {
   return {
     services: {
-      list: async (pageNumber, pageSize) => {
+      list: async () => {
         return {
           count: 10,
           rows: [
@@ -31,10 +31,10 @@ jest.mock("login.dfe.dao", () => {
       },
     },
     directories: {
-      fetchUserBanners: async (_userId, _bannerId) => {
+      fetchUserBanners: async () => {
         return null;
       },
-      createUserBanners: async (_userId, _bannerId) => {
+      createUserBanners: async () => {
         return Promise.resolve(true);
       },
     },

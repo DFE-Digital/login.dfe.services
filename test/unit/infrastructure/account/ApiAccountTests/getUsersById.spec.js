@@ -6,7 +6,7 @@ jest.mock("./../../../../../src/infrastructure/config", () => {
 jest.mock("login.dfe.dao", () => {
   return {
     directories: {
-      getUsers: async (ids) => {
+      getUsers: async () => {
         return [
           {
             email: "kevin.lewis@hq.local",

@@ -39,7 +39,7 @@ const {
 
 const { getApproverOrgsFromReq } = require("../users/utils");
 
-const action = (csrf, app) => {
+const action = (csrf) => {
   logger.info("Mounting accessRequest routes");
 
   router.use(isLoggedIn);

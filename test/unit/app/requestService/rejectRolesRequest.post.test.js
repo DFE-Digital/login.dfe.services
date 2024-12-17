@@ -7,10 +7,7 @@ const {
   checkCacheForAllServices,
 } = require("../../../../src/infrastructure/helpers/allServicesAppCache");
 const { getUserDetails } = require("../../../../src/app/users/utils");
-const {
-  listRolesOfService,
-  updateUserService,
-} = require("../../../../src/infrastructure/access");
+const { listRolesOfService } = require("../../../../src/infrastructure/access");
 const {
   isServiceEmailNotificationAllowed,
 } = require("../../../../src/infrastructure/applications");
@@ -63,6 +60,8 @@ const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
   validate: jest.fn(),
 };
+
+const sendSubServiceRequestRejected = jest.fn();
 
 describe("When approving a sub service request", () => {
   let req;
@@ -167,7 +166,7 @@ describe("When approving a sub service request", () => {
 
     postRejectRolesRequest =
       require("../../../../src/app/requestService/rejectRolesRequest").post;
-    sendSubServiceRequestRejected = jest.fn();
+    sendSubServiceRequestRejected.mockReset();
     NotificationClient.mockReset().mockImplementation(() => ({
       sendSubServiceRequestRejected,
     }));

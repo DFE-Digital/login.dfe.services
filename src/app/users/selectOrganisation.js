@@ -9,7 +9,6 @@ const {
   isViewOrganisationRequests,
   isRequestService,
   isAddService,
-  isEditService,
 } = require("./utils");
 const {
   recordRequestServiceBannerAck,

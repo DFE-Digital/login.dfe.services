@@ -40,7 +40,7 @@ const signUserOut = async (req, res) => {
       logger.info("service signout :: there is no redirect_uri and redirected");
       returnUrl = `${config.hostingEnvironment.profileUrl}/signout`;
     }
-    logout(req, res);
+    logout(req);
     if (skipIssuerSession && isValidRedirect) {
       logger.info(
         "service signout :: there is skipIssuer and a valid redirect",
@@ -65,7 +65,7 @@ const signUserOut = async (req, res) => {
     }
   } else {
     let isValidRedirect;
-    logout(req, res);
+    logout(req);
     // Check for valid redirect URL
     if (req.query.redirect_uri) {
       isValidRedirect = await isValidRedirectUrl(req.query.redirect_uri);
@@ -79,9 +79,9 @@ const signUserOut = async (req, res) => {
   }
 };
 
-const logout = (req, res) => {
+const logout = (req) => {
   req.logout(() => {
-    logger.info("user logged out.");
+    logger.info("User logged out.");
   });
   req.session = null; // Needed to clear session and completely logout
 };

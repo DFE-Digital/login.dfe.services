@@ -31,7 +31,7 @@ jest.mock("../../../../src/app/home/userBannersHandlers", () => {
 jest.mock("login.dfe.dao", () => {
   return {
     directories: {
-      fetchUserBanners: async (userId, bannerId) => {
+      fetchUserBanners: async () => {
         return null;
       },
     },
@@ -66,7 +66,6 @@ const {
   fetchSubServiceAddedBanners,
   fetchNewServiceBanners,
 } = require("../../../../src/app/home/userBannersHandlers");
-const flash = require("login.dfe.express-flash-2");
 
 const res = mockResponse();
 const userAccess = [

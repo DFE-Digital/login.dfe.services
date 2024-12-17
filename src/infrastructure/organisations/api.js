@@ -1,7 +1,7 @@
 const config = require("./../config");
 const jwtStrategy = require("login.dfe.jwt-strategies");
 const { fetchApi } = require("login.dfe.async-retry");
-const { organisation, invitation, services } = require("login.dfe.dao");
+const { organisation, invitation } = require("login.dfe.dao");
 
 const callApi = async (method, path, correlationId, body) => {
   const token = await jwtStrategy(

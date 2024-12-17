@@ -34,15 +34,15 @@ class StaticAccount extends Account {
     return Promise.resolve(account ? new StaticAccount(account) : null);
   }
 
-  async getUsersById(ids) {
+  async getUsersById() {
     return Promise.resolve(null);
   }
 
-  static async updateInvite(id, email) {
+  static async updateInvite() {
     return Promise.resolve(null);
   }
 
-  static async resendInvitation(id) {
+  static async resendInvitation() {
     return Promise.resolve(null);
   }
 }

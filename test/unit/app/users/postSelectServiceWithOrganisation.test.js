@@ -2,7 +2,6 @@ const { mockRequest, mockResponse } = require("../../../utils/jestMocks");
 const {
   isOrgEndUser,
   isRemoveService,
-  getOrgNaturalIdentifiers,
 } = require("../../../../src/app/users/utils");
 
 jest.mock("./../../../../src/infrastructure/config", () =>
@@ -43,8 +42,6 @@ jest.mock("login.dfe.dao", () => {
     },
   };
 });
-
-const dao = require("login.dfe.dao");
 
 describe("when selecting a service (with organisation)", () => {
   let req;

@@ -14,7 +14,7 @@ const {
 
 const router = express.Router({ mergeParams: true });
 
-const home = (csrf, app) => {
+const home = (csrf) => {
   logger.info("Mounting home routes");
 
   router.get("/", asyncWrapper(getIndex));

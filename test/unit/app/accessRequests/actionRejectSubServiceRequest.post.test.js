@@ -110,15 +110,7 @@ const viewModel = {
   service_name: "service one",
   roles: listRoles,
 };
-const model = {
-  csrfToken: "abcde",
-  title: "Reason for rejection - DfE Sign-in",
-  backLink: `/access-requests/subService-requests/request1`,
-  cancelLink: `/access-requests/requests`,
-  reason: "not needed",
-  validationMessages: {},
-  currentPage: "requests",
-};
+
 const buildModel = {
   _changed: 0,
   _options: null,
@@ -236,7 +228,7 @@ describe("When actioning a sub-service request for rejection", () => {
     });
 
     updateServiceRequest.mockReset();
-    updateServiceRequest.mockReturnValue((request = { success: true }));
+    updateServiceRequest.mockReturnValue({ success: true });
 
     getAndMapServiceRequest.mockReset();
     getAndMapServiceRequest.mockReturnValue(buildModel);

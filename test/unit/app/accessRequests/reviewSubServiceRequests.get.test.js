@@ -91,32 +91,7 @@ const listRoles = [
     numericId: "124",
   },
 ];
-const model = {
-  _changed: 0,
-  _options: null,
-  _previousDataValues: null,
-  approverEmail: "",
-  approverName: "",
-  dataValues: {
-    id: "request1",
-    actioned_by: null,
-    actioned_at: null,
-    actioned_reason: "Pending",
-    createdAt: new Date(),
-    organisation_id: "org1",
-    reason: "",
-    role_ids: "role1",
-    service_id: "service1",
-    status: 0,
-    updatedAt: new Date(),
-    user_id: "endUser1",
-  },
-  endUsersEmail: "b@b.gov.uk",
-  endUsersFamilyName: "b",
-  endUsersGvenName: "b",
-  isNewRecord: false,
-  organisation: { id: "org1", name: "accademic organisatioon" },
-};
+
 jest.mock("../../../../src/app/users/utils");
 
 describe("When reviewing a sub-service request for approving", () => {

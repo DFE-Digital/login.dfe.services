@@ -11,7 +11,7 @@ jest.mock("./../../../../src/infrastructure/config", () => {
 jest.mock("login.dfe.dao", () => {
   return {
     services: {
-      list: async (pageNumber, pageSize) => {
+      list: async () => {
         return {
           count: 10,
           rows: [
@@ -106,6 +106,9 @@ const logger = require("./../../../../src/infrastructure/logger");
 
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
+const sendUserAddedToOrganisationStub = jest.fn();
+const sendServiceAddedStub = jest.fn();
+const sendServiceRequestApprovedStub = jest.fn();
 
 describe("when inviting a new user", () => {
   let req;
@@ -285,9 +288,9 @@ describe("when inviting a new user", () => {
     ]);
     postConfirmNewUser =
       require("./../../../../src/app/users/confirmNewUser").post;
-    sendUserAddedToOrganisationStub = jest.fn();
-    sendServiceAddedStub = jest.fn();
-    sendServiceRequestApprovedStub = jest.fn();
+    sendUserAddedToOrganisationStub.mockReset();
+    sendServiceAddedStub.mockReset();
+    sendServiceRequestApprovedStub.mockReset();
 
     NotificationClient.mockReset().mockImplementation(() => ({
       sendUserAddedToOrganisation: sendUserAddedToOrganisationStub,
