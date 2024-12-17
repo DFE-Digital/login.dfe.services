@@ -1,7 +1,16 @@
 {
   "name": "login.dfe.services",
   "version": "14.0.0",
+  "engines": {
+    "node": "18.x.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DFE-Digital/login.dfe.services.git"
+  },
   "description": "",
+  "author": "",
+  "license": "MIT",
   "scripts": {
     "dev": "settings='./config/login.dfe.services.dev.json' node src/index.js",
     "dev:checks": "npm run lint && npm run test",
@@ -17,19 +26,6 @@
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   },
-  "engines": {
-    "node": "18.x.x"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DFE-Digital/login.dfe.services.git"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/DFE-Digital/login.dfe.services/issues"
-  },
-  "homepage": "https://github.com/DFE-Digital/login.dfe.services#readme",
   "dependencies": {
     "agentkeepalive": "^4.5.0",
     "applicationinsights": "^2.0.0",
