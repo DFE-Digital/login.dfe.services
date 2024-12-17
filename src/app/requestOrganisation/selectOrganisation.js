@@ -70,10 +70,7 @@ const post = async (req, res) => {
 
   if (req.body.selectedOrganisation) {
     // check if associated to org
-    const userOrgs = await getOrganisationAndServiceForUserV2(
-      req.user.sub,
-      req.id,
-    );
+    const userOrgs = await getOrganisationAndServiceForUserV2(req.user.sub);
     const userAssociatedToOrg = userOrgs
       ? userOrgs.find(
           (x) => x.organisation.id === req.body.selectedOrganisation,

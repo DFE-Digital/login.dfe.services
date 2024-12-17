@@ -54,7 +54,7 @@ const getAllAvailableServices = async (req) => {
   const servicesNotAvailableThroughPolicies = [];
   const userOrganisations =
     req.params.uid && !req.params.uid.startsWith("inv-")
-      ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
+      ? await getOrganisationAndServiceForUserV2(req.params.uid)
       : undefined;
   const userAccessToSpecifiedOrganisation = userOrganisations
     ? userOrganisations.find(

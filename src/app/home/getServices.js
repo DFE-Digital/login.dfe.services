@@ -109,10 +109,7 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
     multiOrgDetails: { orgs: 0, approvers: 0 },
   };
   let approvers = [];
-  const organisations = await getOrganisationAndServiceForUser(
-    account.id,
-    correlationId,
-  );
+  const organisations = await getOrganisationAndServiceForUser(account.id);
   const allApprovers = await getApproversDetails(organisations, correlationId);
 
   // Check for organisations and services for the user account
@@ -144,7 +141,6 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
     // If no organisations assigned to a user account then check for pending requests.
     const pendingUserRequests = await getPendingRequestsAssociatedWithUser(
       account.id,
-      correlationId,
     );
     if (pendingUserRequests && pendingUserRequests.length > 0) {
       taskListStatus.hasRequestPending = true;
@@ -162,11 +158,7 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
   return { taskListStatus, approvers };
 };
 
-const getOrganisationsAndServices = async (
-  services,
-  account,
-  correlationId,
-) => {
+const getOrganisationsAndServices = async (services, account) => {
   const organisationDetails =
     (await getOrganisationAndServiceForUser(account.id)) || [];
   const organisationDetailsMap = new Map(
@@ -204,11 +196,7 @@ const getOrganisationsAndServices = async (
 const getServices = async (req, res) => {
   const account = Account.fromContext(req.user);
   const allServices = await getAndMapServices(account, req.id);
-  const services = await getOrganisationsAndServices(
-    allServices,
-    account,
-    req.id,
-  );
+  const services = await getOrganisationsAndServices(allServices, account);
   const approverRequests = req.organisationRequests || [];
   let taskListStatusAndApprovers;
   if (services.length <= 0) {
@@ -246,10 +234,7 @@ const getServices = async (req, res) => {
     removeServicesRedirect = `/approvals/select-organisation-service?action=${actions.REMOVE_SERVICE}`;
   } else {
     editServicesRedirect = `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
-    const organisations = await getOrganisationAndServiceForUser(
-      account.id,
-      req.id,
-    );
+    const organisations = await getOrganisationAndServiceForUser(account.id);
     const orgLength = organisations.length;
 
     if (isEndUser && orgLength > 0) {

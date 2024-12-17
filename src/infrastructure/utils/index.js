@@ -102,7 +102,6 @@ const setUserContext = async (req, res, next) => {
     res.locals.displayName = getUserDisplayName(req.user);
     const organisations = await getOrganisationAndServiceForUserV2(
       req.user.sub,
-      req.id,
     );
     req.userOrganisations = organisations;
     try {

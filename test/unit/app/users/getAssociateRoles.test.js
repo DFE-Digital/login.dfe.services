@@ -144,10 +144,7 @@ describe("when displaying the associate roles view", () => {
     await getAssociateRoles(req, res);
 
     expect(getOrganisationAndServiceForUserV2).toHaveBeenCalledTimes(1);
-    expect(getOrganisationAndServiceForUserV2).toHaveBeenCalledWith(
-      "user1",
-      "correlationId",
-    );
+    expect(getOrganisationAndServiceForUserV2).toHaveBeenCalledWith("user1");
   });
 
   it('then it should not get the users organisations when building the view model if the user is in "invite" satus', async () => {

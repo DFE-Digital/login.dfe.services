@@ -32,7 +32,7 @@ const getViewModel = async (req) => {
 
   const userOrganisations =
     req.params.uid && !req.params.uid.startsWith("inv-")
-      ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
+      ? await getOrganisationAndServiceForUserV2(req.params.uid)
       : undefined;
   const userAccessToSpecifiedOrganisation = userOrganisations
     ? userOrganisations.find(
@@ -135,7 +135,7 @@ const post = async (req, res) => {
 
   const userOrganisations =
     req.params.uid && !req.params.uid.startsWith("inv-")
-      ? await getOrganisationAndServiceForUserV2(req.params.uid, req.id)
+      ? await getOrganisationAndServiceForUserV2(req.params.uid)
       : undefined;
   const userAccessToSpecifiedOrganisation = userOrganisations
     ? userOrganisations.find(

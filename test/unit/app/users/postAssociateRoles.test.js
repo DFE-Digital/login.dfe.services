@@ -126,10 +126,7 @@ describe("when selecting the roles for a service", () => {
     await postAssociateRoles(req, res);
 
     expect(getOrganisationAndServiceForUserV2).toHaveBeenCalledTimes(1);
-    expect(getOrganisationAndServiceForUserV2).toHaveBeenCalledWith(
-      "user1",
-      "correlationId",
-    );
+    expect(getOrganisationAndServiceForUserV2).toHaveBeenCalledWith("user1");
   });
 
   it('then it should not get the users organisations if the user is in "invite" satus', async () => {

@@ -84,7 +84,6 @@ const validate = async (req) => {
     if (existingUser && existingUser.claims) {
       const userOrganisations = await getOrganisationAndServiceForUser(
         existingUser.claims.sub,
-        req.id,
       );
       const isUserInOrg = userOrganisations.find(
         (x) => x.organisation.id === req.params.orgId,

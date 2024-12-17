@@ -19,10 +19,7 @@ const getApproversDetails = async (organisations) => {
 };
 
 const getAndMapOrganisationsAndServices = async (account, correlationId) => {
-  const organisations = await getOrganisationAndServiceForUser(
-    account.id,
-    correlationId,
-  );
+  const organisations = await getOrganisationAndServiceForUser(account.id);
   const allApprovers = await getApproversDetails(organisations, correlationId);
 
   return organisations.map((organisation) => {
@@ -50,10 +47,9 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
   });
 };
 
-const getAndMapPendingRequests = async (account, correlationId) => {
+const getAndMapPendingRequests = async (account) => {
   const pendingUserRequests = await getPendingRequestsAssociatedWithUser(
     account.id,
-    correlationId,
   );
   return pendingUserRequests.map((org) => ({
     id: org.org_id,
@@ -87,7 +83,7 @@ const organisations = async (req, res) => {
     account,
     req.id,
   );
-  const organisationRequests = await getAndMapPendingRequests(account, req.id);
+  const organisationRequests = await getAndMapPendingRequests(account);
   const allOrgs = organisations.concat(organisationRequests);
   const sortedOrgs = sortBy(allOrgs, "name");
   const approverRequests = req.organisationRequests || [];

@@ -62,7 +62,7 @@ const validate = async (req) => {
       "Organisation has reached the limit for requests";
   }
   if (
-    (await getPendingRequestsAssociatedWithUser(req.user.sub, req.id)).length >
+    (await getPendingRequestsAssociatedWithUser(req.user.sub)).length >
     requestLimit
   ) {
     model.validationMessages.limitUser =

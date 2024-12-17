@@ -326,7 +326,6 @@ describe("when inviting a new user", () => {
     expect(putInvitationInOrganisation.mock.calls[0][0]).toBe("invite1");
     expect(putInvitationInOrganisation.mock.calls[0][1]).toBe("org1");
     expect(putInvitationInOrganisation.mock.calls[0][2]).toBe(0);
-    expect(putInvitationInOrganisation.mock.calls[0][3]).toBe("correlationId");
   });
 
   it("then it should add services to invitation for organisation", async () => {

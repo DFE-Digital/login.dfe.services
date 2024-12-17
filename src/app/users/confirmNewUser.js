@@ -167,7 +167,6 @@ const post = async (req, res) => {
         invitationId,
         organisationId,
         req.session.user.permission,
-        req.id,
       );
     } else {
       await putUserInOrganisation(
@@ -181,8 +180,8 @@ const post = async (req, res) => {
   }
 
   const mngUserOrganisations = invitationId
-    ? await getOrganisationAndServiceForInvitation(invitationId, req.id)
-    : await getOrganisationAndServiceForUser(uid, req.id);
+    ? await getOrganisationAndServiceForInvitation(invitationId)
+    : await getOrganisationAndServiceForUser(uid);
   const mngUserOrganisationDetails = mngUserOrganisations.find(
     (x) => x.organisation.id === organisation.id,
   );
@@ -197,10 +196,8 @@ const post = async (req, res) => {
   // if existing user not in org
   if (!invitationId) {
     if (req.session.user.isInvite) {
-      const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(
-        uid,
-        req.id,
-      );
+      const pendingOrgRequests =
+        await getPendingRequestsAssociatedWithUser(uid);
       const requestForOrg = pendingOrgRequests.find(
         (x) => x.org_id === organisationId,
       );

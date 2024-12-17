@@ -202,10 +202,7 @@ const isAllowedToApproveReq = async (req, res, next) => {
 
 const getOrganisationPermissionLevel = async (userId, orgId, correlationId) => {
   try {
-    const userOrganisations = await getOrganisationAndServiceForUser(
-      userId,
-      correlationId,
-    );
+    const userOrganisations = await getOrganisationAndServiceForUser(userId);
     const userOrganisationDetails = userOrganisations.find(
       (x) => x.organisation.id === orgId,
     );

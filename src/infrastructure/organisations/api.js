@@ -28,7 +28,7 @@ const callApi = async (method, path, correlationId, body) => {
   );
 };
 
-const getOrganisationAndServiceForUser = async (userId, correlationId) => {
+const getOrganisationAndServiceForUser = async (userId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
@@ -40,14 +40,7 @@ const getOrganisationUsersForApproval = async (userId, correlationId) => {
   );
 };
 
-const putUserInOrganisation = async (
-  userId,
-  orgId,
-  status,
-  role,
-  reason,
-  correlationId,
-) => {
+const putUserInOrganisation = async (userId, orgId, status, role, reason) => {
   const userOrg = {
     user_id: userId,
     organisation_id: orgId,
@@ -58,38 +51,17 @@ const putUserInOrganisation = async (
   return organisation.putUserOrganisation(userOrg);
 };
 
-const getAllUsersForOrganisation = async (orgId, correlationId) => {
-  try {
-    return await organisation.getUsersAssociatedWithOrganisation(orgId);
-  } catch (ex) {
-    throw ex;
-  }
-};
-
-const deleteUserOrganisation = async (
-  userId,
-  organisationId,
-  correlationId,
-) => {
+const deleteUserOrganisation = async (userId, organisationId) => {
   return await organisation.deleteUserOrganisation(organisationId, userId);
 };
-const deleteInvitationOrganisation = async (
-  invitationId,
-  organisationId,
-  correlationId,
-) => {
+const deleteInvitationOrganisation = async (invitationId, organisationId) => {
   return await invitation.deleteInvitationOrganisation(
     organisationId,
     invitationId,
   );
 };
 
-const putInvitationInOrganisation = async (
-  invitationId,
-  orgId,
-  role,
-  correlationId,
-) => {
+const putInvitationInOrganisation = async (invitationId, orgId, role) => {
   return invitation.putInvitationOrganisation(
     invitationId,
     orgId,
@@ -99,10 +71,7 @@ const putInvitationInOrganisation = async (
   );
 };
 
-const getOrganisationAndServiceForInvitation = async (
-  invitationId,
-  correlationId,
-) => {
+const getOrganisationAndServiceForInvitation = async (invitationId) => {
   return await invitation.getInvitationResponseById(invitationId);
 };
 
@@ -110,7 +79,7 @@ const getOrganisationById = async (orgId) => {
   return await organisation.getOrganisation(orgId);
 };
 
-const getOrganisationAndServiceForUserV2 = async (userId, correlationId) => {
+const getOrganisationAndServiceForUserV2 = async (userId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
@@ -232,7 +201,7 @@ const updateRequestById = async (
   if (rowsUpdated === 0) throw new Error("ENOTFOUND");
 };
 
-const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
+const getPendingRequestsAssociatedWithUser = async (userId) => {
   const pendingRequests =
     await organisation.getPendingUserOrganisationRequestsForUser(userId);
   return pendingRequests;
@@ -258,7 +227,6 @@ module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
   putUserInOrganisation,
-  getAllUsersForOrganisation,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   putInvitationInOrganisation,

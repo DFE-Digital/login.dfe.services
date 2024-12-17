@@ -18,12 +18,9 @@ const action = async (req, res) => {
   let userOrgs;
   if (isInvitation) {
     const invitationId = req.params.uid.substr(4);
-    userOrgs = await getOrganisationAndServiceForInvitation(
-      invitationId,
-      req.id,
-    );
+    userOrgs = await getOrganisationAndServiceForInvitation(invitationId);
   } else {
-    userOrgs = await getOrganisationAndServiceForUser(req.params.uid, req.id);
+    userOrgs = await getOrganisationAndServiceForUser(req.params.uid);
   }
 
   // get array of org ids where current user is an approver

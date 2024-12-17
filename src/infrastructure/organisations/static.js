@@ -29,20 +29,6 @@ const putUserInOrganisation = async () => {
   return Promise.resolve();
 };
 
-const getAllUsersForOrganisation = async () => {
-  return Promise.resolve([
-    {
-      id: "60EEAA8D-D21D-44E9-BF10-6220E841FDAB",
-      status: 1,
-      role: {
-        id: 0,
-        name: "End user",
-      },
-      numberOfPages: 1,
-    },
-  ]);
-};
-
 const getOrganisationById = async () => {
   return Promise.resolve({});
 };
@@ -126,7 +112,6 @@ module.exports = {
   getOrganisationAndServiceForUser,
   getOrganisationUsersForApproval,
   putUserInOrganisation,
-  getAllUsersForOrganisation,
   deleteInvitationOrganisation,
   deleteUserOrganisation,
   putInvitationInOrganisation,

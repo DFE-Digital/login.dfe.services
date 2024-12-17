@@ -219,7 +219,6 @@ const post = async (req, res) => {
 
   const mngUserOrganisations = await getOrganisationAndServiceForUser(
     req.params.uid,
-    req.id,
   );
   const mngUserOrganisationDetails = mngUserOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,

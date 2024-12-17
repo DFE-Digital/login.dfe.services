@@ -77,7 +77,7 @@ const post = async (req, res) => {
         req.id,
       );
     }
-    await deleteInvitationOrganisation(uid.substr(4), organisationId, req.id);
+    await deleteInvitationOrganisation(uid.substr(4), organisationId);
   } else {
     var userOrgs = await getOrganisationAndServiceForUser(uid);
     for (let i = 0; i < servicesForUser.length; i++) {
@@ -87,7 +87,7 @@ const post = async (req, res) => {
     const organisation = currentOrganisationDetails.filter(
       (org) => org.id === organisationId,
     );
-    await deleteUserOrganisation(uid, organisationId, req.id);
+    await deleteUserOrganisation(uid, organisationId);
     if (isEmailAllowed) {
       const notificationClient = new NotificationClient({
         connectionString: config.notifications.connectionString,

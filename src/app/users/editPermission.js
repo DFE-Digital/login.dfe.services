@@ -44,17 +44,9 @@ const post = async (req, res) => {
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
 
   if (uid.startsWith("inv-")) {
-    await putInvitationInOrganisation(
-      uid.substr(4),
-      organisationId,
-      roleId,
-      req.id,
-    );
+    await putInvitationInOrganisation(uid.substr(4), organisationId, roleId);
   } else {
-    const mngUserOrganisations = await getOrganisationAndServiceForUser(
-      uid,
-      req.id,
-    );
+    const mngUserOrganisations = await getOrganisationAndServiceForUser(uid);
 
     await putUserInOrganisation(uid, organisationId, 1, roleId, req.id);
     if (isEmailAllowed) {
