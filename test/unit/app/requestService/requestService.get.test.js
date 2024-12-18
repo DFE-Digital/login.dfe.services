@@ -1,54 +1,58 @@
-jest.mock('login.dfe.policy-engine');
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
-jest.mock('./../../../../src/app/users/utils');
-jest.mock('./../../../../src/app/users/utils');
+jest.mock("login.dfe.policy-engine");
+jest.mock("./../../../../src/infrastructure/config", () =>
+  require("./../../../utils/jestMocks").mockConfig(),
+);
+jest.mock("./../../../../src/infrastructure/logger", () =>
+  require("./../../../utils/jestMocks").mockLogger(),
+);
+jest.mock("./../../../../src/app/users/utils");
+jest.mock("./../../../../src/app/users/utils");
 
-
-jest.mock('login.dfe.dao', () => {
+jest.mock("login.dfe.dao", () => {
   return {
     services: {
-      list: async (pageNumber, pageSize) => {
+      list: async () => {
         return {
           count: 10,
           rows: [
             {
-              id: 'service1',
+              id: "service1",
               isExternalService: true,
               isMigrated: true,
-              name: 'Service One',
+              name: "Service One",
             },
             {
-              id: 'service2',
+              id: "service2",
               isExternalService: true,
               isMigrated: true,
-              name: 'Service two',
+              name: "Service two",
             },
           ],
         };
       },
     },
     directories: {
-      fetchUserBanners: async (_userId, _bannerId) => {
-        return null
+      fetchUserBanners: async () => {
+        return null;
       },
-      createUserBanners: async (_userId, _bannerId) => {
-        return Promise.resolve(true)
-      }
-    }
+      createUserBanners: async () => {
+        return Promise.resolve(true);
+      },
+    },
   };
 });
 
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-const { getAllServicesForUserInOrg } = require('./../../../../src/app/users/utils');
+const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
+const {
+  getAllServicesForUserInOrg,
+} = require("./../../../../src/app/users/utils");
 
-const PolicyEngine = require('login.dfe.policy-engine');
+const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
 };
 
-
-describe('when displaying the request a service page', () => {
+describe("when displaying the request a service page", () => {
   let req;
   let res;
   let get;
@@ -56,35 +60,35 @@ describe('when displaying the request a service page', () => {
   beforeEach(() => {
     req = mockRequest();
     req.params = {
-      uid: 'user1',
-      orgId: 'org1',
-      sid: 'service1',
+      uid: "user1",
+      orgId: "org1",
+      sid: "service1",
     };
     req.session = {
       user: {
-        email: 'test@test.com',
-        firstName: 'test',
-        lastName: 'name',
+        email: "test@test.com",
+        firstName: "test",
+        lastName: "name",
         services: [
           {
-            serviceId: 'service1',
+            serviceId: "service1",
             roles: [],
           },
         ],
       },
     };
     req.user = {
-      sub: 'user1',
-      email: 'user.one@unit.test',
+      sub: "user1",
+      email: "user.one@unit.test",
       organisations: [
         {
           organisation: {
-            id: 'organisationId',
-            name: 'organisationName',
+            id: "organisationId",
+            name: "organisationName",
           },
           role: {
             id: 0,
-            name: 'category name',
+            name: "category name",
           },
         },
       ],
@@ -92,12 +96,12 @@ describe('when displaying the request a service page', () => {
     req.userOrganisations = [
       {
         organisation: {
-          id: 'organisationId',
-          name: 'organisationName',
+          id: "organisationId",
+          name: "organisationName",
         },
         role: {
           id: 0,
-          name: 'category name',
+          name: "category name",
         },
       },
     ];
@@ -106,36 +110,40 @@ describe('when displaying the request a service page', () => {
     getAllServicesForUserInOrg.mockReset();
     getAllServicesForUserInOrg.mockReturnValue([
       {
-        id: 'service2',
-        dateActivated: '10/10/2018',
-        name: 'service name',
-        status: 'active',
+        id: "service2",
+        dateActivated: "10/10/2018",
+        name: "service name",
+        status: "active",
         isExternalService: true,
       },
     ]);
 
-    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
-      policiesAppliedForUser: [],
-      rolesAvailableToUser: [],
-      serviceAvailableToUser: true,
-    });
+    policyEngine.getPolicyApplicationResultsForUser
+      .mockReset()
+      .mockReturnValue({
+        policiesAppliedForUser: [],
+        rolesAvailableToUser: [],
+        serviceAvailableToUser: true,
+      });
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
-    get = require('./../../../../src/app/requestService/requestService').get;
+    get = require("./../../../../src/app/requestService/requestService").get;
   });
 
-  it('then it should display the select service page', async () => {
+  it("then it should display the select service page", async () => {
     await get(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('requestService/views/requestService');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "requestService/views/requestService",
+    );
   });
 
-  it('then it should include csrf token', async () => {
+  it("then it should include csrf token", async () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      csrfToken: 'token',
+      csrfToken: "token",
     });
   });
 });

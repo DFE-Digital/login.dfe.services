@@ -1,19 +1,21 @@
-const Account = require('./../../infrastructure/account');
-const { updateUserService } = require('../../infrastructure/access');
-const { updateServiceRequest } = require('../requestService/utils');
+const Account = require("./../../infrastructure/account");
+const { updateUserService } = require("../../infrastructure/access");
+const { updateServiceRequest } = require("../requestService/utils");
 const {
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
   generateFlashMessages,
   getRoleAndServiceNames,
   getOrganisationPermissionLevel,
-} = require('./utils');
-const { createSubServiceAddedBanners } = require('../home/userBannersHandlers');
-const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
-const { actions } = require('../constans/actions');
-const logger = require('./../../infrastructure/logger');
-const config = require('./../../infrastructure/config');
-const { NotificationClient } = require('login.dfe.jobs-client');
+} = require("./utils");
+const { createSubServiceAddedBanners } = require("../home/userBannersHandlers");
+const {
+  isServiceEmailNotificationAllowed,
+} = require("../../../src/infrastructure/applications");
+const { actions } = require("../constans/actions");
+const logger = require("./../../infrastructure/logger");
+const config = require("./../../infrastructure/config");
+const { NotificationClient } = require("login.dfe.jobs-client");
 
 const validate = async (req) => {
   const buildmodel = await getAndMapServiceRequest(req.params.rid);
@@ -23,25 +25,33 @@ const validate = async (req) => {
   if (req.session.roleIds !== undefined) {
     if (req.session.roleIds !== viewModel.role_ids) {
       viewModel.role_ids = req.session.roleIds;
-      let submodel = await getRoleAndServiceNames(viewModel, req.params.rid, req);
-      viewModel.roles = submodel.roles.filter((x) => x !== undefined).sort((a, b) => a.name.localeCompare(b.name));
+      let submodel = await getRoleAndServiceNames(
+        viewModel,
+        req.params.rid,
+        req,
+      );
+      viewModel.roles = submodel.roles
+        .filter((x) => x !== undefined)
+        .sort((a, b) => a.name.localeCompare(b.name));
       req.session.roles = viewModel.roles;
     } else {
       req.session.roles = viewModel.roles;
     }
   }
   const model = {
-    title: 'Review request - DfE Sign-in',
+    title: "Review request - DfE Sign-in",
     backLink: `/access-requests/requests`,
     cancelLink: `/access-requests/requests`,
     viewModel,
     selectedResponse: req.body.selectedResponse,
     validationMessages: {},
-    currentPage: 'requests',
+    currentPage: "requests",
   };
   if (model.selectedResponse === undefined || model.selectedResponse === null) {
-    model.validationMessages.selectedResponse = 'Approve or Reject must be selected';
-    model.viewModel.validationMessages.selectedResponse = 'Approve or Reject must be selected';
+    model.validationMessages.selectedResponse =
+      "Approve or Reject must be selected";
+    model.viewModel.validationMessages.selectedResponse =
+      "Approve or Reject must be selected";
   } else if (model.viewModel.approverEmail) {
     model.validationMessages.selectedResponse = `Request already actioned by ${model.viewModel.approverEmail}`;
     model.viewModel.validationMessages.selectedResponse = `Request already actioned by ${model.viewModel.approverEmail}`;
@@ -56,7 +66,11 @@ const get = async (req, res) => {
   if (req.session.roleIds !== undefined) {
     if (req.session.roleIds !== viewModel.role_ids) {
       viewModel.role_ids = req.session.roleIds;
-      let submodel = await getRoleAndServiceNames(viewModel, req.params.rid, req);
+      let submodel = await getRoleAndServiceNames(
+        viewModel,
+        req.params.rid,
+        req,
+      );
       viewModel.roles = submodel.roles.filter((x) => x !== undefined);
       req.session.roles = viewModel.roles;
     } else {
@@ -69,7 +83,7 @@ const get = async (req, res) => {
   if (viewModel.actioned_by && (viewModel.status === -1 || 1)) {
     const user = await Account.getById(viewModel.actioned_by);
     const { title, heading, message } = generateFlashMessages(
-      'service',
+      "service",
       viewModel.status,
       user.claims.email,
       viewModel.endUsersGivenName,
@@ -77,24 +91,28 @@ const get = async (req, res) => {
       viewModel.roles.map((i) => i?.name),
       res,
     );
-    res.flash('title', `${title}`);
-    res.flash('heading', `${heading}`);
-    res.flash('message', `${message}`);
+    res.flash("title", `${title}`);
+    res.flash("heading", `${heading}`);
+    res.flash("message", `${message}`);
     return res.redirect(`/access-requests/requests`);
   }
-  return res.render('accessRequests/views/reviewSubServiceRequest', viewModel);
+  return res.render("accessRequests/views/reviewSubServiceRequest", viewModel);
 };
 
 const post = async (req, res) => {
   const model = await validate(req);
   const request = await getAndMapServiceRequest(req.params.rid);
-  if (request.dataValues.status === -1 || 1) {
-    const alreadyActioned = await getSubServiceRequestVieModel(request, req.id, req);
+  if (request.dataValues.status === -1 || request.dataValues.status === 1) {
+    const alreadyActioned = await getSubServiceRequestVieModel(
+      request,
+      req.id,
+      req,
+    );
     if (alreadyActioned.actioned_by) {
       model.viewModel.validationMessages.alreadyActioned = `Request already actioned by ${alreadyActioned.actioned_by}`;
       const user = await Account.getById(alreadyActioned.actioned_by);
       const { title, heading, message } = generateFlashMessages(
-        'service',
+        "service",
         request.dataValues.status,
         alreadyActioned.endUsersGivenName,
         user.claims.email,
@@ -102,9 +120,9 @@ const post = async (req, res) => {
         alreadyActioned.roles.map((i) => i.name),
         res,
       );
-      res.flash('title', `${title}`);
-      res.flash('heading', `${heading}`);
-      res.flash('message', `${message}`);
+      res.flash("title", `${title}`);
+      res.flash("heading", `${heading}`);
+      res.flash("message", `${message}`);
       return res.redirect(`/access-requests/requests`);
     }
   }
@@ -112,19 +130,29 @@ const post = async (req, res) => {
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
     model.viewModel.csrfToken = req.csrfToken();
-    return res.render('accessRequests/views/reviewSubServiceRequest', model.viewModel);
+    return res.render(
+      "accessRequests/views/reviewSubServiceRequest",
+      model.viewModel,
+    );
   }
 
-  if (model.selectedResponse === 'reject') {
+  if (model.selectedResponse === "reject") {
     model.csrfToken = req.csrfToken();
     model.viewModel.csrfToken = req.csrfToken();
     model.validationMessages = {};
     model.viewModel.validationMessages = {};
 
-    return res.redirect(`/access-requests/subService-requests/${req.params.rid}/rejected`);
-  } else if (model.selectedResponse === 'approve') {
-    const request = await updateServiceRequest(req.params.rid, 1, req.user.sub, model.reason);
-    requestedIds = [];
+    return res.redirect(
+      `/access-requests/subService-requests/${req.params.rid}/rejected`,
+    );
+  } else if (model.selectedResponse === "approve") {
+    const request = await updateServiceRequest(
+      req.params.rid,
+      1,
+      req.user.sub,
+      model.reason,
+    );
+    let requestedIds = [];
     model.viewModel.role_ids.forEach((element) => {
       requestedIds.push(element.id);
     });
@@ -166,14 +194,14 @@ const post = async (req, res) => {
       }
 
       logger.audit({
-        type: 'sub-service',
-        subType: 'sub-service request Approved',
+        type: "sub-service",
+        subType: "sub-service request Approved",
         userId: req.user.sub,
         userEmail: req.user.email,
         meta: {
           editedFields: [
             {
-              name: 'Approved_Subservice',
+              name: "Approved_Subservice",
               newValue: model.viewModel.role_ids,
             },
           ],
@@ -187,10 +215,10 @@ const post = async (req, res) => {
           model.viewModel.org_id
         }) for end user (endUserId: ${model.viewModel.user_id}) - requestId (reqId: ${req.params.rid})`,
       });
-      res.flash('title', `Success`);
-      res.flash('heading', 'Sub-service changes approved');
+      res.flash("title", `Success`);
+      res.flash("heading", "Sub-service changes approved");
       res.flash(
-        'message',
+        "message",
         `${model.viewModel.endUsersGivenName} ${model.viewModel.endUsersFamilyName} will receive an email to tell them their sub-service access has changed.`,
       );
       return res.redirect(`/access-requests/requests`);

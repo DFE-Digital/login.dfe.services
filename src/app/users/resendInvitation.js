@@ -1,18 +1,19 @@
-'use strict';
-const { emailPolicy } = require('login.dfe.validation');
-const Account = require('./../../infrastructure/account');
-const logger = require('./../../infrastructure/logger');
-const { updateIndex } = require('./../../infrastructure/search');
-const { waitForIndexToUpdate } = require('./utils');
-const config = require('./../../infrastructure/config');
+const { emailPolicy } = require("login.dfe.validation");
+const Account = require("./../../infrastructure/account");
+const logger = require("./../../infrastructure/logger");
+const { updateIndex } = require("./../../infrastructure/search");
+const { waitForIndexToUpdate } = require("./utils");
+const config = require("./../../infrastructure/config");
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect(`/approvals/${req.params.orgId}/users/${req.params.uid}`);
+    return res.redirect(
+      `/approvals/${req.params.orgId}/users/${req.params.uid}`,
+    );
   }
-  return res.render('users/views/confirmResendInvitation', {
+  return res.render("users/views/confirmResendInvitation", {
     backLink: true,
-    currentPage: 'users',
+    currentPage: "users",
     csrfToken: req.csrfToken(),
     user: {
       name: `${req.session.user.firstName} ${req.session.user.lastName}`,
@@ -26,8 +27,8 @@ const get = async (req, res) => {
 const validate = async (req) => {
   const model = {
     backLink: true,
-    currentPage: 'users',
-    email: req.body.email.trim() || '',
+    currentPage: "users",
+    email: req.body.email.trim() || "",
     user: {
       name: `${req.session.user.firstName} ${req.session.user.lastName}`,
     },
@@ -42,11 +43,15 @@ const validate = async (req) => {
   }
 
   if (!model.email) {
-    model.validationMessages.email = 'Please enter an email address';
+    model.validationMessages.email = "Please enter an email address";
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
-    model.validationMessages.email = 'Please enter a valid email address';
-  } else if (config.toggles.environmentName === 'pr' && emailPolicy.isBlacklistedEmail(model.email)) {
-    model.validationMessages.email = 'This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.'
+    model.validationMessages.email = "Please enter a valid email address";
+  } else if (
+    config.toggles.environmentName === "pr" &&
+    emailPolicy.isBlacklistedEmail(model.email)
+  ) {
+    model.validationMessages.email =
+      "This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.";
   } else {
     const existingUser = await Account.getByEmail(model.email);
     const existingInvitation = await Account.getInvitationByEmail(model.email);
@@ -63,7 +68,7 @@ const post = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return res.render('users/views/confirmResendInvitation', model);
+    return res.render("users/views/confirmResendInvitation", model);
   }
 
   req.session.user.email = model.email;
@@ -71,14 +76,26 @@ const post = async (req, res) => {
   if (model.noChangedEmail) {
     await Account.resendInvitation(req.params.uid.substr(4));
   } else {
-    await Account.updateInvite(req.params.uid.substr(4), req.session.user.email);
-    await updateIndex(req.params.uid, null, req.session.user.email, null, req.id);
-    await waitForIndexToUpdate(req.params.uid, (updated) => updated.email === req.session.user.email);
+    await Account.updateInvite(
+      req.params.uid.substr(4),
+      req.session.user.email,
+    );
+    await updateIndex(
+      req.params.uid,
+      null,
+      req.session.user.email,
+      null,
+      req.id,
+    );
+    await waitForIndexToUpdate(
+      req.params.uid,
+      (updated) => updated.email === req.session.user.email,
+    );
   }
 
   logger.audit({
-    type: 'approver',
-    subType: 'resent-invitation',
+    type: "approver",
+    subType: "resent-invitation",
     userId: req.user.sub,
     userEmail: req.user.email,
     invitedUserEmail: req.session.user.email,
@@ -87,10 +104,10 @@ const post = async (req, res) => {
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.email} (id: ${req.session.user.uid})`,
   });
-  res.flash('title', `Success`);
-  res.flash('heading', `Invitation email sent`);
-  res.flash('message', `Invitation email sent to: ${req.session.user.email}`);
-  return res.redirect('/approvals/users');
+  res.flash("title", `Success`);
+  res.flash("heading", `Invitation email sent`);
+  res.flash("message", `Invitation email sent to: ${req.session.user.email}`);
+  return res.redirect("/approvals/users");
 };
 
 module.exports = {

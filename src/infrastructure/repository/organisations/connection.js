@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize').default;
-const assert = require('assert');
-const config = require('./../../config');
+const Sequelize = require("sequelize").default;
+const assert = require("assert");
+const config = require("./../../config");
 
 const Op = Sequelize.Op;
 
@@ -17,12 +17,21 @@ const makeConnection = () => {
     return new Sequelize(config.database.postgresUrl);
   }
 
-  assert(config.database.username, 'Database property username must be supplied');
-  assert(config.database.password, 'Database property password must be supplied');
-  assert(config.database.host, 'Database property host must be supplied');
-  assert(config.database.dialect, 'Database property dialect must be supplied, this must be postgres or mssql');
+  assert(
+    config.database.username,
+    "Database property username must be supplied",
+  );
+  assert(
+    config.database.password,
+    "Database property password must be supplied",
+  );
+  assert(config.database.host, "Database property host must be supplied");
+  assert(
+    config.database.dialect,
+    "Database property dialect must be supplied, this must be postgres or mssql",
+  );
 
-  const databaseName = config.database.name || 'postgres';
+  const databaseName = config.database.name || "postgres";
   const encryptDb = config.database.encrypt || true;
   const dbOpts = {
     retry: {
@@ -35,7 +44,7 @@ const makeConnection = () => {
         /SequelizeConnectionTimedOutError/,
         /TimeoutError/,
       ],
-      name: 'query',
+      name: "query",
       backoffBase: 100,
       backoffExponent: 1.1,
       timeout: 60000,
@@ -58,7 +67,12 @@ const makeConnection = () => {
     };
   }
 
-  return new Sequelize(databaseName, config.database.username, config.database.password, dbOpts);
+  return new Sequelize(
+    databaseName,
+    config.database.username,
+    config.database.password,
+    dbOpts,
+  );
 };
 
 module.exports = {

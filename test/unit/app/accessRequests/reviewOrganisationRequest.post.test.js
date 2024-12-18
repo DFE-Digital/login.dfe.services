@@ -1,25 +1,38 @@
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
-jest.mock('login.dfe.dao', () => require('./../../../utils/jestMocks').mockDao());
-jest.mock('./../../../../src/app/accessRequests/utils');
-jest.mock('./../../../../src/app/users/utils');
-jest.mock('./../../../../src/infrastructure/organisations');
-jest.mock('./../../../../src/infrastructure/search');
-jest.mock('login.dfe.jobs-client');
+jest.mock("./../../../../src/infrastructure/config", () =>
+  require("./../../../utils/jestMocks").mockConfig(),
+);
+jest.mock("./../../../../src/infrastructure/logger", () =>
+  require("./../../../utils/jestMocks").mockLogger(),
+);
+jest.mock("login.dfe.dao", () =>
+  require("./../../../utils/jestMocks").mockDao(),
+);
+jest.mock("./../../../../src/app/accessRequests/utils");
+jest.mock("./../../../../src/app/users/utils");
+jest.mock("./../../../../src/infrastructure/organisations");
+jest.mock("./../../../../src/infrastructure/search");
+jest.mock("login.dfe.jobs-client");
 
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-const { post } = require('./../../../../src/app/accessRequests/reviewOrganisationRequest');
+const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
+const {
+  post,
+} = require("./../../../../src/app/accessRequests/reviewOrganisationRequest");
 const res = mockResponse();
 const {
   putUserInOrganisation,
   updateRequestById,
   getOrganisationById,
-} = require('./../../../../src/infrastructure/organisations');
-const { getById, updateIndex } = require('./../../../../src/infrastructure/search');
-const { getAndMapOrgRequest } = require('./../../../../src/app/accessRequests/utils');
-const logger = require('./../../../../src/infrastructure/logger');
+} = require("./../../../../src/infrastructure/organisations");
+const {
+  getById,
+  updateIndex,
+} = require("./../../../../src/infrastructure/search");
+const {
+  getAndMapOrgRequest,
+} = require("./../../../../src/app/accessRequests/utils");
+const logger = require("./../../../../src/infrastructure/logger");
 
-const { NotificationClient } = require('login.dfe.jobs-client');
+const { NotificationClient } = require("login.dfe.jobs-client");
 const sendAccessRequest = jest.fn();
 NotificationClient.mockImplementation(() => {
   return {
@@ -27,22 +40,22 @@ NotificationClient.mockImplementation(() => {
   };
 });
 
-Date.now = jest.fn(() => '2019-01-02');
+Date.now = jest.fn(() => "2019-01-02");
 
-describe('when reviewing an organisation request', () => {
+describe("when reviewing an organisation request", () => {
   let req;
 
   beforeEach(() => {
     req = mockRequest({
       user: {
-        sub: 'user1',
-        email: 'email@email.com',
+        sub: "user1",
+        email: "email@email.com",
       },
       params: {
-        orgId: 'org1',
+        orgId: "org1",
       },
       body: {
-        selectedResponse: 'approve',
+        selectedResponse: "approve",
       },
     });
 
@@ -56,11 +69,11 @@ describe('when reviewing an organisation request', () => {
       };
     });
     getOrganisationById.mockReset().mockReturnValue({
-      id: 'org1',
-      name: 'organisation two',
+      id: "org1",
+      name: "organisation two",
       category: {
-        id: '001',
-        name: 'Establishment',
+        id: "001",
+        name: "Establishment",
       },
       status: {
         id: 1,
@@ -71,26 +84,26 @@ describe('when reviewing an organisation request', () => {
       organisations: [],
     });
     getAndMapOrgRequest.mockReset().mockReturnValue({
-      usersName: 'John Doe',
-      usersEmail: 'john.doe@email.com',
-      id: 'requestId',
-      org_id: 'org1',
-      org_name: 'Org 1',
-      user_id: 'userId',
-      created_date: '2019-05-01',
+      usersName: "John Doe",
+      usersEmail: "john.doe@email.com",
+      id: "requestId",
+      org_id: "org1",
+      org_name: "Org 1",
+      user_id: "userId",
+      created_date: "2019-05-01",
       actioned_date: null,
       actioned_by: null,
       actioned_reason: null,
-      reason: '',
+      reason: "",
       status: {
         id: 0,
-        name: 'Pending',
+        name: "Pending",
       },
     });
     res.mockResetAll();
   });
 
-  it('then it should render error if no response selected', async () => {
+  it("then it should render error if no response selected", async () => {
     req.body.selectedResponse = null;
     req.params.rid = 1;
 
@@ -99,55 +112,57 @@ describe('when reviewing an organisation request', () => {
     expect(putUserInOrganisation.mock.calls).toHaveLength(0);
     expect(updateRequestById.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/reviewOrganisationRequest');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "accessRequests/views/reviewOrganisationRequest",
+    );
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: "/access-requests/requests",
-      cancelLink: '/access-requests/requests',
-      csrfToken: 'token',
-      currentPage: 'requests',
+      cancelLink: "/access-requests/requests",
+      csrfToken: "token",
+      currentPage: "requests",
       request: {
         actioned_by: null,
         actioned_date: null,
         actioned_reason: null,
-        created_date: '2019-05-01',
-        id: 'requestId',
-        org_id: 'org1',
-        org_name: 'Org 1',
-        reason: '',
+        created_date: "2019-05-01",
+        id: "requestId",
+        org_id: "org1",
+        org_name: "Org 1",
+        reason: "",
         status: {
           id: 0,
-          name: 'Pending',
+          name: "Pending",
         },
-        user_id: 'userId',
-        usersEmail: 'john.doe@email.com',
-        usersName: 'John Doe',
+        user_id: "userId",
+        usersEmail: "john.doe@email.com",
+        usersName: "John Doe",
       },
       selectedResponse: null,
-      title: 'Review request - DfE Sign-in',
+      title: "Review request - DfE Sign-in",
       validationMessages: {
-        selectedResponse: 'Approve or Reject must be selected',
+        selectedResponse: "Approve or Reject must be selected",
       },
     });
   });
 
-  it('then it should render error if request already actioned', async () => {
+  it("then it should render error if request already actioned", async () => {
     getAndMapOrgRequest.mockReset().mockReturnValue({
-      usersName: 'John Doe',
-      usersEmail: 'john.doe@email.com',
-      approverName: 'Jane Doe',
-      approverEmail: 'jane.doe@email.com',
-      id: 'requestId',
-      org_id: 'org1',
-      org_name: 'Org 1',
-      user_id: 'userId',
-      created_date: '2019-05-01',
+      usersName: "John Doe",
+      usersEmail: "john.doe@email.com",
+      approverName: "Jane Doe",
+      approverEmail: "jane.doe@email.com",
+      id: "requestId",
+      org_id: "org1",
+      org_name: "Org 1",
+      user_id: "userId",
+      created_date: "2019-05-01",
       actioned_date: null,
       actioned_by: null,
       actioned_reason: null,
-      reason: '',
+      reason: "",
       status: {
         id: 1,
-        name: 'approved',
+        name: "approved",
       },
     });
 
@@ -156,82 +171,84 @@ describe('when reviewing an organisation request', () => {
     expect(putUserInOrganisation.mock.calls).toHaveLength(0);
     expect(updateRequestById.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/reviewOrganisationRequest');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "accessRequests/views/reviewOrganisationRequest",
+    );
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: "/access-requests/requests",
-      cancelLink: '/access-requests/requests',
-      csrfToken: 'token',
-      currentPage: 'requests',
+      cancelLink: "/access-requests/requests",
+      csrfToken: "token",
+      currentPage: "requests",
       request: {
         actioned_by: null,
         actioned_date: null,
         actioned_reason: null,
-        created_date: '2019-05-01',
-        id: 'requestId',
-        org_id: 'org1',
-        org_name: 'Org 1',
-        reason: '',
+        created_date: "2019-05-01",
+        id: "requestId",
+        org_id: "org1",
+        org_name: "Org 1",
+        reason: "",
         status: {
           id: 1,
-          name: 'approved',
+          name: "approved",
         },
-        user_id: 'userId',
-        usersEmail: 'john.doe@email.com',
-        usersName: 'John Doe',
-        approverName: 'Jane Doe',
-        approverEmail: 'jane.doe@email.com',
+        user_id: "userId",
+        usersEmail: "john.doe@email.com",
+        usersName: "John Doe",
+        approverName: "Jane Doe",
+        approverEmail: "jane.doe@email.com",
       },
-      selectedResponse: 'approve',
-      title: 'Review request - DfE Sign-in',
+      selectedResponse: "approve",
+      title: "Review request - DfE Sign-in",
       validationMessages: {
-        selectedResponse: 'Request already actioned by jane.doe@email.com',
+        selectedResponse: "Request already actioned by jane.doe@email.com",
       },
     });
   });
 
-  it('then it should redirect to rejection reason if reject', async () => {
-    req.body.selectedResponse = 'reject';
+  it("then it should redirect to rejection reason if reject", async () => {
+    req.body.selectedResponse = "reject";
 
     await post(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('requestId/rejected');
+    expect(res.redirect.mock.calls[0][0]).toBe("requestId/rejected");
   });
 
-  it('then it should put the user in the organisation if approved', async () => {
+  it("then it should put the user in the organisation if approved", async () => {
     await post(req, res);
 
     expect(putUserInOrganisation.mock.calls).toHaveLength(1);
-    expect(putUserInOrganisation.mock.calls[0][0]).toBe('userId');
-    expect(putUserInOrganisation.mock.calls[0][1]).toBe('org1');
+    expect(putUserInOrganisation.mock.calls[0][0]).toBe("userId");
+    expect(putUserInOrganisation.mock.calls[0][1]).toBe("org1");
     expect(putUserInOrganisation.mock.calls[0][2]).toBe(0);
     expect(putUserInOrganisation.mock.calls[0][3]).toBe(null);
-    expect(putUserInOrganisation.mock.calls[0][4]).toBe('correlationId');
+    expect(putUserInOrganisation.mock.calls[0][4]).toBe("correlationId");
   });
 
-  it('then it should patch the request as complete', async () => {
+  it("then it should patch the request as complete", async () => {
     await post(req, res);
 
     expect(updateRequestById.mock.calls).toHaveLength(1);
-    expect(updateRequestById.mock.calls[0][0]).toBe('requestId');
+    expect(updateRequestById.mock.calls[0][0]).toBe("requestId");
     expect(updateRequestById.mock.calls[0][1]).toBe(1);
-    expect(updateRequestById.mock.calls[0][2]).toBe('user1');
+    expect(updateRequestById.mock.calls[0][2]).toBe("user1");
     expect(updateRequestById.mock.calls[0][3]).toBe(null);
-    expect(updateRequestById.mock.calls[0][4]).toBe('2019-01-02');
-    expect(updateRequestById.mock.calls[0][5]).toBe('correlationId');
+    expect(updateRequestById.mock.calls[0][4]).toBe("2019-01-02");
+    expect(updateRequestById.mock.calls[0][5]).toBe("correlationId");
   });
 
-  it('then it should update the search index with the new org', async () => {
+  it("then it should update the search index with the new org", async () => {
     await post(req, res);
     expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toBe('userId');
+    expect(updateIndex.mock.calls[0][0]).toBe("userId");
     expect(updateIndex.mock.calls[0][1]).toEqual([
       {
-        categoryId: '001',
+        categoryId: "001",
         establishmentNumber: undefined,
-        id: 'org1',
+        id: "org1",
         laNumber: undefined,
-        name: 'organisation two',
+        name: "organisation two",
         roleId: 0,
         statusId: 1,
         uid: undefined,
@@ -240,23 +257,23 @@ describe('when reviewing an organisation request', () => {
     ]);
   });
 
-  it('then it should should audit approved org request', async () => {
+  it("then it should should audit approved org request", async () => {
     await post(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      'email@email.com (id: user1) approved organisation request for org1)',
+      "email@email.com (id: user1) approved organisation request for org1)",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
-      type: 'approver',
-      subType: 'approved-org',
-      userId: 'user1',
+      type: "approver",
+      subType: "approved-org",
+      userId: "user1",
       meta: {
-        editedUser: 'userId',
+        editedUser: "userId",
         editedFields: [
           {
-            name: 'new_organisation',
-            newValue: 'org1',
+            name: "new_organisation",
+            newValue: "org1",
             oldValue: undefined,
           },
         ],
@@ -264,10 +281,10 @@ describe('when reviewing an organisation request', () => {
     });
   });
 
-  it('then it should redirect to the user profile for the user approved', async () => {
+  it("then it should redirect to the user profile for the user approved", async () => {
     await post(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/access-requests/requests');
+    expect(res.redirect.mock.calls[0][0]).toBe("/access-requests/requests");
   });
 });

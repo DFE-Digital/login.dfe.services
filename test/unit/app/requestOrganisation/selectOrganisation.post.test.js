@@ -1,34 +1,38 @@
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/organisations');
+jest.mock("./../../../../src/infrastructure/config", () =>
+  require("./../../../utils/jestMocks").mockConfig(),
+);
+jest.mock("./../../../../src/infrastructure/organisations");
 
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-const { post } = require('./../../../../src/app/requestOrganisation/selectOrganisation');
+const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
+const {
+  post,
+} = require("./../../../../src/app/requestOrganisation/selectOrganisation");
 const {
   searchOrganisations,
   getRequestsForOrganisation,
   getOrganisationAndServiceForUserV2,
   getCategories,
-} = require('./../../../../src/infrastructure/organisations');
+} = require("./../../../../src/infrastructure/organisations");
 
 const res = mockResponse();
 
-describe('when showing the searching for a organisation', () => {
+describe("when showing the searching for a organisation", () => {
   let req;
 
   beforeEach(() => {
     req = mockRequest({
       user: {
-        sub: 'user1',
+        sub: "user1",
       },
       body: {
-        criteria: 'organisation one',
+        criteria: "organisation one",
         page: 1,
       },
-      method: 'POST',
+      method: "POST",
     });
 
     searchOrganisations.mockReset().mockReturnValue({
-      organisations: [{ id: 'org1' }],
+      organisations: [{ id: "org1" }],
       totalNumberOfPages: 2,
       totalNumberOfRecords: 49,
       page: 1,
@@ -36,30 +40,30 @@ describe('when showing the searching for a organisation', () => {
 
     getCategories.mockReset().mockReturnValue([
       {
-        id: '001',
-        name: 'some category name',
+        id: "001",
+        name: "some category name",
       },
     ]);
 
     getRequestsForOrganisation.mockReset();
     getRequestsForOrganisation.mockReturnValue([
       {
-        id: 'requestId',
-        org_id: 'organisationId',
-        org_name: 'organisationName',
-        user_id: 'user2',
+        id: "requestId",
+        org_id: "organisationId",
+        org_name: "organisationName",
+        user_id: "user2",
         status: {
           id: 0,
-          name: 'pending',
+          name: "pending",
         },
-        created_date: '2019-08-12',
+        created_date: "2019-08-12",
       },
     ]);
     getOrganisationAndServiceForUserV2.mockReset();
     getOrganisationAndServiceForUserV2.mockReturnValue([
       {
         organisation: {
-          id: 'organisationId',
+          id: "organisationId",
         },
       },
     ]);
@@ -67,28 +71,30 @@ describe('when showing the searching for a organisation', () => {
     res.mockResetAll();
   });
 
-  it('then it should use criteria and page to search for organisations', async () => {
+  it("then it should use criteria and page to search for organisations", async () => {
     await post(req, res);
 
     expect(searchOrganisations.mock.calls).toHaveLength(1);
-    expect(searchOrganisations.mock.calls[0][0]).toBe('organisation one');
+    expect(searchOrganisations.mock.calls[0][0]).toBe("organisation one");
     expect(searchOrganisations.mock.calls[0][1]).toBe(1);
-    expect(searchOrganisations.mock.calls[0][2]).toMatchObject(['001']);
+    expect(searchOrganisations.mock.calls[0][2]).toMatchObject(["001"]);
     expect(searchOrganisations.mock.calls[0][3]).toMatchObject([1, 3, 4]);
-    expect(searchOrganisations.mock.calls[0][4]).toBe('correlationId');
+    expect(searchOrganisations.mock.calls[0][4]).toBe("correlationId");
   });
 
-  it('then it should render search view with results', async () => {
+  it("then it should render search view with results", async () => {
     await post(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('requestOrganisation/views/search');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "requestOrganisation/views/search",
+    );
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      csrfToken: 'token',
-      criteria: 'organisation one',
+      csrfToken: "token",
+      criteria: "organisation one",
       organisations: [
         {
-          id: 'org1',
+          id: "org1",
         },
       ],
       page: 1,
@@ -97,83 +103,91 @@ describe('when showing the searching for a organisation', () => {
     });
   });
 
-  it('then it should update session with selected organisation', async () => {
+  it("then it should update session with selected organisation", async () => {
     req.body = {
-      selectedOrganisation: 'org1',
+      selectedOrganisation: "org1",
     };
 
     await post(req, res);
 
-    expect(req.session.organisationId).toBe('org1');
+    expect(req.session.organisationId).toBe("org1");
   });
 
-  it('then it should redirect to review page if organisation selected', async () => {
+  it("then it should redirect to review page if organisation selected", async () => {
     req.body = {
-      selectedOrganisation: 'org1',
+      selectedOrganisation: "org1",
     };
 
     await post(req, res);
 
     expect(res.sessionRedirect.mock.calls).toHaveLength(1);
-    expect(res.sessionRedirect.mock.calls[0][0]).toBe('review');
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe("review");
     expect(res.render.mock.calls).toHaveLength(0);
   });
 
-  it('then it should render with error if already apart of org', async () => {
-    req.body.selectedOrganisation = 'organisationId';
+  it("then it should render with error if already apart of org", async () => {
+    req.body.selectedOrganisation = "organisationId";
 
     await post(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('requestOrganisation/views/search');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "requestOrganisation/views/search",
+    );
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      csrfToken: 'token',
-      criteria: 'organisation one',
+      csrfToken: "token",
+      criteria: "organisation one",
       organisations: [
         {
-          id: 'org1',
+          id: "org1",
         },
       ],
       page: 1,
       totalNumberOfPages: 2,
       totalNumberOfRecords: 49,
-      validationMessages: { selectedOrganisation: 'You are already linked to this organisation' },
+      validationMessages: {
+        selectedOrganisation: "You are already linked to this organisation",
+      },
     });
   });
 
-  it('then it should render with error if outstanding request for org', async () => {
-    req.body.selectedOrganisation = 'org1';
+  it("then it should render with error if outstanding request for org", async () => {
+    req.body.selectedOrganisation = "org1";
 
     getRequestsForOrganisation.mockReturnValue([
       {
-        id: 'requestId',
-        org_id: 'organisationId',
-        org_name: 'organisationName',
-        user_id: 'user1',
+        id: "requestId",
+        org_id: "organisationId",
+        org_name: "organisationName",
+        user_id: "user1",
         status: {
           id: 0,
-          name: 'pending',
+          name: "pending",
         },
-        created_date: '2019-08-12',
+        created_date: "2019-08-12",
       },
     ]);
 
     await post(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('requestOrganisation/views/search');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "requestOrganisation/views/search",
+    );
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      csrfToken: 'token',
-      criteria: 'organisation one',
+      csrfToken: "token",
+      criteria: "organisation one",
       organisations: [
         {
-          id: 'org1',
+          id: "org1",
         },
       ],
       page: 1,
       totalNumberOfPages: 2,
       totalNumberOfRecords: 49,
-      validationMessages: { selectedOrganisation: 'You have already requested this organisation' },
+      validationMessages: {
+        selectedOrganisation: "You have already requested this organisation",
+      },
     });
   });
 });

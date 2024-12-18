@@ -1,16 +1,22 @@
-const config = require('./../config');
-const { fetchApi } = require('login.dfe.async-retry');
-const jwtStrategy = require('login.dfe.jwt-strategies');
+const config = require("./../config");
+const { fetchApi } = require("login.dfe.async-retry");
+const jwtStrategy = require("login.dfe.jwt-strategies");
 
-const getAllUsersForOrg = async (page, orgIds, sortBy, sortDirection, correlationId) => {
+const getAllUsersForOrg = async (
+  page,
+  orgIds,
+  sortBy,
+  sortDirection,
+  correlationId,
+) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
     let endpoint = `${config.search.service.url}/users`;
     return await fetchApi(endpoint, {
-      method: 'POST',
+      method: "POST",
       headers: {
         authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+        "x-correlation-id": correlationId,
       },
       body: {
         page,
@@ -27,16 +33,24 @@ const getAllUsersForOrg = async (page, orgIds, sortBy, sortDirection, correlatio
   }
 };
 
-const searchForUsers = async (criteria, page, sortBy, sortDirection, filters, searchFields, correlationId) => {
+const searchForUsers = async (
+  criteria,
+  page,
+  sortBy,
+  sortDirection,
+  filters,
+  searchFields,
+  correlationId,
+) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
     let endpoint = `${config.search.service.url}/users`;
 
     const results = await fetchApi(`${endpoint}`, {
-      method: 'POST',
+      method: "POST",
       headers: {
         authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+        "x-correlation-id": correlationId,
       },
       body: {
         page,
@@ -54,7 +68,9 @@ const searchForUsers = async (criteria, page, sortBy, sortDirection, filters, se
       users: results.users,
     };
   } catch (e) {
-    throw new Error(`Error searching for users with criteria ${criteria} (page: ${page}) - ${e.message}`);
+    throw new Error(
+      `Error searching for users with criteria ${criteria} (page: ${page}) - ${e.message}`,
+    );
   }
 };
 
@@ -62,10 +78,10 @@ const getById = async (userId, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
     return await fetchApi(`${config.search.service.url}/users/${userId}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
         authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+        "x-correlation-id": correlationId,
       },
     });
   } catch (e) {
@@ -76,7 +92,13 @@ const getById = async (userId, correlationId) => {
   }
 };
 
-const updateIndex = async (userId, organisations, email, services, correlationId) => {
+const updateIndex = async (
+  userId,
+  organisations,
+  email,
+  services,
+  correlationId,
+) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
     const body = {};
@@ -90,10 +112,10 @@ const updateIndex = async (userId, organisations, email, services, correlationId
       body.services = services;
     }
     await fetchApi(`${config.search.service.url}/users/${userId}`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
         authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+        "x-correlation-id": correlationId,
       },
       body,
     });
@@ -113,10 +135,10 @@ const createIndex = async (id, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
   try {
     await fetchApi(`${config.search.service.url}/users/update-index`, {
-      method: 'POST',
+      method: "POST",
       headers: {
         authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+        "x-correlation-id": correlationId,
       },
       body: {
         id,

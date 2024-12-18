@@ -1,47 +1,53 @@
-'use strict';
-const { getUserDetails, isSelfManagement, getApproverOrgsFromReq } = require('./utils');
-const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
-const Account = require('./../../infrastructure/account');
+const {
+  getUserDetails,
+  isSelfManagement,
+  getApproverOrgsFromReq,
+} = require("./utils");
+const {
+  checkCacheForAllServices,
+} = require("../../infrastructure/helpers/allServicesAppCache");
 const {
   getOrganisationAndServiceForUser,
   getOrganisationAndServiceForInvitation,
-} = require('./../../infrastructure/organisations');
+} = require("./../../infrastructure/organisations");
 
 const action = async (req, res) => {
   const user = await getUserDetails(req);
-  const isInvitation = req.params.uid.startsWith('inv-');
-  const userMigratedDetails = isInvitation
-    ? await Account.getInvitationById(req.params.uid.substr(4))
-    : await Account.getById(req.params.uid);
-  let isMigrated;
-  if (userMigratedDetails) {
-    isMigrated = userMigratedDetails.claims ? userMigratedDetails.claims.isMigrated : userMigratedDetails.isMigrated;
-  }
-
+  const isInvitation = req.params.uid.startsWith("inv-");
   const approverOrgs = getApproverOrgsFromReq(req);
   let userOrgs;
   if (isInvitation) {
     const invitationId = req.params.uid.substr(4);
-    userOrgs = await getOrganisationAndServiceForInvitation(invitationId, req.id);
+    userOrgs = await getOrganisationAndServiceForInvitation(invitationId);
   } else {
-    userOrgs = await getOrganisationAndServiceForUser(req.params.uid, req.id);
+    userOrgs = await getOrganisationAndServiceForUser(req.params.uid);
   }
 
   // get array of org ids where current user is an approver
-  const visibleUserOrgs = userOrgs.filter((x) => approverOrgs.find((y) => y.organisation.id === x.organisation.id));
+  const visibleUserOrgs = userOrgs.filter((x) =>
+    approverOrgs.find((y) => y.organisation.id === x.organisation.id),
+  );
 
   // prepare details for all services to start matching and building details for the view
   const allServices = await checkCacheForAllServices();
   const externalServices = allServices.services.filter(
     (x) =>
       x.isExternalService === true &&
-      !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideApprover === 'true'),
+      !(
+        x.relyingParty &&
+        x.relyingParty.params &&
+        x.relyingParty.params.hideApprover === "true"
+      ),
   );
 
   visibleUserOrgs.forEach((userOrg) => {
-    userOrg.displayedServices = userOrg.services.filter((x) => externalServices.find((y) => y.id === x.id));
+    userOrg.displayedServices = userOrg.services.filter((x) =>
+      externalServices.find((y) => y.id === x.id),
+    );
     userOrg.displayedServices.forEach((service) => {
-      const serviceDetails = allServices.services.find((x) => x.id === service.id);
+      const serviceDetails = allServices.services.find(
+        (x) => x.id === service.id,
+      );
       service.name = serviceDetails.name;
     });
   });
@@ -55,13 +61,13 @@ const action = async (req, res) => {
   req.session.user.email = user.email;
   req.session.user.services = [];
 
-  return res.render('users/views/services', {
-    backLink: './',
-    currentPage: 'users',
+  return res.render("users/views/services", {
+    backLink: "./",
+    currentPage: "users",
     csrfToken: req.csrfToken(),
     visibleUserOrgs,
     user,
-    isInvitation: req.params.uid.startsWith('inv-'),
+    isInvitation: req.params.uid.startsWith("inv-"),
     isSelfManage: isSelfManagement(req),
   });
 };

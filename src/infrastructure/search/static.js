@@ -1,16 +1,16 @@
-const getAllUsersForOrg = async (page, orgId, pageSize, correlationId) => {
+const getAllUsersForOrg = async () => {
   return Promise.resolve([]);
 };
 
-const getById = async (userId, correlationId) => {
+const getById = async () => {
   return Promise.resolve([]);
 };
 
-const updateIndex = async (userId, organisations, email, services, correlationId) => {
+const updateIndex = async () => {
   return Promise.resolve();
 };
 
-const createIndex = async (id, correlationId) => {
+const createIndex = async () => {
   return Promise.resolve();
 };
 

@@ -1,44 +1,44 @@
-const getServicesForUser = async (id, correlationId) => {
+const getServicesForUser = async () => {
   return Promise.resolve([]);
 };
 
-const getServicesForInvitation = async (iid, correlationId) => {
+const getServicesForInvitation = async () => {
   return Promise.resolve([]);
 };
 
-const getSingleUserService = async (id, sid, oid, correlationId) => {
+const getSingleUserService = async () => {
   return Promise.resolve([]);
 };
 
-const getSingleInvitationService = async (iid, sid, oid, correlationId) => {
+const getSingleInvitationService = async () => {
   return Promise.resolve([]);
 };
 
-const listRolesOfService = async (sid, correlationId) => {
+const listRolesOfService = async () => {
   return Promise.resolve([]);
 };
 
-const removeServiceFromUser = async (uid, sid, oid, correlationId) => {
+const removeServiceFromUser = async () => {
   return Promise.resolve();
 };
 
-const removeServiceFromInvitation = async (iid, sid, oid, correlationId) => {
+const removeServiceFromInvitation = async () => {
   return Promise.resolve();
 };
 
-const updateUserService = async (uid, sid, oid, role, correlationId) => {
+const updateUserService = async () => {
   return Promise.resolve(null);
 };
 
-const updateInvitationService = async (iid, sid, oid, role, correlationId) => {
+const updateInvitationService = async () => {
   return Promise.resolve(null);
 };
 
-const addUserService = async (uid, sid, oid, role, correlationId) => {
+const addUserService = async () => {
   return Promise.resolve(null);
 };
 
-const addInvitationService = async (iid, sid, oid, role, correlationId) => {
+const addInvitationService = async () => {
   return Promise.resolve(null);
 };
 

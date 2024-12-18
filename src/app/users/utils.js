@@ -1,21 +1,22 @@
-'use strict';
-const { getById } = require('./../../infrastructure/search');
-const { mapUserStatus } = require('./../../infrastructure/utils');
+const { getById } = require("./../../infrastructure/search");
+const { mapUserStatus } = require("./../../infrastructure/utils");
 const {
   getServicesForUser,
   getServicesForInvitation,
   getSingleUserService,
   getSingleInvitationService,
-} = require('./../../infrastructure/access');
-const { getApplication } = require('./../../infrastructure/applications');
-const { actions } = require('../constans/actions');
-const moment = require('moment');
-const sortBy = require('lodash/sortBy');
+} = require("./../../infrastructure/access");
+const { getApplication } = require("./../../infrastructure/applications");
+const { actions } = require("../constans/actions");
+const moment = require("moment");
+const sortBy = require("lodash/sortBy");
 const numberOfHours = 24;
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
   const user = await getById(uid, req.id);
-  const organisationDetails = user.organisations.find((x) => x.id === req.params.orgId);
+  const organisationDetails = user.organisations.find(
+    (x) => x.id === req.params.orgId,
+  );
   return {
     id: uid,
     firstName: user.firstName,
@@ -28,19 +29,25 @@ const getUserDetails = async (req) => {
   };
 };
 
-const getAllServicesForUserInOrg = async (userId, organisationId, correlationId) => {
-  const allUserServices = userId.startsWith('inv-')
+const getAllServicesForUserInOrg = async (
+  userId,
+  organisationId,
+  correlationId,
+) => {
+  const allUserServices = userId.startsWith("inv-")
     ? await getServicesForInvitation(userId.substr(4), correlationId)
     : await getServicesForUser(userId, correlationId);
   if (!allUserServices) {
     return [];
   }
 
-  const userServicesForOrg = allUserServices.filter((x) => x.organisationId === organisationId);
+  const userServicesForOrg = allUserServices.filter(
+    (x) => x.organisationId === organisationId,
+  );
   const services = userServicesForOrg.map((service) => ({
     id: service.serviceId,
     dateActivated: service.accessGrantedOn,
-    name: '',
+    name: "",
     status: null,
   }));
   for (let i = 0; i < services.length; i++) {
@@ -49,13 +56,28 @@ const getAllServicesForUserInOrg = async (userId, organisationId, correlationId)
     service.name = application.name;
     service.status = mapUserStatus(service.status);
   }
-  return sortBy(services, 'name');
+  return sortBy(services, "name");
 };
 
-const getSingleServiceForUser = async (userId, organisationId, serviceId, correlationId) => {
-  const userService = userId.startsWith('inv-')
-    ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId)
-    : await getSingleUserService(userId, serviceId, organisationId, correlationId);
+const getSingleServiceForUser = async (
+  userId,
+  organisationId,
+  serviceId,
+  correlationId,
+) => {
+  const userService = userId.startsWith("inv-")
+    ? await getSingleInvitationService(
+        userId.substr(4),
+        serviceId,
+        organisationId,
+        correlationId,
+      )
+    : await getSingleUserService(
+        userId,
+        serviceId,
+        organisationId,
+        correlationId,
+      );
   const application = await getApplication(userService.serviceId);
   return {
     id: userService.serviceId,
@@ -91,7 +113,11 @@ const isSelfManagement = (req) => {
 };
 
 const isUserManagement = (req) => {
-  return req.query.manage_users === 'true' || isOrganisationInvite(req) || isViewOrganisationRequests(req);
+  return (
+    req.query.manage_users === "true" ||
+    isOrganisationInvite(req) ||
+    isViewOrganisationRequests(req)
+  );
 };
 
 const isRequestService = (req) => {
@@ -200,18 +226,19 @@ const isOrgEndUser = (userOrganisations, orgId) => {
   return false;
 };
 const isLoginOver24 = (last_login, prev_login) => {
-  let a = moment(last_login, "HH:mm")
-  let b = moment(prev_login, "HH:mm")
-  let checkfor24 = a.diff(b, 'hours');
-  if(checkfor24 > numberOfHours)
-  {
+  let a = moment(last_login, "HH:mm");
+  let b = moment(prev_login, "HH:mm");
+  let checkfor24 = a.diff(b, "hours");
+  if (checkfor24 > numberOfHours) {
     return true;
   }
   return false;
 };
 const isMultipleRolesAllowed = (serviceDetails, numberOfRolesAvailable) => {
-  const maximumRolesAllowed = serviceDetails?.relyingParty?.params?.maximumRolesAllowed;
-  const minimumRolesRequired = serviceDetails?.relyingParty?.params?.minimumRolesRequired;
+  const maximumRolesAllowed =
+    serviceDetails?.relyingParty?.params?.maximumRolesAllowed;
+  const minimumRolesRequired =
+    serviceDetails?.relyingParty?.params?.minimumRolesRequired;
 
   const maxRoles = parseInt(maximumRolesAllowed, 10);
   const minRoles = parseInt(minimumRolesRequired, 10);
@@ -238,12 +265,17 @@ const isMultipleRolesAllowed = (serviceDetails, numberOfRolesAvailable) => {
   }
 };
 
-const RoleSelectionConstraintCheck = (serviceRoles, roleSelectionConstraint) => {
+const RoleSelectionConstraintCheck = (
+  serviceRoles,
+  roleSelectionConstraint,
+) => {
   try {
     let roleFoundCount = 0;
     if (roleSelectionConstraint) {
-      let roleIds = roleSelectionConstraint.split(',').map( (role) => role.trim());
-      serviceRoles.map( (role) => {
+      let roleIds = roleSelectionConstraint
+        .split(",")
+        .map((role) => role.trim());
+      serviceRoles.map((role) => {
         if (roleIds.includes(role.id)) {
           roleFoundCount += 1;
         }
@@ -252,14 +284,12 @@ const RoleSelectionConstraintCheck = (serviceRoles, roleSelectionConstraint) => 
 
     if (roleFoundCount >= 2) {
       return true;
-    } 
+    }
     return false;
   } catch (e) {
     return false;
   }
- 
-  
-}
+};
 
 module.exports = {
   getUserDetails,
