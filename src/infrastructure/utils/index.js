@@ -3,6 +3,7 @@ const {
   getOrganisationAndServiceForUserV2,
   getAllRequestsForApprover,
   getAllRequestsTypesForApprover,
+  getPendingRequestsAssociatedWithUser,
 } = require("./../organisations");
 
 const isLoggedIn = (req, res, next) => {
@@ -15,6 +16,25 @@ const isLoggedIn = (req, res, next) => {
   }
   req.session.redirectUrl = req.originalUrl;
   return res.status(302).redirect("/auth");
+};
+
+const canRequestOrg = async (req, res, next) => {
+  if (
+    req.userOrganisations.length === 0 &&
+    (await getPendingRequestsAssociatedWithUser(req.user.id)).length > 0
+  ) {
+    res.flash("title", "Important");
+    res.flash(
+      "heading",
+      "Your recent organisation request is awaiting approval.",
+    );
+    res.flash(
+      "message",
+      "You must wait for a response before submitting another request.",
+    );
+    return res.sessionRedirect("/organisations");
+  }
+  return next();
 };
 
 const addSessionRedirect = (errorPageRenderer, logger = console) => {
@@ -161,6 +181,7 @@ const mapRole = (roleId) => {
 
 module.exports = {
   isLoggedIn,
+  canRequestOrg,
   addSessionRedirect,
   getUserEmail,
   getUserDisplayName,
