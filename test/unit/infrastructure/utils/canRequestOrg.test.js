@@ -11,181 +11,75 @@ const {
 } = require("../../../../src/infrastructure/organisations");
 const { canRequestOrg } = require("../../../../src/infrastructure/utils");
 
+function createOrg(id) {
+  return {
+    organisation: {
+      id: `testOrgId${id}`,
+      name: "testOrgName",
+      urn: "testOrgURN",
+      uid: "testOrgUID",
+      upin: "testOrgUPIN",
+      ukprn: "testOrgUKPRN",
+      address: undefined,
+      status: {
+        id: 1,
+        name: "Open",
+      },
+      pimStatus: "1",
+      legacyUserId: undefined,
+      legacyUserName: undefined,
+      category: {
+        id: "002",
+        name: "Local Authority",
+      },
+      type: undefined,
+      providerTypeName: "Local Authority with an Education remit",
+      companyRegistrationNumber: undefined,
+      LegalName: "testOrgLegalName",
+    },
+    role: {
+      id: 0,
+      name: "End user",
+    },
+    approvers: [],
+    services: [],
+    numericIdentifier: undefined,
+    textIdentifier: undefined,
+  };
+}
+
+function createRequest(id) {
+  return {
+    id: `testRequestId${id}`,
+    org_id: "testOrgId",
+    org_name: "testOrgName",
+    LegalName: "testOrgLegalName",
+    urn: "testOrgURN",
+    uid: "testOrgUID",
+    upin: "testOrgUPIN",
+    ukprn: "testOrgUKPRN",
+    org_status: {
+      id: 1,
+      name: "Open",
+    },
+    user_id: "user-1",
+    created_date: Date.now(),
+    status: {
+      id: 0,
+      name: "Pending",
+    },
+  };
+}
+
 describe("When using the canRequestOrg middleware", () => {
   const testUserId = "user-1";
   const res = mockResponse();
   let req;
 
-  const singleOrg = [
-    {
-      organisation: {
-        id: "testOrgId",
-        name: "testOrgName",
-        urn: "testOrgURN",
-        uid: "testOrgUID",
-        upin: "testOrgUPIN",
-        ukprn: "testOrgUKPRN",
-        address: undefined,
-        status: {
-          id: 1,
-          name: "Open",
-        },
-        pimStatus: "1",
-        legacyUserId: undefined,
-        legacyUserName: undefined,
-        category: {
-          id: "002",
-          name: "Local Authority",
-        },
-        type: undefined,
-        providerTypeName: "Local Authority with an Education remit",
-        companyRegistrationNumber: undefined,
-        LegalName: "testOrgLegalName",
-      },
-      role: {
-        id: 0,
-        name: "End user",
-      },
-      approvers: [],
-      services: [],
-      numericIdentifier: undefined,
-      textIdentifier: undefined,
-    },
-  ];
-  const multipleOrgs = [
-    {
-      organisation: {
-        id: "testOrgId",
-        name: "testOrgName",
-        urn: "testOrgURN",
-        uid: "testOrgUID",
-        upin: "testOrgUPIN",
-        ukprn: "testOrgUKPRN",
-        address: undefined,
-        status: {
-          id: 1,
-          name: "Open",
-        },
-        pimStatus: "1",
-        legacyUserId: undefined,
-        legacyUserName: undefined,
-        category: {
-          id: "002",
-          name: "Local Authority",
-        },
-        type: undefined,
-        providerTypeName: "Local Authority with an Education remit",
-        companyRegistrationNumber: undefined,
-        LegalName: "testOrgLegalName",
-      },
-      role: {
-        id: 0,
-        name: "End user",
-      },
-      approvers: [],
-      services: [],
-      numericIdentifier: undefined,
-      textIdentifier: undefined,
-    },
-    {
-      organisation: {
-        id: "testOrgId2",
-        name: "testOrgName",
-        urn: "testOrgURN",
-        uid: "testOrgUID",
-        upin: "testOrgUPIN",
-        ukprn: "testOrgUKPRN",
-        address: undefined,
-        status: {
-          id: 1,
-          name: "Open",
-        },
-        pimStatus: "1",
-        legacyUserId: undefined,
-        legacyUserName: undefined,
-        category: {
-          id: "002",
-          name: "Local Authority",
-        },
-        type: undefined,
-        providerTypeName: "Local Authority with an Education remit",
-        companyRegistrationNumber: undefined,
-        LegalName: "testOrgLegalName",
-      },
-      role: {
-        id: 0,
-        name: "End user",
-      },
-      approvers: [],
-      services: [],
-      numericIdentifier: undefined,
-      textIdentifier: undefined,
-    },
-  ];
-  const singleRequest = [
-    {
-      id: "testRequestId",
-      org_id: "testOrgId",
-      org_name: "testOrgName",
-      LegalName: "testOrgLegalName",
-      urn: "testOrgURN",
-      uid: "testOrgUID",
-      upin: "testOrgUPIN",
-      ukprn: "testOrgUKPRN",
-      org_status: {
-        id: 1,
-        name: "Open",
-      },
-      user_id: testUserId,
-      created_date: Date.now(),
-      status: {
-        id: 0,
-        name: "Pending",
-      },
-    },
-  ];
-  const multipleRequests = [
-    {
-      id: "testRequestId",
-      org_id: "testOrgId",
-      org_name: "testOrgName",
-      LegalName: "testOrgLegalName",
-      urn: "testOrgURN",
-      uid: "testOrgUID",
-      upin: "testOrgUPIN",
-      ukprn: "testOrgUKPRN",
-      org_status: {
-        id: 1,
-        name: "Open",
-      },
-      user_id: testUserId,
-      created_date: Date.now(),
-      status: {
-        id: 0,
-        name: "Pending",
-      },
-    },
-    {
-      id: "testRequestId2",
-      org_id: "testOrgId",
-      org_name: "testOrgName",
-      LegalName: "testOrgLegalName",
-      urn: "testOrgURN",
-      uid: "testOrgUID",
-      upin: "testOrgUPIN",
-      ukprn: "testOrgUKPRN",
-      org_status: {
-        id: 1,
-        name: "Open",
-      },
-      user_id: testUserId,
-      created_date: Date.now(),
-      status: {
-        id: 0,
-        name: "Pending",
-      },
-    },
-  ];
+  const singleOrg = [createOrg(1)];
+  const multipleOrgs = [createOrg(1), createOrg(2)];
+  const singleRequest = [createRequest(1)];
+  const multipleRequests = [createRequest(1), createRequest(2)];
 
   beforeEach(() => {
     req = mockRequest({
