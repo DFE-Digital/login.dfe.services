@@ -7,6 +7,7 @@ const Account = require("./../../infrastructure/account");
 const flatten = require("lodash/flatten");
 const uniq = require("lodash/uniq");
 const sortBy = require("lodash/sortBy");
+const { dateFormat } = require("../helpers/timezoneHelper");
 
 const getApproversDetails = async (organisations) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
@@ -62,6 +63,9 @@ const getAndMapPendingRequests = async (account) => {
     status: org.org_status,
     requestDate: org.created_date,
     requestStatus: org.status.id,
+    formatted_created_date: org.created_date
+      ? dateFormat(org.created_date, "shortDateFormat")
+      : "",
   }));
 };
 
