@@ -19,7 +19,7 @@
 
             <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
                 <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
-                    <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
+                    <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner<%= locals.flash.title[0].toLowerCase().includes("success") ? "--success" : "" %>"
                         role="alert" aria-labelledby="govuk-notification-banner-title"
                         data-module="govuk-notification-banner">
                         <div class="govuk-notification-banner__header govuk-grid-row">
