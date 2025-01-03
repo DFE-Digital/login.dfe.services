@@ -40,8 +40,8 @@ const validate = async (req) => {
   }
   const model = {
     title: "Review request - DfE Sign-in",
-    backLink: `/access-requests/requests`,
-    cancelLink: `/access-requests/requests`,
+    backLink: "/access-requests/requests",
+    cancelLink: "/access-requests/requests",
     viewModel,
     selectedResponse: req.body.selectedResponse,
     validationMessages: {},
