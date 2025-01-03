@@ -39,13 +39,12 @@ const buildBackLink = (req) => {
 };
 
 const buildCancelLink = (req) => {
-  if (!isUserManagement(req)) {
-    if (req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST) {
-      return `/access-requests/subService-requests/${req.session.rid}`;
-    } else return `/approvals/users/${req.params.uid}`;
-  } else {
-    return `/my-services`;
+  if (isUserManagement(req)) {
+    return isReviewSubServiceRequest(req)
+      ? `/access-requests/subService-requests/${req.session.rid}`
+      : `/approvals/users/${req.params.uid}`;
   }
+  return `/my-services`;
 };
 
 const getViewModel = async (req) => {

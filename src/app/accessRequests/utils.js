@@ -44,7 +44,8 @@ const getSubServiceRequestVieModel = async (model, requestId, req) => {
   viewModel.selectedResponse = " ";
   viewModel.validationMessages = {};
   viewModel.currentPage = "requests";
-  viewModel.backLink = `/access-requests/requests`;
+  viewModel.backLink = "/access-requests/requests";
+  viewModel.cancelLink = "/access-requests/requests";
   viewModel = await getRoleAndServiceNames(viewModel, requestId, req);
   return viewModel;
 };

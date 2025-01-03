@@ -116,7 +116,8 @@ const isUserManagement = (req) => {
   return (
     req.query.manage_users === "true" ||
     isOrganisationInvite(req) ||
-    isViewOrganisationRequests(req)
+    isViewOrganisationRequests(req) ||
+    isReviewSubServiceRequest(req)
   );
 };
 
