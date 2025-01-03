@@ -80,12 +80,12 @@ const get = async (req, res) => {
   }
 
   viewModel.csrfToken = req.csrfToken();
+  viewModel.formatted_created_date = viewModel.created_date
+    ? dateFormat(viewModel.created_date, "longDateFormat")
+    : "";
   viewModel.subServiceAmendUrl = `/approvals/${viewModel.org_id}/users/${viewModel.user_id}/services/${viewModel.service_id}?actions=${actions.REVIEW_SUBSERVICE_REQUEST}`;
   if (viewModel.actioned_by && (viewModel.status === -1 || 1)) {
     const user = await Account.getById(viewModel.actioned_by);
-    viewModel.formatted_created_date = model.dataValues.createdAt
-      ? dateFormat(model.dataValues.createdAt, "longDateFormat")
-      : "";
     const { title, heading, message } = generateFlashMessages(
       "service",
       viewModel.status,
