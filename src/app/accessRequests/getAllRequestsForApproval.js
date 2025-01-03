@@ -2,6 +2,7 @@ const {
   getAllRequestsTypesForApprover,
 } = require("../../infrastructure/organisations");
 const { getUserDetails } = require("./utils");
+const { dateFormat } = require("../helpers/timezoneHelper");
 
 const getAllRequestsForApproval = async (req) => {
   const pageSize = 5;
@@ -30,7 +31,13 @@ const getAllRequestsForApproval = async (req) => {
       const userName = userFound
         ? `${userFound.claims.given_name} ${userFound.claims.family_name}`
         : "";
-      return Object.assign({ usersEmail, userName }, user);
+      const formatted_created_date = user.created_date
+        ? dateFormat(user.created_date, "shortDateFormat")
+        : "";
+      return Object.assign(
+        { usersEmail, userName, formatted_created_date },
+        user,
+      );
     });
   }
 

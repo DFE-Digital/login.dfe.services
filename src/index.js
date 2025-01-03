@@ -9,7 +9,6 @@ const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const { createClient } = require("redis");
 const RedisStore = require("connect-redis").default;
-const moment = require("moment");
 const http = require("http");
 const https = require("https");
 const path = require("path");
@@ -210,7 +209,6 @@ const init = async () => {
     ? assetsUrl.substr(0, assetsUrl.length - 1)
     : assetsUrl;
   Object.assign(app.locals, {
-    moment,
     urls: {
       help: config.hostingEnvironment.helpUrl,
       profile: config.hostingEnvironment.profileUrl,

@@ -138,7 +138,7 @@
                                <p class="govuk-!-margin-0 govuk-!-font-weight-bold"><%=service.name%></p>
                             </td>
                             <% if (service.requestDate) { %>
-                                <td><%=locals.moment(service.requestDate).format('DD MMM YYYY')%></td>
+                                <td><%= service.formatted_request_date %></td>
                             <%} else {%>
                                 <td>Pending</td>
                             <%}%>
