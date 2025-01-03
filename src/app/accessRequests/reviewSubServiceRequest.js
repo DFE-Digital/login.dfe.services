@@ -8,6 +8,7 @@ const {
   getRoleAndServiceNames,
   getOrganisationPermissionLevel,
 } = require("./utils");
+const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { createSubServiceAddedBanners } = require("../home/userBannersHandlers");
 const {
   isServiceEmailNotificationAllowed,
@@ -82,6 +83,9 @@ const get = async (req, res) => {
   viewModel.subServiceAmendUrl = `/approvals/${viewModel.org_id}/users/${viewModel.user_id}/services/${viewModel.service_id}?actions=${actions.REVIEW_SUBSERVICE_REQUEST}`;
   if (viewModel.actioned_by && (viewModel.status === -1 || 1)) {
     const user = await Account.getById(viewModel.actioned_by);
+    viewModel.formattedCreatedDate = model.dataValues.createdAt
+      ? dateFormat(model.dataValues.createdAt, "longDateFormat")
+      : "";
     const { title, heading, message } = generateFlashMessages(
       "service",
       viewModel.status,

@@ -3,6 +3,7 @@ const {
   isSelfManagement,
   getApproverOrgsFromReq,
 } = require("./utils");
+const { dateFormat } = require("../helpers/dateFormatterHelper");
 const {
   checkCacheForAllServices,
 } = require("../../infrastructure/helpers/allServicesAppCache");
@@ -49,6 +50,9 @@ const action = async (req, res) => {
         (x) => x.id === service.id,
       );
       service.name = serviceDetails.name;
+      service.formattedRequestDate = service.requestDate
+        ? dateFormat(service.requestDate, "shortDateFormat")
+        : "";
     });
   });
 

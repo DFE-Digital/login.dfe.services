@@ -1,7 +1,7 @@
 const {
   getFormattedDate,
   dateFormat,
-} = require("../../../../src/app/helpers/timezoneHelper");
+} = require("../../../../src/app/helpers/dateFormatterHelper");
 
 describe("Date Formatter Functions", () => {
   const testDate = new Date("2024-12-13 12:00:00.447"); // Example date
