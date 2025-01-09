@@ -5,6 +5,7 @@ const {
 } = require("../../infrastructure/search");
 const { getById } = require("../../infrastructure/account");
 const { getApproverOrgsFromReq } = require("./utils");
+const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { actions } = require("../constans/actions");
 const he = require("he");
 
@@ -83,6 +84,10 @@ const search = async (req) => {
       const me = await getById(req.user.sub);
       user.email = me.claims.email;
     }
+
+    user.formattedLastLogin = user.lastLogin
+      ? dateFormat(user.lastLogin, "shortDateFormat")
+      : "";
 
     const approverUserOrgs = user.organisations.filter((x) =>
       filteredOrgIds.includes(x.id),

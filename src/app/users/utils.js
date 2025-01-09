@@ -225,6 +225,7 @@ const isOrgEndUser = (userOrganisations, orgId) => {
   }
   return false;
 };
+
 const isLoginOver24 = (last_login, prev_login) => {
   let a = moment(last_login, "HH:mm");
   let b = moment(prev_login, "HH:mm");
@@ -234,6 +235,7 @@ const isLoginOver24 = (last_login, prev_login) => {
   }
   return false;
 };
+
 const isMultipleRolesAllowed = (serviceDetails, numberOfRolesAvailable) => {
   const maximumRolesAllowed =
     serviceDetails?.relyingParty?.params?.maximumRolesAllowed;

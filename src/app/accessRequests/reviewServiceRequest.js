@@ -6,6 +6,7 @@ const {
 } = require("../../../src/infrastructure/access");
 const { updateServiceRequest } = require("../requestService/utils");
 const { getAndMapServiceRequest, generateFlashMessages } = require("./utils");
+const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { services: daoServices } = require("login.dfe.dao");
 const { actions } = require("../constans/actions");
 const PolicyEngine = require("login.dfe.policy-engine");
@@ -105,6 +106,10 @@ const get = async (req, res) => {
   const model = await getViewModel(req);
   const { request, action, requestedRolesIds, service, endUserId } = model;
   const { rid, sid, rolesIds } = req.params;
+  model.request.dataValues.formattedCreatedDate = model.request.dataValues
+    .createdAt
+    ? dateFormat(model.request.dataValues.createdAt, "longDateFormat")
+    : "";
   req.session.action = action;
   req.session.reviewServiceRequest = {
     serviceReqId: rid,

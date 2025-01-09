@@ -113,7 +113,7 @@
                         const request = locals.requests[i]%>
                             <tr class="govuk-table__row">
                                 <th class="govuk-table__cell govuk-body govuk-!-font-size-15 govuk-!-font-weight-bold">
-                                    <%= locals.moment(request.created_date).format('DD MMM YYYY') %>
+                                    <%= request.formattedCreatedDate %>
                                 </th>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <%= request.userName %>

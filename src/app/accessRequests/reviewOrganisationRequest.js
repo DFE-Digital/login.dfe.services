@@ -7,6 +7,7 @@ const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
 const { getById, updateIndex } = require("./../../infrastructure/search");
 const { waitForIndexToUpdate } = require("../users/utils");
+const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getAndMapOrgRequest } = require("./utils");
 const { NotificationClient } = require("login.dfe.jobs-client");
 
@@ -16,6 +17,10 @@ const notificationClient = new NotificationClient({
 
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);
+
+  request.formattedCreatedDate = request.createdAt
+    ? dateFormat(request.createdAt, "longDateFormat")
+    : "";
 
   if (request.approverEmail) {
     res.flash("warn", `Request already actioned by ${request.approverEmail}`);
