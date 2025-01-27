@@ -31,10 +31,9 @@ const buildBackLink = (req) => {
   } else if (isUserManagement(req)) {
     if (isReviewSubServiceRequest(req)) {
       return `/access-requests/subService-requests/${req.session.rid}`;
-    } else
-      return `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
+    }
   } else {
-    return `/approvals/users/${req.params.uid}`;
+    return `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
   }
 };
 
