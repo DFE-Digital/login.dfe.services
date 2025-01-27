@@ -28,8 +28,8 @@ const buildBackLink = (req) => {
   const isEditServiceUrl = isEditService(req);
   if (isEditServiceUrl) {
     return `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.EDIT_SERVICE}`;
-  } else if (!isUserManagement(req)) {
-    if (req.query.actions === actions.REVIEW_SUBSERVICE_REQUEST) {
+  } else if (isUserManagement(req)) {
+    if (isReviewSubServiceRequest(req)) {
       return `/access-requests/subService-requests/${req.session.rid}`;
     } else
       return `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
