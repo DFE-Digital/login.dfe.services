@@ -14,6 +14,9 @@ const PolicyEngine = require("login.dfe.policy-engine");
 const {
   getSingleServiceForUser,
   getUserDetails,
+  isEditService,
+  isUserManagement,
+  isReviewSubServiceRequest,
 } = require("./../../../../src/app/users/utils");
 const {
   getApplication,
@@ -42,6 +45,10 @@ describe("when displaying the edit service view", () => {
   let getEditService;
 
   beforeEach(() => {
+    isEditService.mockReset();
+    isUserManagement.mockReset();
+    isReviewSubServiceRequest.mockReset();
+
     req = mockRequest();
     req.params = {
       uid: "user1",
@@ -49,6 +56,7 @@ describe("when displaying the edit service view", () => {
       sid: "service1",
     };
     req.session = {
+      rid: "rid1",
       user: {
         email: "test@test.com",
         firstName: "test",
@@ -144,6 +152,36 @@ describe("when displaying the edit service view", () => {
       service: {
         name: "service name",
       },
+    });
+  });
+
+  it("then it should include the correct backLink for editing a service for an user", async () => {
+    isEditService.mockReturnValue(true);
+
+    await getEditService(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      backLink:
+        "/approvals/org1/users/user1/associate-services?action=edit-service",
+    });
+  });
+
+  it("then it should include the correct backLink for reviewing a sub-service request", async () => {
+    isUserManagement.mockReturnValue(true);
+    isReviewSubServiceRequest.mockReturnValue(true);
+
+    await getEditService(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      backLink: "/access-requests/subService-requests/rid1",
+    });
+  });
+
+  it("then it should include the default backLink for editing services", async () => {
+    await getEditService(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      backLink: "/approvals/select-organisation-service?action=edit-service",
     });
   });
 });
