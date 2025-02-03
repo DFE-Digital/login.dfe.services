@@ -12,17 +12,14 @@ describe("Date Formatter Functions", () => {
   });
 
   it("Should format date correctly in long format", () => {
-    const formattedDate = getFormattedDate(
-      testDate,
-      "DD MMM YYYY hh:mma",
-    );
+    const formattedDate = getFormattedDate(testDate, "DD MMM YYYY hh:mma");
     expect(formattedDate).toBe("13 Dec 2024 12:00pm");
   });
 
   it("Should throw TypeError for invalid date", () => {
-    expect(() =>
-      getFormattedDate("invalid date", "DD MMM YYYY"),
-    ).toThrow(TypeError);
+    expect(() => getFormattedDate("invalid date", "DD MMM YYYY")).toThrow(
+      TypeError,
+    );
   });
 
   it("Should format date correctly in short format", () => {
