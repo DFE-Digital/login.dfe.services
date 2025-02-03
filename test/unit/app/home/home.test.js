@@ -126,6 +126,6 @@ describe("when displaying current organisation and service mapping", () => {
     await home(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][1].sessionExpiryTime).toBe(20);
+    expect(res.render.mock.calls[0][1].sessionExpiryTime).toBe("20 minutes");
   });
 });
