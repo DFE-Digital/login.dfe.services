@@ -35,7 +35,7 @@ const getAllRequestsForApproval = async (req) => {
         ? dateFormat(user.created_date, "shortDateFormat")
         : "";
       return Object.assign(
-        { usersEmail, userName, formattedCreatedDate},
+        { usersEmail, userName, formattedCreatedDate },
         user,
       );
     });
