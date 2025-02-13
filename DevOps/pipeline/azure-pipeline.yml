@@ -134,7 +134,7 @@ stages:
       - ${{ if eq(variables[env], 'true') }}:
         - stage: Deployment_${{env}}_${{location}}
           displayName: "Deployment [${{env}}] ${{location}}"
-          ${{ if eq(env, 'pp') }}:
+          ${{ if eq(env, 'dev') }}:
             dependsOn: 
             - releasebranch
           ${{ elseif eq(parameters.existTag, ' ') }}:
