@@ -106,14 +106,13 @@ variables:
 
 stages:
 
-  - ${{ if ne(parameters.existTag, '') }}:
+  - ${{ if eq(parameters.existTag, '') }}:
     # Code Scans & Build the artifact for deployment
     - stage: scanBuildApp
       displayName: "Scan tools & Build"
       jobs:
         - template: pipeline/components/checks/checks.yml@devopsTemplates
           parameters:
-            useRevisedLinting: true
             AppDeploy: ${{ not(parameters.InfrDeploy) }}
 
         - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
@@ -137,7 +136,7 @@ stages:
           ${{ if eq(env, 'pp') }}:
             dependsOn: 
             - releasebranch
-          ${{ elseif ne(parameters.existTag, '') }}:
+          ${{ elseif eq(parameters.existTag, '') }}:
             dependsOn: 
             - scanBuildApp
           condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
