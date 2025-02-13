@@ -193,3 +193,4 @@ stages:
                 parameters:
                   applicationName: ${{variables.applicationFullName}}
                   serviceConnection: $(${{ format('{0}{1}', env, 'ServCon') }})
+                  shaCode: $(${{ format('{0}{1}', env, 'ShaCode') }})
