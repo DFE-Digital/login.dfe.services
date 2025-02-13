@@ -39,7 +39,7 @@ parameters:
 - name: existTag
   type: string
   displayName: "Deploy existing tag"
-  default: ''
+  default: ""
 - name: slotDeploy
   type: boolean
   displayName: "Slot Deployment"
@@ -114,6 +114,7 @@ stages:
         - template: pipeline/components/checks/checks.yml@devopsTemplates
           parameters:
             AppDeploy: ${{ not(parameters.InfrDeploy) }}
+            custRegAuth: $(custRegAuth)
 
         - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
           - template: pipeline/components/build/buildAzureAppServices.yml@devopsTemplates
