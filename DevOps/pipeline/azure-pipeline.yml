@@ -88,13 +88,13 @@ variables:
 - name: tran
   value: true #${{ eq(parameters.tran, 'true') }}
 - name: dev
-  value: ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature1')) }}
+  value: ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
 - name: test
   value: ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature1')) }}
 - name: pp
   value: ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
 - name: pr
-  value: ${{ or(and(eq(parameters.pr, 'true'), ne(parameters.existTag, ' ')),eq(parameters.pp, 'true')) }}
+  value: ${{ or(and(eq(parameters.pr, 'true'), ne(parameters.existTag, ' ')),eq(variables.pp, 'true')) }}
 - name: ContRegServerTran
   value: ${{ eq(variables.tran, 'true') }}
 - name: northeurope
@@ -171,7 +171,7 @@ stages:
                 appRepoName: ${{variables.applicationFullName}}
                 healthCheckEndpoint: healthcheck
           
-        - ${{ if and(eq(env, 'pp'),eq(location, 'westeurope')) }}:
+        - ${{ if and(eq(env, 'tran'),eq(location, 'westeurope')) }}:
           - stage: releasebranch
             displayName: "GitHub Release Branch Creation"
             dependsOn:
@@ -183,7 +183,7 @@ stages:
                   serviceConnection: $(${{ format('{0}{1}', env, 'ServCon') }})
                   shaCode: $(${{ format('{0}{1}', env, 'ShaCode') }})
         
-        - ${{ if and(eq(env, 'pr'),eq(location, 'westeurope')) }}:
+        - ${{ if and(eq(env, 'dev'),eq(location, 'westeurope')) }}:
           - stage: branchPrTag
             displayName: "GitHub PR & Release Branch Tag"
             dependsOn: 
