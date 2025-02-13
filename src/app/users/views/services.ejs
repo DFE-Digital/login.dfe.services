@@ -45,19 +45,11 @@
             </h1>
             <dl class="inline">
                 <dt class="govuk-label">Account Status:</dt>
-                <%
-                    let tagColour = 'govuk-tag--'; 
-                    if(locals.user.status.id === 1) {
-                        tagColour += 'green';
-                    } else if(locals.user.status.id === 0) {
-                        tagColour += 'red';
-                    } else if(locals.user.status.id === -1) {
-                        tagColour += 'blue';
-                    } else if(locals.user.status.id === -2) {
-                        tagColour += 'orange';
-                    }
-                %>
-                <dd class="govuk-label govuk-tag <%= tagColour %>"><strong><%=locals.user.status.description%></strong></dd>
+                <dd class="govuk-label">
+                    <span class="govuk-label govuk-tag govuk-tag--<%= locals.user.status.tagColor %>">  
+                        <%=locals.user.status.description%>
+                    </span>
+                </dd>
             </dl>
         </div>
 
@@ -138,7 +130,7 @@
                                <p class="govuk-!-margin-0 govuk-!-font-weight-bold"><%=service.name%></p>
                             </td>
                             <% if (service.requestDate) { %>
-                                <td><%=locals.moment(service.requestDate).format('DD MMM YYYY')%></td>
+                                <td><%= service.formattedRequestDate %></td>
                             <%} else {%>
                                 <td>Pending</td>
                             <%}%>

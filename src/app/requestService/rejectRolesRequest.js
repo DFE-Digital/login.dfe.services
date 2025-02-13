@@ -1,17 +1,25 @@
-'use strict';
-const { listRolesOfService } = require('../../infrastructure/access');
-const { getUserDetails } = require('../users/utils');
-const { isServiceEmailNotificationAllowed } = require('../../../src/infrastructure/applications');
-const logger = require('../../infrastructure/logger');
-const config = require('../../infrastructure/config');
-const PolicyEngine = require('login.dfe.policy-engine');
+const { listRolesOfService } = require("../../infrastructure/access");
+const { getUserDetails } = require("../users/utils");
+const {
+  isServiceEmailNotificationAllowed,
+} = require("../../../src/infrastructure/applications");
+const logger = require("../../infrastructure/logger");
+const config = require("../../infrastructure/config");
+const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
-const { NotificationClient } = require('login.dfe.jobs-client');
-const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
-const { getUserServiceRequestStatus, updateServiceRequest } = require('./utils.js');
+const { NotificationClient } = require("login.dfe.jobs-client");
+const {
+  checkCacheForAllServices,
+} = require("../../infrastructure/helpers/allServicesAppCache");
+const {
+  getUserServiceRequestStatus,
+  updateServiceRequest,
+} = require("./utils.js");
 
 const getViewModel = async (req) => {
-  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
+  const organisationDetails = req.userOrganisations.find(
+    (x) => x.organisation.id === req.params.orgId,
+  );
   const serviceId = req.params.sid;
   const roleIds = JSON.parse(decodeURIComponent(req.params.rids));
   const roles = roleIds || [];
@@ -20,9 +28,16 @@ const getViewModel = async (req) => {
 
   const allServices = await checkCacheForAllServices(req.id);
   const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-  const allRolesOfServiceUnsorted = await listRolesOfService(req.params.sid, req.id);
-  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
-  const roleDetails = allRolesOfService.filter((x) => roles.find((y) => y.toLowerCase() === x.id.toLowerCase()));
+  const allRolesOfServiceUnsorted = await listRolesOfService(
+    req.params.sid,
+    req.id,
+  );
+  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
+  const roleDetails = allRolesOfService.filter((x) =>
+    roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
+  );
 
   const service = {
     serviceId,
@@ -32,12 +47,12 @@ const getViewModel = async (req) => {
 
   const model = {
     csrfToken: req.csrfToken(),
-    currentPage: 'users',
+    currentPage: "users",
     user: {
       firstName: req.session.user.firstName,
       lastName: req.session.user.lastName,
       email: req.session.user.email,
-      uid: req.session.user.uid ? req.session.user.uid : '',
+      uid: req.session.user.uid ? req.session.user.uid : "",
     },
     validationMessages: {},
     endUserName: `${endUser.firstName} ${endUser.lastName}`,
@@ -52,7 +67,7 @@ const getViewModel = async (req) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/my-services');
+    return res.redirect("/my-services");
   }
 
   const model = await getViewModel(req);
@@ -67,22 +82,32 @@ const get = async (req, res) => {
   const { endUser } = model;
 
   if (userSubServiceRequestID) {
-    const userServiceRequestStatus = await getUserServiceRequestStatus(userSubServiceRequestID);
+    const userServiceRequestStatus = await getUserServiceRequestStatus(
+      userSubServiceRequestID,
+    );
     if (userServiceRequestStatus === -1) {
       model.validationMessages = {};
-      return res.render('requestService/views/requestAlreadyRejected', model);
+      return res.render("requestService/views/requestAlreadyRejected", model);
     }
 
     if (userServiceRequestStatus === 1) {
       model.validationMessages = {};
-      return res.render('requestService/views/requestAlreadyApproved', model);
+      return res.render("requestService/views/requestAlreadyApproved", model);
     }
   }
 
-  const policyValidationResult = await policyEngine.validate(endUserId, orgId, serviceId, roles, reqId);
+  const policyValidationResult = await policyEngine.validate(
+    endUserId,
+    orgId,
+    serviceId,
+    roles,
+    reqId,
+  );
 
   if (policyValidationResult.length > 0) {
-    model.validationMessages.roles = policyValidationResult.map((x) => x.message);
+    model.validationMessages.roles = policyValidationResult.map(
+      (x) => x.message,
+    );
   }
 
   if (!req.session.user) {
@@ -95,15 +120,15 @@ const get = async (req, res) => {
   req.session.user.email = endUser.email;
   req.session.user.services = [model.service];
 
-  return res.render('requestService/views/rejectRolesRequest', model);
+  return res.render("requestService/views/rejectRolesRequest", model);
 };
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/my-services');
+    return res.redirect("/my-services");
   }
 
-  const rejectReason = req.body.reason ? req.body.reason : '';
+  const rejectReason = req.body.reason ? req.body.reason : "";
   const model = await getViewModel(req);
   const userSubServiceRequestID = req.params.reqID;
   const endUserId = req.params.uid;
@@ -118,24 +143,37 @@ const post = async (req, res) => {
   const { service } = model;
   const rolesName = model.service.roles.map((r) => r.name);
 
-  const policyValidationResult = await policyEngine.validate(endUserId, orgId, serviceId, roles, reqId);
+  const policyValidationResult = await policyEngine.validate(
+    endUserId,
+    orgId,
+    serviceId,
+    roles,
+    reqId,
+  );
 
   if (policyValidationResult.length > 0) {
-    model.validationMessages.roles = policyValidationResult.map((x) => x.message);
-    return res.render('requestService/views/rejectRolesRequest', model);
+    model.validationMessages.roles = policyValidationResult.map(
+      (x) => x.message,
+    );
+    return res.render("requestService/views/rejectRolesRequest", model);
   }
 
   if (userSubServiceRequestID) {
-    const updateServiceReq = await updateServiceRequest(userSubServiceRequestID, -1, approverDetails.sub, rejectReason);
+    const updateServiceReq = await updateServiceRequest(
+      userSubServiceRequestID,
+      -1,
+      approverDetails.sub,
+      rejectReason,
+    );
     const resStatus = updateServiceReq.serviceRequest.status;
 
     if (updateServiceReq.success === false && resStatus === -1) {
       model.validationMessages = {};
-      return res.render('requestService/views/requestAlreadyRejected', model);
+      return res.render("requestService/views/requestAlreadyRejected", model);
     }
     if (updateServiceReq.success === false && resStatus === 1) {
       model.validationMessages = {};
-      return res.render('requestService/views/requestAlreadyApproved', model);
+      return res.render("requestService/views/requestAlreadyApproved", model);
     }
   }
 
@@ -155,8 +193,8 @@ const post = async (req, res) => {
     );
   }
   logger.audit({
-    type: 'sub-service',
-    subType: 'sub-service request Rejected',
+    type: "sub-service",
+    subType: "sub-service request Rejected",
     userId: approverDetails.sub,
     userEmail: approverDetails.email,
     application: config.loggerSettings.applicationName,
@@ -166,18 +204,18 @@ const post = async (req, res) => {
     }) rejected sub-service request for (serviceId: ${serviceId}) and sub-services (roleIds: ${JSON.stringify(
       roles,
     )}) for organisation (orgId: ${orgId}) for end user (endUserId: ${endUserId}). ${
-      rejectReason ? `The reject reason is ${rejectReason}` : ''
+      rejectReason ? `The reject reason is ${rejectReason}` : ""
     } - requestId (reqId: ${userSubServiceRequestID})`,
   });
 
-  res.flash('title', 'Success');
-  res.flash('heading', 'Sub-service request rejected');
+  res.flash("title", "Success");
+  res.flash("heading", "Sub-service request rejected");
   res.flash(
-    'message',
-    'The user who raised the request will receive an email to tell them their sub-service access request has been rejected.',
+    "message",
+    "The user who raised the request will receive an email to tell them their sub-service access request has been rejected.",
   );
 
-  res.redirect('/my-services');
+  res.redirect("/my-services");
 };
 
 module.exports = {

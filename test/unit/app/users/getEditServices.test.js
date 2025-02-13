@@ -1,75 +1,80 @@
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('login.dfe.policy-engine');
-jest.mock('./../../../../src/app/users/utils');
-jest.mock('./../../../../src/infrastructure/applications', () => {
+jest.mock("./../../../../src/infrastructure/config", () =>
+  require("./../../../utils/jestMocks").mockConfig(),
+);
+jest.mock("login.dfe.policy-engine");
+jest.mock("./../../../../src/app/users/utils");
+jest.mock("./../../../../src/infrastructure/applications", () => {
   return {
     getApplication: jest.fn(),
   };
 });
 
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
-const PolicyEngine = require('login.dfe.policy-engine');
-const { getSingleServiceForUser, getUserDetails } = require('./../../../../src/app/users/utils');
-const { getApplication } = require('./../../../../src/infrastructure/applications');
+const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
+const PolicyEngine = require("login.dfe.policy-engine");
+const {
+  getSingleServiceForUser,
+  getUserDetails,
+  isEditService,
+  isUserManagement,
+  isReviewSubServiceRequest,
+} = require("./../../../../src/app/users/utils");
+const {
+  getApplication,
+} = require("./../../../../src/infrastructure/applications");
 const application = {
-  name: 'Service One',
+  name: "Service One",
   relyingParty: {
-    service_home: 'http://service.one/login',
-    redirect_uris: ['http://service.one/login/cb'],
+    service_home: "http://service.one/login",
+    redirect_uris: ["http://service.one/login/cb"],
   },
 };
 const user = {
-  email: 'test@test.com',
-  firstName: 'test',
-  lastName: 'name',
+  email: "test@test.com",
+  firstName: "test",
+  lastName: "name",
 };
-const service = {
-  name: 'Service One',
-  relyingParty: {
-    service_home: 'http://service.one/login',
-    redirect_uris: ['http://service.one/login/cb'],
-    params: {
-      maximumRolesAllowed: null,
-      minimumRolesRequired: null,
-    },
-  },
-};
+
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
 };
 
-describe('when displaying the edit service view', () => {
+describe("when displaying the edit service view", () => {
   let req;
   let res;
 
   let getEditService;
 
   beforeEach(() => {
+    isEditService.mockReset();
+    isUserManagement.mockReset();
+    isReviewSubServiceRequest.mockReset();
+
     req = mockRequest();
     req.params = {
-      uid: 'user1',
-      orgId: 'org1',
-      sid: 'service1',
+      uid: "user1",
+      orgId: "org1",
+      sid: "service1",
     };
     req.session = {
+      rid: "rid1",
       user: {
-        email: 'test@test.com',
-        firstName: 'test',
-        lastName: 'name',
+        email: "test@test.com",
+        firstName: "test",
+        lastName: "name",
       },
     };
     req.user = {
-      sub: 'user1',
-      email: 'user.one@unit.test',
+      sub: "user1",
+      email: "user.one@unit.test",
       organisations: [
         {
           organisation: {
-            id: 'organisationId',
-            name: 'organisationName',
+            id: "organisationId",
+            name: "organisationName",
           },
           role: {
             id: 0,
-            name: 'category name',
+            name: "category name",
           },
         },
       ],
@@ -77,12 +82,12 @@ describe('when displaying the edit service view', () => {
     req.userOrganisations = [
       {
         organisation: {
-          id: 'organisationId',
-          name: 'organisationName',
+          id: "organisationId",
+          name: "organisationName",
         },
         role: {
           id: 0,
-          name: 'category name',
+          name: "category name",
         },
       },
     ];
@@ -90,48 +95,49 @@ describe('when displaying the edit service view', () => {
     getUserDetails.mockReset().mockReturnValue(user);
     res = mockResponse();
 
-    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
-      rolesAvailableToUser: [],
-    });
+    policyEngine.getPolicyApplicationResultsForUser
+      .mockReset()
+      .mockReturnValue({
+        rolesAvailableToUser: [],
+      });
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getSingleServiceForUser.mockReset();
     getSingleServiceForUser.mockReturnValue({
-      id: 'service1',
-      dateActivated: '10/10/2018',
-      name: 'service name',
-      status: 'active',
+      id: "service1",
+      dateActivated: "10/10/2018",
+      name: "service name",
+      status: "active",
     });
 
-    getEditService = require('./../../../../src/app/users/editServices').get;
-    
+    getEditService = require("./../../../../src/app/users/editServices").get;
   });
 
-  it('then it should get the selected user service', async () => {
+  it("then it should get the selected user service", async () => {
     await getEditService(req, res);
 
     expect(getSingleServiceForUser.mock.calls).toHaveLength(1);
-    expect(getSingleServiceForUser.mock.calls[0][0]).toBe('user1');
-    expect(getSingleServiceForUser.mock.calls[0][1]).toBe('org1');
-    expect(getSingleServiceForUser.mock.calls[0][2]).toBe('service1');
-    expect(getSingleServiceForUser.mock.calls[0][3]).toBe('correlationId');
+    expect(getSingleServiceForUser.mock.calls[0][0]).toBe("user1");
+    expect(getSingleServiceForUser.mock.calls[0][1]).toBe("org1");
+    expect(getSingleServiceForUser.mock.calls[0][2]).toBe("service1");
+    expect(getSingleServiceForUser.mock.calls[0][3]).toBe("correlationId");
   });
 
-  it('then it should return the edit service view', async () => {
+  it("then it should return the edit service view", async () => {
     await getEditService(req, res);
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/editServices');
+    expect(res.render.mock.calls[0][0]).toBe("users/views/editServices");
   });
 
-  it('then it should include csrf token', async () => {
+  it("then it should include csrf token", async () => {
     await getEditService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      csrfToken: 'token',
+      csrfToken: "token",
     });
   });
 
-  it('then it should include the organisation details', async () => {
+  it("then it should include the organisation details", async () => {
     await getEditService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
@@ -139,13 +145,43 @@ describe('when displaying the edit service view', () => {
     });
   });
 
-  it('then it should include the service details', async () => {
+  it("then it should include the service details", async () => {
     await getEditService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       service: {
-        name: 'service name',
+        name: "service name",
       },
+    });
+  });
+
+  it("then it should include the correct backLink for editing a service for an user", async () => {
+    isEditService.mockReturnValue(true);
+
+    await getEditService(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      backLink:
+        "/approvals/org1/users/user1/associate-services?action=edit-service",
+    });
+  });
+
+  it("then it should include the correct backLink for reviewing a sub-service request", async () => {
+    isUserManagement.mockReturnValue(true);
+    isReviewSubServiceRequest.mockReturnValue(true);
+
+    await getEditService(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      backLink: "/access-requests/subService-requests/rid1",
+    });
+  });
+
+  it("then it should include the default backLink for editing services", async () => {
+    await getEditService(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      backLink: "/approvals/select-organisation-service?action=edit-service",
     });
   });
 });

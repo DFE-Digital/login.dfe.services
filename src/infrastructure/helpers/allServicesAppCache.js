@@ -1,9 +1,9 @@
-const appCache = require('./AppCache');
-const logger = require('../logger/index');
-const { getAllServices } = require('../applications/api');
+const appCache = require("./AppCache");
+const logger = require("../logger/index");
+const { getAllServices } = require("../applications/api");
 
 exports.checkCacheForAllServices = async (correlationId) => {
-  const allServicesId = 'allServices';
+  const allServicesId = "allServices";
   let allServices = appCache.retrieve(allServicesId);
 
   if (!allServices) {

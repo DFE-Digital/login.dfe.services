@@ -1,9 +1,13 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
+const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
+jest.mock("./../../../../src/infrastructure/config", () =>
+  require("./../../../utils/jestMocks").mockConfig(),
+);
+jest.mock("./../../../../src/infrastructure/logger", () =>
+  require("./../../../utils/jestMocks").mockLogger(),
+);
 
-describe('when displaying the resend invitation view', () => {
+describe("when displaying the resend invitation view", () => {
   let req;
   let res;
 
@@ -12,69 +16,72 @@ describe('when displaying the resend invitation view', () => {
   beforeEach(() => {
     req = mockRequest();
     req.params = {
-      uid: 'user1',
-      orgId: 'org1',
-      sid: 'service1',
+      uid: "user1",
+      orgId: "org1",
+      sid: "service1",
     };
     req.session = {
       user: {
-        email: 'test@test.com',
-        firstName: 'test',
-        lastName: 'name',
-        uid: 'userid',
+        email: "test@test.com",
+        firstName: "test",
+        lastName: "name",
+        uid: "userid",
       },
     };
     req.user = {
-      sub: 'user1',
-      email: 'user.one@unit.test',
+      sub: "user1",
+      email: "user.one@unit.test",
       organisations: [
         {
           organisation: {
-            id: 'organisationId',
-            name: 'organisationName',
+            id: "organisationId",
+            name: "organisationName",
           },
           role: {
             id: 0,
-            name: 'category name',
+            name: "category name",
           },
         },
       ],
     };
     res = mockResponse();
 
-    getResendInvitation = require('./../../../../src/app/users/resendInvitation').get;
+    getResendInvitation =
+      require("./../../../../src/app/users/resendInvitation").get;
   });
 
-  it('then it should return the confirm resend invitation view', async () => {
+  it("then it should return the confirm resend invitation view", async () => {
     await getResendInvitation(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/confirmResendInvitation');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "users/views/confirmResendInvitation",
+    );
   });
 
-  it('then it should include csrf token', async () => {
+  it("then it should include csrf token", async () => {
     await getResendInvitation(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      csrfToken: 'token',
+      csrfToken: "token",
     });
   });
 
-  it('then it should include the users name', async () => {
+  it("then it should include the users name", async () => {
     await getResendInvitation(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       user: {
-        name: 'test name',
+        name: "test name",
       },
     });
   });
 
-  it('then it should include the users email address', async () => {
+  it("then it should include the users email address", async () => {
     await getResendInvitation(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      email: 'test@test.com',
+      email: "test@test.com",
     });
   });
 });

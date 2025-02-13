@@ -1,18 +1,21 @@
-const config = require('./../config');
-const { fetchApi } = require('login.dfe.async-retry');
-const jwtStrategy = require('login.dfe.jwt-strategies');
-const { services } = require('login.dfe.dao');
+const config = require("./../config");
+const { fetchApi } = require("login.dfe.async-retry");
+const jwtStrategy = require("login.dfe.jwt-strategies");
+const { services } = require("login.dfe.dao");
 
 const getApplication = async (idOrClientId, correlationId) => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
   try {
-    return await fetchApi(`${config.applications.service.url}/services/${idOrClientId}`, {
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+    return await fetchApi(
+      `${config.applications.service.url}/services/${idOrClientId}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
       },
-    });
+    );
   } catch (e) {
     if (e.statusCode === 404) {
       return undefined;
@@ -23,7 +26,9 @@ const getApplication = async (idOrClientId, correlationId) => {
 
 const getPageOfService = async (pageNumber, pageSize) => {
   const pageOfServices = await services.list(pageNumber, pageSize);
-  return !pageOfServices || pageOfServices.length === 0 ? undefined : pageOfServices;
+  return !pageOfServices || pageOfServices.length === 0
+    ? undefined
+    : pageOfServices;
 };
 
 const getAllServices = async () => {
@@ -43,7 +48,7 @@ const getAllServices = async () => {
 };
 
 const isServiceEmailNotificationAllowed = async () => {
-  const statusFlags = await services.getToggleStatuses('email', 'services');
+  const statusFlags = await services.getToggleStatuses("email", "services");
   if (statusFlags && statusFlags.length === 1) {
     return statusFlags[0].Flag;
   }

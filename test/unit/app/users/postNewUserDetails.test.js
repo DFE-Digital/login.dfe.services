@@ -1,29 +1,32 @@
-const { mockRequest, mockResponse } = require('./../../../utils/jestMocks');
+const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
-jest.mock('./../../../../src/infrastructure/organisations', () => {
+jest.mock("./../../../../src/infrastructure/config", () =>
+  require("./../../../utils/jestMocks").mockConfig(),
+);
+jest.mock("./../../../../src/infrastructure/logger", () =>
+  require("./../../../utils/jestMocks").mockLogger(),
+);
+jest.mock("./../../../../src/infrastructure/organisations", () => {
   return {
     getOrganisationAndServiceForUser: jest.fn(),
     getOrganisationAndServiceForInvitation: jest.fn(),
   };
 });
-jest.mock('./../../../../src/infrastructure/account', () => ({
+jest.mock("./../../../../src/infrastructure/account", () => ({
   getByEmail: jest.fn(),
   getById: jest.fn(),
   getInvitationByEmail: jest.fn(),
 }));
 
-const { actions } = require('../../../../src/app/constans/actions');
+const { actions } = require("../../../../src/app/constans/actions");
 
 const {
   getOrganisationAndServiceForUser,
   getOrganisationAndServiceForInvitation,
-} = require('./../../../../src/infrastructure/organisations');
-const Account = require('./../../../../src/infrastructure/account');
-const config = require('../../../../src/infrastructure/config');
+} = require("./../../../../src/infrastructure/organisations");
+const Account = require("./../../../../src/infrastructure/account");
 
-describe('when entering a new users details', () => {
+describe("when entering a new users details", () => {
   let req;
   let res;
 
@@ -34,30 +37,30 @@ describe('when entering a new users details', () => {
   beforeEach(() => {
     req = mockRequest();
     req.params = {
-      uid: 'user1',
-      orgId: 'org1',
-      sid: 'service1',
+      uid: "user1",
+      orgId: "org1",
+      sid: "service1",
     };
     req.user = {
-      sub: 'user1',
-      email: 'user.one@unit.test',
+      sub: "user1",
+      email: "user.one@unit.test",
       organisations: [
         {
           organisation: {
-            id: 'organisationId',
-            name: 'organisationName',
+            id: "organisationId",
+            name: "organisationName",
           },
           role: {
             id: 0,
-            name: 'category name',
+            name: "category name",
           },
         },
       ],
     };
     req.body = {
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'johndoe@someschool.com',
+      firstName: "John",
+      lastName: "Doe",
+      email: "johndoe@someschool.com",
     };
     res = mockResponse();
 
@@ -67,183 +70,188 @@ describe('when entering a new users details', () => {
     getOrganisationAndServiceForInvitation.mockReset().mockReturnValue(null);
     getOrganisationAndServiceForUser.mockReset().mockReturnValue(null);
 
-    postNewUserDetails = require('./../../../../src/app/users/newUserDetails').post;
+    postNewUserDetails =
+      require("./../../../../src/app/users/newUserDetails").post;
 
-    backRedirect = `/approvals/select-organisation?action=${actions.ORG_INVITE}`
+    backRedirect = `/approvals/select-organisation?action=${actions.ORG_INVITE}`;
   });
 
-  it('then it should include user details in session', async () => {
+  it("then it should include user details in session", async () => {
     await postNewUserDetails(req, res);
 
     expect(req.session.user).not.toBeNull();
-    expect(req.session.user.firstName).toBe('John');
-    expect(req.session.user.lastName).toBe('Doe');
-    expect(req.session.user.email).toBe('johndoe@someschool.com');
+    expect(req.session.user.firstName).toBe("John");
+    expect(req.session.user.lastName).toBe("Doe");
+    expect(req.session.user.email).toBe("johndoe@someschool.com");
   });
 
-  it('then it should render view if first name not entered', async () => {
+  it("then it should render view if first name not entered", async () => {
     req.body.firstName = undefined;
 
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/newUserDetails');
+    expect(res.render.mock.calls[0][0]).toBe("users/views/newUserDetails");
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      firstName: '',
-      lastName: 'Doe',
-      email: 'johndoe@someschool.com',
+      csrfToken: "token",
+      firstName: "",
+      lastName: "Doe",
+      email: "johndoe@someschool.com",
       backLink: backRedirect,
-      currentPage: 'users',
+      currentPage: "users",
       isDSIUser: false,
-      organisationId: 'org1',
-      uid: '',
+      organisationId: "org1",
+      uid: "",
       validationMessages: {
-        firstName: 'Please enter a first name',
+        firstName: "Please enter a first name",
       },
     });
   });
 
-  it('then it should render view if last name not entered', async () => {
+  it("then it should render view if last name not entered", async () => {
     req.body.lastName = undefined;
 
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/newUserDetails');
+    expect(res.render.mock.calls[0][0]).toBe("users/views/newUserDetails");
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      firstName: 'John',
-      lastName: '',
-      email: 'johndoe@someschool.com',
+      csrfToken: "token",
+      firstName: "John",
+      lastName: "",
+      email: "johndoe@someschool.com",
       backLink: backRedirect,
-      currentPage: 'users',
+      currentPage: "users",
       isDSIUser: false,
-      organisationId: 'org1',
-      uid: '',
+      organisationId: "org1",
+      uid: "",
       validationMessages: {
-        lastName: 'Please enter a last name',
+        lastName: "Please enter a last name",
       },
     });
   });
 
-  it('then it should render view if email not entered', async () => {
+  it("then it should render view if email not entered", async () => {
     req.body.email = undefined;
 
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/newUserDetails');
+    expect(res.render.mock.calls[0][0]).toBe("users/views/newUserDetails");
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: '',
+      csrfToken: "token",
+      firstName: "John",
+      lastName: "Doe",
+      email: "",
       backLink: backRedirect,
-      currentPage: 'users',
+      currentPage: "users",
       isDSIUser: false,
-      organisationId: 'org1',
-      uid: '',
+      organisationId: "org1",
+      uid: "",
       validationMessages: {
-        email: 'Please enter an email address',
+        email: "Please enter an email address",
       },
     });
   });
 
-  it('then it should render view if email not a valid email address', async () => {
-    req.body.email = 'not-an-email';
+  it("then it should render view if email not a valid email address", async () => {
+    req.body.email = "not-an-email";
 
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/newUserDetails');
+    expect(res.render.mock.calls[0][0]).toBe("users/views/newUserDetails");
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'not-an-email',
+      csrfToken: "token",
+      firstName: "John",
+      lastName: "Doe",
+      email: "not-an-email",
       backLink: backRedirect,
-      currentPage: 'users',
+      currentPage: "users",
       isDSIUser: false,
-      organisationId: 'org1',
-      uid: '',
+      organisationId: "org1",
+      uid: "",
       validationMessages: {
-        email: 'Please enter a valid email address',
+        email: "Please enter a valid email address",
       },
     });
   });
 
-  it('should render with error if emailValidation is undefined and the email address is a blacklisted email', async () => {
-    req.body.email = 'blacklisted.domain@hotmail.com';
+  it("should render with error if emailValidation is undefined and the email address is a blacklisted email", async () => {
+    req.body.email = "blacklisted.domain@hotmail.com";
     process.env.emailValidation = undefined;
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/newUserDetails');
+    expect(res.render.mock.calls[0][0]).toBe("users/views/newUserDetails");
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'blacklisted.domain@hotmail.com',
+      csrfToken: "token",
+      firstName: "John",
+      lastName: "Doe",
+      email: "blacklisted.domain@hotmail.com",
       backLink: backRedirect,
-      currentPage: 'users',
+      currentPage: "users",
       isDSIUser: false,
-      organisationId: 'org1',
-      uid: '',
+      organisationId: "org1",
+      uid: "",
       validationMessages: {
-        email: 'This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.',
+        email:
+          "This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.",
       },
     });
   });
 
-  it('should render with error if emailValidation is True and the email address is a blacklisted email', async () => {
-    req.body.email = 'blacklisted.domain@hotmail.com';
-    process.env.emailValidation = 'true';
+  it("should render with error if emailValidation is True and the email address is a blacklisted email", async () => {
+    req.body.email = "blacklisted.domain@hotmail.com";
+    process.env.emailValidation = "true";
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/newUserDetails');
+    expect(res.render.mock.calls[0][0]).toBe("users/views/newUserDetails");
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'blacklisted.domain@hotmail.com',
+      csrfToken: "token",
+      firstName: "John",
+      lastName: "Doe",
+      email: "blacklisted.domain@hotmail.com",
       backLink: backRedirect,
-      currentPage: 'users',
+      currentPage: "users",
       isDSIUser: false,
-      organisationId: 'org1',
-      uid: '',
+      organisationId: "org1",
+      uid: "",
       validationMessages: {
-        email: 'This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.',
+        email:
+          "This email address is not valid for this service. Generic email names (for example, headmaster@, admin@) and domains (for example, @yahoo.co.uk, @gmail.com) compromise security. Enter an email address that is associated with your organisation.",
       },
     });
   });
 
-  it('should redirect if emailValidation is False and the email address is a blacklisted email', async () => {
-    req.body.email = 'blacklisted.domain@hotmail.com';
-    process.env.emailValidation = 'false';
+  it("should redirect if emailValidation is False and the email address is a blacklisted email", async () => {
+    req.body.email = "blacklisted.domain@hotmail.com";
+    process.env.emailValidation = "false";
     await postNewUserDetails(req, res);
 
     expect(res.sessionRedirect.mock.calls).toHaveLength(1);
-    expect(res.sessionRedirect.mock.calls[0][0]).toBe('organisation-permissions');
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
+      "organisation-permissions",
+    );
   });
 
-  it('then it should render view if email already associated to a user in this org', async () => {
+  it("then it should render view if email already associated to a user in this org", async () => {
     Account.getById.mockReturnValue({
       claims: {
-        sub: 'user1',
+        sub: "user1",
       },
     });
     Account.getByEmail.mockReturnValue({
       claims: {
-        sub: 'user1',
+        sub: "user1",
       },
     });
     getOrganisationAndServiceForUser.mockReturnValue([
       {
         organisation: {
-          id: 'org1',
-          name: 'organisation1',
+          id: "org1",
+          name: "organisation1",
         },
       },
     ]);
@@ -251,32 +259,33 @@ describe('when entering a new users details', () => {
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/newUserDetails');
+    expect(res.render.mock.calls[0][0]).toBe("users/views/newUserDetails");
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'johndoe@someschool.com',
+      csrfToken: "token",
+      firstName: "John",
+      lastName: "Doe",
+      email: "johndoe@someschool.com",
       backLink: backRedirect,
-      currentPage: 'users',
+      currentPage: "users",
       isDSIUser: false,
-      organisationId: 'org1',
-      uid: '',
+      organisationId: "org1",
+      uid: "",
       validationMessages: {
-        email: 'A DfE Sign-in user already exists with that email address for organisation1',
+        email:
+          "A DfE Sign-in user already exists with that email address for organisation1",
       },
     });
   });
 
-  it('then it should render view if email already associated to a invitation in this org', async () => {
+  it("then it should render view if email already associated to a invitation in this org", async () => {
     Account.getInvitationByEmail.mockReturnValue({
-      id: 'inv1',
+      id: "inv1",
     });
     getOrganisationAndServiceForInvitation.mockReturnValue([
       {
         organisation: {
-          id: 'org1',
-          name: 'organisation1',
+          id: "org1",
+          name: "organisation1",
         },
       },
     ]);
@@ -284,39 +293,40 @@ describe('when entering a new users details', () => {
     await postNewUserDetails(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/newUserDetails');
+    expect(res.render.mock.calls[0][0]).toBe("users/views/newUserDetails");
     expect(res.render.mock.calls[0][1]).toEqual({
-      csrfToken: 'token',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'johndoe@someschool.com',
+      csrfToken: "token",
+      firstName: "John",
+      lastName: "Doe",
+      email: "johndoe@someschool.com",
       backLink: backRedirect,
-      currentPage: 'users',
+      currentPage: "users",
       isDSIUser: false,
-      organisationId: 'org1',
-      uid: '',
+      organisationId: "org1",
+      uid: "",
       validationMessages: {
-        email: 'A DfE Sign-in user already exists with that email address for organisation1',
+        email:
+          "A DfE Sign-in user already exists with that email address for organisation1",
       },
     });
   });
 
-  it('then it should redirect to confirm user if user not in org', async () => {
+  it("then it should redirect to confirm user if user not in org", async () => {
     Account.getById.mockReturnValue({
       claims: {
-        sub: 'user1',
+        sub: "user1",
       },
     });
     Account.getByEmail.mockReturnValue({
       claims: {
-        sub: 'user1',
+        sub: "user1",
       },
     });
     getOrganisationAndServiceForUser.mockReturnValue([
       {
         organisation: {
-          id: 'org2',
-          name: 'organisation2',
+          id: "org2",
+          name: "organisation2",
         },
       },
     ]);
@@ -329,15 +339,15 @@ describe('when entering a new users details', () => {
     );
   });
 
-  it('then it should redirect to confirm user if inv not in org', async () => {
+  it("then it should redirect to confirm user if inv not in org", async () => {
     Account.getInvitationByEmail.mockReturnValue({
-      id: 'inv1',
+      id: "inv1",
     });
     getOrganisationAndServiceForInvitation.mockReturnValue([
       {
         organisation: {
-          id: 'org2',
-          name: 'organisation2',
+          id: "org2",
+          name: "organisation2",
         },
       },
     ]);
@@ -350,23 +360,23 @@ describe('when entering a new users details', () => {
     );
   });
 
-  it('then it should redirect to confirm user if user not in org and include review in query string', async () => {
-    req.query.review = 'true';
+  it("then it should redirect to confirm user if user not in org and include review in query string", async () => {
+    req.query.review = "true";
     Account.getById.mockReturnValue({
       claims: {
-        sub: 'user1',
+        sub: "user1",
       },
     });
     Account.getByEmail.mockReturnValue({
       claims: {
-        sub: 'user1',
+        sub: "user1",
       },
     });
     getOrganisationAndServiceForUser.mockReturnValue([
       {
         organisation: {
-          id: 'org2',
-          name: 'organisation2',
+          id: "org2",
+          name: "organisation2",
         },
       },
     ]);

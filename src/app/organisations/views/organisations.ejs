@@ -19,7 +19,7 @@
 
             <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
                 <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
-                    <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner--success"
+                    <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner<%= locals.flash.title[0].toLowerCase().includes("success") ? "--success" : "" %>"
                         role="alert" aria-labelledby="govuk-notification-banner-title"
                         data-module="govuk-notification-banner">
                         <div class="govuk-notification-banner__header govuk-grid-row">
@@ -136,15 +136,17 @@
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.upin %></td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.ukprn %></td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                                            <% if (organisation.status) { %>
+                                    <% if (organisation.status) { %>
+                                        <span class="govuk-tag govuk-tag--<%= organisation.status.tagColor %>">
                                             <%= organisation.status.name %>
-                                            <%}%>
+                                        </span>
+                                        <%}%>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <% if (organisation.role) { %>
                                         <%= organisation.role.name %>
                                     <% } else { %>
-                                        <span class="font-style-italic">REQUESTED <br> <%= locals.moment(organisation.requestDate).format('DD/MM/YYYY') %></span>
+                                        <span class="font-style-italic">REQUESTED <br> <%= organisation.formattedCreatedDate %></span>
                                     <% } %>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">

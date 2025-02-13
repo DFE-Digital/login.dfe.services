@@ -1,30 +1,42 @@
-'use strict';
-const { listRolesOfService, addUserService, getServicesForUser } = require('../../infrastructure/access');
-const { getOrganisationAndServiceForUser } = require('../../infrastructure/organisations');
-const { getUserDetails } = require('../users/utils');
-const { actions } = require('../constans/actions');
+const {
+  listRolesOfService,
+  addUserService,
+  getServicesForUser,
+} = require("../../infrastructure/access");
+const {
+  getOrganisationAndServiceForUser,
+} = require("../../infrastructure/organisations");
+const { getUserDetails } = require("../users/utils");
+const { actions } = require("../constans/actions");
 
-const logger = require('../../infrastructure/logger');
-const config = require('../../infrastructure/config');
+const logger = require("../../infrastructure/logger");
+const config = require("../../infrastructure/config");
 
-const PolicyEngine = require('login.dfe.policy-engine');
+const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
 
-const { NotificationClient } = require('login.dfe.jobs-client');
+const { NotificationClient } = require("login.dfe.jobs-client");
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,
 });
 
-const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+const {
+  checkCacheForAllServices,
+} = require("../../infrastructure/helpers/allServicesAppCache");
 
-const { getUserServiceRequestStatus, updateServiceRequest } = require('./utils');
+const {
+  getUserServiceRequestStatus,
+  updateServiceRequest,
+} = require("./utils");
 
 const validate = async (req) => {
-  const organisationDetails = req.userOrganisations.find((x) => x.organisation.id === req.params.orgId);
+  const organisationDetails = req.userOrganisations.find(
+    (x) => x.organisation.id === req.params.orgId,
+  );
   const endUser = await getUserDetails(req);
   const model = {
     csrfToken: req.csrfToken(),
-    currentPage: 'users',
+    currentPage: "users",
     organisationDetails,
     endUserName: `${endUser.firstName} ${endUser.lastName}`,
     endUserEmail: endUser.email,
@@ -36,13 +48,15 @@ const validate = async (req) => {
   const roles = roleIds || [];
 
   if (req.session.user.serviceId && req.session.user.serviceId !== serviceId) {
-    model.validationMessages.messages = 'Service not valid - please change service';
+    model.validationMessages.messages =
+      "Service not valid - please change service";
     return model;
   }
 
   if (req.session.user.roleIds) {
     if (JSON.stringify(req.session.user.roleIds) !== JSON.stringify(roles)) {
-      model.validationMessages.messages = 'Sub-service not valid - please change sub-service';
+      model.validationMessages.messages =
+        "Sub-service not valid - please change sub-service";
       return model;
     }
   }
@@ -51,15 +65,22 @@ const validate = async (req) => {
 };
 
 const getViewModel = async (req, existingModel) => {
-  const serviceId = req.session.user.serviceId ? req.session.user.serviceId : req.params.sid;
+  const serviceId = req.session.user.serviceId
+    ? req.session.user.serviceId
+    : req.params.sid;
   const roleIds = JSON.parse(decodeURIComponent(req.params.rids));
-  const roles = (req.session.user.roleIds ? req.session.user.roleIds : roleIds) || [];
+  const roles =
+    (req.session.user.roleIds ? req.session.user.roleIds : roleIds) || [];
 
   const allServices = await checkCacheForAllServices(req.id);
   const serviceDetails = allServices.services.find((x) => x.id === serviceId);
   const allRolesOfServiceUnsorted = await listRolesOfService(serviceId, req.id);
-  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
-  const roleDetails = allRolesOfService.filter((x) => roles.find((y) => y.toLowerCase() === x.id.toLowerCase()));
+  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
+  const roleDetails = allRolesOfService.filter((x) =>
+    roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
+  );
 
   const serviceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.REQUEST_SERVICE}`;
   const subServiceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services/${serviceId}?action=${actions.REQUEST_SERVICE}`;
@@ -82,7 +103,7 @@ const getViewModel = async (req, existingModel) => {
 
 const get = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/my-services');
+    return res.redirect("/my-services");
   }
 
   const model = await validate(req);
@@ -91,15 +112,22 @@ const get = async (req, res) => {
   const userServiceRequestId = req.query.reqId;
 
   if (userServiceRequestId) {
-    const userServiceRequestStatus = await getUserServiceRequestStatus(userServiceRequestId);
+    const userServiceRequestStatus =
+      await getUserServiceRequestStatus(userServiceRequestId);
     if (userServiceRequestStatus === -1) {
       viewModel.validationMessages = {};
-      return res.render('requestService/views/requestAlreadyRejected', viewModel);
+      return res.render(
+        "requestService/views/requestAlreadyRejected",
+        viewModel,
+      );
     }
 
     if (userServiceRequestStatus === 1) {
       viewModel.validationMessages = {};
-      return res.render('requestService/views/requestAlreadyApproved', viewModel);
+      return res.render(
+        "requestService/views/requestAlreadyApproved",
+        viewModel,
+      );
     }
   }
 
@@ -107,14 +135,18 @@ const get = async (req, res) => {
 
   if (endUserService) {
     const hasServiceAlreadyApproved = endUserService.filter(
-      (i) => i.serviceId === req.params.sid && i.organisationId === req.params.orgId,
+      (i) =>
+        i.serviceId === req.params.sid && i.organisationId === req.params.orgId,
     );
     if (hasServiceAlreadyApproved && hasServiceAlreadyApproved.length > 0) {
       viewModel.validationMessages = {};
       if (userServiceRequestId) {
         await updateServiceRequest(userServiceRequestId, 1, req.user.sub);
       }
-      return res.render('requestService/views/requestAlreadyApproved', viewModel);
+      return res.render(
+        "requestService/views/requestAlreadyApproved",
+        viewModel,
+      );
     }
   }
 
@@ -131,7 +163,9 @@ const get = async (req, res) => {
     );
 
     if (policyValidationResult.length > 0) {
-      viewModel.validationMessages.messages = policyValidationResult.map((x) => x.message);
+      viewModel.validationMessages.messages = policyValidationResult.map(
+        (x) => x.message,
+      );
     }
 
     const endUser = await getUserDetails(req);
@@ -150,19 +184,19 @@ const get = async (req, res) => {
     req.session.action = actions.REQUEST_SERVICE;
   }
 
-  return res.render('requestService/views/approveServiceRequest', viewModel);
+  return res.render("requestService/views/approveServiceRequest", viewModel);
 };
 
 const post = async (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/my-services');
+    return res.redirect("/my-services");
   }
 
   const model = await validate(req);
   const viewModel = await getViewModel(req, model);
 
   if (viewModel.validationMessages.messages) {
-    return res.render('requestService/views/approveServiceRequest', viewModel);
+    return res.render("requestService/views/approveServiceRequest", viewModel);
   }
 
   const roleIds = JSON.parse(decodeURIComponent(req.params.rids));
@@ -177,12 +211,18 @@ const post = async (req, res) => {
   );
 
   if (policyValidationResult.length > 0) {
-    viewModel.validationMessages.messages = policyValidationResult.map((x) => x.message);
-    return res.render('requestService/views/approveServiceRequest', viewModel);
+    viewModel.validationMessages.messages = policyValidationResult.map(
+      (x) => x.message,
+    );
+    return res.render("requestService/views/approveServiceRequest", viewModel);
   }
 
-  const mngUserOrganisations = await getOrganisationAndServiceForUser(req.params.uid, req.id);
-  const mngUserOrganisationDetails = mngUserOrganisations.find(x => x.organisation.id === req.params.orgId);
+  const mngUserOrganisations = await getOrganisationAndServiceForUser(
+    req.params.uid,
+  );
+  const mngUserOrganisationDetails = mngUserOrganisations.find(
+    (x) => x.organisation.id === req.params.orgId,
+  );
   const mngUserOrgPermission = {
     id: mngUserOrganisationDetails.role.id,
     name: mngUserOrganisationDetails.role.name,
@@ -191,21 +231,37 @@ const post = async (req, res) => {
   const userServiceRequestId = req.query.reqId;
 
   if (userServiceRequestId) {
-    const updateServiceReq = await updateServiceRequest(userServiceRequestId, 1, req.user.sub);
+    const updateServiceReq = await updateServiceRequest(
+      userServiceRequestId,
+      1,
+      req.user.sub,
+    );
     const resStatus = updateServiceReq.serviceRequest.status;
 
     if (updateServiceReq.success === false && resStatus === -1) {
       model.validationMessages = {};
-      return res.render('requestService/views/requestAlreadyRejected', viewModel);
+      return res.render(
+        "requestService/views/requestAlreadyRejected",
+        viewModel,
+      );
     }
 
     if (updateServiceReq.success === false && resStatus === 1) {
       model.validationMessages = {};
-      return res.render('requestService/views/requestAlreadyApproved', viewModel);
+      return res.render(
+        "requestService/views/requestAlreadyApproved",
+        viewModel,
+      );
     }
   }
 
-  await addUserService(req.params.uid, req.params.sid, req.params.orgId, roles, req.id);
+  await addUserService(
+    req.params.uid,
+    req.params.sid,
+    req.params.orgId,
+    roles,
+    req.id,
+  );
 
   await notificationClient.sendServiceRequestApproved(
     req.session.user.email,
@@ -218,8 +274,8 @@ const post = async (req, res) => {
   );
 
   logger.audit({
-    type: 'services',
-    subType: 'access-request',
+    type: "services",
+    subType: "access-request",
     userId: req.user.uid,
     userEmail: req.user.email,
     application: config.loggerSettings.applicationName,
@@ -231,10 +287,10 @@ const post = async (req, res) => {
     }) for end user (endUserId: ${req.params.uid}) - requestId (reqId: ${userServiceRequestId})`,
   });
 
-  res.flash('title', `Success`);
-  res.flash('heading', `Service request approved`);
+  res.flash("title", `Success`);
+  res.flash("heading", `Service request approved`);
   res.flash(
-    'message',
+    "message",
     `The user who raised the request will receive an email to tell them their service access request was approved.`,
   );
 

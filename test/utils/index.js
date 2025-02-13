@@ -1,14 +1,12 @@
-'use strict';
-
-const express = require('express');
-const expressLayouts = require('express-ejs-layouts');
+const express = require("express");
+const expressLayouts = require("express-ejs-layouts");
 
 const expressAppWithViews = (viewPath) => {
   let app = express();
   app.use(expressLayouts);
-  app.set('view engine', 'ejs');
-  app.set('views', viewPath);
-  app.set('layout', 'layouts/layout');
+  app.set("view engine", "ejs");
+  app.set("views", viewPath);
+  app.set("layout", "layouts/layout");
   return app;
 };
 
@@ -24,7 +22,7 @@ const expressAuthenticationStub = (authenticated, extras) => {
       res.locals = {};
     }
     res.locals.flash = {};
-    res.locals.profilesUrl = '';
+    res.locals.profilesUrl = "";
 
     next();
   };

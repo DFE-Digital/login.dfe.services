@@ -1,10 +1,13 @@
-'use strict';
-const { mapUserStatus } = require('./../../infrastructure/utils');
-const { getAllUsersForOrg, searchForUsers } = require('../../infrastructure/search');
-const { getById } = require('../../infrastructure/account');
-const { getApproverOrgsFromReq } = require('./utils');
-const { actions } = require('../constans/actions');
-const he = require('he');
+const { mapUserStatus } = require("./../../infrastructure/utils");
+const {
+  getAllUsersForOrg,
+  searchForUsers,
+} = require("../../infrastructure/search");
+const { getById } = require("../../infrastructure/account");
+const { getApproverOrgsFromReq } = require("./utils");
+const { dateFormat } = require("../helpers/dateFormatterHelper");
+const { actions } = require("../constans/actions");
+const he = require("he");
 
 const clearUserSessionData = (req) => {
   if (req.session.user) {
@@ -13,14 +16,16 @@ const clearUserSessionData = (req) => {
 };
 
 const search = async (req) => {
-  const paramsSource = req.method === 'POST' ? req.body : req.query;
+  const paramsSource = req.method === "POST" ? req.body : req.query;
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
   if (isNaN(page)) {
     page = 1;
   }
 
-  let sortBy = paramsSource.sort ? paramsSource.sort : 'searchableName';
-  let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
+  let sortBy = paramsSource.sort ? paramsSource.sort : "searchableName";
+  let sortAsc =
+    (paramsSource.sortdir ? paramsSource.sortdir : "asc").toLowerCase() ===
+    "asc";
 
   const approverOrgs = getApproverOrgsFromReq(req);
   const approverOrgIds = approverOrgs.map((org) => org.organisation.id);
@@ -30,7 +35,10 @@ const search = async (req) => {
 
   if (paramsSource && paramsSource.selectedOrganisation) {
     const selectedOrgIds = paramsSource.selectedOrganisation;
-    selectedOrganisations = typeof selectedOrgIds === 'string' ? selectedOrgIds.split(',') : selectedOrgIds;
+    selectedOrganisations =
+      typeof selectedOrgIds === "string"
+        ? selectedOrgIds.split(",")
+        : selectedOrgIds;
     filteredOrgIds = selectedOrganisations;
   } else {
     filteredOrgIds = approverOrgIds;
@@ -42,19 +50,27 @@ const search = async (req) => {
       `${paramsSource.searchCriteria}*`,
       page,
       sortBy,
-      sortAsc ? 'asc' : 'desc',
+      sortAsc ? "asc" : "desc",
       {
         filter_organisations: filteredOrgIds,
       },
-      ['firstName', 'lastName'],
+      ["firstName", "lastName"],
       req.id,
     );
   } else {
-    usersForOrganisation = await getAllUsersForOrg(page, filteredOrgIds, sortBy, sortAsc ? 'asc' : 'desc', req.id);
+    usersForOrganisation = await getAllUsersForOrg(
+      page,
+      filteredOrgIds,
+      sortBy,
+      sortAsc ? "asc" : "desc",
+      req.id,
+    );
   }
 
   if (usersForOrganisation.users.length) {
-    const users = usersForOrganisation.users.filter((item) => item.id !== req.user.sub);
+    const users = usersForOrganisation.users.filter(
+      (item) => item.id !== req.user.sub,
+    );
     if (users.length == 0) {
       usersForOrganisation.numberOfPages = 0;
       usersForOrganisation.totalNumberOfResults = 0;
@@ -69,17 +85,29 @@ const search = async (req) => {
       user.email = me.claims.email;
     }
 
-    const approverUserOrgs = user.organisations.filter((x) => filteredOrgIds.includes(x.id));
+    user.formattedLastLogin = user.lastLogin
+      ? dateFormat(user.lastLogin, "shortDateFormat")
+      : "";
+
+    const approverUserOrgs = user.organisations.filter((x) =>
+      filteredOrgIds.includes(x.id),
+    );
     user.statusId = mapUserStatus(user.statusId);
-    user.organisations = approverUserOrgs.sort((a, b) => a.name.localeCompare(b.name));
+    user.organisations = approverUserOrgs.sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
     user.primaryOrganisation = [...user.organisations].shift().name;
   }
 
-  if (sortBy === 'primaryOrganisation') {
+  if (sortBy === "primaryOrganisation") {
     if (sortAsc) {
-      usersForOrganisation.users.sort((a, b) => (a.primaryOrganisation > b.primaryOrganisation ? 1 : -1));
+      usersForOrganisation.users.sort((a, b) =>
+        a.primaryOrganisation > b.primaryOrganisation ? 1 : -1,
+      );
     } else {
-      usersForOrganisation.users.sort((a, b) => (a.primaryOrganisation > b.primaryOrganisation ? -1 : 1));
+      usersForOrganisation.users.sort((a, b) =>
+        a.primaryOrganisation > b.primaryOrganisation ? -1 : 1,
+      );
     }
   }
 
@@ -88,7 +116,7 @@ const search = async (req) => {
   return {
     page,
     sortBy,
-    sortOrder: sortAsc ? 'asc' : 'desc',
+    sortOrder: sortAsc ? "asc" : "desc",
     usersForOrganisation,
     approverOrgIds,
     filteredOrgIds,
@@ -96,36 +124,44 @@ const search = async (req) => {
     approverOrgs,
     numberOfPages: usersForOrganisation.numberOfPages,
     totalNumberOfResults: usersForOrganisation.totalNumberOfResults,
-    searchCriteria: paramsSource.searchCriteria || '',
+    searchCriteria: paramsSource.searchCriteria || "",
     sort: {
       searchableName: {
-        nextDirection: sortBy === 'searchableName' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'searchableName',
+        nextDirection:
+          sortBy === "searchableName" ? (sortAsc ? "desc" : "asc") : "asc",
+        applied: sortBy === "searchableName",
       },
       primaryOrganisation: {
-        nextDirection: sortBy === 'primaryOrganisation' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'primaryOrganisation',
+        nextDirection:
+          sortBy === "primaryOrganisation" ? (sortAsc ? "desc" : "asc") : "asc",
+        applied: sortBy === "primaryOrganisation",
       },
       lastLogin: {
-        nextDirection: sortBy === 'lastLogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'lastLogin',
+        nextDirection:
+          sortBy === "lastLogin" ? (sortAsc ? "desc" : "asc") : "asc",
+        applied: sortBy === "lastLogin",
       },
       statusId: {
-        nextDirection: sortBy === 'statusId' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'statusId',
+        nextDirection:
+          sortBy === "statusId" ? (sortAsc ? "desc" : "asc") : "asc",
+        applied: sortBy === "statusId",
       },
     },
   };
 };
 
 const filterDuplicateUsers = (users) => {
-  if(!users || users.length == 0) {
+  if (!users || users.length == 0) {
     return users;
   }
 
   users.forEach((item, index, object) => {
-    if (item.statusId.description.toLowerCase() == 'invited') {
-      const activeUser = users.find(u => u.email == item.email && u.statusId.description.toLowerCase() == 'active');
+    if (item.statusId.description.toLowerCase() == "invited") {
+      const activeUser = users.find(
+        (u) =>
+          u.email == item.email &&
+          u.statusId.description.toLowerCase() == "active",
+      );
       if (activeUser) {
         object.splice(index, 1);
       }
@@ -133,7 +169,7 @@ const filterDuplicateUsers = (users) => {
   });
 
   return users;
-}
+};
 
 const buildInviteUserLink = (orgIds) => {
   if (orgIds && orgIds.length === 1) {
@@ -148,12 +184,12 @@ const get = async (req, res) => {
   const result = await search(req);
   const inviteUserUrl = buildInviteUserLink(result.approverOrgIds);
   const requestsUrl = `/access-requests/requests`;
-  const showFilter = req.query.showFilter?.toLowerCase() === 'true';
+  const showFilter = req.query.showFilter?.toLowerCase() === "true";
 
-  return res.render('users/views/usersList', {
-    title: 'Manage users',
+  return res.render("users/views/usersList", {
+    title: "Manage users",
     csrfToken: req.csrfToken(),
-    currentPage: 'users',
+    currentPage: "users",
     approverOrgs: result.approverOrgs,
     selectedOrganisations: result.selectedOrganisations,
     usersForOrganisation: result.usersForOrganisation,
@@ -174,14 +210,19 @@ const get = async (req, res) => {
 const validateOrgSelection = (req, model) => {
   const selectedOrg = req.body.selectedOrganisation;
   if (selectedOrg === undefined || selectedOrg === null) {
-    model.validations.selectedOrganisation = 'Select at least one organisation';
+    model.validations.selectedOrganisation = "Select at least one organisation";
   }
 };
 
 const validateSearch = (req, model) => {
   const searchCriteria = req.body.searchCriteria;
-  if (searchCriteria === undefined || searchCriteria === null || searchCriteria.length < 3) {
-    model.validations.searchUser = 'Enter at least three characters to search users';
+  if (
+    searchCriteria === undefined ||
+    searchCriteria === null ||
+    searchCriteria.length < 3
+  ) {
+    model.validations.searchUser =
+      "Enter at least three characters to search users";
   }
 };
 
@@ -190,11 +231,11 @@ const post = async (req, res) => {
 
   let model = {
     validations: {},
-    showFilter: reqBody.showFilter || reqBody.isFilterToggle === 'true',
+    showFilter: reqBody.showFilter || reqBody.isFilterToggle === "true",
   };
 
   if (reqBody.showFilter) {
-    model.showFilter = !(model.showFilter === 'true');
+    model.showFilter = !(model.showFilter === "true");
   }
 
   if (reqBody.searchUser) {
@@ -209,16 +250,16 @@ const post = async (req, res) => {
     req.body.selectedOrganisation = null;
   }
 
-  model.searchCriteria = req.body.searchCriteria || '';
+  model.searchCriteria = req.body.searchCriteria || "";
 
   const result = await search(req);
   const inviteUserUrl = buildInviteUserLink(result.approverOrgIds);
   const requestsUrl = `/access-requests/requests`;
-  return res.render('users/views/usersList', {
+  return res.render("users/views/usersList", {
     ...model,
-    title: 'Manage users',
+    title: "Manage users",
     csrfToken: req.csrfToken(),
-    currentPage: 'users',
+    currentPage: "users",
     approverOrgs: result.approverOrgs,
     selectedOrganisations: result.selectedOrganisations,
     usersForOrganisation: result.usersForOrganisation,

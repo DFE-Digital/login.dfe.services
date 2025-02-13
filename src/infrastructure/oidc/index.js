@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
-const config = require('../config');
-const { Strategy, Issuer } = require('openid-client');
-const logger = require('../logger');
-const asyncRetry = require('login.dfe.async-retry');
+const config = require("../config");
+const { Strategy, Issuer } = require("openid-client");
+const logger = require("../logger");
+const asyncRetry = require("login.dfe.async-retry");
 
 const getPassportStrategy = async () => {
   Issuer.defaultHttpOptions = { timeout: 10000 };
@@ -14,8 +14,11 @@ const getPassportStrategy = async () => {
     client_id: config.identifyingParty.clientId,
     client_secret: config.identifyingParty.clientSecret,
   });
-  console.log('signout url: ', client.issuer.end_session_endpoint);
-  if (config.identifyingParty.clockTolerance && config.identifyingParty.clockTolerance > 0) {
+  console.log("signout url: ", client.issuer.end_session_endpoint);
+  if (
+    config.identifyingParty.clockTolerance &&
+    config.identifyingParty.clockTolerance > 0
+  ) {
     client.CLOCK_TOLERANCE = config.identifyingParty.clockTolerance;
   }
 
@@ -24,7 +27,7 @@ const getPassportStrategy = async () => {
       client,
       params: {
         redirect_uri: `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/auth/cb`,
-        scope: 'openid profile email',
+        scope: "openid profile email",
       },
     },
     (tokenset, authUserInfo, done) => {

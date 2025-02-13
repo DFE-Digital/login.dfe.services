@@ -1,24 +1,34 @@
-jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
-jest.mock('./../../../../src/infrastructure/logger', () => require('./../../../utils/jestMocks').mockLogger());
-jest.mock('login.dfe.policy-engine');
-jest.mock('./../../../../src/infrastructure/organisations', () => {
+jest.mock("./../../../../src/infrastructure/config", () =>
+  require("./../../../utils/jestMocks").mockConfig(),
+);
+jest.mock("./../../../../src/infrastructure/logger", () =>
+  require("./../../../utils/jestMocks").mockLogger(),
+);
+jest.mock("login.dfe.policy-engine");
+jest.mock("./../../../../src/infrastructure/organisations", () => {
   return {
     getOrganisationAndServiceForUserV2: jest.fn(),
   };
 });
 
-const { mockRequest, mockResponse, mockConfig } = require('./../../../utils/jestMocks');
-const PolicyEngine = require('login.dfe.policy-engine');
-const { actions } = require('../../../../src/app/constans/actions');
-const { getOrganisationAndServiceForUserV2 } = require('./../../../../src/infrastructure/organisations');
-const logger = require('./../../../../src/infrastructure/logger');
+const {
+  mockRequest,
+  mockResponse,
+  mockConfig,
+} = require("./../../../utils/jestMocks");
+const PolicyEngine = require("login.dfe.policy-engine");
+const { actions } = require("../../../../src/app/constans/actions");
+const {
+  getOrganisationAndServiceForUserV2,
+} = require("./../../../../src/infrastructure/organisations");
+const logger = require("./../../../../src/infrastructure/logger");
 
 const policyEngine = {
   validate: jest.fn(),
   getPolicyApplicationResultsForUser: jest.fn(),
 };
 
-describe('when selecting the roles for a service', () => {
+describe("when selecting the roles for a service", () => {
   let req;
   let res;
   let postAssociateRoles;
@@ -28,38 +38,38 @@ describe('when selecting the roles for a service', () => {
     config = mockConfig();
     req = mockRequest();
     req.params = {
-      uid: 'user1',
-      orgId: 'org1',
-      sid: 'service1',
+      uid: "user1",
+      orgId: "org1",
+      sid: "service1",
     };
     req.body = {
-      roles: ['role1'],
+      roles: ["role1"],
     };
     req.session = {
       user: {
-        email: 'test@test.com',
-        firstName: 'test',
-        lastName: 'name',
+        email: "test@test.com",
+        firstName: "test",
+        lastName: "name",
         services: [
           {
-            serviceId: 'service1',
+            serviceId: "service1",
             roles: [],
           },
         ],
       },
     };
     req.user = {
-      sub: 'user1',
-      email: 'user.one@unit.test',
+      sub: "user1",
+      email: "user.one@unit.test",
       organisations: [
         {
           organisation: {
-            id: 'organisationId',
-            name: 'organisationName',
+            id: "organisationId",
+            name: "organisationName",
           },
           role: {
             id: 0,
-            name: 'category name',
+            name: "category name",
           },
         },
       ],
@@ -67,38 +77,43 @@ describe('when selecting the roles for a service', () => {
     req.userOrganisations = [
       {
         organisation: {
-          id: 'organisationId',
-          name: 'organisationName',
+          id: "organisationId",
+          name: "organisationName",
         },
         role: {
           id: 0,
-          name: 'category name',
+          name: "category name",
         },
       },
     ];
     res = mockResponse();
 
     policyEngine.validate.mockReset().mockReturnValue([]);
-    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
-      rolesAvailableToUser: ['role1'],
-    });
+    policyEngine.getPolicyApplicationResultsForUser
+      .mockReset()
+      .mockReturnValue({
+        rolesAvailableToUser: ["role1"],
+      });
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
-    postAssociateRoles = require('./../../../../src/app/users/associateRoles').post;
+    postAssociateRoles =
+      require("./../../../../src/app/users/associateRoles").post;
   });
 
-  it('then it should redirect to confirm user page if no more services', async () => {
+  it("then it should redirect to confirm user page if no more services", async () => {
     await postAssociateRoles(req, res);
 
     expect(res.sessionRedirect.mock.calls).toHaveLength(1);
-    expect(res.sessionRedirect.mock.calls[0][0]).toBe(`/approvals/${req.params.orgId}/users/confirm-new-user`);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
+      `/approvals/${req.params.orgId}/users/confirm-new-user`,
+    );
   });
 
-  it('then it should transform selected roles in an array', async () => {
-    req.body.role = 'selected-role-id';
-    req.session.user.uid = 'user1';
+  it("then it should transform selected roles in an array", async () => {
+    req.body.role = "selected-role-id";
+    req.session.user.uid = "user1";
     req.query.action = actions.REQUEST_SUB_SERVICE;
-    req.session.subServiceReqId = 'sub-service-req-id-1';
+    req.session.subServiceReqId = "sub-service-req-id-1";
 
     await postAssociateRoles(req, res);
 
@@ -107,78 +122,82 @@ describe('when selecting the roles for a service', () => {
     expect(res.sessionRedirect).toHaveBeenCalledWith(expectedRedirectUrl);
   });
 
-  it('then it should get the users organisations if the user is active', async () => {
+  it("then it should get the users organisations if the user is active", async () => {
     await postAssociateRoles(req, res);
 
     expect(getOrganisationAndServiceForUserV2).toHaveBeenCalledTimes(1);
-    expect(getOrganisationAndServiceForUserV2).toHaveBeenCalledWith('user1', 'correlationId');
+    expect(getOrganisationAndServiceForUserV2).toHaveBeenCalledWith("user1");
   });
 
   it('then it should not get the users organisations if the user is in "invite" satus', async () => {
-    req.params.uid = 'inv-user1';
+    req.params.uid = "inv-user1";
     await postAssociateRoles(req, res);
 
     expect(getOrganisationAndServiceForUserV2).toHaveBeenCalledTimes(0);
   });
 
-  it('then it should validate the policy for the user if they have access to the specified organisation', async () => {
-    req.body.role = ['selected-role-id'];
+  it("then it should validate the policy for the user if they have access to the specified organisation", async () => {
+    req.body.role = ["selected-role-id"];
     const userOrganisations = [
       {
         organisation: {
-          id: 'org1',
+          id: "org1",
         },
       },
       {
         organisation: {
-          id: 'org2',
+          id: "org2",
         },
       },
     ];
-    getOrganisationAndServiceForUserV2.mockReset().mockReturnValue(userOrganisations);
+    getOrganisationAndServiceForUserV2
+      .mockReset()
+      .mockReturnValue(userOrganisations);
 
     await postAssociateRoles(req, res);
 
     expect(policyEngine.validate).toHaveBeenCalledTimes(1);
     expect(policyEngine.validate).toHaveBeenCalledWith(
-      'user1',
-      'org1',
-      'service1',
-      ['selected-role-id'],
-      'correlationId',
+      "user1",
+      "org1",
+      "service1",
+      ["selected-role-id"],
+      "correlationId",
     );
   });
 
   it(`then it should not validate the policy for the user using the user id if they don't have access to the specified organisation`, async () => {
-    req.body.role = ['selected-role-id'];
+    req.body.role = ["selected-role-id"];
     const userOrganisations = [
       {
         organisation: {
-          id: 'org2',
+          id: "org2",
         },
       },
       {
         organisation: {
-          id: 'org3',
+          id: "org3",
         },
       },
     ];
-    getOrganisationAndServiceForUserV2.mockReset().mockReturnValue(userOrganisations);
+    getOrganisationAndServiceForUserV2
+      .mockReset()
+      .mockReturnValue(userOrganisations);
 
     await postAssociateRoles(req, res);
 
     expect(policyEngine.validate).toHaveBeenCalledTimes(1);
     expect(policyEngine.validate).toHaveBeenCalledWith(
       undefined,
-      'org1',
-      'service1',
-      ['selected-role-id'],
-      'correlationId',
+      "org1",
+      "service1",
+      ["selected-role-id"],
+      "correlationId",
     );
   });
 
-  it('then it should redirect to confirm user page with uid in params if no more services and existing user', async () => {
-    req.session.user.uid = 'user1';
+  it("then it should redirect to confirm user page with uid in params if no more services and existing user", async () => {
+    req.session.user.uid = "user1";
     await postAssociateRoles(req, res);
 
     expect(res.sessionRedirect.mock.calls).toHaveLength(1);
@@ -189,13 +208,13 @@ describe('when selecting the roles for a service', () => {
 
   it('then it should redirect to "Review request" page when changing the sub-service in a service request', async () => {
     req.query.action = actions.REVIEW_SERVICE_REQ_SERVICE;
-    req.body.role = ['role1'];
-    req.session.user.uid = 'user1';
+    req.body.role = ["role1"];
+    req.session.user.uid = "user1";
     req.session = {
       ...req.session,
       reviewServiceRequest: {
-        serviceReqId: 'service-req-id',
-        serviceId: 'service1',
+        serviceReqId: "service-req-id",
+        serviceId: "service1",
       },
     };
 
@@ -208,13 +227,13 @@ describe('when selecting the roles for a service', () => {
 
   it('then it should redirect to "Review request" page when changing the service in a service request', async () => {
     req.query.action = actions.REVIEW_SERVICE_REQ_ROLE;
-    req.body.role = ['role1'];
-    req.session.user.uid = 'user1';
+    req.body.role = ["role1"];
+    req.session.user.uid = "user1";
     req.session = {
       ...req.session,
       reviewServiceRequest: {
-        serviceReqId: 'service-req-id',
-        serviceId: 'service1',
+        serviceReqId: "service-req-id",
+        serviceId: "service1",
       },
     };
 
@@ -228,12 +247,12 @@ describe('when selecting the roles for a service', () => {
   it('then it should redirect to "Review request" page when changing the sub-service in a service request with correct path if no role selected', async () => {
     req.query.action = actions.REVIEW_SERVICE_REQ_SERVICE;
     req.body.role = [];
-    req.session.user.uid = 'user1';
+    req.session.user.uid = "user1";
     req.session = {
       ...req.session,
       reviewServiceRequest: {
-        serviceReqId: 'service-req-id',
-        serviceId: 'service1',
+        serviceReqId: "service-req-id",
+        serviceId: "service1",
       },
     };
 
@@ -247,12 +266,12 @@ describe('when selecting the roles for a service', () => {
   it('then it should redirect to "Review request" page when changing the service in a service request with correct path if no role selected', async () => {
     req.query.action = actions.REVIEW_SERVICE_REQ_ROLE;
     req.body.role = [];
-    req.session.user.uid = 'user1';
+    req.session.user.uid = "user1";
     req.session = {
       ...req.session,
       reviewServiceRequest: {
-        serviceReqId: 'service-req-id',
-        serviceId: 'service1',
+        serviceReqId: "service-req-id",
+        serviceId: "service1",
       },
     };
 
@@ -264,9 +283,9 @@ describe('when selecting the roles for a service', () => {
   });
 
   it('then it should redirect to "Review request" page when changing the sub-service in a sub-service request from email journey', async () => {
-    req.session.user.uid = 'user1';
+    req.session.user.uid = "user1";
     req.query.action = actions.REQUEST_SUB_SERVICE;
-    req.session.subServiceReqId = 'sub-service-req-id-1';
+    req.session.subServiceReqId = "sub-service-req-id-1";
 
     await postAssociateRoles(req, res);
 
@@ -275,34 +294,36 @@ describe('when selecting the roles for a service', () => {
     expect(res.sessionRedirect).toHaveBeenCalledWith(expectedRedirectUrl);
   });
 
-  it('then it should redirect to the next service if one exists', async () => {
+  it("then it should redirect to the next service if one exists", async () => {
     req.session.user.services = [
       {
-        serviceId: 'service1',
+        serviceId: "service1",
         roles: [],
       },
       {
-        serviceId: 'service2',
+        serviceId: "service2",
         roles: [],
       },
     ];
     await postAssociateRoles(req, res);
 
     expect(res.sessionRedirect.mock.calls).toHaveLength(1);
-    expect(res.sessionRedirect.mock.calls[0][0]).toBe('service2');
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe("service2");
   });
 
-  it('then it should redirect to users list if no user in session', async () => {
+  it("then it should redirect to users list if no user in session", async () => {
     req.session.user = null;
 
     await postAssociateRoles(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/approvals/users');
+    expect(res.redirect.mock.calls[0][0]).toBe("/approvals/users");
   });
 
-  it('then it should render view with error if selection do not meet requirements of service', async () => {
-    policyEngine.validate.mockReturnValue([{ message: 'selections not valid' }]);
+  it("then it should render view with error if selection do not meet requirements of service", async () => {
+    policyEngine.validate.mockReturnValue([
+      { message: "selections not valid" },
+    ]);
 
     await postAssociateRoles(req, res);
 
@@ -310,31 +331,31 @@ describe('when selecting the roles for a service', () => {
     expect(res.render.mock.calls[0][0]).toBe(`users/views/associateRoles`);
     expect(res.render.mock.calls[0][1]).toMatchObject({
       validationMessages: {
-        roles: ['selections not valid'],
+        roles: ["selections not valid"],
       },
     });
   });
 
-  it('then it should redirect the user to /approvals/users and log a warning message if user services do not exist in the session', async () => {
+  it("then it should redirect the user to /approvals/users and log a warning message if user services do not exist in the session", async () => {
     req.session.user.services = undefined;
-    req.originalUrl = 'test/foo';
+    req.originalUrl = "test/foo";
     await postAssociateRoles(req, res);
 
     expect(res.redirect).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledWith('/approvals/users');
+    expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
     expect(logger.warn).toHaveBeenCalledTimes(1);
     expect(logger.warn).toHaveBeenCalledWith(
       `POST ${req.originalUrl} missing user session services, redirecting to approvals/users`,
     );
   });
 
-  it('then it should redirect the user to /approvals/users and log a warning message if user services are empty in the session', async () => {
+  it("then it should redirect the user to /approvals/users and log a warning message if user services are empty in the session", async () => {
     req.session.user.services = [];
-    req.originalUrl = 'test/foo';
+    req.originalUrl = "test/foo";
     await postAssociateRoles(req, res);
 
     expect(res.redirect).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledWith('/approvals/users');
+    expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
     expect(logger.warn).toHaveBeenCalledTimes(1);
     expect(logger.warn).toHaveBeenCalledWith(
       `POST ${req.originalUrl} missing user session services, redirecting to approvals/users`,

@@ -1,16 +1,18 @@
-const { listRolesOfService } = require('../../infrastructure/access');
-const Account = require('./../../infrastructure/account');
-const flatten = require('lodash/flatten');
-const uniq = require('lodash/uniq');
-const { checkCacheForAllServices } = require('../../infrastructure/helpers/allServicesAppCache');
+const { listRolesOfService } = require("../../infrastructure/access");
+const Account = require("./../../infrastructure/account");
+const flatten = require("lodash/flatten");
+const uniq = require("lodash/uniq");
+const {
+  checkCacheForAllServices,
+} = require("../../infrastructure/helpers/allServicesAppCache");
 
 const {
   getRequestById,
   getOrganisationById,
   getOrganisationAndServiceForUser,
-} = require('./../../infrastructure/organisations');
+} = require("./../../infrastructure/organisations");
 
-const { services } = require('login.dfe.dao');
+const { services } = require("login.dfe.dao");
 
 const getSubServiceRequestVieModel = async (model, requestId, req) => {
   let viewModel = {};
@@ -23,8 +25,8 @@ const getSubServiceRequestVieModel = async (model, requestId, req) => {
   viewModel.created_date = model.dataValues.createdAt;
   viewModel.org_id = model.organisation.id;
   viewModel.user_id = model.dataValues.user_id;
-  if (model.dataValues.role_ids.includes(',')) {
-    let tempArry = model.dataValues.role_ids.split(',');
+  if (model.dataValues.role_ids.includes(",")) {
+    let tempArry = model.dataValues.role_ids.split(",");
     tempArry.forEach((item) => {
       viewModel.role_ids.push(item);
     });
@@ -39,10 +41,11 @@ const getSubServiceRequestVieModel = async (model, requestId, req) => {
   viewModel.actioned_by = model.dataValues.actioned_by;
   viewModel.reason = model.dataValues.reason;
   viewModel.csrfToken = null;
-  viewModel.selectedResponse = ' ';
+  viewModel.selectedResponse = " ";
   viewModel.validationMessages = {};
-  viewModel.currentPage = 'requests';
-  viewModel.backLink = `/access-requests/requests`;
+  viewModel.currentPage = "requests";
+  viewModel.backLink = "/access-requests/requests";
+  viewModel.cancelLink = "/access-requests/requests";
   viewModel = await getRoleAndServiceNames(viewModel, requestId, req);
   return viewModel;
 };
@@ -53,11 +56,15 @@ const getNewRoleDetails = async (serviceId, roleId) => {
 
 const getRoleAndServiceNames = async (subModel, requestId, req) => {
   let serviceId = subModel.service_id;
-  let roleIds = subModel.role_ids;
   const allServices = await checkCacheForAllServices(requestId);
   const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-  const allRolesOfServiceUnsorted = await listRolesOfService(serviceId, subModel.role_ids);
-  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
+  const allRolesOfServiceUnsorted = await listRolesOfService(
+    serviceId,
+    subModel.role_ids,
+  );
+  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
   subModel.roles = [];
   if (serviceDetails.name) subModel.Service_name = serviceDetails.name;
   if (req !== undefined) {
@@ -79,13 +86,22 @@ const getAndMapOrgRequest = async (req) => {
   const request = await getRequestById(req.params.rid, req.id);
   let mappedRequest;
   if (request) {
-    const approver = request.actioned_by ? await Account.getById(request.actioned_by) : null;
+    const approver = request.actioned_by
+      ? await Account.getById(request.actioned_by)
+      : null;
     const user = await Account.getById(request.user_id);
-    const usersName = user ? `${user.claims.given_name} ${user.claims.family_name}` : '';
-    const usersEmail = user ? user.claims.email : '';
-    const approverName = approver ? `${approver.given_name} ${approver.family_name}` : '';
-    const approverEmail = approver ? approver.email : '';
-    mappedRequest = Object.assign({ usersName, usersEmail, approverName, approverEmail }, request);
+    const usersName = user
+      ? `${user.claims.given_name} ${user.claims.family_name}`
+      : "";
+    const usersEmail = user ? user.claims.email : "";
+    const approverName = approver
+      ? `${approver.given_name} ${approver.family_name}`
+      : "";
+    const approverEmail = approver ? approver.email : "";
+    mappedRequest = Object.assign(
+      { usersName, usersEmail, approverName, approverEmail },
+      request,
+    );
   }
   return mappedRequest;
 };
@@ -103,16 +119,29 @@ const getAndMapServiceRequest = async (serviceReqId) => {
   const userServiceRequest = await services.getUserServiceRequest(serviceReqId);
   let mappedServiceRequest;
   if (userServiceRequest) {
-    const approver = userServiceRequest.actioned_by ? await Account.getById(userServiceRequest.actioned_by) : null;
+    const approver = userServiceRequest.actioned_by
+      ? await Account.getById(userServiceRequest.actioned_by)
+      : null;
     const endUser = await Account.getById(userServiceRequest.user_id);
-    const endUsersGivenName = endUser ? `${endUser.claims.given_name}` : '';
-    const endUsersFamilyName = endUser ? `${endUser.claims.family_name}` : '';
-    const endUsersEmail = endUser ? endUser.claims.email : '';
-    const approverName = approver ? `${approver.given_name} ${approver.family_name}` : '';
-    const approverEmail = approver ? approver.email : '';
-    const organisation = await getOrganisationById(userServiceRequest.organisation_id, serviceReqId);
+    const endUsersGivenName = endUser ? `${endUser.claims.given_name}` : "";
+    const endUsersFamilyName = endUser ? `${endUser.claims.family_name}` : "";
+    const endUsersEmail = endUser ? endUser.claims.email : "";
+    const approverName = approver
+      ? `${approver.given_name} ${approver.family_name}`
+      : "";
+    const approverEmail = approver ? approver.email : "";
+    const organisation = await getOrganisationById(
+      userServiceRequest.organisation_id,
+      serviceReqId,
+    );
     mappedServiceRequest = Object.assign(
-      { endUsersGivenName, endUsersFamilyName, endUsersEmail, approverName, approverEmail },
+      {
+        endUsersGivenName,
+        endUsersFamilyName,
+        endUsersEmail,
+        approverName,
+        approverEmail,
+      },
       { organisation },
       userServiceRequest,
     );
@@ -128,21 +157,24 @@ const generateFlashMessages = (
   endUsersFamilyName,
   orgOrServName,
 ) => {
-  const capitalisedReqType = requestType[0].toUpperCase() + requestType.substring(1);
-  const capitalisedGivenName = endUsersGivenName[0].toUpperCase() + endUsersGivenName.substring(1);
-  const capitalisedFamilyName = endUsersFamilyName[0].toUpperCase() + endUsersFamilyName.substring(1);
+  const capitalisedReqType =
+    requestType[0].toUpperCase() + requestType.substring(1);
+  const capitalisedGivenName =
+    endUsersGivenName[0].toUpperCase() + endUsersGivenName.substring(1);
+  const capitalisedFamilyName =
+    endUsersFamilyName[0].toUpperCase() + endUsersFamilyName.substring(1);
   let action;
 
   switch (requestStatus) {
     case 1:
-      action = 'approved';
+      action = "approved";
       break;
     case -1:
-      action = 'rejected';
+      action = "rejected";
       break;
   }
   const flashMessages = {
-    title: 'Important',
+    title: "Important",
     heading: `${capitalisedReqType} request already ${action}: ${orgOrServName}`,
     message: `${approverEmail} has already responded to the ${requestType} request.<br>${capitalisedGivenName} ${capitalisedFamilyName} has received an email to tell them their request has been ${action}. No further action is needed.`,
   };
@@ -151,20 +183,30 @@ const generateFlashMessages = (
 
 const isAllowedToApproveReq = async (req, res, next) => {
   if (req.userOrganisations && req.params.rid) {
-    const serviceSubServiceReq = await services.getUserServiceRequest(req.params.rid);
+    const serviceSubServiceReq = await services.getUserServiceRequest(
+      req.params.rid,
+    );
     const orgId = serviceSubServiceReq.dataValues.organisation_id;
-    const userApproverOrgs = req.userOrganisations.filter((x) => x.role.id === 10000);
-    if (userApproverOrgs.find((x) => x.organisation.id.toLowerCase() === orgId.toLowerCase())) {
+    const userApproverOrgs = req.userOrganisations.filter(
+      (x) => x.role.id === 10000,
+    );
+    if (
+      userApproverOrgs.find(
+        (x) => x.organisation.id.toLowerCase() === orgId.toLowerCase(),
+      )
+    ) {
       return next();
     }
   }
-  return res.status(401).render('errors/views/notAuthorised');
+  return res.status(401).render("errors/views/notAuthorised");
 };
 
 const getOrganisationPermissionLevel = async (userId, orgId, correlationId) => {
   try {
-    const userOrganisations = await getOrganisationAndServiceForUser(userId, correlationId);
-    const userOrganisationDetails = userOrganisations.find((x) => x.organisation.id === orgId);
+    const userOrganisations = await getOrganisationAndServiceForUser(userId);
+    const userOrganisationDetails = userOrganisations.find(
+      (x) => x.organisation.id === orgId,
+    );
 
     if (userOrganisationDetails) {
       return {

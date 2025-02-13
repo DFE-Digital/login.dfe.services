@@ -1,7 +1,7 @@
 name: $(BuildDefinitionName)_tag-$(BuildID)_at-$(Date:yyyyMMdd)$(Rev:.r)
 resources:
   repositories:
-  # Defult branch is master
+    # Defult branch is master
     - repository: devopsTemplates
       type: github
       endpoint: DfE-Digital
@@ -16,14 +16,14 @@ resources:
 trigger:
   branches:
     include:
-    - feature/*
-    - main
-    - release/*
+      - feature/*
+      - main
+      - release/*
 
 pr:
   branches:
     include:
-    - main
+      - main
 
 parameters:
 - name: location
@@ -93,8 +93,6 @@ variables:
   value: ${{ or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }}
 - name: ContRegServerDev
   value: ${{ or(or(eq(variables.tran, 'true'), eq(variables.dev, 'true')), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'feature'))) }}
-- name: ContRegServerTest
-  value: ${{ or(eq(variables.test, 'true'), eq(variables.pp, 'true')) }}
 - name: ContRegServerProd
   value: ${{ or(eq(variables.pr, 'true'), and(contains(variables['Build.SourceVersionMessage'],'Merge pull request'), contains(variables['Build.SourceVersionMessage'],'release'))) }}
 - name: northeurope
@@ -105,6 +103,14 @@ variables:
 
 
 stages:
+  # Code Scans & Build the artifact for deployment
+  - stage: scanBuildApp
+    displayName: "Scan tools & Build"
+    jobs:
+      - template: pipeline/scanTools.yml@devopsTemplates
+        parameters:
+          useRevisedLinting: true
+          AppDeploy: ${{ not(parameters.InfrDeploy) }}
 
   # Code Scans & Build the artifact for deployment
   - stage: scanBuildApp

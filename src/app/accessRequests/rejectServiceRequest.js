@@ -1,10 +1,10 @@
-const { getAndMapServiceRequest, generateFlashMessages } = require('./utils');
-const logger = require('../../infrastructure/logger');
-const config = require('../../infrastructure/config');
-const { NotificationClient } = require('login.dfe.jobs-client');
-const { updateServiceRequest } = require('../requestService/utils');
-const { listRolesOfService } = require('../../../src/infrastructure/access');
-const { services: daoServices } = require('login.dfe.dao');
+const { getAndMapServiceRequest, generateFlashMessages } = require("./utils");
+const logger = require("../../infrastructure/logger");
+const config = require("../../infrastructure/config");
+const { NotificationClient } = require("login.dfe.jobs-client");
+const { updateServiceRequest } = require("../requestService/utils");
+const { listRolesOfService } = require("../../../src/infrastructure/access");
+const { services: daoServices } = require("login.dfe.dao");
 
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,
@@ -16,13 +16,13 @@ const getViewModel = (req) => {
   const backLink = `/access-requests/service-requests/${rid}/services/${sid}/roles/${encodedRids}`;
   const model = {
     csrfToken: req.csrfToken(),
-    title: 'Reason for rejection - DfE Sign-in',
+    title: "Reason for rejection - DfE Sign-in",
     backLink,
     cancelLink: `/access-requests/requests`,
-    reason: '',
+    reason: "",
     request: {},
     validationMessages: {},
-    currentPage: 'requests',
+    currentPage: "requests",
   };
   return model;
 };
@@ -30,18 +30,19 @@ const getViewModel = (req) => {
 const validate = async (req) => {
   let model = getViewModel(req);
   model.request = await getAndMapServiceRequest(req.params.rid);
-  model.reason = req.body.reason?.trim() ?? '';
+  model.reason = req.body.reason?.trim() ?? "";
   if (model.reason.length === 0) {
-    model.validationMessages.reason = 'Enter a reason for rejection';
+    model.validationMessages.reason = "Enter a reason for rejection";
   } else if (model.reason.length > 1000) {
-    model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
+    model.validationMessages.reason =
+      "Reason cannot be longer than 1000 characters";
   }
   return model;
 };
 
 const get = async (req, res) => {
   const model = getViewModel(req);
-  return res.render('accessRequests/views/rejectServiceRequest', model);
+  return res.render("accessRequests/views/rejectServiceRequest", model);
 };
 
 const post = async (req, res) => {
@@ -51,30 +52,39 @@ const post = async (req, res) => {
   const serviceId = model.request.dataValues.service_id;
   const endUserId = model.request.dataValues.user_id;
   const service = await daoServices.getById(serviceId);
-  const { organisation, endUsersEmail, endUsersFamilyName, endUsersGivenName } = model.request;
+  const { organisation, endUsersEmail, endUsersFamilyName, endUsersGivenName } =
+    model.request;
   const { reason } = model;
   const approver = req.user;
 
-  const requestedRolesIds = roleIds && roleIds !== 'null' ? roleIds.split(',') : [];
+  const requestedRolesIds =
+    roleIds && roleIds !== "null" ? roleIds.split(",") : [];
   const allRolesOfServiceUnsorted = await listRolesOfService(serviceId, rid);
-  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) => a.name.localeCompare(b.name));
+  const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
   const selectedRoles = allRolesOfService.filter((x) =>
     requestedRolesIds.find((y) => y.toLowerCase() === x.id.toLowerCase()),
   );
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return res.render('accessRequests/views/rejectServiceRequest', model);
+    return res.render("accessRequests/views/rejectServiceRequest", model);
   }
 
-  const updateServiceReq = await updateServiceRequest(rid, -1, req.user.sub, reason);
+  const updateServiceReq = await updateServiceRequest(
+    rid,
+    -1,
+    req.user.sub,
+    reason,
+  );
   const resStatus = updateServiceReq.serviceRequest.status;
 
   if (updateServiceReq.success === false && (resStatus === -1 || 1)) {
     const request = await getAndMapServiceRequest(rid);
     if (request.approverEmail) {
       const { title, heading, message } = generateFlashMessages(
-        'service',
+        "service",
         request.dataValues.status,
         request.approverEmail,
         request.endUsersGivenName,
@@ -82,9 +92,9 @@ const post = async (req, res) => {
         service.name,
         res,
       );
-      res.flash('title', `${title}`);
-      res.flash('heading', `${heading}`);
-      res.flash('message', `${message}`);
+      res.flash("title", `${title}`);
+      res.flash("heading", `${heading}`);
+      res.flash("message", `${message}`);
       return res.redirect(`/access-requests/requests`);
     }
   }
@@ -100,8 +110,8 @@ const post = async (req, res) => {
   );
 
   logger.audit({
-    type: 'services',
-    subType: 'access-request-rejected',
+    type: "services",
+    subType: "access-request-rejected",
     userId: approver.sub,
     userEmail: approver.email,
     application: config.loggerSettings.applicationName,
@@ -109,15 +119,18 @@ const post = async (req, res) => {
     message: `${approver.email} (approverId: ${
       approver.sub
     }) rejected service (serviceId: ${serviceId}), roles (roleIds: ${
-      roleIds ? roleIds : 'No roles selected'
+      roleIds ? roleIds : "No roles selected"
     }) and organisation (orgId: ${organisation.id}) for end user (endUserId: ${endUserId}). ${
-      reason ? `The reject reason is ${reason}` : ''
+      reason ? `The reject reason is ${reason}` : ""
     } - requestId (reqId: ${rid})`,
   });
 
-  res.flash('title', `Success`);
-  res.flash('heading', `Service access request rejected`);
-  res.flash('message', `${endUsersGivenName} ${endUsersFamilyName} cannot access ${service.name}.`);
+  res.flash("title", `Success`);
+  res.flash("heading", `Service access request rejected`);
+  res.flash(
+    "message",
+    `${endUsersGivenName} ${endUsersFamilyName} cannot access ${service.name}.`,
+  );
 
   return res.redirect(`/access-requests/requests`);
 };
