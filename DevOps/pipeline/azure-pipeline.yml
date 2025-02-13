@@ -106,7 +106,7 @@ variables:
 
 stages:
 
-  - ${{ if ne(parameters.existTag, '')) }}:
+  - ${{ if ne(parameters.existTag, '') }}:
     # Code Scans & Build the artifact for deployment
     - stage: scanBuildApp
       displayName: "Scan tools & Build"
@@ -137,7 +137,7 @@ stages:
           ${{ if eq(env, 'pp') }}:
             dependsOn: 
             - releasebranch
-          ${{ elseif ne(parameters.existTag, '')) }}:
+          ${{ elseif ne(parameters.existTag, '') }}:
             dependsOn: 
             - scanBuildApp
           condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
