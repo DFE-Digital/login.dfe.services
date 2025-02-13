@@ -111,13 +111,13 @@ stages:
     - stage: scanBuildApp
       displayName: "Scan tools & Build"
       jobs:
-        - template: pipeline/scanTools.yml@devopsTemplates
+        - template: pipeline/components/checks/checks.yml@devopsTemplates
           parameters:
             useRevisedLinting: true
             AppDeploy: ${{ not(parameters.InfrDeploy) }}
 
         - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
-          - template: pipeline/buildAzureAppServices.yml@devopsTemplates
+          - template: pipeline/components/build/buildAzureAppServices.yml@devopsTemplates
             parameters:
               applicationName: ${{variables.applicationFullName}}
               custRegAuth: $(custRegAuth)
@@ -151,7 +151,7 @@ stages:
             - name: ShaCodeName
               value: ${{ format('{0}{1}', env, 'ShaCode') }}
           jobs:
-            - template: pipeline/deployAzureAppServices.yml@devopsTemplates
+            - template: pipeline/components/deploy/deployAzureAppServices.yml@devopsTemplates
               parameters:
                 serviceConnection: $(${{variables.ServConName}})
                 shaPool: $[variables['${{env}}ShaPool']]
@@ -169,6 +169,7 @@ stages:
                 shaUse: true
                 slotDeploy: ${{parameters.slotDeploy}}
                 appRepoName: ${{variables.applicationFullName}}
+                healthCheckEndpoint: healthcheck
           
         - ${{ if and(eq(env, 'pp'),eq(location, 'westeurope')) }}:
           - stage: releasebranch
@@ -176,7 +177,7 @@ stages:
             dependsOn:
               - Deployment_${{env}}_${{location}}
             jobs:
-              - template: pipeline/releaseCreation.yml@devopsTemplates
+              - template: pipeline/components/git/releaseCreation.yml@devopsTemplates
                 parameters:
                   applicationFullName: ${{variables.applicationFullName}}
                   serviceConnection: $(${{ format('{0}{1}', env, 'ServCon') }})
@@ -188,7 +189,7 @@ stages:
             dependsOn: 
               - Deployment_${{env}}_${{location}}
             jobs:
-              - template:  pipeline/tagCreation.yml@devopsTemplates
+              - template:  pipeline/components/git/tagCreation.yml@devopsTemplates
                 parameters:
                   applicationName: ${{variables.applicationFullName}}
                   serviceConnection: $(${{ format('{0}{1}', env, 'ServCon') }})
