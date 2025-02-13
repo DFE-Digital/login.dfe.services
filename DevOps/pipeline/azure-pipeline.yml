@@ -39,7 +39,7 @@ parameters:
 - name: existTag
   type: string
   displayName: "Deploy existing tag"
-  default: ""
+  default: " "
 - name: slotDeploy
   type: boolean
   displayName: "Slot Deployment"
@@ -94,7 +94,7 @@ variables:
 - name: pp
   value: ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
 - name: pr
-  value: ${{ or(and(eq(parameters.pr, 'true'), ne(parameters.existTag, '')),eq(parameters.pp, 'true')) }}
+  value: ${{ or(and(eq(parameters.pr, 'true'), ne(parameters.existTag, ' ')),eq(parameters.pp, 'true')) }}
 - name: ContRegServerTran
   value: ${{ eq(variables.tran, 'true') }}
 - name: northeurope
@@ -106,7 +106,7 @@ variables:
 
 stages:
 
-  - ${{ if eq(parameters.existTag, '') }}:
+  - ${{ if eq(parameters.existTag, ' ') }}:
     # Code Scans & Build the artifact for deployment
     - stage: scanBuildApp
       displayName: "Scan tools & Build"
@@ -137,7 +137,7 @@ stages:
           ${{ if eq(env, 'pp') }}:
             dependsOn: 
             - releasebranch
-          ${{ elseif eq(parameters.existTag, '') }}:
+          ${{ elseif eq(parameters.existTag, ' ') }}:
             dependsOn: 
             - scanBuildApp
           condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
