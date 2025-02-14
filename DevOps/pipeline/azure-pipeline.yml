@@ -86,9 +86,9 @@ variables:
 - name: SourceVersionMessage
   value: variables['Build.SourceVersionMessage']
 - name: tran
-  value: true #${{ eq(parameters.tran, 'true') }}
+  value: ${{ eq(parameters.tran, 'true') }}
 - name: dev
-  value: ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
+  value: ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature1')) }}
 - name: test
   value: ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature1')) }}
 - name: pp
