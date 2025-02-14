@@ -170,6 +170,7 @@ stages:
                 slotDeploy: ${{parameters.slotDeploy}}
                 appRepoName: ${{variables.applicationFullName}}
                 healthCheckEndpoint: healthcheck
+                existTag: ${{parameters.existTag}}
           
         - ${{ if and(eq(env, 'pp'),eq(location, 'westeurope')) }}:
           - stage: releasebranch
