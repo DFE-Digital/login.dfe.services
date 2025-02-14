@@ -122,8 +122,8 @@ stages:
               applicationName: ${{variables.applicationFullName}}
               custRegAuth: $(custRegAuth)
               ContRegServers:
-                - ${{ if eq(variables.ContRegServerTran, 'true') }}:
-                  - $(platformGlobalIdentifier)$(tranShaCode)$(platformGlobalName)shdcr.azurecr.io
+                #- ${{ if eq(variables.ContRegServerTran, 'true') }}:
+                - $(platformGlobalIdentifier)$(tranShaCode)$(platformGlobalName)shdcr.azurecr.io
                 #- $(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io
               nodeVersionSpec: '18.17.0'
               prMsg: variables['Build.SourceVersionMessage'] 
