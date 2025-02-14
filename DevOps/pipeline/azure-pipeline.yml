@@ -172,7 +172,7 @@ stages:
                 healthCheckEndpoint: healthcheck
                 existTag: ${{parameters.existTag}}
           
-        - ${{ if and(and(eq(env, 'pp'),eq(location, 'westeurope')),eq(parameters.existTag, ' ') }}:
+        - ${{ if and(and(eq(env, 'pp'),eq(location, 'westeurope')),eq(parameters.existTag, ' ')) }}:
           - stage: releasebranch
             displayName: "GitHub Release Branch Creation"
             dependsOn:
@@ -184,7 +184,7 @@ stages:
                   serviceConnection: $(prServCon)
                   shaCode: $(prShaCode)
         
-        - ${{ if and(and(eq(env, 'pr'),eq(location, 'westeurope')),eq(parameters.existTag, ' ') }}:
+        - ${{ if and(and(eq(env, 'pr'),eq(location, 'westeurope')),eq(parameters.existTag, ' ')) }}:
           - stage: branchPrTag
             displayName: "GitHub PR & Release Branch Tag"
             dependsOn: 
