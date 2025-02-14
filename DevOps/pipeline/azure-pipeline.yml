@@ -180,8 +180,8 @@ stages:
               - template: pipeline/components/git/releaseCreation.yml@devopsTemplates
                 parameters:
                   applicationFullName: ${{variables.applicationFullName}}
-                  serviceConnection: $(prServCon)
-                  shaCode: $(prShaCode)
+                  serviceConnection: $(tranServCon)
+                  shaCode: $(tranShaCode)
         
         - ${{ if and(eq(env, 'pr'),eq(location, 'westeurope')) }}:
           - stage: branchPrTag
@@ -192,5 +192,5 @@ stages:
               - template:  pipeline/components/git/tagCreation.yml@devopsTemplates
                 parameters:
                   applicationName: ${{variables.applicationFullName}}
-                  serviceConnection: $(prServCon)
-                  shaCode: $(prShaCode)
+                  serviceConnection: $(tranServCon)
+                  shaCode: $(tranShaCode)
