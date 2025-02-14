@@ -171,7 +171,7 @@ stages:
                 appRepoName: ${{variables.applicationFullName}}
                 healthCheckEndpoint: healthcheck
           
-        - ${{ if and(eq(env, 'tran'),eq(location, 'westeurope')) }}:
+        - ${{ if and(eq(env, 'pp'),eq(location, 'westeurope')) }}:
           - stage: releasebranch
             displayName: "GitHub Release Branch Creation"
             dependsOn:
@@ -183,7 +183,7 @@ stages:
                   serviceConnection: $(${{ format('{0}{1}', env, 'ServCon') }})
                   shaCode: $(${{ format('{0}{1}', env, 'ShaCode') }})
         
-        - ${{ if and(eq(env, 'dev'),eq(location, 'westeurope')) }}:
+        - ${{ if and(eq(env, 'pr'),eq(location, 'westeurope')) }}:
           - stage: branchPrTag
             displayName: "GitHub PR & Release Branch Tag"
             dependsOn: 
