@@ -137,10 +137,11 @@ stages:
           ${{ if eq(env, 'pr') }}:
             dependsOn: 
             - releasebranch
+            condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
           ${{ elseif eq(parameters.existTag, ' ') }}:
             dependsOn: 
             - scanBuildApp
-          condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+            condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
           variables:
             - name: secRegionId
               value: $(${{ format('{0}{1}', location, 'Id') }})
