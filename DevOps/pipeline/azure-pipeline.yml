@@ -122,9 +122,9 @@ stages:
               applicationName: ${{variables.applicationFullName}}
               custRegAuth: $(custRegAuth)
               ContRegServers:
-                #- ${{ if eq(variables.ContRegServerTran, 'true') }}:
-                - $(platformGlobalIdentifier)$(tranShaCode)$(platformGlobalName)shdcr.azurecr.io
-                #- $(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io
+                - ${{ if eq(variables.ContRegServerTran, 'true') }}:
+                  - $(platformGlobalIdentifier)$(tranShaCode)$(platformGlobalName)shdcr.azurecr.io
+                - $(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io
               nodeVersionSpec: '18.17.0'
               prMsg: variables['Build.SourceVersionMessage'] 
 
@@ -181,8 +181,8 @@ stages:
               - template: pipeline/components/git/releaseCreation.yml@devopsTemplates
                 parameters:
                   applicationFullName: ${{variables.applicationFullName}}
-                  serviceConnection: $(tranServCon)
-                  shaCode: $(tranShaCode)
+                  serviceConnection: $(prServCon)
+                  shaCode: $(prShaCode)
         
         - ${{ if and(and(eq(env, 'pr'),eq(location, 'westeurope')),eq(parameters.existTag, ' ') }}:
           - stage: branchPrTag
@@ -194,4 +194,4 @@ stages:
                 parameters:
                   applicationName: ${{variables.applicationFullName}}
                   serviceConnection: $(tranServCon)
-                  shaCode: $(tranShaCode)
+                  shaCode: $(prShaCode)
