@@ -83,8 +83,8 @@ variables:
   value: 'services'
 - name: numberOfWorkers
   value: 1
-- name: SourceVersionMessage
-  value: variables['Build.SourceVersionMessage']
+- name: buildNotNeeded
+  value: ${{ not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version')) }}
 - name: tran
   value: ${{ eq(parameters.tran, 'true') }}
 - name: dev
@@ -92,7 +92,7 @@ variables:
 - name: test
   value: ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature1')) }}
 - name: pp
-  value: ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
+  value: ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), eq(variables.buildNotNeeded, 'false')) }}
 - name: pr
   value: ${{ or(and(eq(parameters.pr, 'true'), ne(parameters.existTag, ' ')),eq(variables.pp, 'true')) }}
 - name: ContRegServerTran
@@ -116,7 +116,7 @@ stages:
             AppDeploy: ${{ not(parameters.InfrDeploy) }}
             custRegAuth: $(custRegAuth)
 
-        - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
+        - ${{ if and(eq(parameters.InfrDeploy, 'false'), eq(variables.buildNotNeeded, 'false')) }}:
           - template: pipeline/components/build/buildAzureAppServices.yml@devopsTemplates
             parameters:
               applicationName: ${{variables.applicationFullName}}
