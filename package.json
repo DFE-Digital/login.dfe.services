@@ -1,9 +1,6 @@
 {
   "name": "login.dfe.services",
   "version": "20.0.0",
-  "engines": {
-    "node": "18.x.x"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DFE-Digital/login.dfe.services.git"
