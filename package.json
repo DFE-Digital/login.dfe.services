@@ -1,6 +1,6 @@
 {
   "name": "login.dfe.services",
-  "version": "20.0.0",
+  "version": "21.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DFE-Digital/login.dfe.services.git"
