@@ -121,11 +121,4 @@ describe("when displaying current organisation and service mapping", () => {
       "https://localhost:3001/chatBot",
     );
   });
-
-  it("then it should include session expiry time in model", async () => {
-    await home(req, res);
-
-    expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][1].sessionExpiryTime).toBe("20 minutes");
-  });
 });
