@@ -137,9 +137,9 @@
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16"><%= organisation.ukprn %></td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <% if (organisation.status) { %>
-                                        <span class="govuk-tag govuk-tag--<%= organisation.status.tagColor %>">
+                                        <strong class="govuk-tag govuk-tag--<%= organisation.status.tagColor %>">
                                             <%= organisation.status.name %>
-                                        </span>
+                                        </strong>
                                         <%}%>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
