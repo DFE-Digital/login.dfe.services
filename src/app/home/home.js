@@ -4,9 +4,6 @@ const config = require("../../infrastructure/config");
 const {
   checkCacheForAllServices,
 } = require("../../infrastructure/helpers/allServicesAppCache");
-const {
-  getMomentFormattedDuration,
-} = require("../helpers/durationFormatterHelper");
 
 const getAndMapExternalServices = async (correlationId) => {
   const allServices = await checkCacheForAllServices(correlationId);
@@ -40,8 +37,6 @@ const displayEsfa = (externalServices) => {
 
 const home = async (req, res) => {
   let services = await getAndMapExternalServices(req.id);
-  const sessionExpiryTime =
-    config.hostingEnvironment.sessionCookieExpiryInMinutes || 20;
 
   services = displayEsfa(services);
 
@@ -52,7 +47,6 @@ const home = async (req, res) => {
     profileUrl: config.hostingEnvironment.profileUrl,
     helpUrl: config.hostingEnvironment.helpUrl,
     helpAssistantUrl: config.hostingEnvironment.helpAssistantUrl,
-    sessionExpiryTime: getMomentFormattedDuration(sessionExpiryTime),
   });
 };
 

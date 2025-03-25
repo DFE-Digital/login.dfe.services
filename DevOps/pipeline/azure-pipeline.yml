@@ -121,7 +121,7 @@ stages:
                     servCon: $(devServiceConnection)
                 - name: '$(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io'
                   servCon: $(prodServiceConnection)
-              nodeVersionSpec: '18.17.0'
+              nodeVersionSpec: '22.11.0'
               prMsg: variables['Build.SourceVersionMessage'] 
 
 
