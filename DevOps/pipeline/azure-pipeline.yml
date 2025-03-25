@@ -6,7 +6,7 @@ resources:
       type: github
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.devops
-      ref: feature/DSI-7328
+      ref: main
 
 trigger:
   branches:
@@ -148,7 +148,7 @@ stages:
             - name: ShaCodeName
               value: ${{ format('{0}{1}', env, 'ShaCode') }}
           jobs:
-            - template: pipeline/components/deploy/deployAzureAppServices.yml@devopsTemplates
+            - template: pipeline/components/deploy/deployAppServicesNodeJs.yml@devopsTemplates
               parameters:
                 serviceConnection: $(${{variables.ServConName}})
                 shaPool: $[variables['${{env}}ShaPool']]
@@ -171,27 +171,4 @@ stages:
                   ContRegServerCode: $(tranShaCode)
                 ${{ else }}:
                   ContRegServerCode: $(prShaCode)
-          
-        - ${{ if and(and(eq(env, 'pp'),eq(location, 'westeurope')),eq(parameters.existTag, ' ')) }}:
-          - stage: releasebranch
-            displayName: "GitHub Release Branch Creation"
-            dependsOn:
-              - Deployment_${{env}}_${{location}}
-            jobs:
-              - template: pipeline/components/git/releaseCreation.yml@devopsTemplates
-                parameters:
-                  applicationFullName: ${{variables.applicationFullName}}
-                  serviceConnection: $(prServCon)
-                  shaCode: $(prShaCode)
-        
-        - ${{ if and(and(eq(env, 'pr'),eq(location, 'westeurope')),eq(parameters.existTag, ' ')) }}:
-          - stage: branchPrTag
-            displayName: "GitHub PR & Release Branch Tag"
-            dependsOn: 
-              - Deployment_${{env}}_${{location}}
-            jobs:
-              - template:  pipeline/components/git/tagCreation.yml@devopsTemplates
-                parameters:
-                  applicationName: ${{variables.applicationFullName}}
-                  serviceConnection: $(tranServCon)
-                  shaCode: $(prShaCode)
+
