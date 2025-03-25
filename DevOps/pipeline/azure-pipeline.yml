@@ -7,18 +7,12 @@ resources:
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.devops
       ref: feature/DSI-7328
-    - repository: config
-      type: github
-      endpoint: DfE-Digital
-      name: DFE-Digital/login.dfe.dsi-config
-      ref: feature/DSI-7328
 
 trigger:
   branches:
     include:
       - feature/*
       - main
-      - release/*
 
 pr:
   branches:
@@ -109,7 +103,7 @@ stages:
   - ${{ if eq(parameters.existTag, ' ') }}:
     # Code Scans & Build the artifact for deployment
     - stage: scanBuildApp
-      displayName: "Scan tools & Build"
+      displayName: "Pre Deploy jobs"
       jobs:
         - template: pipeline/components/checks/checks.yml@devopsTemplates
           parameters:
@@ -117,7 +111,7 @@ stages:
             custRegAuth: $(custRegAuth)
 
         - ${{ if and(eq(parameters.InfrDeploy, 'false'), eq(variables.buildNotNeeded, 'false')) }}:
-          - template: pipeline/components/build/buildAzureAppServices.yml@devopsTemplates
+          - template: pipeline/components/build/buildAppServicesNodeJs.yml@devopsTemplates
             parameters:
               applicationName: ${{variables.applicationFullName}}
               custRegAuth: $(custRegAuth)
@@ -163,7 +157,6 @@ stages:
                 environmentName: ${{env}}
                 applicationShortName: ${{variables.applicationShortName}}
                 applicationFullName: ${{variables.applicationFullName}}
-                releaseArtifactName: ${{variables.applicationShortName}}-${{env}}-$(Build.BuildId)-release
                 InfrDeploy: ${{parameters.InfrDeploy}}
                 deploymentLocation: ${{location}}
                 gitCheck: ${{parameters.gitCheck}}
@@ -174,6 +167,10 @@ stages:
                 appRepoName: ${{variables.applicationFullName}}
                 healthCheckEndpoint: healthcheck
                 existTag: ${{parameters.existTag}}
+                ${{ if eq(variables.ContRegServerTran, 'true') }}:
+                  ContRegServerCode: $(tranShaCode)
+                ${{ else }}:
+                  ContRegServerCode: $(prShaCode)
           
         - ${{ if and(and(eq(env, 'pp'),eq(location, 'westeurope')),eq(parameters.existTag, ' ')) }}:
           - stage: releasebranch

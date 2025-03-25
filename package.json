@@ -1,6 +1,7 @@
 {
   "name": "login.dfe.services",
   "version": "20.0.0",
+  "funVersion": "20.0.1",
   "engines": {
     "node": "18.x.x"
   },
@@ -62,7 +63,7 @@
     "simpl-schema": "^3.4.1",
     "tedious": "^18.2.1",
     "winston": "^3.3.3",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
