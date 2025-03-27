@@ -3,11 +3,6 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
   getUsersById: jest.fn(),
   getById: jest.fn(),
 }));
-jest.mock("./../../../../src/infrastructure/account", () => ({
-  fromContext: jest.fn(),
-  getUsersById: jest.fn(),
-  getById: jest.fn(),
-}));
 jest.mock("./../../../../src/infrastructure/applications", () => ({
   getApplication: jest.fn(),
 }));
@@ -15,6 +10,8 @@ jest.mock("./../../../../src/infrastructure/applications", () => ({
 jest.mock("./../../../../src/infrastructure/access", () => ({
   getServicesForUser: jest.fn(),
 }));
+
+jest.mock("./../../../../src/infrastructure/helpers/AppCache");
 
 jest.mock("./../../../../src/infrastructure/logger", () => ({
   info: jest.fn(),
@@ -278,33 +275,35 @@ describe("when displaying the users services", () => {
   });
 
   it("then it should map serviceUrl from service_home when available", async () => {
-    getApplication.mockReset().mockReturnValue({
+    const application = {
       name: "Service One",
       relyingParty: {
         service_home: "http://service.one/login",
         redirect_uris: ["http://service.one/login"],
       },
-    });
+    };
+    getApplication.mockReset().mockReturnValue(application);
 
     await getServices(req, res);
 
     expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe(
-      "http://service.one/login",
+      application.relyingParty.service_home,
     );
   });
 
   it("then it should map serviceUrl from first redirect if service_home not available", async () => {
-    getApplication.mockReset().mockReturnValue({
+    const application = {
       name: "Service One",
       relyingParty: {
         redirect_uris: ["http://service.one/login/cb"],
       },
-    });
+    };
+    getApplication.mockReset().mockReturnValue(application);
 
     await getServices(req, res);
 
     expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe(
-      "http://service.one/login",
+      application.relyingParty.redirect_uris[0],
     );
   });
 
@@ -337,8 +336,136 @@ describe("when displaying the users services", () => {
 
     await getServices(req, res);
 
-    expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe(
-      "http://service.one/login",
-    );
+    expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe("#");
+  });
+
+  describe("when displaying services with the 'showRolesOnServices' param set to 'true'", () => {
+    let userAccess;
+    let application;
+
+    beforeEach(() => {
+      userAccess = [
+        {
+          serviceId: "service1",
+          organisationId: "org1",
+          accessGrantedOn: "2024-08-14T11:07:02Z",
+          roles: [
+            {
+              id: "service1-role1",
+              name: "Service One Role One",
+              code: "S1R1",
+            },
+            {
+              id: "service1-role2",
+              name: "Service One Role Two",
+              code: "S1R2",
+            },
+          ],
+        },
+        {
+          serviceId: "service1",
+          organisationId: "org2",
+          accessGrantedOn: "2024-08-14T11:07:02Z",
+          roles: [
+            {
+              id: "service1-role1",
+              name: "Service One Role One",
+              code: "S1R1",
+            },
+          ],
+        },
+        {
+          serviceId: "service1",
+          organisationId: "non-existant-org",
+          accessGrantedOn: "2024-08-14T11:07:02Z",
+          roles: [
+            {
+              id: "service1-role1",
+              name: "Service One Role One",
+              code: "S1R1",
+            },
+          ],
+        },
+      ];
+      application = {
+        id: "service1",
+        name: "Service One",
+        relyingParty: {
+          params: {
+            showRolesOnServices: "true",
+          },
+        },
+        description: "Service One Description",
+      };
+
+      getServicesForUser.mockReset().mockReturnValue(userAccess);
+      getApplication.mockReset().mockReturnValue(application);
+    });
+
+    it("then it will not pass the service itself when rendering the page", async () => {
+      await getServices(req, res);
+
+      expect(
+        res.render.mock.calls[0][1].services.some(
+          (service) => service.id === application.id,
+        ),
+      ).toBe(false);
+    });
+
+    it("then it will pass each role the user has access to separately when rendering the page", async () => {
+      await getServices(req, res);
+
+      expect(res.render.mock.calls[0][1].services.length).toBe(2);
+      expect(res.render.mock.calls[0][1].services[0]).toMatchObject({
+        id: userAccess[0].roles[0].id,
+        name: userAccess[0].roles[0].name,
+      });
+      expect(res.render.mock.calls[0][1].services[1]).toMatchObject({
+        id: userAccess[0].roles[1].id,
+        name: userAccess[0].roles[1].name,
+      });
+    });
+
+    it("then it will list the correct organisations the user has the service/role and organisation access for", async () => {
+      await getServices(req, res);
+
+      const role1Orgs = res.render.mock.calls[0][1].services[0].organisations;
+      const role2Orgs = res.render.mock.calls[0][1].services[1].organisations;
+      expect(role1Orgs.length).toBe(2);
+      expect(role1Orgs[0].id).toBe(userAccess[0].organisationId);
+      expect(role1Orgs[1].id).toBe(userAccess[1].organisationId);
+      expect(role2Orgs.length).toBe(1);
+      expect(role2Orgs[0].id).toBe(userAccess[0].organisationId);
+    });
+
+    it("then the service role URL will be the service param value whose name matches the role code", async () => {
+      const url = "TEST-URL1";
+      application.relyingParty.params.S1R1 = url;
+      await getServices(req, res);
+
+      expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe(url);
+    });
+
+    it("then the service role URL will be an empty string if no service param whose name matches the role code exists", async () => {
+      await getServices(req, res);
+
+      expect(res.render.mock.calls[0][1].services[0].serviceUrl).toBe("");
+    });
+
+    it("then the service role description will be the service param whose name matches the format ROLECODE_DESCRIPTION", async () => {
+      const description = "TEST DESCRIPTION";
+      application.relyingParty.params.S1R1_DESCRIPTION = description;
+      await getServices(req, res);
+
+      expect(res.render.mock.calls[0][1].services[0].description).toBe(
+        description,
+      );
+    });
+
+    it("then the service role description will be an empty string if no service param whose name matches the format ROLECODE_DESCRIPTION exists", async () => {
+      await getServices(req, res);
+
+      expect(res.render.mock.calls[0][1].services[0].description).toBe("");
+    });
   });
 });
