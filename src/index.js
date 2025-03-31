@@ -210,6 +210,7 @@ const init = async () => {
   assetsUrl = assetsUrl.endsWith("/")
     ? assetsUrl.substr(0, assetsUrl.length - 1)
     : assetsUrl;
+  console.log("Before object.assigning app locals");
   Object.assign(app.locals, {
     urls: {
       help: config.hostingEnvironment.helpUrl,
@@ -231,6 +232,9 @@ const init = async () => {
       version: config.assets.version,
     },
   });
+
+  console.log("About to log out app.locals");
+  console.log(app.locals);
 
   passport.use("oidc", await getPassportStrategy());
   passport.serializeUser((user, done) => {

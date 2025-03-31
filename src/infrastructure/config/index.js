@@ -28,7 +28,6 @@ const fetchConfig = () => {
     const settings = process.env.settings;
     let settingsObject = getSettingsObject(settings);
     console.log("After settings from object");
-    console.log(settingsObject);
     if (settingsObject !== null) {
       return settingsObject;
     }
@@ -36,7 +35,6 @@ const fetchConfig = () => {
     if (fs.existsSync(settingsPath)) {
       settingsObject = getSettingsFromFile(settingsPath);
       console.log("After settings from file");
-      console.log(settingsObject);
       if (settingsObject !== null) {
         return settingsObject;
       }
