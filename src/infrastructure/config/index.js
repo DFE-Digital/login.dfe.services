@@ -4,6 +4,7 @@ const fs = require('fs');
 const Path = require('path');
 
 const getSettingsObject = (settings) => {
+  console.log("getting settings from object");
   try {
     return JSON.parse(settings);
   } catch (e) {
@@ -12,6 +13,7 @@ const getSettingsObject = (settings) => {
 };
 
 const getSettingsFromFile = (settingsPath) => {
+  console.log("in settings from file");
   if (fs.existsSync(settingsPath)) {
     const file = fs.readFileSync(settingsPath, 'utf8');
     try {
@@ -27,12 +29,16 @@ const fetchConfig = () => {
   if (process.env.settings) {
     const settings = process.env.settings;
     let settingsObject = getSettingsObject(settings);
+    console.log("After settings from object");
+    console.log(settingsObject);
     if (settingsObject !== null) {
       return settingsObject;
     }
     const settingsPath = Path.resolve(settings);
     if (fs.existsSync(settingsPath)) {
       settingsObject = getSettingsFromFile(settingsPath);
+      console.log("After settings from file");
+      console.log(settingsObject);
       if (settingsObject !== null) {
         return settingsObject;
       }
