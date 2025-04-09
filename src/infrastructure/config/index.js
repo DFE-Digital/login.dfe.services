@@ -32,6 +32,7 @@ const config = {
     port: 443,
     protocol: "https",
     sessionSecret: process.env.SESSION_ENCRYPTION_SECRET_SVC,
+    csrfSecret: process.env.CSRF_ENCRYPTION_SECRET_SVC,
     gaTrackingId: process.env.GOOGLE_ANALYTICS_ID,
     serviceId: process.env.SERVICE_ID,
     profileUrl: "https://" + process.env.STANDALONE_PROFILE_HOST_NAME,
@@ -41,7 +42,7 @@ const config = {
     supportUrl: "https://" + process.env.STANDALONE_SUPPORT_HOST_NAME,
     surveyUrl: process.env.PLATFORM_GLOBAL_USER_FEEDBACK_URL,
     applicationInsights: process.env.APP_INSIGHTS_INSTRUMENTATION_KEY,
-    sessionCookieExpiryInMinutes: 20,
+    sessionCookieExpiryInMinutes: 480,
     agentKeepAlive: {
       maxSockets: 30,
       maxFreeSockets: 10,

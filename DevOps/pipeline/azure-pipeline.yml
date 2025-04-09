@@ -130,7 +130,7 @@ stages:
           displayName: "Deployment [${{env}}] ${{location}}"
           ${{ if eq(env, 'pr') }}:
             dependsOn: 
-            - releasebranch
+            - Deployment_pp_westeurope
             condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
           ${{ elseif eq(parameters.existTag, ' ') }}:
             dependsOn: 
@@ -160,7 +160,7 @@ stages:
                 gitCheck: ${{parameters.gitCheck}}
                 tier: presentation
                 tierPlan: prestier-g3
-                shaUse: true
+                shaUse: ${{parameters.shaUse}}
                 slotDeploy: ${{parameters.slotDeploy}}
                 appRepoName: ${{variables.applicationFullName}}
                 healthCheckEndpoint: healthcheck
@@ -169,4 +169,3 @@ stages:
                   ContRegServerCode: $(tranShaCode)
                 ${{ else }}:
                   ContRegServerCode: $(prShaCode)
-
