@@ -62,6 +62,12 @@ const getAndMapServices = async (account, correlationId) => {
           services.push({
             id: role.id,
             name: role.name,
+            description:
+              application.relyingParty &&
+              application.relyingParty.params &&
+              application.relyingParty.params[`${role.code}_DESCRIPTION`]
+                ? application.relyingParty.params[`${role.code}_DESCRIPTION`]
+                : "",
             serviceUrl:
               application.relyingParty &&
               application.relyingParty.params &&
