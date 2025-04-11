@@ -7,18 +7,12 @@ resources:
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.devops
       ref: main
-    - repository: config
-      type: github
-      endpoint: DfE-Digital
-      name: DFE-Digital/login.dfe.dsi-config
-      ref: main
 
 trigger:
   branches:
     include:
       - feature/*
       - main
-      - release/*
 
 pr:
   branches:
@@ -26,154 +20,152 @@ pr:
       - main
 
 parameters:
-  - name: location
-    type: object
-    displayName: "Deployment locations (- westeurope & - northeurope)"
-    default:
-      - westeurope
-      - northeurope
-  - name: InfrDeploy
-    type: boolean
-    displayName: "Infrastrucure Deployment only"
-    default: false
-  - name: tran
-    type: boolean
-    displayName: "Transformation Deployment"
-    default: false
-  - name: dev
-    type: boolean
-    displayName: "Dev Deployment"
-    default: false
-  - name: test
-    type: boolean
-    displayName: "Test Deployment"
-    default: false
-  - name: pp
-    type: boolean
-    displayName: "Pre-Prod Deployment"
-    default: false
-  - name: pr
-    type: boolean
-    displayName: "Prod Deployment"
-    default: false
-  - name: gitCheck
-    type: boolean
-    displayName: "Bypass Git Check in Test"
-    default: false
+- name: location
+  type: object
+  displayName: 'Deployment locations (- westeurope & - northeurope)'
+  default:
+    - westeurope
+    - northeurope
+- name: shaUse
+  type: boolean
+  displayName: "Use Self Host agent"
+  default: true
+- name: existTag
+  type: string
+  displayName: "Deploy existing tag"
+  default: " "
+- name: slotDeploy
+  type: boolean
+  displayName: "Slot Deployment"
+  default: true
+- name: InfrDeploy
+  type: boolean
+  displayName: 'Infrastrucure Deployment only'
+  default: false
+- name: tran
+  type: boolean
+  displayName: 'Transformation Deployment'
+  default: false
+- name: dev
+  type: boolean
+  displayName: 'Dev Deployment'
+  default: false
+- name: test
+  type: boolean
+  displayName: 'Test Deployment'
+  default: false
+- name: pp
+  type: boolean
+  displayName: 'Pre-Prod Deployment'
+  default: false
+- name: pr
+  type: boolean
+  displayName: 'Prod Deployment'
+  default: false
+- name: gitCheck
+  type: boolean
+  displayName: 'Bypass Git Check in Test'
+  default: false
+
 
 variables:
-  - group: dsi-global
-  - group: dsi-envs-list
-  - name: applicationShortName
-    value: "svc"
-  - name: applicationFullName
-    value: "services"
-  - name: numberOfWorkers
-    value: 1
-  - name: tran
-    value: ${{ eq(parameters.tran, 'true') }}
-  - name: dev
-    value: ${{ or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
-  - name: test
-    value: ${{ or(eq(parameters.test, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}
-  - name: pp
-    value: ${{ and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'main')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}
-  - name: pr
-    value: ${{ or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }}
-  - name: northeurope
-    value: "tran,pp,pr"
-  - name: westeurope
-    value: "tran,dev,test,pp,pr"
+- group: dsi-global
+- group: dsi-envs-list
+- name: applicationShortName
+  value: 'svc'
+- name: applicationFullName
+  value: 'services'
+- name: numberOfWorkers
+  value: 1
+- name: buildNotNeeded
+  value: ${{ contains(variables['Build.SourceVersionMessage'],'Upgrade to version') }}
+- name: tran
+  value: ${{ parameters.tran }}
+- name: dev
+  value: ${{ or(parameters.dev, contains(variables['Build.SourceBranch'],'feature')) }}
+- name: test
+  value: ${{ or(parameters.test, contains(variables['Build.SourceBranch'],'feature')) }}
+- name: pp
+  value: ${{ and(or(parameters.pp, contains(variables['Build.SourceBranch'],'main')), eq(variables.buildNotNeeded, 'false')) }}
+- name: pr
+  value: ${{ or(and(parameters.pr, ne(parameters.existTag, ' ')),eq(variables.pp, 'true')) }}
+- name: ContRegServerTran
+  value: ${{ eq(variables.tran, 'true') }}
+- name: northeurope
+  value: "tran,pp,pr"
+- name: westeurope
+  value: "tran,dev,test,pp,pr"
+
+
 
 stages:
-  # Code Scans & Build the artifact for deployment
-  - stage: scanBuildApp
-    displayName: "Scan tools & Build"
-    jobs:
-      - template: pipeline/scanTools.yml@devopsTemplates
-        parameters:
-          useRevisedLinting: true
-          AppDeploy: ${{ not(parameters.InfrDeploy) }}
 
-      - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
-          - template: pipeline/build.yml@devopsTemplates
+  - ${{ if eq(parameters.existTag, ' ') }}:
+      # Code Scans & Build the artifact for deployment
+      - stage: scanBuildApp
+        displayName: "Pre Deploy jobs"
+        jobs:
+          - template: pipeline/components/checks/checks.yml@devopsTemplates
             parameters:
-              applicationName: ${{variables.applicationFullName}}
+              AppDeploy: ${{ not(parameters.InfrDeploy) }}
               custRegAuth: $(custRegAuth)
-              environmentNames:
-                - ${{ if eq(variables.tran, 'true') }}:
-                    - tran
-                - ${{ if eq(variables.dev, 'true') }}:
-                    - dev
-                - ${{ if eq(variables.test, 'true') }}:
-                    - test
-                - ${{ if eq(variables.pp, 'true') }}:
-                    - pp
-                - ${{ if eq(variables.pr, 'true') }}:
-                    - pr
-              pm2ProcessFileName: process.json
-              nodeVersionSpec: "22.11.0"
-              useRevisedLinting: true
 
-  - ${{ each location in parameters.location }}:
-      - ${{each env in split(variables[location],',') }}:
-          - ${{ if eq(variables[env], 'true') }}:
-              - stage: Deployment_${{env}}_${{location}}
-                displayName: "Deployment [${{env}}] ${{location}}"
-                ${{ if eq(location,'westeurope') }}:
-                  dependsOn:
-                    - scanBuildApp
-                  condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-                ${{ if eq(location,'northeurope') }}:
-                  ${{ if eq(length(parameters.location), 2) }}:
-                    dependsOn:
-                      - scanBuildApp
-                      - Deployment_${{env}}_westeurope
-                    condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-                  ${{ else }}:
-                    dependsOn:
-                      - scanBuildApp
-                    condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-                variables:
-                  - name: secRegionId
-                    value: $(${{ format('{0}{1}', location, 'Id') }})
-                  - name: environmentId
-                    value: $[variables['${{env}}EnvId']]
-                  - name: ServConName
-                    value: ${{ format('{0}{1}', env, 'ServCon') }}
-                  - name: ShaCodeName
-                    value: ${{ format('{0}{1}', env, 'ShaCode') }}
-                jobs:
-                  - template: pipeline/deployment.yml@devopsTemplates
-                    parameters:
-                      serviceConnection: $(${{variables.ServConName}})
-                      # shaPool: $[variables['${{env}}ShaPool']]
-                      # shaCode: $(${{variables.ShaCodeName}})
-                      devOpsEnv: ${{variables.secRegionId}}${{env}}
-                      environmentName: ${{env}}
-                      applicationShortName: ${{variables.applicationShortName}}
-                      applicationFullName: ${{variables.applicationFullName}}
-                      releaseArtifactName: ${{variables.applicationShortName}}-${{env}}-$(Build.BuildId)-release
-                      InfrDeploy: ${{parameters.InfrDeploy}}
-                      deploymentLocation: ${{location}}
-                      runtimeStack: NODE|22-lts
-                      pm2ProcessFileName: process.json
-                      gitCheck: ${{parameters.gitCheck}}
+          - ${{ if  and(not(parameters.InfrDeploy), eq(variables.buildNotNeeded, 'false')) }}:
+            - template:  pipeline/components/build/buildAppServicesNodeJs.yml@devopsTemplates
+              parameters:
+                applicationName: ${{variables.applicationFullName}}
+                custRegAuth: $(custRegAuth)
+                ContRegServers:
+                  - ${{ if eq(variables.ContRegServerTran, 'true') }}:
+                    - name: '$(platformGlobalIdentifier)$(tranShaCode)$(platformGlobalName)shdcr.azurecr.io'
+                      servCon: $(devServiceConnection)
+                  - name: '$(platformGlobalIdentifier)$(prShaCode)$(platformGlobalName)shdcr.azurecr.io'
+                    servCon: $(prodServiceConnection)
+                nodeVersionSpec: "22.11.0"
 
-              - ${{ if and(eq(env, 'pp'),eq(location, 'westeurope')) }}:
-                  - stage: releasebranch
-                    displayName: "GitHub Release Branch Creation"
-                    dependsOn:
-                      - Deployment_${{env}}_${{location}}
-                    jobs:
-                      - template: pipeline/releaseCreation.yml@devopsTemplates
-
-              - ${{ if and(eq(env, 'pr'),eq(location, 'westeurope')) }}:
-                  - stage: branchPrTag
-                    displayName: "GitHub PR & Release Branch Tag"
-                    dependsOn:
-                      - Deployment_${{env}}_${{location}}
-                    jobs:
-                      - template: pipeline/tagCreation.yml@devopsTemplates
-                        parameters:
-                          applicationName: ${{variables.applicationFullName}}
+  - ${{ each location in parameters.location }}:           
+    - ${{each env in split(variables[location],',') }}:
+      - ${{ if eq(variables[env], 'true') }}:
+        - stage: Deployment_${{env}}_${{location}}
+          displayName: "Deployment [${{env}}] ${{location}}"
+          ${{ if eq(env, 'pr') }}:
+            dependsOn: 
+            - Deployment_pp_westeurope
+            condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+          ${{ elseif eq(parameters.existTag, ' ') }}:
+            dependsOn: 
+            - scanBuildApp
+            condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+          variables:
+            - name: secRegionId
+              value: $(${{ format('{0}{1}', location, 'Id') }})
+            - name: environmentId
+              value: $[variables['${{env}}EnvId']]
+            - name: ServConName
+              value: ${{ format('{0}{1}', env, 'ServCon') }}
+            - name: ShaCodeName
+              value: ${{ format('{0}{1}', env, 'ShaCode') }}
+          jobs:
+            - template: pipeline/components/deploy/deployAppServicesNodeJs.yml@devopsTemplates
+              parameters:
+                serviceConnection: $(${{variables.ServConName}})
+                shaPool: $[variables['${{env}}ShaPool']]
+                shaCode: $(${{variables.ShaCodeName}})
+                devOpsEnv: ${{variables.secRegionId}}${{env}}
+                environmentName: ${{env}}
+                applicationShortName: ${{variables.applicationShortName}}
+                applicationFullName: ${{variables.applicationFullName}}
+                InfrDeploy: ${{parameters.InfrDeploy}}
+                deploymentLocation: ${{location}}
+                gitCheck: ${{parameters.gitCheck}}
+                tier: presentation
+                tierPlan: prestier-g3
+                shaUse: ${{parameters.shaUse}}
+                slotDeploy: ${{parameters.slotDeploy}}
+                appRepoName: ${{variables.applicationFullName}}
+                healthCheckEndpoint: healthcheck
+                existTag: ${{parameters.existTag}}                
+                ${{ if eq(env, 'tran') }}:
+                  ContRegServerCode: $(tranShaCode)
+                ${{ else }}:
+                  ContRegServerCode: $(prShaCode)
