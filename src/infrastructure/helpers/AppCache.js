@@ -17,7 +17,7 @@ class AppCache {
     try {
       const status = store.set(key, value);
       return status;
-    } catch (e) {
+    } catch {
       return false;
     }
   }
