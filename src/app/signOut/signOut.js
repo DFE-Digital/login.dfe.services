@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-
 const url = require("url");
 const passport = require("passport");
 const config = require("./../../infrastructure/config");
@@ -99,7 +97,7 @@ const isValidRedirectUrl = async (url) => {
     if (redirectUrl) {
       return true;
     }
-  } catch (e) {
+  } catch {
     logger.error(`error getting service post logout url`);
     return false;
   }
