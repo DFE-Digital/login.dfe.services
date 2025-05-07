@@ -74,6 +74,7 @@ const {
   removeServiceFromUser,
 } = require("./../../../../src/infrastructure/access");
 const { getById } = require("./../../../../src/infrastructure/search");
+const { organisation } = require("login.dfe.dao");
 
 describe("when removing service access", () => {
   let req;
@@ -200,13 +201,14 @@ describe("when removing service access", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "user.one@unit.test (id: user1) removed service service name for organisation organisationName (id: org1) for user test@test.com (id: user1)",
+      "user.one@unit.test removed service service name for user test@test.com",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",
       subType: "user-service-deleted",
       userId: "user1",
       userEmail: "user.one@unit.test",
+      organisationId: "org1",
       meta: {
         editedUser: "user1",
         editedFields: [
