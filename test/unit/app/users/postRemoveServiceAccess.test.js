@@ -74,7 +74,6 @@ const {
   removeServiceFromUser,
 } = require("./../../../../src/infrastructure/access");
 const { getById } = require("./../../../../src/infrastructure/search");
-const { organisation } = require("login.dfe.dao");
 
 describe("when removing service access", () => {
   let req;
