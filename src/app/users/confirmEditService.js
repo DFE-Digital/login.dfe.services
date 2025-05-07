@@ -133,15 +133,12 @@ const post = async (req, res) => {
     }
   }
 
-  const organisationDetails = req.userOrganisations.find(
-    (x) => x.organisation.id === organisationId,
-  );
-  const org = organisationDetails.organisation.name;
   logger.audit({
     type: "approver",
     subType: "user-service-updated",
     userId: req.user.sub,
     userEmail: req.user.email,
+    organisationId,
     meta: {
       editedFields: [
         {
@@ -153,7 +150,7 @@ const post = async (req, res) => {
     },
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} (id: ${req.user.sub}) updated service ${service.name} for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
+    message: `${req.user.email} updated service ${service.name} for user ${req.session.user.email}`,
   });
 
   res.flash("title", `Success`);
