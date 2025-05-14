@@ -469,13 +469,14 @@ describe("when inviting a new user", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "user.one@unit.test (id: user1) added services for organisation organisationName (id: org1) for user test@test.com (id: user1)",
+      "user.one@unit.test added 1 service(s) for user test@test.com",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",
       subType: "user-services-added",
       userId: req.user.sub,
       userEmail: req.user.email,
+      organisationId: "org1",
       meta: {
         editedUser: req.params.uid,
         editedFields: [

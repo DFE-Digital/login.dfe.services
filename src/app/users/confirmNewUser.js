@@ -369,15 +369,17 @@ const post = async (req, res) => {
         (updated) => updated.services.length === currentUserServices.length,
       );
     }
+
     // audit add services to existing user
     logger.audit({
       type: "approver",
       subType: "user-services-added",
       userId: req.user.sub,
       userEmail: req.user.email,
+      organisationId,
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `${req.user.email} (id: ${req.user.sub}) added services for organisation ${org} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
+      message: `${req.user.email} added ${req.session.user.services.length} service(s) for user ${req.session.user.email}`,
       meta: {
         editedFields: [
           {
