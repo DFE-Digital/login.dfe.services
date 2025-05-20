@@ -124,6 +124,9 @@
                     </span>
                 <% } %>
                 <textarea class="govuk-textarea govuk-!-width-full govuk-js-character-count" id="with-hint" name="reason" maxlength="1000" rows="6" aria-describedby="with-hint-info with-hint-hint"  placeholder="e.g I am an administrator at the organisation and need to be able to submit the census."><% if (locals.reason.length > 0) { %><%= locals.reason %><% } %></textarea>
+                <div id="with-hint-info" class="govuk-hint govuk-character-count__message">
+                    You have 200 characters remaining
+                </div>
             </div>
 
             <div class="govuk-warning-text">
