@@ -108,13 +108,16 @@
             <input type="hidden" value="<%=locals.organisation.id%>" name="organisationId"/>
             <input type="hidden" value="<%=locals.organisation.name%>" name="organisationName"/>
             
-            <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>">
-                <h2 class="govuk-heading-m">
+            <div class="govuk-form-group govuk-character-count <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>" data-module="govuk-character-count" data-maxlength="200">
+                <h2 class="govuk-label-wrapper">
+                    <label class="govuk-label govuk-label--m" for="with-hint">
                     Reason for request
+                    </label>
                 </h2>
-                <label class="govuk-label" for="reason">
-                    Describe briefly why you require access to this organisation. The approvers at the organisation will see this information when reviewing your request.
-                </label>
+                <div id="with-hint-hint" class="govuk-hint">
+                    The approvers at the organisation will see this information when reviewing your request. Explain why you need access and what your job role is.
+                </div>
+                
                 <% if (locals.validationMessages.reason !== undefined) { %>
                     <span id="validation-message" class="govuk-error-message">
                         <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.reason %>
