@@ -123,7 +123,7 @@
                         <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.reason %>
                     </span>
                 <% } %>
-                <textarea class="govuk-textarea govuk-!-width-full" id="reason" name="reason" maxlength="1000" rows = "6"></textarea>
+                <textarea class="govuk-textarea govuk-!-width-full govuk-js-character-count" id="with-hint" name="reason" maxlength="1000" rows="6" aria-describedby="with-hint-info with-hint-hint"  placeholder="e.g I am an administrator at the organisation and need to be able to submit the census."><% if (locals.reason.length > 0) { %><%= locals.reason %><% } %></textarea>
             </div>
 
             <div class="govuk-warning-text">
