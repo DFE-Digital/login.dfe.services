@@ -110,11 +110,11 @@
             
             <div class="govuk-form-group govuk-character-count <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>" data-module="govuk-character-count" data-maxlength="200">
                 <h2 class="govuk-label-wrapper">
-                    <label class="govuk-label govuk-label--m" for="with-hint">
+                    <label class="govuk-label govuk-label--m" for="reason">
                     Reason for request
                     </label>
                 </h2>
-                <div id="with-hint-hint" class="govuk-hint">
+                <div id="reason-hint" class="govuk-hint">
                     The approvers at the organisation will see this information when reviewing your request. Explain why you need access and what your job role is.
                 </div>
                 
@@ -123,8 +123,8 @@
                         <span class="govuk-visually-hidden">Error:</span> <%=locals.validationMessages.reason %>
                     </span>
                 <% } %>
-                <textarea class="govuk-textarea govuk-!-width-full govuk-js-character-count" id="with-hint" name="reason" maxlength="1000" rows="6" aria-describedby="with-hint-info with-hint-hint"  placeholder="e.g I am an administrator at the organisation and need to be able to submit the census."><% if (locals.reason.length > 0) { %><%= locals.reason %><% } %></textarea>
-                <div id="with-hint-info" class="govuk-hint govuk-character-count__message">
+                <textarea class="govuk-textarea govuk-!-width-full govuk-js-character-count" id="reason" name="reason" rows="6" aria-describedby="reason-info reason-hint"  placeholder="e.g I am an administrator at the organisation and need to be able to submit the census."><% if (locals.reason.length > 0) { %><%= locals.reason %><% } %></textarea>
+                <div id="reason-info" class="govuk-hint govuk-character-count__message">
                     You have 200 characters remaining
                 </div>
             </div>
