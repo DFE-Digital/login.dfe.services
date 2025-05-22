@@ -157,7 +157,7 @@ describe("when reviewing an organisation request", () => {
       reason: req.body.reason,
       title: "Confirm Request - DfE Sign-in",
       validationMessages: {
-        reason: "Reason cannot be longer than 1000 characters",
+        reason: "Reason cannot be longer than 200 characters",
       },
       backLink: "/request-organisation/search",
     });

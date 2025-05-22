@@ -49,9 +49,9 @@ const validate = async (req) => {
   };
   if (model.reason.trim().length === 0) {
     model.validationMessages.reason = "Enter a reason for request";
-  } else if (model.reason.length > 1000) {
+  } else if (model.reason.length > 200) {
     model.validationMessages.reason =
-      "Reason cannot be longer than 1000 characters";
+      "Reason cannot be longer than 200 characters";
   }
 
   if (
