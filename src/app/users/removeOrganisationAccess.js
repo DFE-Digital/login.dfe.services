@@ -88,7 +88,7 @@ const post = async (req, res) => {
       (org) => org.id === organisationId,
     );
     await deleteUserOrganisation(uid, organisationId);
-    if (isEmailAllowed && getAllUserDetails.statusId !== 0) {
+    if (isEmailAllowed && getAllUserDetails.statusId === 1) {
       const notificationClient = new NotificationClient({
         connectionString: config.notifications.connectionString,
       });
