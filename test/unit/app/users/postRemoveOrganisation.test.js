@@ -119,6 +119,7 @@ describe("when removing organisation access", () => {
           roleId: 0,
         },
       ],
+      statusId: 1,
     });
 
     res = mockResponse();
@@ -204,7 +205,7 @@ describe("when removing organisation access", () => {
     );
   });
 
-  it("then it should send an email notification to user", async () => {
+  it("then it should send an email notification to active user", async () => {
     await postRemoveOrganisationAccess(req, res);
 
     expect(sendUserRemovedFromOrganisationStub.mock.calls).toHaveLength(1);
@@ -221,5 +222,29 @@ describe("when removing organisation access", () => {
     expect(sendUserRemovedFromOrganisationStub.mock.calls[0][3]).toBe(
       organisationName,
     );
+  });
+  it("then it should not send an email notification to deactivated user", async () => {
+    getById.mockReset();
+    getById.mockReturnValue({
+      organisations: [
+        {
+          id: "org1",
+          name: "organisationName",
+          categoryId: "004",
+          statusId: 1,
+          roleId: 0,
+        },
+      ],
+      statusId: 0,
+    });
+
+    await postRemoveOrganisationAccess(req, res);
+
+    expect(sendUserRemovedFromOrganisationStub.mock.calls).toHaveLength(0);
+    expect(res.flash.mock.calls).toHaveLength(3);
+    expect(updateIndex.mock.calls).toHaveLength(1);
+    expect(deleteUserOrganisation.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls).toHaveLength(1);
   });
 });

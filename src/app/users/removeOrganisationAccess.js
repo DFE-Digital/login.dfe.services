@@ -61,8 +61,8 @@ const post = async (req, res) => {
     organisationId,
     req.id,
   );
-  const getAllUserDetails = await getById(uid, req.id);
-  const currentOrganisationDetails = getAllUserDetails.organisations;
+  const userDetails = await getById(uid, req.id);
+  const currentOrganisationDetails = userDetails.organisations;
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
   var invitedUser = false;
 
@@ -88,7 +88,7 @@ const post = async (req, res) => {
       (org) => org.id === organisationId,
     );
     await deleteUserOrganisation(uid, organisationId);
-    if (isEmailAllowed) {
+    if (isEmailAllowed && userDetails.statusId === 1) {
       const notificationClient = new NotificationClient({
         connectionString: config.notifications.connectionString,
       });
