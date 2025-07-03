@@ -45,7 +45,7 @@ npm run test
 3. Add audit sql host name to keyvault with name `auditSqlHostName` - added
 4. Add audit sql db name to keyvault with name `auditSqlDbName` - added
 5. Add request verification cert to keyvault with name `requestVerificationCert` - added
-6. Add app insights instrumentation Key to keyvault with name `appInsightsInstrumentationKey` - added
+6. Add app insights connection string to keyvault with name `appInsightsConnectionString` - added
 7. Add User Feedback Url to keyvault with name `platformGlobalUserFeedbackUrl` - added
 8. Add secure Key of oidc connection to interactions to keyvault with name `secureKey` - not needed for now
 9. Add tenant Url to keyvault with name `tenantUrl` - added
