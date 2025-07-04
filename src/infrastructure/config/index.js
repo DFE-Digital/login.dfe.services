@@ -41,7 +41,7 @@ const config = {
     helpAssistantUrl: process.env.HELP_ASSISTANT_URL,
     supportUrl: "https://" + process.env.STANDALONE_SUPPORT_HOST_NAME,
     surveyUrl: process.env.PLATFORM_GLOBAL_USER_FEEDBACK_URL,
-    applicationInsights: process.env.APP_INSIGHTS_INSTRUMENTATION_KEY,
+    applicationInsights: process.env.APPLICATIONINSIGHTS_CONNECTION_STRING,
     sessionCookieExpiryInMinutes: 480,
     agentKeepAlive: {
       maxSockets: 30,
