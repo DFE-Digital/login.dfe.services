@@ -113,6 +113,38 @@ describe("when showing the searching for a organisation", () => {
     expect(req.session.organisationId).toBe("org1");
   });
 
+  it("should not include category 011 or 003", async () => {
+    getCategories.mockReset().mockReturnValue([
+      {
+        id: "001",
+        name: "some category name",
+      },
+      {
+        id: "003",
+        name: "A filtered out category",
+      },
+      {
+        id: "011",
+        name: "Another filtered out category",
+      },
+    ]);
+    req.body = {
+      selectedOrganisation: "org1",
+    };
+
+    await post(req, res);
+    expect(searchOrganisations).toHaveBeenCalledWith(
+      "",
+      1,
+      ["001"],
+      [1, 3, 4],
+      "correlationId",
+      ["Department for Education"],
+    );
+
+    expect(req.session.organisationId).toBe("org1");
+  });
+
   it("then it should redirect to review page if organisation selected", async () => {
     req.body = {
       selectedOrganisation: "org1",
