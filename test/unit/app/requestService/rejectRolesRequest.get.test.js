@@ -63,7 +63,7 @@ describe("When reviewing a sub-service request for rejecting", () => {
 
   beforeEach(() => {
     req = mockRequest();
-    (req.params = {
+    ((req.params = {
       orgId: "organisationId",
       uid: "endUser1",
       sid: "service1",
@@ -79,7 +79,7 @@ describe("When reviewing a sub-service request for rejecting", () => {
         service: {
           roles: ["role1"],
         },
-      });
+      }));
 
     req.user = {
       sub: "approver1",
