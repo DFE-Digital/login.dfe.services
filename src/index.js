@@ -26,6 +26,7 @@ const {
   getErrorHandler,
   ejsErrorPages,
 } = require("login.dfe.express-error-handling");
+const { setupApi } = require("login.dfe.api-client/api/setup");
 
 const registerRoutes = require("./routes");
 
@@ -33,6 +34,33 @@ https.globalAgent.maxSockets = http.globalAgent.maxSockets =
   config.hostingEnvironment.agentKeepAlive.maxSockets || 50;
 
 configSchema.validate();
+
+setupApi({
+  auth: {
+    tenant: config.directories.service.auth.tenant,
+    authorityHostUrl: config.directories.service.auth.authorityHostUrl,
+    clientId: config.directories.service.auth.clientId,
+    clientSecret: config.directories.service.auth.clientSecret,
+    resource: config.directories.service.auth.resource,
+  },
+  api: {
+    directories: {
+      baseUri: config.directories.service.url,
+    },
+    organisations: {
+      baseUri: config.organisations.service.url,
+    },
+    applications: {
+      baseUri: config.applications.service.url,
+    },
+    access: {
+      baseUri: config.access.service.url,
+    },
+    search: {
+      baseUri: config.search.service.url,
+    },
+  },
+});
 
 // Initialize client.
 const redisUrl = new URL(config.cookieSessionRedis.params.connectionString);
