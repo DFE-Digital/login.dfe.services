@@ -23,11 +23,6 @@ const callApi = async (method, endpoint, correlationId, body) => {
     throw e;
   }
 };
-
-const getServicesForUser = async (id, correlationId) => {
-  return callApi("GET", `/users/${id}/services`, correlationId, undefined);
-};
-
 const getServicesForInvitation = async (iid, correlationId) => {
   return callApi(
     "GET",
@@ -126,7 +121,6 @@ const addInvitationService = async (iid, sid, oid, roles, correlationId) => {
 };
 
 module.exports = {
-  getServicesForUser,
   getServicesForInvitation,
   getSingleUserService,
   getSingleInvitationService,

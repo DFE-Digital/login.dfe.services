@@ -1,7 +1,6 @@
 const { getById } = require("./../../infrastructure/search");
 const { mapUserStatus } = require("./../../infrastructure/utils");
 const {
-  getServicesForUser,
   getServicesForInvitation,
   getSingleUserService,
   getSingleInvitationService,
@@ -10,6 +9,7 @@ const { getApplication } = require("./../../infrastructure/applications");
 const { actions } = require("../constans/actions");
 const moment = require("moment");
 const sortBy = require("lodash/sortBy");
+const { getUserServicesRaw } = require("login.dfe.api-client/users");
 const numberOfHours = 24;
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
@@ -36,7 +36,7 @@ const getAllServicesForUserInOrg = async (
 ) => {
   const allUserServices = userId.startsWith("inv-")
     ? await getServicesForInvitation(userId.substr(4), correlationId)
-    : await getServicesForUser(userId, correlationId);
+    : await getUserServicesRaw({ userId });
   if (!allUserServices) {
     return [];
   }
