@@ -1,14 +1,14 @@
 const { getById } = require("./../../infrastructure/search");
 const { mapUserStatus } = require("./../../infrastructure/utils");
-const {
-  getSingleUserService,
-  getSingleInvitationService,
-} = require("./../../infrastructure/access");
+const { getSingleInvitationService } = require("./../../infrastructure/access");
 const { getApplication } = require("./../../infrastructure/applications");
 const { actions } = require("../constans/actions");
 const moment = require("moment");
 const sortBy = require("lodash/sortBy");
-const { getUserServicesRaw } = require("login.dfe.api-client/users");
+const {
+  getUserServicesRaw,
+  getUserServiceRaw,
+} = require("login.dfe.api-client/users");
 const {
   getInvitationServicesRaw,
 } = require("login.dfe.api-client/invitations");
@@ -72,12 +72,11 @@ const getSingleServiceForUser = async (
         organisationId,
         correlationId,
       )
-    : await getSingleUserService(
+    : await getUserServiceRaw({
         userId,
         serviceId,
         organisationId,
-        correlationId,
-      );
+      });
   const application = await getApplication(userService.serviceId);
   return {
     id: userService.serviceId,
