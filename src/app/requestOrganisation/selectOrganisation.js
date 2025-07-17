@@ -1,9 +1,12 @@
 const {
-  searchOrganisations,
   getRequestsForOrganisation,
   getOrganisationAndServiceForUserV2,
   getCategories,
 } = require("./../../infrastructure/organisations");
+
+const {
+  searchOrganisationsRaw,
+} = require("login.dfe.api-client/organisations");
 
 const search = async (req) => {
   const inputSource =
@@ -17,14 +20,14 @@ const search = async (req) => {
   if (isNaN(pageNumber)) {
     pageNumber = 1;
   }
-  return await searchOrganisations(
-    criteria,
+
+  return await searchOrganisationsRaw({
+    organisationName: criteria,
     pageNumber,
-    organisationCategoriesFilter,
-    filterStatus,
-    req.id,
-    filterOutOrgNames,
-  );
+    categories: organisationCategoriesFilter,
+    status: filterStatus,
+    excludeOrganisationNames: filterOutOrgNames,
+  });
 };
 
 const retrieveOrganisationCategories = async () => {

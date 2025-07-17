@@ -83,27 +83,6 @@ const getOrganisationAndServiceForUserV2 = async (userId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
-const searchOrganisations = async (
-  criteria,
-  pageNumber,
-  filterCategories,
-  filterStates,
-  correlationId,
-  filterOutOrgNames,
-) => {
-  let uri = `/organisations?search=${criteria}&page=${pageNumber}`;
-  if (filterCategories && filterCategories.length > 0) {
-    uri += `&filtercategory=${filterCategories.join("&filtercategory=")}`;
-  }
-  if (filterStates && filterStates.length > 0) {
-    uri += `&filterstatus=${filterStates.join("&filterstatus=")}`;
-  }
-  if (filterOutOrgNames && filterOutOrgNames.length > 0) {
-    uri += `&filterOutOrgNames=${filterOutOrgNames.join("&filterOutOrgNames=")}`;
-  }
-  return callApi("GET", uri, correlationId, undefined);
-};
-
 const createUserOrganisationRequest = async (
   userId,
   orgId,
@@ -233,7 +212,6 @@ module.exports = {
   getOrganisationAndServiceForInvitation,
   getOrganisationById,
   getOrganisationAndServiceForUserV2,
-  searchOrganisations,
   createUserOrganisationRequest,
   getAllRequestsForApprover,
   getNonPagedRequestsTypesForApprover,
