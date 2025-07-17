@@ -45,10 +45,6 @@ const putInvitationInOrganisation = async () => {
   return Promise.resolve();
 };
 
-const createUserOrganisationRequest = async () => {
-  return Promise.resolve();
-};
-
 const getAllRequestsForApprover = async () => {
   return Promise.resolve();
 };
@@ -95,7 +91,6 @@ module.exports = {
   getOrganisationAndServiceForInvitation,
   getOrganisationById,
   getOrganisationAndServiceForUserV2,
-  createUserOrganisationRequest,
   getAllRequestsForApprover,
   getRequestsForOrganisation,
   getRequestById,

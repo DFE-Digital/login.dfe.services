@@ -7,12 +7,16 @@ jest.mock("./../../../../src/infrastructure/logger", () =>
 
 jest.mock("./../../../../src/infrastructure/organisations");
 jest.mock("login.dfe.jobs-client");
+jest.mock("login.dfe.api-client/users");
+
+const {
+  createUserOrganisationRequestRaw,
+} = require("login.dfe.api-client/users");
 
 const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 const { post } = require("./../../../../src/app/requestOrganisation/review");
 const res = mockResponse();
 const {
-  createUserOrganisationRequest,
   getOrganisationById,
   getRequestsForOrganisation,
   getPendingRequestsAssociatedWithUser,
@@ -55,7 +59,7 @@ describe("when reviewing an organisation request", () => {
         reason: "reason",
       },
     });
-    createUserOrganisationRequest.mockReset().mockReturnValue("requestId");
+    createUserOrganisationRequestRaw.mockReset().mockReturnValue("requestId");
 
     sendUserOrganisationRequest.mockReset();
     NotificationClient.mockImplementation(() => {
@@ -242,13 +246,12 @@ describe("when reviewing an organisation request", () => {
   it("then it should create the organisation request", async () => {
     await post(req, res);
 
-    expect(createUserOrganisationRequest.mock.calls).toHaveLength(1);
-    expect(createUserOrganisationRequest.mock.calls[0][0]).toBe("user1");
-    expect(createUserOrganisationRequest.mock.calls[0][1]).toBe("org1");
-    expect(createUserOrganisationRequest.mock.calls[0][2]).toBe("reason");
-    expect(createUserOrganisationRequest.mock.calls[0][3]).toBe(
-      "correlationId",
-    );
+    expect(createUserOrganisationRequestRaw.mock.calls).toHaveLength(1);
+    expect(createUserOrganisationRequestRaw.mock.calls[0][0]).toMatchObject({
+      organisationId: "org1",
+      reason: "reason",
+      userId: "user1",
+    });
   });
 
   it("then it should should audit org request", async () => {

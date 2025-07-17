@@ -83,21 +83,6 @@ const getOrganisationAndServiceForUserV2 = async (userId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
-const createUserOrganisationRequest = async (
-  userId,
-  orgId,
-  reason,
-  correlationId,
-) => {
-  const request = await callApi(
-    "POST",
-    `/organisations/${orgId}/users/${userId}/requests`,
-    correlationId,
-    { reason },
-  );
-  return request;
-};
-
 const getAllRequestsForApprover = async (userId, correlationId) => {
   return callApi(
     "GET",
@@ -212,7 +197,6 @@ module.exports = {
   getOrganisationAndServiceForInvitation,
   getOrganisationById,
   getOrganisationAndServiceForUserV2,
-  createUserOrganisationRequest,
   getAllRequestsForApprover,
   getNonPagedRequestsTypesForApprover,
   getRequestsForOrganisation,
