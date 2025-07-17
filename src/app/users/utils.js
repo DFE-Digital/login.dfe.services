@@ -1,6 +1,5 @@
 const { getById } = require("./../../infrastructure/search");
 const { mapUserStatus } = require("./../../infrastructure/utils");
-const { getSingleInvitationService } = require("./../../infrastructure/access");
 const { getApplication } = require("./../../infrastructure/applications");
 const { actions } = require("../constans/actions");
 const moment = require("moment");
@@ -10,6 +9,7 @@ const {
   getUserServiceRaw,
 } = require("login.dfe.api-client/users");
 const {
+  getInvitationServiceRaw,
   getInvitationServicesRaw,
 } = require("login.dfe.api-client/invitations");
 const numberOfHours = 24;
@@ -59,19 +59,13 @@ const getAllServicesForUserInOrg = async (userId, organisationId) => {
   return sortBy(services, "name");
 };
 
-const getSingleServiceForUser = async (
-  userId,
-  organisationId,
-  serviceId,
-  correlationId,
-) => {
+const getSingleServiceForUser = async (userId, organisationId, serviceId) => {
   const userService = userId.startsWith("inv-")
-    ? await getSingleInvitationService(
-        userId.substr(4),
+    ? await getInvitationServiceRaw({
+        invitationId: userId.substr(4),
         serviceId,
         organisationId,
-        correlationId,
-      )
+      })
     : await getUserServiceRaw({
         userId,
         serviceId,

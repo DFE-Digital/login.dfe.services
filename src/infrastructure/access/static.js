@@ -1,7 +1,3 @@
-const getSingleInvitationService = async () => {
-  return Promise.resolve([]);
-};
-
 const listRolesOfService = async () => {
   return Promise.resolve([]);
 };
@@ -31,7 +27,6 @@ const addInvitationService = async () => {
 };
 
 module.exports = {
-  getSingleInvitationService,
   listRolesOfService,
   removeServiceFromUser,
   removeServiceFromInvitation,
