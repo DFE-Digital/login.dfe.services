@@ -24,15 +24,6 @@ const callApi = async (method, endpoint, correlationId, body) => {
   }
 };
 
-const removeServiceFromUser = async (uid, sid, oid, correlationId) => {
-  return callApi(
-    "DELETE",
-    `users/${uid}/services/${sid}/organisations/${oid}`,
-    correlationId,
-    undefined,
-  );
-};
-
 const removeServiceFromInvitation = async (iid, sid, oid, correlationId) => {
   return callApi(
     "DELETE",
@@ -91,7 +82,6 @@ const addInvitationService = async (iid, sid, oid, roles, correlationId) => {
 };
 
 module.exports = {
-  removeServiceFromUser,
   removeServiceFromInvitation,
   updateUserService,
   updateInvitationService,
