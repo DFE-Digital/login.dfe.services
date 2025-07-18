@@ -1,7 +1,3 @@
-const listRolesOfService = async () => {
-  return Promise.resolve([]);
-};
-
 const removeServiceFromUser = async () => {
   return Promise.resolve();
 };
@@ -27,7 +23,6 @@ const addInvitationService = async () => {
 };
 
 module.exports = {
-  listRolesOfService,
   removeServiceFromUser,
   removeServiceFromInvitation,
   updateUserService,

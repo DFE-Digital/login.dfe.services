@@ -1,4 +1,4 @@
-const { listRolesOfService } = require("../../infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const { checkForActiveRequests } = require("./utils");
@@ -52,10 +52,9 @@ const get = async (req, res) => {
     const serviceDetails = allServices.services.find(
       (x) => x.id === service.id,
     );
-    const allRolesOfServiceUnsorted = await listRolesOfService(
-      service.id,
-      req.id,
-    );
+    const allRolesOfServiceUnsorted = await getServiceRolesRaw({
+      serviceId: service.id,
+    });
     const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
       a.name.localeCompare(b.name),
     );
@@ -108,10 +107,9 @@ const post = async (req, res) => {
     (x) => x.id === req.session.user.services[0].serviceId,
   );
 
-  const allRolesOfServiceUnsorted = await listRolesOfService(
-    serviceDetails.id,
-    req.id,
-  );
+  const allRolesOfServiceUnsorted = await getServiceRolesRaw({
+    serviceId: serviceDetails.id,
+  });
   const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
     a.name.localeCompare(b.name),
   );

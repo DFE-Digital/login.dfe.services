@@ -6,7 +6,6 @@ const {
 const {
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
-  getNewRoleDetails,
   getOrganisationPermissionLevel,
 } = require("../../../../src/app/accessRequests/utils");
 const {
@@ -44,7 +43,6 @@ jest.mock("../../../../src/app/accessRequests/utils", () => {
   return {
     getAndMapServiceRequest: jest.fn(),
     getSubServiceRequestVieModel: jest.fn(),
-    getNewRoleDetails: jest.fn(),
     getOrganisationPermissionLevel: jest.fn(),
   };
 });
@@ -251,9 +249,6 @@ describe("When reviewing a sub-service request for approving", () => {
 
     getSubServiceRequestVieModel.mockReset();
     getSubServiceRequestVieModel.mockReturnValue(viewModel);
-
-    getNewRoleDetails.mockReset();
-    getNewRoleDetails.mockReturnValue(listRoles);
 
     sendSubServiceRequestApproved.mockReset();
     NotificationClient.mockReset().mockImplementation(() => ({

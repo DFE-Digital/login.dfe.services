@@ -7,7 +7,7 @@ const {
   checkCacheForAllServices,
 } = require("../../../../src/infrastructure/helpers/allServicesAppCache");
 const { getUserDetails } = require("../../../../src/app/users/utils");
-const { listRolesOfService } = require("../../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   isServiceEmailNotificationAllowed,
 } = require("../../../../src/infrastructure/applications");
@@ -28,7 +28,11 @@ jest.mock("../../../../src/infrastructure/logger", () =>
 jest.mock("../../../../src/infrastructure/access", () => {
   return {
     updateUserService: jest.fn(),
-    listRolesOfService: jest.fn(),
+  };
+});
+jest.mock("login.dfe.api-client/services", () => {
+  return {
+    getServiceRolesRaw: jest.fn(),
   };
 });
 jest.mock("../../../../src/infrastructure/applications", () => {
@@ -135,7 +139,7 @@ describe("When approving a sub service request", () => {
       });
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
-    listRolesOfService.mockReset().mockReturnValue([
+    getServiceRolesRaw.mockReset().mockReturnValue([
       {
         code: "role_code",
         id: "role1",
@@ -193,9 +197,8 @@ describe("When approving a sub service request", () => {
   it("then it should list all roles of service", async () => {
     await postRejectRolesRequest(req, res);
 
-    expect(listRolesOfService.mock.calls).toHaveLength(1);
-    expect(listRolesOfService.mock.calls[0][0]).toBe("service1");
-    expect(listRolesOfService.mock.calls[0][1]).toBe("correlationId");
+    expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
+    expect(getServiceRolesRaw).toBeCalledWith({ serviceId: "service1" });
   });
 
   it("then it should update the sub-service-request in the DB with rejection", async () => {
