@@ -32,14 +32,6 @@ const getOrganisationAndServiceForUser = async (userId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
-const getOrganisationUsersForApproval = async (userId, correlationId) => {
-  return callApi(
-    "GET",
-    `/organisations/users-for-approval/${userId}`,
-    correlationId,
-  );
-};
-
 const putUserInOrganisation = async (userId, orgId, status, role, reason) => {
   const userOrg = {
     user_id: userId,
@@ -167,7 +159,6 @@ const getCategories = async () => {
 
 module.exports = {
   getOrganisationAndServiceForUser,
-  getOrganisationUsersForApproval,
   putUserInOrganisation,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
