@@ -6,6 +6,11 @@ jest.mock("./../../../../src/infrastructure/config", () =>
 jest.mock("./../../../../src/infrastructure/logger", () =>
   require("./../../../utils/jestMocks").mockLogger(),
 );
+jest.mock("login.dfe.api-client/services", () => {
+  return {
+    getServiceRolesRaw: jest.fn(),
+  };
+});
 
 const { NotificationClient } = require("login.dfe.jobs-client");
 const {
@@ -22,6 +27,7 @@ const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
   validate: jest.fn(),
 };
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 
 NotificationClient.mockImplementation(() => {
   return {
@@ -133,6 +139,17 @@ describe("when posting a service rejection", () => {
 
     postRejectServiceRequest =
       require("../../../../src/app/requestService/rejectServiceRequest").post;
+
+    getServiceRolesRaw.mockReset().mockReturnValue([
+      {
+        code: "role_code",
+        id: "role1",
+        name: "role_name",
+        status: {
+          id: "status_id",
+        },
+      },
+    ]);
   });
 
   it("should redirect to /my-services when there is no session", async () => {

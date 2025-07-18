@@ -1,7 +1,7 @@
 const logger = require("../../../src/infrastructure/logger");
 const { getSingleServiceForUser } = require("../../../src/app/users/utils");
 const { createServiceRequest } = require("./utils");
-const { listRolesOfService } = require("./../../infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const config = require("../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { v4: uuid } = require("uuid");
@@ -14,10 +14,9 @@ const renderConfirmEditRolesPage = (res, model) => {
 
 const getSelectedRoles = async (req) => {
   let selectedRoleIds = req.session.service.roles;
-  let allRolesOfServiceUnsorted = await listRolesOfService(
-    req.params.sid,
-    req.id,
-  );
+  let allRolesOfServiceUnsorted = await getServiceRolesRaw({
+    serviceId: req.params.sid,
+  });
   let allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
     a.name.localeCompare(b.name),
   );

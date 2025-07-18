@@ -16,7 +16,6 @@ jest.mock("./../../../../src/infrastructure/organisations", () => {
 
 jest.mock("./../../../../src/infrastructure/access", () => {
   return {
-    removeServiceFromUser: jest.fn(),
     removeServiceFromInvitation: jest.fn(),
   };
 });

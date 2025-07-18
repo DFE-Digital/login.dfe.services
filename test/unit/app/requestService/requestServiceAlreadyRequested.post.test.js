@@ -42,9 +42,7 @@ jest.mock("login.dfe.dao", () => {
 });
 
 const { mockRequest, mockResponse } = require("../../../utils/jestMocks");
-const {
-  getAllServicesForUserInOrg,
-} = require("../../../../src/app/users/utils");
+
 const {
   checkForActiveRequests,
 } = require("../../../../src/app/requestService/utils");
@@ -196,17 +194,6 @@ describe("when posting service and the request has already been requested", () =
     getNonPagedRequestsTypesForApprover.mockReturnValue(requestservices);
     checkForActiveRequests.mockReset();
     checkForActiveRequests.mockReturnValue([new Date()]);
-
-    getAllServicesForUserInOrg.mockReset();
-    getAllServicesForUserInOrg.mockReturnValue([
-      {
-        id: "service1",
-        dateActivated: "10/10/2018",
-        name: "service name",
-        status: "active",
-        isExternalService: true,
-      },
-    ]);
 
     policyEngine.getPolicyApplicationResultsForUser
       .mockReset()

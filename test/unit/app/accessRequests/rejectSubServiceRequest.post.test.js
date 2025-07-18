@@ -6,7 +6,6 @@ const {
 const {
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
-  getNewRoleDetails,
 } = require("../../../../src/app/accessRequests/utils");
 const {
   updateServiceRequest,
@@ -34,7 +33,6 @@ jest.mock("../../../../src/app/accessRequests/utils", () => {
   return {
     getAndMapServiceRequest: jest.fn(),
     getSubServiceRequestVieModel: jest.fn(),
-    getNewRoleDetails: jest.fn(),
   };
 });
 
@@ -55,38 +53,6 @@ jest.mock("login.dfe.dao", () => {
     },
   };
 });
-const listRoles = [
-  {
-    code: "ASP_School_Anon",
-    id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
-    numericId: "124",
-  },
-  {
-    code: "ASP_School_Anon",
-    id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
-    numericId: "124",
-  },
-  {
-    code: "ASP_School_Anon",
-    id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
-    numericId: "124",
-  },
-  {
-    code: "ASP_School_Anon",
-    id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
-    numericId: "124",
-  },
-  {
-    code: "ASP_School_Anon",
-    id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
-    numericId: "124",
-  },
-];
 const viewModel = {
   endUsersEmail: "b@b.gov.uk",
   endUsersFamilyName: "b",
@@ -232,8 +198,6 @@ describe("When reviewing a sub-service request for rejecting", () => {
 
     getSubServiceRequestVieModel.mockReset();
     getSubServiceRequestVieModel.mockReturnValue(viewModel);
-    getNewRoleDetails.mockReset();
-    getNewRoleDetails.mockReturnValue(listRoles);
   });
 
   it("then it should redirect to reject sub service view", async () => {

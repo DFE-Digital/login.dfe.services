@@ -7,7 +7,7 @@ const {
   checkCacheForAllServices,
 } = require("../../../../src/infrastructure/helpers/allServicesAppCache");
 const { getUserDetails } = require("../../../../src/app/users/utils");
-const { listRolesOfService } = require("../../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   getUserServiceRequestStatus,
 } = require("../../../../src/app/requestService/utils");
@@ -20,9 +20,9 @@ jest.mock("../../../../src/infrastructure/config", () => {
 jest.mock("../../../../src/infrastructure/logger", () =>
   require("./../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("../../../../src/infrastructure/access", () => {
+jest.mock("login.dfe.api-client/services", () => {
   return {
-    listRolesOfService: jest.fn(),
+    getServiceRolesRaw: jest.fn(),
   };
 });
 
@@ -127,8 +127,8 @@ describe("When reviewing a sub-service request for rejecting", () => {
       });
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
-    listRolesOfService.mockReset();
-    listRolesOfService.mockReturnValue([
+    getServiceRolesRaw.mockReset();
+    getServiceRolesRaw.mockReturnValue([
       {
         code: "role_code",
         id: "role1",
@@ -172,9 +172,10 @@ describe("When reviewing a sub-service request for rejecting", () => {
   it("then it should list all roles of service", async () => {
     await getRejectRolesRequest(req, res);
 
-    expect(listRolesOfService.mock.calls).toHaveLength(1);
-    expect(listRolesOfService.mock.calls[0][0]).toBe("service1");
-    expect(listRolesOfService.mock.calls[0][1]).toBe("correlationId");
+    expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
+    expect(getServiceRolesRaw.mock.calls[0][0]).toMatchObject({
+      serviceId: "service1",
+    });
   });
 
   it("then it should check if the request is not already actioned", async () => {

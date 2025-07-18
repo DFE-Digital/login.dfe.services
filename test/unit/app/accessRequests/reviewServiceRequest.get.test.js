@@ -1,4 +1,4 @@
-const { listRolesOfService } = require("../../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { mockRequest, mockResponse } = require("../../../utils/jestMocks");
 const {
   getAndMapServiceRequest,
@@ -21,7 +21,12 @@ jest.mock("login.dfe.policy-engine");
 jest.mock("../../../../src/infrastructure/access", () => {
   return {
     updateUserService: jest.fn(),
-    listRolesOfService: jest.fn(),
+  };
+});
+
+jest.mock("login.dfe.api-client/services", () => {
+  return {
+    getServiceRolesRaw: jest.fn(),
   };
 });
 
@@ -90,7 +95,7 @@ describe("when reviewing a service request", () => {
       });
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
-    listRolesOfService.mockReset().mockReturnValue([
+    getServiceRolesRaw.mockReset().mockReturnValue([
       {
         id: "role-id-1",
         name: "Test role one",
@@ -113,8 +118,10 @@ describe("when reviewing a service request", () => {
   it("then should list all the services roles", async () => {
     await get(req, res);
 
-    expect(listRolesOfService.mock.calls).toHaveLength(1);
-    expect(listRolesOfService.mock.calls[0][0]).toBe(req.params.sid);
+    expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
+    expect(getServiceRolesRaw.mock.calls[0][0]).toMatchObject({
+      serviceId: req.params.sid,
+    });
   });
 
   it("then it should display the review service request view", async () => {

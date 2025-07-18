@@ -1,10 +1,10 @@
 const logger = require("./../../infrastructure/logger");
 const { getSingleServiceForUser, isUserManagement } = require("./utils");
 const {
-  listRolesOfService,
   updateUserService,
   updateInvitationService,
 } = require("./../../infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const {
@@ -29,10 +29,9 @@ const buildBackLink = (req) => {
 
 const getSelectedRoles = async (req) => {
   let selectedRoleIds = req.session.service.roles;
-  const allRolesOfServiceUnsorted = await listRolesOfService(
-    req.params.sid,
-    req.id,
-  );
+  const allRolesOfServiceUnsorted = await getServiceRolesRaw({
+    serviceId: req.params.sid,
+  });
   const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
     a.name.localeCompare(b.name),
   );

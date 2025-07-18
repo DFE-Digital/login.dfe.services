@@ -1,7 +1,5 @@
-const {
-  listRolesOfService,
-  updateUserService,
-} = require("../../../src/infrastructure/access");
+const { updateUserService } = require("../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("../users/utils");
 const { actions } = require("../constans/actions");
 const {
@@ -53,7 +51,7 @@ const getViewModel = async (req, existingModel) => {
 
   const allServices = await checkCacheForAllServices(req.id);
   const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-  const allRolesOfServiceUnsorted = await listRolesOfService(serviceId, req.id);
+  const allRolesOfServiceUnsorted = await getServiceRolesRaw({ serviceId });
   const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
     a.name.localeCompare(b.name),
   );

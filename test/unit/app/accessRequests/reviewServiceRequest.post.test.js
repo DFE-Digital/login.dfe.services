@@ -1,7 +1,5 @@
-const {
-  listRolesOfService,
-  addUserService,
-} = require("../../../../src/infrastructure/access");
+const { addUserService } = require("../../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   mockRequest,
   mockResponse,
@@ -41,7 +39,11 @@ jest.mock("../../../../src/app/accessRequests/utils");
 jest.mock("../../../../src/infrastructure/access", () => {
   return {
     addUserService: jest.fn(),
-    listRolesOfService: jest.fn(),
+  };
+});
+jest.mock("login.dfe.api-client/services", () => {
+  return {
+    getServiceRolesRaw: jest.fn(),
   };
 });
 jest.mock("../../../../src/app/home/userBannersHandlers", () => {
@@ -186,7 +188,7 @@ describe("when reviewing a service request", () => {
       },
     });
 
-    listRolesOfService.mockReset().mockReturnValue([
+    getServiceRolesRaw.mockReset().mockReturnValue([
       {
         id: "role-id-1",
         name: "Test role one",

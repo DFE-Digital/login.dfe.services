@@ -1,4 +1,4 @@
-const { listRolesOfService } = require("../../infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const Account = require("./../../infrastructure/account");
 const flatten = require("lodash/flatten");
 const uniq = require("lodash/uniq");
@@ -50,18 +50,11 @@ const getSubServiceRequestVieModel = async (model, requestId, req) => {
   return viewModel;
 };
 
-const getNewRoleDetails = async (serviceId, roleId) => {
-  return await listRolesOfService(serviceId, roleId);
-};
-
 const getRoleAndServiceNames = async (subModel, requestId, req) => {
   let serviceId = subModel.service_id;
   const allServices = await checkCacheForAllServices(requestId);
   const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-  const allRolesOfServiceUnsorted = await listRolesOfService(
-    serviceId,
-    subModel.role_ids,
-  );
+  const allRolesOfServiceUnsorted = await getServiceRolesRaw({ serviceId });
   const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
     a.name.localeCompare(b.name),
   );
@@ -227,7 +220,6 @@ module.exports = {
   getAndMapOrgRequest,
   getUserDetails,
   getRoleAndServiceNames,
-  getNewRoleDetails,
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
   generateFlashMessages,

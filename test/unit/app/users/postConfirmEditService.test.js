@@ -10,10 +10,13 @@ jest.mock("./../../../../src/infrastructure/access", () => {
   return {
     updateUserService: jest.fn(),
     updateInvitationService: jest.fn(),
-    listRolesOfService: jest.fn(),
   };
 });
-
+jest.mock("login.dfe.api-client/services", () => {
+  return {
+    getServiceRolesRaw: jest.fn(),
+  };
+});
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
@@ -25,8 +28,9 @@ const {
 const {
   updateUserService,
   updateInvitationService,
-  listRolesOfService,
 } = require("./../../../../src/infrastructure/access");
+
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 
 const sendServiceAdded = jest.fn();
 
@@ -98,8 +102,8 @@ describe("when editing a service for a user", () => {
       status: "active",
     });
 
-    listRolesOfService.mockReset();
-    listRolesOfService.mockReturnValue([
+    getServiceRolesRaw.mockReset();
+    getServiceRolesRaw.mockReturnValue([
       {
         code: "role_code",
         id: "role_id",

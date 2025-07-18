@@ -1,9 +1,7 @@
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
-const {
-  listRolesOfService,
-  addUserService,
-} = require("../../../src/infrastructure/access");
+const { addUserService } = require("../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { updateServiceRequest } = require("../requestService/utils");
 const { getAndMapServiceRequest, generateFlashMessages } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
@@ -27,10 +25,9 @@ const getViewModel = async (req) => {
 
   const requestedRolesIds =
     roleIds && roleIds !== "null" ? roleIds.split(",") : [];
-  const allRolesOfServiceUnsorted = await listRolesOfService(
-    req.params.sid,
-    req.id,
-  );
+  const allRolesOfServiceUnsorted = await getServiceRolesRaw({
+    serviceId: req.params.sid,
+  });
   const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
     a.name.localeCompare(b.name),
   );

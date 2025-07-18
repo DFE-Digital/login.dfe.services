@@ -36,12 +36,15 @@ jest.mock("login.dfe.dao", () => {
 
 jest.mock("./../../../../src/infrastructure/access", () => {
   return {
-    listRolesOfService: jest.fn(),
     addInvitationService: jest.fn(),
     addUserService: jest.fn(),
   };
 });
-
+jest.mock("login.dfe.api-client/services", () => {
+  return {
+    getServiceRolesRaw: jest.fn(),
+  };
+});
 jest.mock("./../../../../src/infrastructure/organisations", () => {
   return {
     putUserInOrganisation: jest.fn(),
@@ -81,10 +84,10 @@ jest.mock("./../../../../src/infrastructure/logger", () =>
 );
 
 const {
-  listRolesOfService,
   addInvitationService,
   addUserService,
 } = require("./../../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   putUserInOrganisation,
   putInvitationInOrganisation,
@@ -275,8 +278,8 @@ describe("when inviting a new user", () => {
       services: [],
     });
 
-    listRolesOfService.mockReset();
-    listRolesOfService.mockReturnValue([
+    getServiceRolesRaw.mockReset();
+    getServiceRolesRaw.mockReturnValue([
       {
         code: "role_code",
         id: "role_id",

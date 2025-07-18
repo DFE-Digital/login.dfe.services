@@ -8,7 +8,6 @@ const {
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
   generateFlashMessages,
-  getNewRoleDetails,
 } = require("../../../../src/app/accessRequests/utils");
 const Account = require("../../../../src/infrastructure/account");
 jest.mock("login.dfe.policy-engine");
@@ -31,7 +30,6 @@ jest.mock("../../../../src/app/accessRequests/utils", () => {
     getAndMapServiceRequest: jest.fn(),
     getSubServiceRequestVieModel: jest.fn(),
     generateFlashMessages: jest.fn(),
-    getNewRoleDetails: jest.fn(),
   };
 });
 
@@ -185,9 +183,6 @@ describe("When reviewing a sub-service request for approving", () => {
 
     generateFlashMessages.mockReset();
     generateFlashMessages.mockReturnValue(flashMessages);
-
-    getNewRoleDetails.mockReset();
-    getNewRoleDetails.mockReturnValue(listRoles);
 
     getSubServiceRequest =
       require("../../../../src/app/accessRequests/reviewSubServiceRequest").get;
