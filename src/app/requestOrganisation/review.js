@@ -3,7 +3,6 @@ const logger = require("./../../infrastructure/logger");
 
 const {
   getOrganisationById,
-  getRequestsForOrganisation,
   getPendingRequestsAssociatedWithUser,
   getApproversForOrganisation,
 } = require("./../../infrastructure/organisations");
@@ -11,6 +10,10 @@ const {
 const {
   createUserOrganisationRequestRaw,
 } = require("login.dfe.api-client/users");
+
+const {
+  getRequestsForOrganisationRaw,
+} = require("login.dfe.api-client/organisations");
 
 const { NotificationClient } = require("login.dfe.jobs-client");
 
@@ -58,8 +61,11 @@ const validate = async (req) => {
   }
 
   if (
-    (await getRequestsForOrganisation(req.session.organisationId, req.id))
-      .length > requestLimit
+    (
+      await getRequestsForOrganisationRaw({
+        organisationId: req.session.organisationId,
+      })
+    ).length > requestLimit
   ) {
     model.validationMessages.limitOrg =
       "Organisation has reached the limit for requests";

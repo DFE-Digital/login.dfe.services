@@ -1,10 +1,10 @@
 const {
-  getRequestsForOrganisation,
   getOrganisationAndServiceForUserV2,
   getCategories,
 } = require("./../../infrastructure/organisations");
 
 const {
+  getRequestsForOrganisationRaw,
   searchOrganisationsRaw,
 } = require("login.dfe.api-client/organisations");
 
@@ -86,10 +86,9 @@ const post = async (req, res) => {
     }
 
     // check if outstanding request
-    const requestsForOrg = await getRequestsForOrganisation(
-      req.body.selectedOrganisation,
-      req.id,
-    );
+    const requestsForOrg = await getRequestsForOrganisationRaw({
+      organisationId: req.body.selectedOrganisation,
+    });
     const userRequested = requestsForOrg
       ? requestsForOrg.find((x) => x.user_id === req.user.sub)
       : null;

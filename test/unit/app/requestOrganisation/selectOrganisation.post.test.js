@@ -9,13 +9,13 @@ const {
   post,
 } = require("./../../../../src/app/requestOrganisation/selectOrganisation");
 const {
-  getRequestsForOrganisation,
   getOrganisationAndServiceForUserV2,
   getCategories,
 } = require("./../../../../src/infrastructure/organisations");
 
 const {
   searchOrganisationsRaw,
+  getRequestsForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
 
 const res = mockResponse();
@@ -49,8 +49,8 @@ describe("when showing the searching for a organisation", () => {
       },
     ]);
 
-    getRequestsForOrganisation.mockReset();
-    getRequestsForOrganisation.mockReturnValue([
+    getRequestsForOrganisationRaw.mockReset();
+    getRequestsForOrganisationRaw.mockReturnValue([
       {
         id: "requestId",
         org_id: "organisationId",
@@ -191,7 +191,7 @@ describe("when showing the searching for a organisation", () => {
   it("then it should render with error if outstanding request for org", async () => {
     req.body.selectedOrganisation = "org1";
 
-    getRequestsForOrganisation.mockReturnValue([
+    getRequestsForOrganisationRaw.mockReturnValue([
       {
         id: "requestId",
         org_id: "organisationId",

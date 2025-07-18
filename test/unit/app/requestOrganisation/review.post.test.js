@@ -9,16 +9,21 @@ jest.mock("./../../../../src/infrastructure/organisations");
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/users");
 
+jest.mock("login.dfe.api-client/organisations");
+
 const {
   createUserOrganisationRequestRaw,
 } = require("login.dfe.api-client/users");
+
+const {
+  getRequestsForOrganisationRaw,
+} = require("login.dfe.api-client/organisations");
 
 const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 const { post } = require("./../../../../src/app/requestOrganisation/review");
 const res = mockResponse();
 const {
   getOrganisationById,
-  getRequestsForOrganisation,
   getPendingRequestsAssociatedWithUser,
   getApproversForOrganisation,
 } = require("./../../../../src/infrastructure/organisations");
@@ -75,8 +80,8 @@ describe("when reviewing an organisation request", () => {
         name: "Establishment",
       },
     });
-    getRequestsForOrganisation.mockReset();
-    getRequestsForOrganisation.mockReturnValue([
+    getRequestsForOrganisationRaw.mockReset();
+    getRequestsForOrganisationRaw.mockReturnValue([
       {
         id: "requestId",
         org_id: "organisationId",
@@ -168,8 +173,8 @@ describe("when reviewing an organisation request", () => {
   });
 
   it("then it should render error view if org requests are over limit", async () => {
-    getRequestsForOrganisation.mockReset();
-    getRequestsForOrganisation.mockReturnValue([
+    getRequestsForOrganisationRaw.mockReset();
+    getRequestsForOrganisationRaw.mockReturnValue([
       {
         id: "requestId",
         org_id: "organisationId",
