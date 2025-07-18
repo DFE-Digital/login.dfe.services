@@ -1,7 +1,9 @@
 const { services } = require("login.dfe.dao");
+
 const {
-  getNonPagedRequestsTypesForApprover,
-} = require("../../infrastructure/organisations");
+  getServiceRequestsForApproverRaw,
+} = require("login.dfe.api-client/services");
+
 const mapUserServiceRequestStatus = (status) => {
   if (status === 0) {
     return { id: 0, description: "Pending" };
@@ -32,10 +34,9 @@ const checkForActiveRequests = async (
   const approvers = organisationDetails.approvers;
   if (approvers !== undefined && approvers.length > 0) {
     const approverId = approvers[0];
-    const requestservices = await getNonPagedRequestsTypesForApprover(
-      approverId.user_id,
-      reqId,
-    );
+    const requestservices = await getServiceRequestsForApproverRaw({
+      userId: approverId.user_id,
+    });
     if (requestservices !== undefined) {
       if (requestType !== "subservice") {
         let inRequest = requestservices.requests.filter(

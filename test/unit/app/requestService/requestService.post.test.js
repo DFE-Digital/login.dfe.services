@@ -50,11 +50,9 @@ const {
 } = require("../../../../src/app/requestService/utils");
 const {
   getOrganisationAndServiceForUserV2,
-  getNonPagedRequestsTypesForApprover,
 } = require("../../../../src/infrastructure/organisations");
 jest.mock("../../../../src/infrastructure/organisations", () => {
   return {
-    getNonPagedRequestsTypesForApprover: jest.fn(),
     getOrganisationAndServiceForUserV2: jest.fn(),
   };
 });
@@ -66,25 +64,6 @@ jest.mock("../../../../src/app/requestService/utils", () => {
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
-};
-
-const requestservices = {
-  requests: [
-    {
-      id: "request1",
-      user_id: "user1",
-      service_id: "service1",
-      organisation_id: "organisationId",
-      role_ids: "role1, role2",
-      status: "0",
-      actioned_by: null,
-      actioned_reason: null,
-      reason: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      request_type: "service",
-    },
-  ],
 };
 
 describe("when posting service and the request has already been requested", () => {
@@ -193,8 +172,6 @@ describe("when posting service and the request has already been requested", () =
       },
     ]);
 
-    getNonPagedRequestsTypesForApprover.mockReset();
-    getNonPagedRequestsTypesForApprover.mockReturnValue(requestservices);
     checkForActiveRequests.mockReset();
     checkForActiveRequests.mockReturnValue(undefined);
 

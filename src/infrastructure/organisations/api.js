@@ -111,13 +111,7 @@ const getAllRequestsTypesForApprover = async (
     correlationId,
   );
 };
-const getNonPagedRequestsTypesForApprover = async (uid, correlationId) => {
-  return callApi(
-    "GET",
-    `/organisations/org-service-subService-requests-for-approval/${uid}`,
-    correlationId,
-  );
-};
+
 const getRequestById = async (...args) => {
   const { dataValues, ...request } =
     await organisation.getUserOrganisationRequest(...args);
@@ -189,7 +183,6 @@ module.exports = {
   getOrganisationAndServiceForInvitation,
   getOrganisationById,
   getOrganisationAndServiceForUserV2,
-  getNonPagedRequestsTypesForApprover,
   getRequestsForOrganisation,
   getRequestsForOrganisations,
   getRequestById,
