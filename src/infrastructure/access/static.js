@@ -1,7 +1,3 @@
-const removeServiceFromInvitation = async () => {
-  return Promise.resolve();
-};
-
 const updateUserService = async () => {
   return Promise.resolve(null);
 };
@@ -19,7 +15,6 @@ const addInvitationService = async () => {
 };
 
 module.exports = {
-  removeServiceFromInvitation,
   updateUserService,
   updateInvitationService,
   addInvitationService,

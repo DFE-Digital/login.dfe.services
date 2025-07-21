@@ -13,10 +13,9 @@ jest.mock("./../../../../src/infrastructure/organisations", () => {
     getOrganisationAndServiceForUser: jest.fn(() => []),
   };
 });
-
-jest.mock("./../../../../src/infrastructure/access", () => {
+jest.mock("login.dfe.api-client/invitations", () => {
   return {
-    removeServiceFromInvitation: jest.fn(),
+    deleteServiceAccessFromInvitation: jest.fn(),
   };
 });
 
