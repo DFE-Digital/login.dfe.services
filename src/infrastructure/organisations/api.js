@@ -75,14 +75,6 @@ const getOrganisationAndServiceForUserV2 = async (userId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
-const getRequestsForOrganisations = async (organisationIds, correlationId) => {
-  return callApi(
-    "GET",
-    `/organisations/${organisationIds}/requests/all`,
-    correlationId,
-  );
-};
-
 const getAllRequestsTypesForApprover = async (
   uid,
   pageSize,
@@ -166,7 +158,6 @@ module.exports = {
   getOrganisationAndServiceForInvitation,
   getOrganisationById,
   getOrganisationAndServiceForUserV2,
-  getRequestsForOrganisations,
   getRequestById,
   updateRequestById,
   getPendingRequestsAssociatedWithUser,
