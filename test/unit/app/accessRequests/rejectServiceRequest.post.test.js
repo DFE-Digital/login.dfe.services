@@ -1,4 +1,4 @@
-const { listRolesOfService } = require("../../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   mockRequest,
   mockResponse,
@@ -43,7 +43,12 @@ jest.mock("../../../../src/app/accessRequests/utils");
 jest.mock("../../../../src/infrastructure/access", () => {
   return {
     addUserService: jest.fn(),
-    listRolesOfService: jest.fn(),
+  };
+});
+
+jest.mock("login.dfe.api-client/services", () => {
+  return {
+    getServiceRolesRaw: jest.fn(),
   };
 });
 
@@ -179,7 +184,7 @@ describe("when reviewing a service request", () => {
       },
     });
 
-    listRolesOfService.mockReset().mockReturnValue([
+    getServiceRolesRaw.mockReset().mockReturnValue([
       {
         id: "role-id-1",
         name: "Test role one",
@@ -276,8 +281,10 @@ describe("when reviewing a service request", () => {
   it("then should list all the services roles", async () => {
     await post(req, res);
 
-    expect(listRolesOfService.mock.calls).toHaveLength(1);
-    expect(listRolesOfService.mock.calls[0][0]).toBe(req.params.sid);
+    expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
+    expect(getServiceRolesRaw.mock.calls[0][0]).toMatchObject({
+      serviceId: req.params.sid,
+    });
   });
 
   it("then it should update the service request status to rejected and rejection reason", async () => {

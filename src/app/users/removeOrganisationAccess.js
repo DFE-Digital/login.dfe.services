@@ -11,9 +11,9 @@ const {
   getOrganisationAndServiceForUser,
 } = require("./../../infrastructure/organisations");
 const {
-  removeServiceFromUser,
   removeServiceFromInvitation,
 } = require("./../../infrastructure/access");
+const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
 const { getById, updateIndex } = require("./../../infrastructure/search");
 
 const get = async (req, res) => {
@@ -82,7 +82,11 @@ const post = async (req, res) => {
     var userOrgs = await getOrganisationAndServiceForUser(uid);
     for (let i = 0; i < servicesForUser.length; i++) {
       const service = servicesForUser[i];
-      await removeServiceFromUser(uid, service.id, organisationId, req.id);
+      await deleteUserServiceAccess({
+        userId: uid,
+        serviceId: service.id,
+        organisationId,
+      });
     }
     const organisation = currentOrganisationDetails.filter(
       (org) => org.id === organisationId,

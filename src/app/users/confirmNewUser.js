@@ -2,10 +2,10 @@ const {
   isServiceEmailNotificationAllowed,
 } = require("./../../infrastructure/applications");
 const {
-  listRolesOfService,
   addInvitationService,
   addUserService,
 } = require("./../../infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   putUserInOrganisation,
   putInvitationInOrganisation,
@@ -75,7 +75,9 @@ const get = async (req, res) => {
     const serviceDetails = allServices.services.find(
       (x) => x.id === service.id,
     );
-    const allRolesOfService = await listRolesOfService(service.id, req.id);
+    const allRolesOfService = await getServiceRolesRaw({
+      serviceId: service.id,
+    });
     const rotails = allRolesOfService.filter((x) =>
       service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
     );
@@ -230,10 +232,9 @@ const post = async (req, res) => {
       const serviceDetails = allServices.services.find(
         (x) => x.id === service.serviceId,
       );
-      const allRolesOfService = await listRolesOfService(
-        service.serviceId,
-        req.id,
-      );
+      const allRolesOfService = await getServiceRolesRaw({
+        serviceId: service.serviceId,
+      });
       const roleDetails = allRolesOfService.filter((x) =>
         service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
       );
