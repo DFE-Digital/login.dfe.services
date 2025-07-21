@@ -42,10 +42,6 @@ const getPendingRequestsAssociatedWithUser = async () => {
   return Promise.resolve();
 };
 
-const getApproversForOrganisation = async () => {
-  return Promise.resolve();
-};
-
 const getLatestRequestAssociatedWithUser = async () => {
   return Promise.resolve();
 };
@@ -70,7 +66,6 @@ module.exports = {
   getRequestById,
   updateRequestById,
   getPendingRequestsAssociatedWithUser,
-  getApproversForOrganisation,
   getLatestRequestAssociatedWithUser,
   getCategories,
   getAllRequestsTypesForApprover,
