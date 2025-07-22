@@ -14,14 +14,12 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
   getUsersById: jest.fn(),
 }));
 
-jest.mock("./../../../../src/infrastructure/organisations", () => ({
-  getAllRequestsTypesForApprover: jest.fn(),
-}));
+jest.mock("login.dfe.api-client/services");
+const {
+  getServiceRequestsForApproverRaw,
+} = require("login.dfe.api-client/services");
 
 const Account = require("../../../../src/infrastructure/account");
-const {
-  getAllRequestsTypesForApprover,
-} = require("../../../../src/infrastructure/organisations");
 
 describe("when displaying the pending access requests for approver ", () => {
   let req;
@@ -63,8 +61,8 @@ describe("when displaying the pending access requests for approver ", () => {
     ];
     res = mockResponse();
 
-    getAllRequestsTypesForApprover.mockReset();
-    getAllRequestsTypesForApprover.mockReturnValue({
+    getServiceRequestsForApproverRaw.mockReset();
+    getServiceRequestsForApproverRaw.mockReturnValue({
       requests: [
         {
           id: "org-req-id-1",
@@ -148,13 +146,12 @@ describe("when displaying the pending access requests for approver ", () => {
 
   it("then it should get all the access requests (organisation, service, sub-service) for all organisations where the logged-in user is Approver", async () => {
     await getAllRequestsForApproval(req, res);
-    expect(getAllRequestsTypesForApprover.mock.calls).toHaveLength(1);
-    expect(getAllRequestsTypesForApprover.mock.calls[0][0]).toBe("user1");
-    expect(getAllRequestsTypesForApprover.mock.calls[0][1]).toBe(5);
-    expect(getAllRequestsTypesForApprover.mock.calls[0][2]).toBe(1);
-    expect(getAllRequestsTypesForApprover.mock.calls[0][3]).toBe(
-      "correlationId",
-    );
+    expect(getServiceRequestsForApproverRaw.mock.calls).toHaveLength(1);
+    expect(getServiceRequestsForApproverRaw.mock.calls[0][0]).toMatchObject({
+      pageNumber: 1,
+      pageSize: 5,
+      userId: "user1",
+    });
   });
 
   it("then it should return the `getAllRequestsForApproval` view", async () => {
@@ -271,7 +268,11 @@ describe("when displaying the pending access requests for approver ", () => {
     req.query.page = "test";
 
     await getAllRequestsForApproval(req, res);
-    expect(getAllRequestsTypesForApprover.mock.calls[0][2]).toBe(1);
+    expect(getServiceRequestsForApproverRaw.mock.calls[0][0]).toMatchObject({
+      pageNumber: 1,
+      pageSize: 5,
+      userId: "user1",
+    });
     expect(res.render.mock.calls[0][1]).toMatchObject({ page: 1 });
   });
 });

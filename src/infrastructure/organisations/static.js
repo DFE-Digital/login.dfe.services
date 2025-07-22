@@ -42,10 +42,6 @@ const getPendingRequestsAssociatedWithUser = async () => {
   return Promise.resolve();
 };
 
-const getAllRequestsTypesForApprover = async () => {
-  return Promise.resolve();
-};
-
 module.exports = {
   getOrganisationAndServiceForUser,
   putUserInOrganisation,
@@ -58,5 +54,4 @@ module.exports = {
   getRequestById,
   updateRequestById,
   getPendingRequestsAssociatedWithUser,
-  getAllRequestsTypesForApprover,
 };

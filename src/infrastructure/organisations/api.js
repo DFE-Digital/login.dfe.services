@@ -1,32 +1,4 @@
-const config = require("./../config");
-const jwtStrategy = require("login.dfe.jwt-strategies");
-const { fetchApi } = require("login.dfe.async-retry");
 const { organisation, invitation } = require("login.dfe.dao");
-
-const callApi = async (method, path, correlationId, body) => {
-  const token = await jwtStrategy(
-    config.organisations.service,
-  ).getBearerToken();
-
-  const hasSeperator =
-    (config.organisations.service.url.endsWith("/") && !path.startsWith("/")) ||
-    (!config.organisations.service.url.endsWith("/") && path.startsWith("/"));
-  const basePathSeperator = hasSeperator ? "" : "/";
-  const opts = {
-    method,
-    headers: {
-      authorization: `bearer ${token}`,
-      "x-correlation-id": correlationId,
-    },
-  };
-  if (body && (method === "POST" || method !== "PUT" || method !== "PATCH")) {
-    opts.body = body;
-  }
-  return fetchApi(
-    `${config.organisations.service.url}${basePathSeperator}${path}`,
-    opts,
-  );
-};
 
 const getOrganisationAndServiceForUser = async (userId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
@@ -73,19 +45,6 @@ const getOrganisationById = async (orgId) => {
 
 const getOrganisationAndServiceForUserV2 = async (userId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
-};
-
-const getAllRequestsTypesForApprover = async (
-  uid,
-  pageSize,
-  pageNumber,
-  correlationId,
-) => {
-  return callApi(
-    "GET",
-    `/organisations/org-service-subService-requests-for-approval/${uid}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-    correlationId,
-  );
 };
 
 const getRequestById = async (...args) => {
@@ -145,5 +104,4 @@ module.exports = {
   getRequestById,
   updateRequestById,
   getPendingRequestsAssociatedWithUser,
-  getAllRequestsTypesForApprover,
 };

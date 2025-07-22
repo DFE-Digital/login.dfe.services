@@ -1,9 +1,12 @@
 const config = require("./../config");
 const {
   getOrganisationAndServiceForUserV2,
-  getAllRequestsTypesForApprover,
   getPendingRequestsAssociatedWithUser,
 } = require("./../organisations");
+
+const {
+  getServiceRequestsForApproverRaw,
+} = require("login.dfe.api-client/services");
 
 const {
   getPendingOrganisationRequestsRaw,
@@ -136,9 +139,8 @@ const setUserContext = async (req, res, next) => {
         const approverOrgRequests = await getPendingOrganisationRequestsRaw({
           userId: req.user.sub,
         });
-        const { totalNumberOfRecords } = await getAllRequestsTypesForApprover(
-          req.user.sub,
-          req.id,
+        const { totalNumberOfRecords } = await getServiceRequestsForApproverRaw(
+          { userId: req.user.sub },
         );
         req.organisationRequests = approverOrgRequests;
         res.locals.approverRequests = approverOrgRequests;
