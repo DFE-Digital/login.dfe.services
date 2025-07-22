@@ -42,10 +42,6 @@ const getPendingRequestsAssociatedWithUser = async () => {
   return Promise.resolve();
 };
 
-const getLatestRequestAssociatedWithUser = async () => {
-  return Promise.resolve();
-};
-
 const getCategories = async () => {
   return Promise.resolve();
 };
@@ -66,7 +62,6 @@ module.exports = {
   getRequestById,
   updateRequestById,
   getPendingRequestsAssociatedWithUser,
-  getLatestRequestAssociatedWithUser,
   getCategories,
   getAllRequestsTypesForApprover,
 };

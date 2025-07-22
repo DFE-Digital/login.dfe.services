@@ -11,6 +11,14 @@ jest.mock("./../../../../src/infrastructure/access", () => ({
   getServicesForUser: jest.fn(),
 }));
 
+jest.mock("login.dfe.api-client/users", () => ({
+  getUserLatestActionedOrganisationRequestRaw: jest.fn(),
+}));
+
+const {
+  getUserLatestActionedOrganisationRequestRaw,
+} = require("login.dfe.api-client/users");
+
 jest.mock("./../../../../src/infrastructure/helpers/AppCache");
 
 jest.mock("./../../../../src/infrastructure/logger", () => ({
@@ -42,7 +50,6 @@ jest.mock("./../../../../src/infrastructure/config", () =>
 jest.mock("./../../../../src/infrastructure/organisations", () => ({
   getOrganisationAndServiceForUser: jest.fn(),
   getPendingRequestsAssociatedWithUser: jest.fn(),
-  getLatestRequestAssociatedWithUser: jest.fn(),
 }));
 
 const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
@@ -56,7 +63,6 @@ const {
 const {
   getOrganisationAndServiceForUser,
   getPendingRequestsAssociatedWithUser,
-  getLatestRequestAssociatedWithUser,
 } = require("./../../../../src/infrastructure/organisations");
 const getServices = require("./../../../../src/app/home/getServices");
 const {
@@ -148,7 +154,9 @@ describe("when displaying the users services", () => {
       },
     ]);
     getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue([]);
-    getLatestRequestAssociatedWithUser.mockReset().mockReturnValue(undefined);
+    getUserLatestActionedOrganisationRequestRaw
+      .mockReset()
+      .mockReturnValue(undefined);
 
     fetchNewServiceBanners.mockReset().mockReturnValue([
       { id: "banner1", userId: "user1", serviceName: "bobs burgers" },
