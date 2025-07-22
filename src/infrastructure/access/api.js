@@ -24,18 +24,6 @@ const callApi = async (method, endpoint, correlationId, body) => {
   }
 };
 
-const updateUserService = async (uid, sid, oid, roles, correlationId) => {
-  const body = {
-    roles,
-  };
-  return callApi(
-    "PATCH",
-    `/users/${uid}/services/${sid}/organisations/${oid}`,
-    correlationId,
-    body,
-  );
-};
-
 const updateInvitationService = async (iid, sid, oid, roles, correlationId) => {
   const body = {
     roles,
@@ -73,7 +61,6 @@ const addInvitationService = async (iid, sid, oid, roles, correlationId) => {
 };
 
 module.exports = {
-  updateUserService,
   updateInvitationService,
   addUserService,
   addInvitationService,

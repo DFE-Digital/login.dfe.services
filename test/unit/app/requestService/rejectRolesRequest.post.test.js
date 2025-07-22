@@ -25,9 +25,9 @@ jest.mock("../../../../src/app/users/utils");
 jest.mock("../../../../src/infrastructure/logger", () =>
   require("./../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("../../../../src/infrastructure/access", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    updateUserService: jest.fn(),
+    updateUserServiceRoles: jest.fn(),
   };
 });
 jest.mock("login.dfe.api-client/services", () => {
