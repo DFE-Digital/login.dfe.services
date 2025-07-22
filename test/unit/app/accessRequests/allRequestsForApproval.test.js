@@ -16,7 +16,7 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
 
 jest.mock("login.dfe.api-client/services");
 const {
-  getServiceRequestsForApproverRaw,
+  getAllRequestTypesForApproverRaw,
 } = require("login.dfe.api-client/services");
 
 const Account = require("../../../../src/infrastructure/account");
@@ -61,8 +61,8 @@ describe("when displaying the pending access requests for approver ", () => {
     ];
     res = mockResponse();
 
-    getServiceRequestsForApproverRaw.mockReset();
-    getServiceRequestsForApproverRaw.mockReturnValue({
+    getAllRequestTypesForApproverRaw.mockReset();
+    getAllRequestTypesForApproverRaw.mockReturnValue({
       requests: [
         {
           id: "org-req-id-1",
@@ -146,8 +146,8 @@ describe("when displaying the pending access requests for approver ", () => {
 
   it("then it should get all the access requests (organisation, service, sub-service) for all organisations where the logged-in user is Approver", async () => {
     await getAllRequestsForApproval(req, res);
-    expect(getServiceRequestsForApproverRaw.mock.calls).toHaveLength(1);
-    expect(getServiceRequestsForApproverRaw.mock.calls[0][0]).toMatchObject({
+    expect(getAllRequestTypesForApproverRaw.mock.calls).toHaveLength(1);
+    expect(getAllRequestTypesForApproverRaw.mock.calls[0][0]).toMatchObject({
       pageNumber: 1,
       pageSize: 5,
       userId: "user1",
@@ -268,7 +268,7 @@ describe("when displaying the pending access requests for approver ", () => {
     req.query.page = "test";
 
     await getAllRequestsForApproval(req, res);
-    expect(getServiceRequestsForApproverRaw.mock.calls[0][0]).toMatchObject({
+    expect(getAllRequestTypesForApproverRaw.mock.calls[0][0]).toMatchObject({
       pageNumber: 1,
       pageSize: 5,
       userId: "user1",

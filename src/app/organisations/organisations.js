@@ -3,7 +3,7 @@ const {
   getPendingRequestsAssociatedWithUser,
 } = require("./../../infrastructure/organisations");
 const {
-  getServiceRequestsForApproverRaw,
+  getAllRequestTypesForApproverRaw,
 } = require("login.dfe.api-client/services");
 const Account = require("./../../infrastructure/account");
 const flatten = require("lodash/flatten");
@@ -97,7 +97,7 @@ const organisations = async (req, res) => {
     organisationRequests,
     organisations,
   );
-  const { totalNumberOfRecords } = await getServiceRequestsForApproverRaw({
+  const { totalNumberOfRecords } = await getAllRequestTypesForApproverRaw({
     userId: req.user.sub,
   });
   const totalNumberOfAccessRequests = totalNumberOfRecords;

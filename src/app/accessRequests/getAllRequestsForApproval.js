@@ -1,5 +1,5 @@
 const {
-  getServiceRequestsForApproverRaw,
+  getAllRequestTypesForApproverRaw,
 } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
@@ -12,7 +12,7 @@ const getAllRequestsForApproval = async (req) => {
   if (isNaN(pageNumber)) {
     pageNumber = 1;
   }
-  const allRequestsForApprover = await getServiceRequestsForApproverRaw({
+  const allRequestsForApprover = await getAllRequestTypesForApproverRaw({
     userId: req.user.sub,
     pageNumber,
     pageSize,
