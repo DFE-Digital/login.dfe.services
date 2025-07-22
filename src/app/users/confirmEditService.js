@@ -1,9 +1,7 @@
 const logger = require("./../../infrastructure/logger");
 const { getSingleServiceForUser, isUserManagement } = require("./utils");
-const {
-  updateUserService,
-  updateInvitationService,
-} = require("./../../infrastructure/access");
+const { updateInvitationService } = require("./../../infrastructure/access");
+const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
@@ -113,13 +111,12 @@ const post = async (req, res) => {
       req.id,
     );
   } else {
-    await updateUserService(
-      uid,
+    await updateUserServiceRoles({
+      userId: uid,
       serviceId,
       organisationId,
-      selectedRoles.selectedRoleIds,
-      req.id,
-    );
+      serviceRoleIds: selectedRoles.selectedRoleIds,
+    });
     if (isEmailAllowed) {
       const notificationClient = new NotificationClient({
         connectionString: config.notifications.connectionString,

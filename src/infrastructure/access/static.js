@@ -1,7 +1,3 @@
-const updateUserService = async () => {
-  return Promise.resolve(null);
-};
-
 const updateInvitationService = async () => {
   return Promise.resolve(null);
 };
@@ -15,7 +11,6 @@ const addInvitationService = async () => {
 };
 
 module.exports = {
-  updateUserService,
   updateInvitationService,
   addInvitationService,
   addUserService,
