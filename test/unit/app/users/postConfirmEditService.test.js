@@ -6,9 +6,9 @@ jest.mock("./../../../../src/infrastructure/config", () =>
 jest.mock("./../../../../src/infrastructure/logger", () =>
   require("./../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("./../../../../src/infrastructure/access", () => {
+jest.mock("login.dfe.api-client/invitations", () => {
   return {
-    updateInvitationService: jest.fn(),
+    updateInvitationServiceRoles: jest.fn(),
   };
 });
 jest.mock("login.dfe.api-client/users", () => {
@@ -29,10 +29,11 @@ const {
   getSingleServiceForUser,
   isUserManagement,
 } = require("./../../../../src/app/users/utils");
-const {
-  updateInvitationService,
-} = require("./../../../../src/infrastructure/access");
+
 const { updateUserServiceRoles } = require("login.dfe.api-client/users");
+const {
+  updateInvitationServiceRoles,
+} = require("login.dfe.api-client/invitations");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 
 const sendServiceAdded = jest.fn();
@@ -134,15 +135,13 @@ describe("when editing a service for a user", () => {
 
     await postConfirmEditService(req, res);
 
-    expect(updateInvitationService.mock.calls).toHaveLength(1);
-    expect(updateInvitationService.mock.calls[0][0]).toBe("invite1");
-    expect(updateInvitationService.mock.calls[0][1]).toBe("service1");
-    expect(updateInvitationService.mock.calls[0][2]).toBe("org1");
-    expect(updateInvitationService.mock.calls[0][3]).toEqual([
-      "role1",
-      "role2",
-    ]);
-    expect(updateInvitationService.mock.calls[0][4]).toBe("correlationId");
+    expect(updateInvitationServiceRoles.mock.calls).toHaveLength(1);
+    expect(updateInvitationServiceRoles).toBeCalledWith({
+      invitationId: "invite1",
+      serviceId: "service1",
+      organisationId: "org1",
+      serviceRoleIds: ["role1", "role2"],
+    });
   });
 
   it("then it should edit service for user if request for user", async () => {

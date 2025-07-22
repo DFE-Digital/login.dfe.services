@@ -1,7 +1,9 @@
 const logger = require("./../../infrastructure/logger");
 const { getSingleServiceForUser, isUserManagement } = require("./utils");
-const { updateInvitationService } = require("./../../infrastructure/access");
 const { updateUserServiceRoles } = require("login.dfe.api-client/users");
+const {
+  updateInvitationServiceRoles,
+} = require("login.dfe.api-client/invitations");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
@@ -103,13 +105,12 @@ const post = async (req, res) => {
   );
   const selectedRoles = await getSelectedRoles(req);
   if (uid.startsWith("inv-")) {
-    await updateInvitationService(
-      uid.substr(4),
+    await updateInvitationServiceRoles({
+      invitationId: uid.substr(4),
       serviceId,
       organisationId,
-      selectedRoles.selectedRoleIds,
-      req.id,
-    );
+      serviceRoleIds: selectedRoles.selectedRoleIds,
+    });
   } else {
     await updateUserServiceRoles({
       userId: uid,
