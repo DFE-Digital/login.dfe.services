@@ -10,11 +10,11 @@ const {
 } = require("./../../../../src/app/requestOrganisation/selectOrganisation");
 const {
   getOrganisationAndServiceForUserV2,
-  getCategories,
 } = require("./../../../../src/infrastructure/organisations");
 
 const {
   searchOrganisationsRaw,
+  getOrganisationCategories,
   getRequestsForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
 
@@ -42,7 +42,7 @@ describe("when showing the searching for a organisation", () => {
       page: 1,
     });
 
-    getCategories.mockReset().mockReturnValue([
+    getOrganisationCategories.mockReset().mockReturnValue([
       {
         id: "001",
         name: "some category name",
@@ -120,7 +120,7 @@ describe("when showing the searching for a organisation", () => {
   });
 
   it("should not include category 011 or 003", async () => {
-    getCategories.mockReset().mockReturnValue([
+    getOrganisationCategories.mockReset().mockReturnValue([
       {
         id: "001",
         name: "some category name",

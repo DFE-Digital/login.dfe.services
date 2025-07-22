@@ -133,10 +133,6 @@ const getPendingRequestsAssociatedWithUser = async (userId) => {
   return pendingRequests;
 };
 
-const getCategories = async () => {
-  return callApi("GET", "/organisations/categories");
-};
-
 module.exports = {
   getOrganisationAndServiceForUser,
   putUserInOrganisation,
@@ -149,6 +145,5 @@ module.exports = {
   getRequestById,
   updateRequestById,
   getPendingRequestsAssociatedWithUser,
-  getCategories,
   getAllRequestsTypesForApprover,
 };
