@@ -198,7 +198,7 @@ describe("When approving a sub service request", () => {
     await postRejectRolesRequest(req, res);
 
     expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
-    expect(getServiceRolesRaw).toBeCalledWith({ serviceId: "service1" });
+    expect(getServiceRolesRaw).toHaveBeenCalledWith({ serviceId: "service1" });
   });
 
   it("then it should update the sub-service-request in the DB with rejection", async () => {

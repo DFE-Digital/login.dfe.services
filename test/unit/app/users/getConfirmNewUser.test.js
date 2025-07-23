@@ -152,7 +152,7 @@ describe("when displaying the confirm new user view", () => {
     await getConfirmNewUser(req, res);
 
     expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
-    expect(getServiceRolesRaw).toBeCalledWith({ serviceId: "service1" });
+    expect(getServiceRolesRaw).toHaveBeenCalledWith({ serviceId: "service1" });
   });
 
   it("then it should return the confirm new user view", async () => {
