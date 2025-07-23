@@ -1,10 +1,13 @@
 const config = require("./../config");
 const {
   getOrganisationAndServiceForUserV2,
-  getAllRequestsForApprover,
   getAllRequestsTypesForApprover,
   getPendingRequestsAssociatedWithUser,
 } = require("./../organisations");
+
+const {
+  getPendingOrganisationRequestsRaw,
+} = require("login.dfe.api-client/users");
 
 const isLoggedIn = (req, res, next) => {
   if (
@@ -130,10 +133,9 @@ const setUserContext = async (req, res, next) => {
           req.userOrganisations.filter((x) => x.role.id === 10000).length > 0;
       }
       if (res.locals.isApprover) {
-        const approverOrgRequests = await getAllRequestsForApprover(
-          req.user.sub,
-          req.id,
-        );
+        const approverOrgRequests = await getPendingOrganisationRequestsRaw({
+          userId: req.user.sub,
+        });
         const { totalNumberOfRecords } = await getAllRequestsTypesForApprover(
           req.user.sub,
           req.id,

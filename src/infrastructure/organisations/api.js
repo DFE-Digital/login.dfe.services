@@ -32,14 +32,6 @@ const getOrganisationAndServiceForUser = async (userId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
-const getOrganisationUsersForApproval = async (userId, correlationId) => {
-  return callApi(
-    "GET",
-    `/organisations/users-for-approval/${userId}`,
-    correlationId,
-  );
-};
-
 const putUserInOrganisation = async (userId, orgId, status, role, reason) => {
   const userOrg = {
     user_id: userId,
@@ -83,58 +75,6 @@ const getOrganisationAndServiceForUserV2 = async (userId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
-const searchOrganisations = async (
-  criteria,
-  pageNumber,
-  filterCategories,
-  filterStates,
-  correlationId,
-  filterOutOrgNames,
-) => {
-  let uri = `/organisations?search=${criteria}&page=${pageNumber}`;
-  if (filterCategories && filterCategories.length > 0) {
-    uri += `&filtercategory=${filterCategories.join("&filtercategory=")}`;
-  }
-  if (filterStates && filterStates.length > 0) {
-    uri += `&filterstatus=${filterStates.join("&filterstatus=")}`;
-  }
-  if (filterOutOrgNames && filterOutOrgNames.length > 0) {
-    uri += `&filterOutOrgNames=${filterOutOrgNames.join("&filterOutOrgNames=")}`;
-  }
-  return callApi("GET", uri, correlationId, undefined);
-};
-
-const createUserOrganisationRequest = async (
-  userId,
-  orgId,
-  reason,
-  correlationId,
-) => {
-  const request = await callApi(
-    "POST",
-    `/organisations/${orgId}/users/${userId}/requests`,
-    correlationId,
-    { reason },
-  );
-  return request;
-};
-
-const getAllRequestsForApprover = async (userId, correlationId) => {
-  return callApi(
-    "GET",
-    `/organisations/requests-for-approval/${userId}`,
-    correlationId,
-  );
-};
-
-const getRequestsForOrganisation = async (organisationId, correlationId) => {
-  return callApi(
-    "GET",
-    `/organisations/${organisationId}/requests`,
-    correlationId,
-  );
-};
-
 const getRequestsForOrganisations = async (organisationIds, correlationId) => {
   return callApi(
     "GET",
@@ -155,13 +95,7 @@ const getAllRequestsTypesForApprover = async (
     correlationId,
   );
 };
-const getNonPagedRequestsTypesForApprover = async (uid, correlationId) => {
-  return callApi(
-    "GET",
-    `/organisations/org-service-subService-requests-for-approval/${uid}`,
-    correlationId,
-  );
-};
+
 const getRequestById = async (...args) => {
   const { dataValues, ...request } =
     await organisation.getUserOrganisationRequest(...args);
@@ -225,7 +159,6 @@ const getCategories = async () => {
 
 module.exports = {
   getOrganisationAndServiceForUser,
-  getOrganisationUsersForApproval,
   putUserInOrganisation,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
@@ -233,11 +166,6 @@ module.exports = {
   getOrganisationAndServiceForInvitation,
   getOrganisationById,
   getOrganisationAndServiceForUserV2,
-  searchOrganisations,
-  createUserOrganisationRequest,
-  getAllRequestsForApprover,
-  getNonPagedRequestsTypesForApprover,
-  getRequestsForOrganisation,
   getRequestsForOrganisations,
   getRequestById,
   updateRequestById,

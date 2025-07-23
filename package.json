@@ -37,7 +37,7 @@
     "he": "^1.2.0",
     "helmet": "^7.2.0",
     "lodash": "^4.17.21",
-    "login.dfe.api-client": "^1.0.16",
+    "login.dfe.api-client": "^1.0.18",
     "login.dfe.async-retry": "github:DFE-Digital/login.dfe.async-retry#v2.0.3",
     "login.dfe.audit.transporter": "^4.0.3",
     "login.dfe.config.schema.common": "^2.1.7",

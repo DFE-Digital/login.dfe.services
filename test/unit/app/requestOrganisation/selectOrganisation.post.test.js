@@ -2,17 +2,21 @@ jest.mock("./../../../../src/infrastructure/config", () =>
   require("./../../../utils/jestMocks").mockConfig(),
 );
 jest.mock("./../../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/organisations");
 
 const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 const {
   post,
 } = require("./../../../../src/app/requestOrganisation/selectOrganisation");
 const {
-  searchOrganisations,
-  getRequestsForOrganisation,
   getOrganisationAndServiceForUserV2,
   getCategories,
 } = require("./../../../../src/infrastructure/organisations");
+
+const {
+  searchOrganisationsRaw,
+  getRequestsForOrganisationRaw,
+} = require("login.dfe.api-client/organisations");
 
 const res = mockResponse();
 
@@ -31,7 +35,7 @@ describe("when showing the searching for a organisation", () => {
       method: "POST",
     });
 
-    searchOrganisations.mockReset().mockReturnValue({
+    searchOrganisationsRaw.mockReset().mockReturnValue({
       organisations: [{ id: "org1" }],
       totalNumberOfPages: 2,
       totalNumberOfRecords: 49,
@@ -45,8 +49,8 @@ describe("when showing the searching for a organisation", () => {
       },
     ]);
 
-    getRequestsForOrganisation.mockReset();
-    getRequestsForOrganisation.mockReturnValue([
+    getRequestsForOrganisationRaw.mockReset();
+    getRequestsForOrganisationRaw.mockReturnValue([
       {
         id: "requestId",
         org_id: "organisationId",
@@ -74,12 +78,14 @@ describe("when showing the searching for a organisation", () => {
   it("then it should use criteria and page to search for organisations", async () => {
     await post(req, res);
 
-    expect(searchOrganisations.mock.calls).toHaveLength(1);
-    expect(searchOrganisations.mock.calls[0][0]).toBe("organisation one");
-    expect(searchOrganisations.mock.calls[0][1]).toBe(1);
-    expect(searchOrganisations.mock.calls[0][2]).toMatchObject(["001"]);
-    expect(searchOrganisations.mock.calls[0][3]).toMatchObject([1, 3, 4]);
-    expect(searchOrganisations.mock.calls[0][4]).toBe("correlationId");
+    expect(searchOrganisationsRaw.mock.calls).toHaveLength(1);
+    expect(searchOrganisationsRaw.mock.calls[0][0]).toMatchObject({
+      categories: ["001"],
+      excludeOrganisationNames: ["Department for Education"],
+      organisationName: "organisation one",
+      pageNumber: 1,
+      status: [1, 3, 4],
+    });
   });
 
   it("then it should render search view with results", async () => {
@@ -133,14 +139,13 @@ describe("when showing the searching for a organisation", () => {
     };
 
     await post(req, res);
-    expect(searchOrganisations).toHaveBeenCalledWith(
-      "",
-      1,
-      ["001"],
-      [1, 3, 4],
-      "correlationId",
-      ["Department for Education"],
-    );
+    expect(searchOrganisationsRaw).toHaveBeenCalledWith({
+      organisationName: "",
+      pageNumber: 1,
+      categories: ["001"],
+      status: [1, 3, 4],
+      excludeOrganisationNames: ["Department for Education"],
+    });
 
     expect(req.session.organisationId).toBe("org1");
   });
@@ -186,7 +191,7 @@ describe("when showing the searching for a organisation", () => {
   it("then it should render with error if outstanding request for org", async () => {
     req.body.selectedOrganisation = "org1";
 
-    getRequestsForOrganisation.mockReturnValue([
+    getRequestsForOrganisationRaw.mockReturnValue([
       {
         id: "requestId",
         org_id: "organisationId",
