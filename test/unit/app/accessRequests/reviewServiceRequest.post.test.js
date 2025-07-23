@@ -1,4 +1,4 @@
-const { addUserService } = require("../../../../src/infrastructure/access");
+const { addServiceToUser } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   mockRequest,
@@ -36,9 +36,9 @@ jest.mock("../../../../src/infrastructure/config", () => {
 jest.mock("login.dfe.dao", () => require("../../../utils/jestMocks").mockDao());
 jest.mock("../../../../src/app/accessRequests/utils");
 
-jest.mock("../../../../src/infrastructure/access", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    addUserService: jest.fn(),
+    addServiceToUser: jest.fn(),
   };
 });
 jest.mock("login.dfe.api-client/services", () => {
@@ -213,8 +213,8 @@ describe("when reviewing a service request", () => {
 
     await post(req, res);
 
-    expect(addUserService.mock.calls).toHaveLength(0);
-    expect(updateServiceRequest.mock.calls).toHaveLength(0);
+    expect(addServiceToUser).toHaveBeenCalledTimes(0);
+    expect(updateServiceRequest).toHaveBeenCalledTimes(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/reviewServiceRequest",
@@ -304,12 +304,13 @@ describe("when reviewing a service request", () => {
 
   it("then it should map user to service and selected sub-services", async () => {
     await post(req, res);
-    expect(addUserService.mock.calls).toHaveLength(1);
-    expect(addUserService.mock.calls[0][0]).toBe("end-user-id");
-    expect(addUserService.mock.calls[0][1]).toEqual("service-id");
-    expect(addUserService.mock.calls[0][2]).toBe("organisation-id");
-    expect(addUserService.mock.calls[0][3]).toEqual(["role-id-1"]);
-    expect(addUserService.mock.calls[0][4]).toBe("request-id");
+    expect(addServiceToUser).toHaveBeenCalledTimes(1);
+    expect(addServiceToUser).toHaveBeenCalledWith({
+      userId: "end-user-id",
+      serviceId: "service-id",
+      organisationId: "organisation-id",
+      serviceRoleIds: ["role-id-1"],
+    });
   });
 
   it("then it should send the audit logs for service request approved", async () => {

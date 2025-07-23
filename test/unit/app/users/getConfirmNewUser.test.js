@@ -1,7 +1,6 @@
-jest.mock("./../../../../src/infrastructure/access", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    addInvitationService: jest.fn(),
-    addUserService: jest.fn(),
+    addServiceToUser: jest.fn(),
   };
 });
 jest.mock("login.dfe.api-client/services", () => {
