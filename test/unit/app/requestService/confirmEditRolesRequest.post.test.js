@@ -1,6 +1,6 @@
 const { mockRequest, mockResponse } = require("../../../utils/jestMocks");
 const { getSingleServiceForUser } = require("../../../../src/app/users/utils");
-const { listRolesOfService } = require("../../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   createServiceRequest,
 } = require("../../../../src/app/requestService/utils");
@@ -19,10 +19,11 @@ jest.mock("../../../../src/infrastructure/config", () =>
 jest.mock("../../../../src/infrastructure/logger", () =>
   require("../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("../../../../src/infrastructure/access", () => {
-  return { listRolesOfService: jest.fn() };
+jest.mock("login.dfe.api-client/services", () => {
+  return {
+    getServiceRolesRaw: jest.fn(),
+  };
 });
-
 jest.mock("../../../../src/app/requestService/utils", () => {
   return {
     createServiceRequest: jest.fn(),
@@ -114,8 +115,8 @@ describe("When confirming and submiting a sub-service request", () => {
     });
     checkForActiveRequests.mockReset();
     checkForActiveRequests.mockReturnValue(undefined);
-    listRolesOfService.mockReset();
-    listRolesOfService.mockReturnValue([
+    getServiceRolesRaw.mockReset();
+    getServiceRolesRaw.mockReturnValue([
       {
         code: "role_code",
         id: "role1",
@@ -161,9 +162,10 @@ describe("When confirming and submiting a sub-service request", () => {
   it("then it should get the requested roles", async () => {
     await postConfirmEditRolesRequest(req, res);
 
-    expect(listRolesOfService.mock.calls).toHaveLength(1);
-    expect(listRolesOfService.mock.calls[0][0]).toBe("service1");
-    expect(listRolesOfService.mock.calls[0][1]).toBe("correlationId");
+    expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
+    expect(getServiceRolesRaw.mock.calls[0][0]).toMatchObject({
+      serviceId: "service1",
+    });
   });
 
   it("then it should create a Service request of type subService ", async () => {

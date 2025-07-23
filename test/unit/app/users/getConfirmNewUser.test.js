@@ -1,8 +1,12 @@
 jest.mock("./../../../../src/infrastructure/access", () => {
   return {
-    listRolesOfService: jest.fn(),
     addInvitationService: jest.fn(),
     addUserService: jest.fn(),
+  };
+});
+jest.mock("login.dfe.api-client/services", () => {
+  return {
+    getServiceRolesRaw: jest.fn(),
   };
 });
 jest.mock(
@@ -50,9 +54,7 @@ jest.mock("login.dfe.dao", () => {
   };
 });
 
-const {
-  listRolesOfService,
-} = require("./../../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   checkCacheForAllServices,
 } = require("./../../../../src/infrastructure/helpers/allServicesAppCache");
@@ -114,8 +116,8 @@ describe("when displaying the confirm new user view", () => {
     ];
     res = mockResponse();
 
-    listRolesOfService.mockReset();
-    listRolesOfService.mockReturnValue([
+    getServiceRolesRaw.mockReset();
+    getServiceRolesRaw.mockReturnValue([
       {
         code: "role_code",
         id: "role_id",
@@ -149,9 +151,8 @@ describe("when displaying the confirm new user view", () => {
   it("then it should list all roles of service", async () => {
     await getConfirmNewUser(req, res);
 
-    expect(listRolesOfService.mock.calls).toHaveLength(1);
-    expect(listRolesOfService.mock.calls[0][0]).toBe("service1");
-    expect(listRolesOfService.mock.calls[0][1]).toBe("correlationId");
+    expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
+    expect(getServiceRolesRaw).toBeCalledWith({ serviceId: "service1" });
   });
 
   it("then it should return the confirm new user view", async () => {

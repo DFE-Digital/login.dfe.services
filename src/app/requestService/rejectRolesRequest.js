@@ -1,4 +1,4 @@
-const { listRolesOfService } = require("../../infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("../users/utils");
 const {
   isServiceEmailNotificationAllowed,
@@ -28,10 +28,9 @@ const getViewModel = async (req) => {
 
   const allServices = await checkCacheForAllServices(req.id);
   const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-  const allRolesOfServiceUnsorted = await listRolesOfService(
-    req.params.sid,
-    req.id,
-  );
+  const allRolesOfServiceUnsorted = await getServiceRolesRaw({
+    serviceId: req.params.sid,
+  });
   const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
     a.name.localeCompare(b.name),
   );
