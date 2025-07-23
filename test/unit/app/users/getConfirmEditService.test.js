@@ -110,7 +110,7 @@ describe("when displaying the confirm edit service view", () => {
     await getConfirmEditService(req, res);
 
     expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
-    expect(getServiceRolesRaw).toBeCalledWith({ serviceId: "service1" });
+    expect(getServiceRolesRaw).toHaveBeenCalledWith({ serviceId: "service1" });
   });
 
   it("then it should return the confirm edit services view", async () => {

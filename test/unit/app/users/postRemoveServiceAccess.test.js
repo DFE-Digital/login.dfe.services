@@ -180,7 +180,7 @@ describe("when removing service access", () => {
     await postRemoveServiceAccess(req, res);
 
     expect(deleteServiceAccessFromInvitation.mock.calls).toHaveLength(1);
-    expect(deleteServiceAccessFromInvitation).toBeCalledWith({
+    expect(deleteServiceAccessFromInvitation).toHaveBeenCalledWith({
       invitationId: "invite1",
       serviceId: "service1",
       organisationId: "org1",
@@ -191,7 +191,7 @@ describe("when removing service access", () => {
     await postRemoveServiceAccess(req, res);
 
     expect(deleteUserServiceAccess.mock.calls).toHaveLength(1);
-    expect(deleteUserServiceAccess).toBeCalledWith({
+    expect(deleteUserServiceAccess).toHaveBeenCalledWith({
       userId: "user1",
       serviceId: "service1",
       organisationId: "org1",
