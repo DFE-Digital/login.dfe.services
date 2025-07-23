@@ -24,18 +24,6 @@ const callApi = async (method, endpoint, correlationId, body) => {
   }
 };
 
-const addUserService = async (uid, sid, oid, roles, correlationId) => {
-  const body = {
-    roles,
-  };
-  return callApi(
-    "PUT",
-    `users/${uid}/services/${sid}/organisations/${oid}`,
-    correlationId,
-    body,
-  );
-};
-
 const addInvitationService = async (iid, sid, oid, roles, correlationId) => {
   const body = {
     roles,
@@ -49,6 +37,5 @@ const addInvitationService = async (iid, sid, oid, roles, correlationId) => {
 };
 
 module.exports = {
-  addUserService,
   addInvitationService,
 };

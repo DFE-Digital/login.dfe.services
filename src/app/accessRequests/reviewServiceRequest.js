@@ -1,7 +1,7 @@
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
-const { addUserService } = require("../../../src/infrastructure/access");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
+const { addServiceToUser } = require("login.dfe.api-client/users");
 const { updateServiceRequest } = require("../requestService/utils");
 const { getAndMapServiceRequest, generateFlashMessages } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
@@ -198,13 +198,12 @@ const post = async (req, res) => {
       }
     }
 
-    await addUserService(
-      endUserId,
-      sid,
-      organisation.id,
-      requestedRolesIds,
-      rid,
-    );
+    await addServiceToUser({
+      userId: endUserId,
+      serviceId: sid,
+      organisationId: organisation.id,
+      serviceRoleIds: requestedRolesIds,
+    });
 
     await notificationClient.sendServiceRequestApproved(
       endUsersEmail,

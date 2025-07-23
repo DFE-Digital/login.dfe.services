@@ -37,7 +37,12 @@ jest.mock("login.dfe.dao", () => {
 jest.mock("./../../../../src/infrastructure/access", () => {
   return {
     addInvitationService: jest.fn(),
-    addUserService: jest.fn(),
+  };
+});
+
+jest.mock("login.dfe.api-client/users", () => {
+  return {
+    addServiceToUser: jest.fn(),
   };
 });
 jest.mock("login.dfe.api-client/services", () => {
@@ -85,8 +90,8 @@ jest.mock("./../../../../src/infrastructure/logger", () =>
 
 const {
   addInvitationService,
-  addUserService,
 } = require("./../../../../src/infrastructure/access");
+const { addServiceToUser } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   putUserInOrganisation,
@@ -233,7 +238,7 @@ describe("when inviting a new user", () => {
     putInvitationInOrganisation.mockReset();
     putUserInOrganisation.mockReset();
     addInvitationService.mockReset();
-    addUserService.mockReset();
+    addServiceToUser.mockReset();
     createIndex.mockReset();
     getOrganisationById.mockReset().mockReturnValue({
       id: "org2",
@@ -368,12 +373,13 @@ describe("when inviting a new user", () => {
     req.params.uid = "user1";
     await postConfirmNewUser(req, res);
 
-    expect(addUserService.mock.calls).toHaveLength(1);
-    expect(addUserService.mock.calls[0][0]).toBe("user1");
-    expect(addUserService.mock.calls[0][1]).toBe("service1");
-    expect(addUserService.mock.calls[0][2]).toBe("org1");
-    expect(addUserService.mock.calls[0][3]).toEqual([]);
-    expect(addUserService.mock.calls[0][4]).toBe("correlationId");
+    expect(addServiceToUser).toHaveBeenCalledTimes(1);
+    expect(addServiceToUser).toHaveBeenCalledWith({
+      userId: "user1",
+      serviceId: "service1",
+      organisationId: "org1",
+      serviceRoleIds: [],
+    });
   });
 
   it("then it should patch the user with the org added if existing user", async () => {

@@ -40,12 +40,6 @@ jest.mock("../../../../src/infrastructure/config", () => {
 jest.mock("login.dfe.dao", () => require("../../../utils/jestMocks").mockDao());
 jest.mock("../../../../src/app/accessRequests/utils");
 
-jest.mock("../../../../src/infrastructure/access", () => {
-  return {
-    addUserService: jest.fn(),
-  };
-});
-
 jest.mock("login.dfe.api-client/services", () => {
   return {
     getServiceRolesRaw: jest.fn(),
