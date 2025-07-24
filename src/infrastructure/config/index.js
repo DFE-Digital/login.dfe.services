@@ -148,7 +148,7 @@ const config = {
     environmentName: process.env.ENVIRONMENT_NAME
   },
   notifications: {
-    connectionString: process.env.REDIS_CONN + "/4?tls=true"
+    connectionString: process.env.LOCAL_REDIS_CONN ? process.env.LOCAL_REDIS_CONN + "/4" : process.env.REDIS_CONN + "/4?tls=true"
   },
   organisationRequests: {
     requestLimit: 30
@@ -189,7 +189,7 @@ const config = {
   cookieSessionRedis: {
     type: "redis",
     params: {
-      connectionString: process.env.REDIS_CONN + "/3?tls=true"
+      connectionString: process.env.LOCAL_REDIS_CONN ? process.env.LOCAL_REDIS_CONN + "/3" : process.env.REDIS_CONN + "/3?tls=true"
     }
   },
   assets: {
