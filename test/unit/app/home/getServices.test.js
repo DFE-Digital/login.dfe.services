@@ -3,9 +3,6 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
   getUsersById: jest.fn(),
   getById: jest.fn(),
 }));
-jest.mock("./../../../../src/infrastructure/applications", () => ({
-  getApplication: jest.fn(),
-}));
 
 jest.mock("./../../../../src/infrastructure/access", () => ({
   getServicesForUser: jest.fn(),
@@ -15,9 +12,15 @@ jest.mock("login.dfe.api-client/users", () => ({
   getUserLatestActionedOrganisationRequestRaw: jest.fn(),
 }));
 
+jest.mock("login.dfe.api-client/services", () => ({
+  getServiceRaw: jest.fn(),
+}));
+
 const {
   getUserLatestActionedOrganisationRequestRaw,
 } = require("login.dfe.api-client/users");
+
+const { getServiceRaw } = require("login.dfe.api-client/services");
 
 jest.mock("./../../../../src/infrastructure/helpers/AppCache");
 
@@ -57,9 +60,7 @@ const Account = require("./../../../../src/infrastructure/account");
 const {
   getServicesForUser,
 } = require("./../../../../src/infrastructure/access");
-const {
-  getApplication,
-} = require("./../../../../src/infrastructure/applications");
+
 const {
   getOrganisationAndServiceForUser,
   getPendingRequestsAssociatedWithUser,
@@ -163,7 +164,7 @@ describe("when displaying the users services", () => {
       { id: "banner2", userId: "user1", serviceName: "Analysis reports" },
     ]);
 
-    getApplication.mockReset().mockReturnValue(application);
+    getServiceRaw.mockReset().mockReturnValue(application);
     Account.getById.mockReset().mockReturnValue({
       claims: {
         sub: "user1",
@@ -290,7 +291,7 @@ describe("when displaying the users services", () => {
         redirect_uris: ["http://service.one/login"],
       },
     };
-    getApplication.mockReset().mockReturnValue(application);
+    getServiceRaw.mockReset().mockReturnValue(application);
 
     await getServices(req, res);
 
@@ -306,7 +307,7 @@ describe("when displaying the users services", () => {
         redirect_uris: ["http://service.one/login/cb"],
       },
     };
-    getApplication.mockReset().mockReturnValue(application);
+    getServiceRaw.mockReset().mockReturnValue(application);
 
     await getServices(req, res);
 
@@ -335,7 +336,7 @@ describe("when displaying the users services", () => {
   });
 
   it("then it should set serviceUrl to # if no service_home or redirects available", async () => {
-    getApplication.mockReset().mockReturnValue({
+    getServiceRaw.mockReset().mockReturnValue({
       name: "Service One",
       relyingParty: {
         redirect_uris: [],
@@ -407,7 +408,7 @@ describe("when displaying the users services", () => {
       };
 
       getServicesForUser.mockReset().mockReturnValue(userAccess);
-      getApplication.mockReset().mockReturnValue(application);
+      getServiceRaw.mockReset().mockReturnValue(application);
     });
 
     it("then it will not pass the service itself when rendering the page", async () => {

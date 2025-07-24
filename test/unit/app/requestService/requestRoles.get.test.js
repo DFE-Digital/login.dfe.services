@@ -5,17 +5,13 @@ jest.mock("./../../../../src/infrastructure/config", () =>
 jest.mock("./../../../../src/infrastructure/logger", () =>
   require("./../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("./../../../../src/infrastructure/applications", () => {
-  return {
-    getApplication: jest.fn(),
-  };
-});
+jest.mock("login.dfe.api-client/services", () => ({
+  getServiceRaw: jest.fn(),
+}));
 
 const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 const PolicyEngine = require("login.dfe.policy-engine");
-const {
-  getApplication,
-} = require("./../../../../src/infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const logger = require("./../../../../src/infrastructure/logger");
 
 const policyEngine = {
@@ -116,8 +112,10 @@ describe("when displaying the sub-services view", () => {
 
   it("then it should get the service details", async () => {
     await getRequestRoles(req, res);
-    expect(getApplication.mock.calls).toHaveLength(1);
-    expect(getApplication.mock.calls[0][0]).toBe("service1");
+    expect(getServiceRaw.mock.calls).toHaveLength(1);
+    expect(getServiceRaw.mock.calls[0][0]).toMatchObject({
+      by: { serviceId: "service1" },
+    });
   });
 
   it("then it should redirect the user to /my-services and log a warning message if user services do not exist in the session", async () => {
