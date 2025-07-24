@@ -1,7 +1,7 @@
 const {
   isServiceEmailNotificationAllowed,
 } = require("./../../infrastructure/applications");
-const { addInvitationService } = require("./../../infrastructure/access");
+const { addServiceToInvitation } = require("login.dfe.api-client/invitations");
 const { addServiceToUser } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
@@ -238,13 +238,12 @@ const post = async (req, res) => {
       );
 
       if (invitationId) {
-        await addInvitationService(
+        await addServiceToInvitation({
           invitationId,
-          service.serviceId,
+          serviceId: service.serviceId,
           organisationId,
-          service.roles,
-          req.id,
-        );
+          serviceRoleIds: service.roles,
+        });
       } else {
         await addServiceToUser({
           userId: uid,
