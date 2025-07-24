@@ -6,7 +6,7 @@ const {
   getSingleUserService,
   getSingleInvitationService,
 } = require("./../../infrastructure/access");
-const { getApplication } = require("./../../infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const { actions } = require("../constans/actions");
 const moment = require("moment");
 const sortBy = require("lodash/sortBy");
@@ -52,7 +52,7 @@ const getAllServicesForUserInOrg = async (
   }));
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
-    const application = await getApplication(service.id);
+    const application = await getServiceRaw({ by: { serviceId: service.id } });
     service.name = application.name;
     service.status = mapUserStatus(service.status);
   }
@@ -78,7 +78,9 @@ const getSingleServiceForUser = async (
         organisationId,
         correlationId,
       );
-  const application = await getApplication(userService.serviceId);
+  const application = await getServiceRaw({
+    by: { serviceId: userService.serviceId },
+  });
   return {
     id: userService.serviceId,
     roles: userService.roles,

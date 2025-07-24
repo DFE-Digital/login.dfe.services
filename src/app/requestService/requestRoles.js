@@ -3,12 +3,13 @@ const {
   isMultipleRolesAllowed,
   RoleSelectionConstraintCheck,
 } = require("../users/utils");
-const { getApplication } = require("../../infrastructure/applications");
 const {
   getOrganisationAndServiceForUserV2,
 } = require("../../infrastructure/organisations");
 const PolicyEngine = require("login.dfe.policy-engine");
 const logger = require("../../infrastructure/logger");
+const { getServiceRaw } = require("login.dfe.api-client/services");
+
 const policyEngine = new PolicyEngine(config);
 const renderAssociateRolesPage = (_req, res, model) => {
   return res.render("requestService/views/requestRoles", model);
@@ -25,7 +26,9 @@ const getViewModel = async (req) => {
     (x) => x.serviceId === req.params.sid,
   );
   const currentService = currentServiceIndex + 1;
-  const serviceDetails = await getApplication(req.params.sid, req.id);
+  const serviceDetails = await getServiceRaw({
+    by: { serviceId: req.params.sid },
+  });
   const organisationDetails = req.userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );
