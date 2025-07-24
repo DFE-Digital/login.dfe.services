@@ -1,4 +1,3 @@
-const { getApplication } = require("./../../infrastructure/applications");
 const Account = require("./../../infrastructure/account");
 const appCache = require("./../../infrastructure/helpers/AppCache");
 const { directories } = require("login.dfe.dao");
@@ -22,6 +21,8 @@ const {
   isLoginOver24,
 } = require("../users/utils");
 const { actions } = require("../constans/actions");
+
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const { getUserServicesRaw } = require("login.dfe.api-client/users");
 
 const {
@@ -49,7 +50,7 @@ const getAndMapServices = async (account) => {
       let application = appCache.retrieve(service.id);
 
       if (!application) {
-        application = await getApplication(service.id);
+        application = await getServiceRaw({ by: { serviceId: service.id } });
         appCache.save(service.id, application);
         logger.info(`${service.id} adding to app cache`);
       } else {

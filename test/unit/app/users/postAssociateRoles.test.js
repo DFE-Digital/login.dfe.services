@@ -10,6 +10,7 @@ jest.mock("./../../../../src/infrastructure/organisations", () => {
     getOrganisationAndServiceForUserV2: jest.fn(),
   };
 });
+jest.mock("login.dfe.api-client/services");
 
 const {
   mockRequest,

@@ -3,18 +3,14 @@ jest.mock("./../../../../src/infrastructure/config", () =>
 );
 jest.mock("login.dfe.policy-engine");
 jest.mock("./../../../../src/app/users/utils");
-jest.mock("./../../../../src/infrastructure/applications", () => {
-  return {
-    getApplication: jest.fn(),
-  };
-});
+jest.mock("login.dfe.api-client/services", () => ({
+  getServiceRaw: jest.fn(),
+}));
 jest.mock("login.dfe.dao", () => require("../../../utils/jestMocks").mockDao());
 const { mockRequest, mockResponse } = require("../../../utils/jestMocks");
 const PolicyEngine = require("login.dfe.policy-engine");
 const { getSingleServiceForUser } = require("../../../../src/app/users/utils");
-const {
-  getApplication,
-} = require("../../../../src/infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const application = {
   name: "Service One",
   relyingParty: {
@@ -79,7 +75,7 @@ describe("when displaying the request edit service view", () => {
         },
       },
     ];
-    getApplication.mockReset().mockReturnValue(application);
+    getServiceRaw.mockReset().mockReturnValue(application);
     res = mockResponse();
 
     policyEngine.getPolicyApplicationResultsForUser

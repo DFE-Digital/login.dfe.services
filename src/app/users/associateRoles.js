@@ -8,7 +8,7 @@ const {
   isMultipleRolesAllowed,
   RoleSelectionConstraintCheck,
 } = require("./utils");
-const { getApplication } = require("./../../infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   getOrganisationAndServiceForUserV2,
 } = require("./../../infrastructure/organisations");
@@ -131,7 +131,9 @@ const getViewModel = async (req) => {
     (x) => x.serviceId === req.params.sid,
   );
   const currentService = currentServiceIndex + 1;
-  const serviceDetails = await getApplication(req.params.sid, req.id);
+  const serviceDetails = await getServiceRaw({
+    by: { serviceId: req.params.sid },
+  });
   const organisationDetails = req.userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );
