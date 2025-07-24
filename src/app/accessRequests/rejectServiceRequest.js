@@ -3,7 +3,7 @@ const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { updateServiceRequest } = require("../requestService/utils");
-const { listRolesOfService } = require("../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { services: daoServices } = require("login.dfe.dao");
 
 const notificationClient = new NotificationClient({
@@ -59,7 +59,9 @@ const post = async (req, res) => {
 
   const requestedRolesIds =
     roleIds && roleIds !== "null" ? roleIds.split(",") : [];
-  const allRolesOfServiceUnsorted = await listRolesOfService(serviceId, rid);
+  const allRolesOfServiceUnsorted = await getServiceRolesRaw({
+    serviceId: serviceId,
+  });
   const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
     a.name.localeCompare(b.name),
   );

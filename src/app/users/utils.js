@@ -1,15 +1,17 @@
 const { getById } = require("./../../infrastructure/search");
 const { mapUserStatus } = require("./../../infrastructure/utils");
-const {
-  getServicesForUser,
-  getServicesForInvitation,
-  getSingleUserService,
-  getSingleInvitationService,
-} = require("./../../infrastructure/access");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const { actions } = require("../constans/actions");
 const moment = require("moment");
 const sortBy = require("lodash/sortBy");
+const {
+  getUserServicesRaw,
+  getUserServiceRaw,
+} = require("login.dfe.api-client/users");
+const {
+  getInvitationServiceRaw,
+  getInvitationServicesRaw,
+} = require("login.dfe.api-client/invitations");
 const numberOfHours = 24;
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
@@ -29,14 +31,12 @@ const getUserDetails = async (req) => {
   };
 };
 
-const getAllServicesForUserInOrg = async (
-  userId,
-  organisationId,
-  correlationId,
-) => {
+const getAllServicesForUserInOrg = async (userId, organisationId) => {
   const allUserServices = userId.startsWith("inv-")
-    ? await getServicesForInvitation(userId.substr(4), correlationId)
-    : await getServicesForUser(userId, correlationId);
+    ? await getInvitationServicesRaw({
+        userInvitationId: userId.substr(4),
+      })
+    : await getUserServicesRaw({ userId });
   if (!allUserServices) {
     return [];
   }
@@ -59,25 +59,18 @@ const getAllServicesForUserInOrg = async (
   return sortBy(services, "name");
 };
 
-const getSingleServiceForUser = async (
-  userId,
-  organisationId,
-  serviceId,
-  correlationId,
-) => {
+const getSingleServiceForUser = async (userId, organisationId, serviceId) => {
   const userService = userId.startsWith("inv-")
-    ? await getSingleInvitationService(
-        userId.substr(4),
+    ? await getInvitationServiceRaw({
+        invitationId: userId.substr(4),
         serviceId,
         organisationId,
-        correlationId,
-      )
-    : await getSingleUserService(
+      })
+    : await getUserServiceRaw({
         userId,
         serviceId,
         organisationId,
-        correlationId,
-      );
+      });
   const application = await getServiceRaw({
     by: { serviceId: userService.serviceId },
   });
