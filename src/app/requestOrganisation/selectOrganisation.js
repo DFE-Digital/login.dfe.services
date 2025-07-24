@@ -1,11 +1,11 @@
 const {
   getOrganisationAndServiceForUserV2,
-  getCategories,
 } = require("./../../infrastructure/organisations");
 
 const {
   getRequestsForOrganisationRaw,
   searchOrganisationsRaw,
+  getOrganisationCategories,
 } = require("login.dfe.api-client/organisations");
 
 const search = async (req) => {
@@ -31,7 +31,7 @@ const search = async (req) => {
 };
 
 const retrieveOrganisationCategories = async () => {
-  const orgCategories = await getCategories();
+  const orgCategories = await getOrganisationCategories();
   return orgCategories
     .map((cat) => {
       return cat.id;

@@ -16,6 +16,7 @@ const {
 } = require("login.dfe.api-client/users");
 
 const {
+  getOrganisationApprovers,
   getRequestsForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
 
@@ -25,7 +26,6 @@ const res = mockResponse();
 const {
   getOrganisationById,
   getPendingRequestsAssociatedWithUser,
-  getApproversForOrganisation,
 } = require("./../../../../src/infrastructure/organisations");
 const logger = require("./../../../../src/infrastructure/logger");
 
@@ -95,7 +95,7 @@ describe("when reviewing an organisation request", () => {
       },
     ]);
     getPendingRequestsAssociatedWithUser.mockReset();
-    getApproversForOrganisation.mockReturnValue(["111", "222"]);
+    getOrganisationApprovers.mockReturnValue(["111", "222"]);
     getPendingRequestsAssociatedWithUser.mockReturnValue([
       {
         id: "requestId",

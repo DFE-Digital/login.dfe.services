@@ -8,7 +8,6 @@ const sortBy = require("lodash/sortBy");
 const {
   getOrganisationAndServiceForUser,
   getPendingRequestsAssociatedWithUser,
-  getLatestRequestAssociatedWithUser,
 } = require("./../../infrastructure/organisations");
 const {
   fetchSubServiceAddedBanners,
@@ -24,6 +23,10 @@ const {
 } = require("../users/utils");
 const { actions } = require("../constans/actions");
 const { getUserServicesRaw } = require("login.dfe.api-client/users");
+
+const {
+  getUserLatestActionedOrganisationRequestRaw,
+} = require("login.dfe.api-client/users");
 
 let user = null;
 
@@ -153,10 +156,9 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
       taskListStatus.hasRequestPending = true;
       taskListStatus.hasOrgAssigned = true; // User has placed a request to add org, and the request is in pending state so this is true.
     } else {
-      const request = await getLatestRequestAssociatedWithUser(
-        account.id,
-        correlationId,
-      );
+      const request = await getUserLatestActionedOrganisationRequestRaw({
+        userId: account.id,
+      });
       if (request && request.status.id === -1) {
         taskListStatus.hasRequestRejected = true;
       }
