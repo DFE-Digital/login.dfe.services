@@ -4,10 +4,6 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
   getById: jest.fn(),
 }));
 
-jest.mock("./../../../../src/infrastructure/access", () => ({
-  getServicesForUser: jest.fn(),
-}));
-
 jest.mock("login.dfe.api-client/users", () => ({
   getUserServicesRaw: jest.fn(),
   getUserLatestActionedOrganisationRequestRaw: jest.fn(),
@@ -59,9 +55,6 @@ jest.mock("./../../../../src/infrastructure/organisations", () => ({
 
 const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 const Account = require("./../../../../src/infrastructure/account");
-const {
-  getServicesForUser,
-} = require("./../../../../src/infrastructure/access");
 
 const {
   getOrganisationAndServiceForUser,
