@@ -67,6 +67,13 @@ jest.mock("login.dfe.dao", () => {
     },
   };
 });
+
+jest.mock("login.dfe.api-client/users", () => {
+  return {
+    updateUserServiceRoles: jest.fn(),
+  };
+});
+
 const listRoles = [
   {
     code: "ASP_School_Anon",

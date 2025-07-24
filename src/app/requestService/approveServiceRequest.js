@@ -1,5 +1,3 @@
-const { addUserService } = require("../../infrastructure/access");
-
 const {
   getOrganisationAndServiceForUser,
 } = require("../../infrastructure/organisations");
@@ -25,7 +23,10 @@ const {
   getUserServiceRequestStatus,
   updateServiceRequest,
 } = require("./utils");
-const { getUserServicesRaw } = require("login.dfe.api-client/users");
+const {
+  getUserServicesRaw,
+  addServiceToUser,
+} = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 
 const validate = async (req) => {
@@ -254,13 +255,12 @@ const post = async (req, res) => {
     }
   }
 
-  await addUserService(
-    req.params.uid,
-    req.params.sid,
-    req.params.orgId,
-    roles,
-    req.id,
-  );
+  await addServiceToUser({
+    userId: req.params.uid,
+    serviceId: req.params.sid,
+    organisationId: req.params.orgId,
+    serviceRoleIds: roles,
+  });
 
   await notificationClient.sendServiceRequestApproved(
     req.session.user.email,

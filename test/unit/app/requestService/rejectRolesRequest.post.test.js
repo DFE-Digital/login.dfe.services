@@ -25,9 +25,9 @@ jest.mock("../../../../src/app/users/utils");
 jest.mock("../../../../src/infrastructure/logger", () =>
   require("./../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("../../../../src/infrastructure/access", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    updateUserService: jest.fn(),
+    updateUserServiceRoles: jest.fn(),
   };
 });
 jest.mock("login.dfe.api-client/services", () => {
@@ -198,7 +198,7 @@ describe("When approving a sub service request", () => {
     await postRejectRolesRequest(req, res);
 
     expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
-    expect(getServiceRolesRaw).toBeCalledWith({ serviceId: "service1" });
+    expect(getServiceRolesRaw).toHaveBeenCalledWith({ serviceId: "service1" });
   });
 
   it("then it should update the sub-service-request in the DB with rejection", async () => {

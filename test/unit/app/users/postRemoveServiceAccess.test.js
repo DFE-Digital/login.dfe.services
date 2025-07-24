@@ -10,10 +10,9 @@ const {
 jest.mock("./../../../../src/infrastructure/logger", () =>
   require("./../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("./../../../../src/infrastructure/access", () => {
-  return {
-    removeServiceFromInvitation: jest.fn(),
-  };
+
+jest.mock("login.dfe.api-client/invitations", () => {
+  return { deleteServiceAccessFromInvitation: jest.fn() };
 });
 jest.mock("login.dfe.api-client/users", () => {
   return { deleteUserServiceAccess: jest.fn() };
@@ -72,8 +71,8 @@ const {
   isUserManagement,
 } = require("./../../../../src/app/users/utils");
 const {
-  removeServiceFromInvitation,
-} = require("./../../../../src/infrastructure/access");
+  deleteServiceAccessFromInvitation,
+} = require("login.dfe.api-client/invitations");
 const { getById } = require("./../../../../src/infrastructure/search");
 const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
 
@@ -180,18 +179,19 @@ describe("when removing service access", () => {
 
     await postRemoveServiceAccess(req, res);
 
-    expect(removeServiceFromInvitation.mock.calls).toHaveLength(1);
-    expect(removeServiceFromInvitation.mock.calls[0][0]).toBe("invite1");
-    expect(removeServiceFromInvitation.mock.calls[0][1]).toBe("service1");
-    expect(removeServiceFromInvitation.mock.calls[0][2]).toBe("org1");
-    expect(removeServiceFromInvitation.mock.calls[0][3]).toBe("correlationId");
+    expect(deleteServiceAccessFromInvitation.mock.calls).toHaveLength(1);
+    expect(deleteServiceAccessFromInvitation).toHaveBeenCalledWith({
+      invitationId: "invite1",
+      serviceId: "service1",
+      organisationId: "org1",
+    });
   });
 
   it("then it should delete org for user if request for user", async () => {
     await postRemoveServiceAccess(req, res);
 
     expect(deleteUserServiceAccess.mock.calls).toHaveLength(1);
-    expect(deleteUserServiceAccess).toBeCalledWith({
+    expect(deleteUserServiceAccess).toHaveBeenCalledWith({
       userId: "user1",
       serviceId: "service1",
       organisationId: "org1",

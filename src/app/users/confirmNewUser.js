@@ -1,10 +1,8 @@
 const {
   isServiceEmailNotificationAllowed,
 } = require("./../../infrastructure/applications");
-const {
-  addInvitationService,
-  addUserService,
-} = require("./../../infrastructure/access");
+const { addServiceToInvitation } = require("login.dfe.api-client/invitations");
+const { addServiceToUser } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   putUserInOrganisation,
@@ -240,21 +238,19 @@ const post = async (req, res) => {
       );
 
       if (invitationId) {
-        await addInvitationService(
+        await addServiceToInvitation({
           invitationId,
-          service.serviceId,
+          serviceId: service.serviceId,
           organisationId,
-          service.roles,
-          req.id,
-        );
+          serviceRoleIds: service.roles,
+        });
       } else {
-        await addUserService(
-          uid,
-          service.serviceId,
+        await addServiceToUser({
+          userId: uid,
+          serviceId: service.serviceId,
           organisationId,
-          service.roles,
-          req.id,
-        );
+          serviceRoleIds: service.roles,
+        });
         // Notification for service added not required while creating the user invitation
         await notificationClient.sendServiceRequestApproved(
           req.session.user.email,
