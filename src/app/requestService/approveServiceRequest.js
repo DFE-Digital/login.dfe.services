@@ -1,8 +1,5 @@
-const {
-  listRolesOfService,
-  addUserService,
-  getServicesForUser,
-} = require("../../infrastructure/access");
+const { addUserService } = require("../../infrastructure/access");
+
 const {
   getOrganisationAndServiceForUser,
 } = require("../../infrastructure/organisations");
@@ -28,6 +25,8 @@ const {
   getUserServiceRequestStatus,
   updateServiceRequest,
 } = require("./utils");
+const { getUserServicesRaw } = require("login.dfe.api-client/users");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 
 const validate = async (req) => {
   const organisationDetails = req.userOrganisations.find(
@@ -74,7 +73,7 @@ const getViewModel = async (req, existingModel) => {
 
   const allServices = await checkCacheForAllServices(req.id);
   const serviceDetails = allServices.services.find((x) => x.id === serviceId);
-  const allRolesOfServiceUnsorted = await listRolesOfService(serviceId, req.id);
+  const allRolesOfServiceUnsorted = await getServiceRolesRaw({ serviceId });
   const allRolesOfService = allRolesOfServiceUnsorted.sort((a, b) =>
     a.name.localeCompare(b.name),
   );
@@ -131,7 +130,7 @@ const get = async (req, res) => {
     }
   }
 
-  const endUserService = await getServicesForUser(req.params.uid);
+  const endUserService = await getUserServicesRaw({ userId: req.params.uid });
 
   if (endUserService) {
     const hasServiceAlreadyApproved = endUserService.filter(

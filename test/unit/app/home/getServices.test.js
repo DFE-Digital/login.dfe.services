@@ -7,8 +7,8 @@ jest.mock("./../../../../src/infrastructure/applications", () => ({
   getApplication: jest.fn(),
 }));
 
-jest.mock("./../../../../src/infrastructure/access", () => ({
-  getServicesForUser: jest.fn(),
+jest.mock("login.dfe.api-client/users", () => ({
+  getUserServicesRaw: jest.fn(),
 }));
 
 jest.mock("login.dfe.api-client/users", () => ({
@@ -54,9 +54,7 @@ jest.mock("./../../../../src/infrastructure/organisations", () => ({
 
 const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 const Account = require("./../../../../src/infrastructure/account");
-const {
-  getServicesForUser,
-} = require("./../../../../src/infrastructure/access");
+const { getUserServicesRaw } = require("login.dfe.api-client/users");
 const {
   getApplication,
 } = require("./../../../../src/infrastructure/applications");
@@ -122,7 +120,7 @@ describe("when displaying the users services", () => {
       id: "user1",
     });
 
-    getServicesForUser.mockReset().mockReturnValue(userAccess);
+    getUserServicesRaw.mockReset().mockReturnValue(userAccess);
     getOrganisationAndServiceForUser.mockReset().mockReturnValue([
       {
         organisation: {
@@ -271,7 +269,7 @@ describe("when displaying the users services", () => {
   });
 
   it("then it should render services view with no services if user has none", async () => {
-    getServicesForUser.mockReturnValue(undefined);
+    getUserServicesRaw.mockReturnValue(undefined);
     getOrganisationAndServiceForUser.mockReturnValue([]);
 
     await getServices(req, res);
@@ -406,7 +404,7 @@ describe("when displaying the users services", () => {
         description: "Service One Description",
       };
 
-      getServicesForUser.mockReset().mockReturnValue(userAccess);
+      getUserServicesRaw.mockReset().mockReturnValue(userAccess);
       getApplication.mockReset().mockReturnValue(application);
     });
 

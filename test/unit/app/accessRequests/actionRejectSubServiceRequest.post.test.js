@@ -6,7 +6,6 @@ const {
 const {
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
-  getNewRoleDetails,
 } = require("../../../../src/app/accessRequests/utils");
 const {
   updateServiceRequest,
@@ -38,7 +37,6 @@ jest.mock("../../../../src/app/accessRequests/utils", () => {
   return {
     getAndMapServiceRequest: jest.fn(),
     getSubServiceRequestVieModel: jest.fn(),
-    getNewRoleDetails: jest.fn(),
   };
 });
 
@@ -235,9 +233,6 @@ describe("When actioning a sub-service request for rejection", () => {
 
     getSubServiceRequestVieModel.mockReset();
     getSubServiceRequestVieModel.mockReturnValue(viewModel);
-
-    getNewRoleDetails.mockReset();
-    getNewRoleDetails.mockReturnValue(listRoles);
   });
 
   it("then it should redirect to summary request view", async () => {

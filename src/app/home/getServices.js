@@ -1,4 +1,3 @@
-const { getServicesForUser } = require("./../../infrastructure/access");
 const { getApplication } = require("./../../infrastructure/applications");
 const Account = require("./../../infrastructure/account");
 const appCache = require("./../../infrastructure/helpers/AppCache");
@@ -23,6 +22,7 @@ const {
   isLoginOver24,
 } = require("../users/utils");
 const { actions } = require("../constans/actions");
+const { getUserServicesRaw } = require("login.dfe.api-client/users");
 
 const {
   getUserLatestActionedOrganisationRequestRaw,
@@ -30,10 +30,11 @@ const {
 
 let user = null;
 
-const getAndMapServices = async (account, correlationId) => {
+const getAndMapServices = async (account) => {
   user = await Account.getById(account.id);
   const serviceAccess =
-    (await getServicesForUser(account.id, correlationId)) || [];
+    (await getUserServicesRaw({ userId: account.id })) || [];
+
   let services = serviceAccess.map((sa) => ({
     id: sa.serviceId,
     name: sa.name,
