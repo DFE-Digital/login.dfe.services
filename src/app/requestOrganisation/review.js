@@ -4,7 +4,6 @@ const logger = require("./../../infrastructure/logger");
 const {
   getOrganisationById,
   getPendingRequestsAssociatedWithUser,
-  getApproversForOrganisation,
 } = require("./../../infrastructure/organisations");
 
 const {
@@ -12,6 +11,7 @@ const {
 } = require("login.dfe.api-client/users");
 
 const {
+  getOrganisationApprovers,
   getRequestsForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
 
@@ -115,8 +115,11 @@ const post = async (req, res) => {
     message: `${req.user.email} (id: ${req.user.sub}) requested organisation (id: ${req.body.organisationId})`,
   });
   if (
-    (await getApproversForOrganisation(req.body.organisationId, req.id))
-      .length > 0
+    (
+      await getOrganisationApprovers({
+        organisationId: req.body.organisationId,
+      })
+    ).length > 0
   ) {
     res.flash("title", `Success`);
     res.flash(

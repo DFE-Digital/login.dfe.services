@@ -1,7 +1,7 @@
 const { services } = require("login.dfe.dao");
 
 const {
-  getServiceRequestsForApproverRaw,
+  getAllRequestTypesForApproverRaw,
 } = require("login.dfe.api-client/services");
 
 const mapUserServiceRequestStatus = (status) => {
@@ -34,7 +34,7 @@ const checkForActiveRequests = async (
   const approvers = organisationDetails.approvers;
   if (approvers !== undefined && approvers.length > 0) {
     const approverId = approvers[0];
-    const requestservices = await getServiceRequestsForApproverRaw({
+    const requestservices = await getAllRequestTypesForApproverRaw({
       userId: approverId.user_id,
     });
     if (requestservices !== undefined) {

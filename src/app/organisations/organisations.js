@@ -1,8 +1,10 @@
 const {
   getOrganisationAndServiceForUser,
   getPendingRequestsAssociatedWithUser,
-  getAllRequestsTypesForApprover,
 } = require("./../../infrastructure/organisations");
+const {
+  getAllRequestTypesForApproverRaw,
+} = require("login.dfe.api-client/services");
 const Account = require("./../../infrastructure/account");
 const flatten = require("lodash/flatten");
 const uniq = require("lodash/uniq");
@@ -95,10 +97,9 @@ const organisations = async (req, res) => {
     organisationRequests,
     organisations,
   );
-  const { totalNumberOfRecords } = await getAllRequestsTypesForApprover(
-    req.user.sub,
-    req.id,
-  );
+  const { totalNumberOfRecords } = await getAllRequestTypesForApproverRaw({
+    userId: req.user.sub,
+  });
   const totalNumberOfAccessRequests = totalNumberOfRecords;
 
   return res.render("organisations/views/organisations", {
