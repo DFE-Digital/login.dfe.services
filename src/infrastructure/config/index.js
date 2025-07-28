@@ -30,6 +30,8 @@ const config = {
     host: process.env.STANDALONE_SERVICES_HOST_NAME,
     hstsMaxAge: 86400,
     port: 443,
+    sslCert: process.env.LOCAL_SSL_CERT ? process.env.LOCAL_SSL_CERT.replace(/\\n/g, '\n') : "",
+    sslKey: process.env.LOCAL_SSL_KEY ? process.env.LOCAL_SSL_KEY.replace(/\\n/g, '\n') : "",
     protocol: "https",
     sessionSecret: process.env.SESSION_ENCRYPTION_SECRET_SVC,
     csrfSecret: process.env.CSRF_ENCRYPTION_SECRET_SVC,
