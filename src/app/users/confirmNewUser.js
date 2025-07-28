@@ -15,11 +15,8 @@ const {
   getOrganisationAndServiceForUser,
   updateRequestById,
 } = require("./../../infrastructure/organisations");
-const {
-  getById,
-  updateIndex,
-  createIndex,
-} = require("./../../infrastructure/search");
+const { updateIndex, createIndex } = require("./../../infrastructure/search");
+const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 const { mapRole } = require("./../../infrastructure/utils");
 const { waitForIndexToUpdate, isSelfManagement } = require("./utils");
 const Account = require("./../../infrastructure/account");
@@ -272,7 +269,9 @@ const post = async (req, res) => {
   if (req.session.user.isInvite) {
     if (req.params.uid) {
       // patch search index with organisation added to existing user or inv
-      const getAllUserDetails = await getById(req.params.uid, req.id);
+      const getAllUserDetails = await searchUserByIdRaw({
+        userId: req.params.uid,
+      });
       if (!getAllUserDetails) {
         logger.error(
           `Failed to find user ${req.params.uid} when confirming change of user permissions`,
@@ -354,7 +353,7 @@ const post = async (req, res) => {
     );
     res.redirect(`/approvals/users`);
   } else {
-    const getAllUserDetails = await getById(uid, req.id);
+    const getAllUserDetails = await searchUserByIdRaw({ userId: uid });
     if (!getAllUserDetails) {
       logger.error(
         `Failed to find user ${uid} when confirming change of user services`,

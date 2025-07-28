@@ -3,7 +3,8 @@ const {
   putInvitationInOrganisation,
   getOrganisationAndServiceForUser,
 } = require("./../../infrastructure/organisations");
-const { getById, updateIndex } = require("./../../infrastructure/search");
+const { updateIndex } = require("./../../infrastructure/search");
+const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 const {
   isServiceEmailNotificationAllowed,
 } = require("./../../infrastructure/applications");
@@ -72,7 +73,8 @@ const post = async (req, res) => {
     }
   }
   // patch search indexer with new role
-  const getAllUserDetails = await getById(uid, req.id);
+  const getAllUserDetails = await searchUserByIdRaw({ userId: uid });
+
   const allOrganisationDetails = getAllUserDetails.organisations;
   const updatedOrganisationDetails = allOrganisationDetails.map((org) => {
     if (org.id === organisationId) {

@@ -16,7 +16,7 @@ jest.mock("./../../../../src/infrastructure/access", () => {
   };
 });
 jest.mock("login.dfe.api-client/users", () => {
-  return { deleteUserServiceAccess: jest.fn() };
+  return { deleteUserServiceAccess: jest.fn(), searchUserByIdRaw: jest.fn() };
 });
 
 jest.mock(
@@ -59,7 +59,6 @@ jest.mock("login.dfe.dao", () => {
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("./../../../../src/infrastructure/search", () => {
   return {
-    getById: jest.fn(),
     updateIndex: jest.fn(),
   };
 });
@@ -74,8 +73,11 @@ const {
 const {
   removeServiceFromInvitation,
 } = require("./../../../../src/infrastructure/access");
-const { getById } = require("./../../../../src/infrastructure/search");
-const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
+
+const {
+  deleteUserServiceAccess,
+  searchUserByIdRaw,
+} = require("login.dfe.api-client/users");
 
 describe("when removing service access", () => {
   let req;
@@ -143,8 +145,8 @@ describe("when removing service access", () => {
       status: "active",
     });
 
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [
         {
           id: "org1",

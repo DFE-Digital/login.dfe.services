@@ -71,10 +71,13 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
 
 jest.mock("./../../../../src/infrastructure/search", () => {
   return {
-    getById: jest.fn(),
     updateIndex: jest.fn(),
     createIndex: jest.fn(),
   };
+});
+
+jest.mock("login.dfe.api-client/users", () => {
+  return { searchUserByIdRaw: jest.fn() };
 });
 
 jest.mock("./../../../../src/app/users/utils");
@@ -100,7 +103,6 @@ const {
   checkCacheForAllServices,
 } = require("./../../../../src/infrastructure/helpers/allServicesAppCache");
 const {
-  getById,
   updateIndex,
   createIndex,
 } = require("./../../../../src/infrastructure/search");
@@ -109,6 +111,7 @@ const logger = require("./../../../../src/infrastructure/logger");
 
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
+const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 const sendUserAddedToOrganisationStub = jest.fn();
 const sendServiceAddedStub = jest.fn();
 const sendServiceRequestApprovedStub = jest.fn();
@@ -264,8 +267,8 @@ describe("when inviting a new user", () => {
       companyRegistrationNumber: null,
     });
 
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [
         {
           id: "org1",

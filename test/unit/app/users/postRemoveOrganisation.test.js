@@ -22,10 +22,14 @@ jest.mock("./../../../../src/infrastructure/access", () => {
 
 jest.mock("./../../../../src/infrastructure/search", () => {
   return {
-    getById: jest.fn(),
     updateIndex: jest.fn(),
   };
 });
+
+jest.mock("login.dfe.api-client/users", () => {
+  return { searchUserByIdRaw: jest.fn() };
+});
+
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
@@ -38,10 +42,9 @@ const {
   deleteInvitationOrganisation,
   deleteUserOrganisation,
 } = require("./../../../../src/infrastructure/organisations");
-const {
-  getById,
-  updateIndex,
-} = require("./../../../../src/infrastructure/search");
+const { updateIndex } = require("./../../../../src/infrastructure/search");
+
+const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 
 const sendUserRemovedFromOrganisationStub = jest.fn();
 
@@ -107,8 +110,8 @@ describe("when removing organisation access", () => {
       status: "active",
     });
 
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [
         {
           id: "org1",
@@ -223,8 +226,8 @@ describe("when removing organisation access", () => {
     );
   });
   it("then it should not send an email notification to deactivated user", async () => {
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [
         {
           id: "org1",

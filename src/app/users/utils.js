@@ -1,6 +1,6 @@
-const { getById } = require("./../../infrastructure/search");
 const { mapUserStatus } = require("./../../infrastructure/utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
+const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 const { actions } = require("../constans/actions");
 const moment = require("moment");
 const sortBy = require("lodash/sortBy");
@@ -15,7 +15,7 @@ const {
 const numberOfHours = 24;
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
-  const user = await getById(uid, req.id);
+  const user = await searchUserByIdRaw({ userId: uid });
   const organisationDetails = user.organisations.find(
     (x) => x.id === req.params.orgId,
   );
@@ -91,7 +91,7 @@ const waitForIndexToUpdate = async (uid, updatedCheck) => {
   const abandonTime = Date.now() + 10000;
   let hasBeenUpdated = false;
   while (!hasBeenUpdated && Date.now() < abandonTime) {
-    const updated = await getById(uid);
+    const updated = await searchUserByIdRaw({ userId: uid });
     if (updatedCheck) {
       hasBeenUpdated = updatedCheck(updated);
     } else {

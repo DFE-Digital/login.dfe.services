@@ -17,9 +17,11 @@ jest.mock("./../../../../src/infrastructure/organisations", () => {
 
 jest.mock("./../../../../src/infrastructure/search", () => {
   return {
-    getById: jest.fn(),
     updateIndex: jest.fn(),
   };
+});
+jest.mock("login.dfe.api-client/users", () => {
+  return { searchUserByIdRaw: jest.fn() };
 });
 
 jest.mock("./../../../../src/app/users/utils");
@@ -31,10 +33,9 @@ const {
   putInvitationInOrganisation,
   getOrganisationAndServiceForUser,
 } = require("./../../../../src/infrastructure/organisations");
-const {
-  getById,
-  updateIndex,
-} = require("./../../../../src/infrastructure/search");
+const { updateIndex } = require("./../../../../src/infrastructure/search");
+
+const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
@@ -111,8 +112,8 @@ describe("when editing organisation permission level", () => {
       lastName: "name",
     });
 
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [
         {
           id: "org1",

@@ -12,6 +12,9 @@ jest.mock("./../../../../src/app/users/utils");
 jest.mock("./../../../../src/infrastructure/organisations");
 jest.mock("./../../../../src/infrastructure/search");
 jest.mock("login.dfe.jobs-client");
+jest.mock("login.dfe.api-client/users", () => {
+  return { searchUserByIdRaw: jest.fn() };
+});
 
 const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 const {
@@ -23,10 +26,8 @@ const {
   updateRequestById,
   getOrganisationById,
 } = require("./../../../../src/infrastructure/organisations");
-const {
-  getById,
-  updateIndex,
-} = require("./../../../../src/infrastructure/search");
+const { updateIndex } = require("./../../../../src/infrastructure/search");
+const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 const {
   getAndMapOrgRequest,
 } = require("./../../../../src/app/accessRequests/utils");
@@ -79,8 +80,8 @@ describe("when reviewing an organisation request", () => {
         id: 1,
       },
     });
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [],
     });
     getAndMapOrgRequest.mockReset().mockReturnValue({

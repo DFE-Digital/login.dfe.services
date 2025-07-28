@@ -8,8 +8,11 @@ const {
 const {
   removeServiceFromInvitation,
 } = require("./../../infrastructure/access");
-const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
-const { getById, updateIndex } = require("./../../infrastructure/search");
+const {
+  deleteUserServiceAccess,
+  searchUserByIdRaw,
+} = require("login.dfe.api-client/users");
+const { updateIndex } = require("./../../infrastructure/search");
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const {
@@ -115,7 +118,7 @@ const post = async (req, res) => {
     }
   }
 
-  const getAllUserDetails = await getById(uid, req.id);
+  const getAllUserDetails = await searchUserByIdRaw({ userId: uid });
   const currentServiceDetails = getAllUserDetails.services;
   const serviceRemoved = currentServiceDetails.findIndex(
     (x) => x === serviceId,

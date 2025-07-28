@@ -5,7 +5,8 @@ const {
 } = require("./../../infrastructure/organisations");
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
-const { getById, updateIndex } = require("./../../infrastructure/search");
+const { updateIndex } = require("./../../infrastructure/search");
+const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 const { waitForIndexToUpdate } = require("../users/utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getAndMapOrgRequest } = require("./utils");
@@ -89,7 +90,10 @@ const post = async (req, res) => {
   );
 
   // patch search index with organisation added to user
-  const getAllUserDetails = await getById(model.request.user_id, req.id);
+  const getAllUserDetails = await searchUserByIdRaw({
+    userId: model.request.user_id,
+  });
+
   const organisation = await getOrganisationById(model.request.org_id, req.id);
   if (!getAllUserDetails) {
     logger.error(
