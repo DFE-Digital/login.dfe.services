@@ -1,7 +1,3 @@
-const getAllUsersForOrg = async () => {
-  return Promise.resolve([]);
-};
-
 const getById = async () => {
   return Promise.resolve([]);
 };
@@ -15,7 +11,6 @@ const createIndex = async () => {
 };
 
 module.exports = {
-  getAllUsersForOrg,
   getById,
   updateIndex,
   createIndex,
