@@ -8,7 +8,7 @@ const {
   isMultipleRolesAllowed,
   RoleSelectionConstraintCheck,
 } = require("./utils");
-const { getApplication } = require("./../../infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const { actions } = require("../constans/actions");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
@@ -64,7 +64,9 @@ const getViewModel = async (req) => {
     req.id,
   );
 
-  const application = await getApplication(req.params.sid, req.id);
+  const application = await getServiceRaw({
+    by: { serviceId: req.params.sid },
+  });
   const serviceRoles = policyResult.rolesAvailableToUser.sort((a, b) =>
     a.name.localeCompare(b.name),
   );
