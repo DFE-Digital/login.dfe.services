@@ -30,6 +30,8 @@ const config = {
     host: process.env.STANDALONE_SERVICES_HOST_NAME,
     hstsMaxAge: 86400,
     port: 443,
+    sslCert: process.env.LOCAL_SSL_CERT ? process.env.LOCAL_SSL_CERT.replace(/\\n/g, '\n') : "",
+    sslKey: process.env.LOCAL_SSL_KEY ? process.env.LOCAL_SSL_KEY.replace(/\\n/g, '\n') : "",
     protocol: "https",
     sessionSecret: process.env.SESSION_ENCRYPTION_SECRET_SVC,
     csrfSecret: process.env.CSRF_ENCRYPTION_SECRET_SVC,
@@ -148,7 +150,7 @@ const config = {
     environmentName: process.env.ENVIRONMENT_NAME
   },
   notifications: {
-    connectionString: process.env.REDIS_CONN + "/4?tls=true"
+    connectionString: process.env.LOCAL_REDIS_CONN ? process.env.LOCAL_REDIS_CONN + "/4" : process.env.REDIS_CONN + "/4?tls=true"
   },
   organisationRequests: {
     requestLimit: 30
@@ -189,7 +191,7 @@ const config = {
   cookieSessionRedis: {
     type: "redis",
     params: {
-      connectionString: process.env.REDIS_CONN + "/3?tls=true"
+      connectionString: process.env.LOCAL_REDIS_CONN ? process.env.LOCAL_REDIS_CONN + "/3" : process.env.REDIS_CONN + "/3?tls=true"
     }
   },
   assets: {
