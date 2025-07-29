@@ -16,8 +16,8 @@ const {
 const {
   deleteUserServiceAccess,
   searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
 } = require("login.dfe.api-client/users");
-const { updateIndex } = require("./../../infrastructure/search");
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -114,7 +114,11 @@ const post = async (req, res) => {
   const updatedOrganisationDetails = currentOrganisationDetails.filter(
     (org) => org.id !== organisationId,
   );
-  await updateIndex(uid, updatedOrganisationDetails, null, null, req.id);
+  await updateUserDetailsInSearchIndex({
+    userId: uid,
+    organisations: updatedOrganisationDetails,
+  });
+
   await waitForIndexToUpdate(
     uid,
     (updated) =>

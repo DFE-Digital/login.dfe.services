@@ -11,8 +11,8 @@ const {
 const {
   deleteUserServiceAccess,
   searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
 } = require("login.dfe.api-client/users");
-const { updateIndex } = require("./../../infrastructure/search");
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const {
@@ -126,7 +126,10 @@ const post = async (req, res) => {
   const updatedServiceDetails = currentServiceDetails.filter(
     (_, index) => index !== serviceRemoved,
   );
-  await updateIndex(uid, null, null, updatedServiceDetails, req.id);
+  await updateUserDetailsInSearchIndex({
+    userId: uid,
+    services: updatedServiceDetails,
+  });
   await waitForIndexToUpdate(
     uid,
     (updated) => updated.services.length === updatedServiceDetails.length,

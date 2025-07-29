@@ -5,8 +5,10 @@ const {
 } = require("./../../infrastructure/organisations");
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
-const { updateIndex } = require("./../../infrastructure/search");
-const { searchUserByIdRaw } = require("login.dfe.api-client/users");
+const {
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 const { waitForIndexToUpdate } = require("../users/utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getAndMapOrgRequest } = require("./utils");
@@ -125,12 +127,10 @@ const post = async (req, res) => {
       roleId: 0,
     };
     currentOrganisationDetails.push(newOrgDetails);
-    await updateIndex(
-      model.request.user_id,
-      currentOrganisationDetails,
-      null,
-      req.id,
-    );
+    await updateUserDetailsInSearchIndex({
+      userId: model.request.user_id,
+      organisations: currentOrganisationDetails,
+    });
     await waitForIndexToUpdate(
       model.request.user_id,
       (updated) =>

@@ -20,14 +20,11 @@ jest.mock("./../../../../src/infrastructure/access", () => {
   };
 });
 
-jest.mock("./../../../../src/infrastructure/search", () => {
-  return {
-    updateIndex: jest.fn(),
-  };
-});
-
 jest.mock("login.dfe.api-client/users", () => {
-  return { searchUserByIdRaw: jest.fn() };
+  return {
+    searchUserByIdRaw: jest.fn(),
+    updateUserDetailsInSearchIndex: jest.fn(),
+  };
 });
 
 jest.mock("./../../../../src/app/users/utils");
@@ -42,9 +39,11 @@ const {
   deleteInvitationOrganisation,
   deleteUserOrganisation,
 } = require("./../../../../src/infrastructure/organisations");
-const { updateIndex } = require("./../../../../src/infrastructure/search");
 
-const { searchUserByIdRaw } = require("login.dfe.api-client/users");
+const {
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 
 const sendUserRemovedFromOrganisationStub = jest.fn();
 
@@ -154,9 +153,11 @@ describe("when removing organisation access", () => {
   it("then it should patch the user with the org removed", async () => {
     await postRemoveOrganisationAccess(req, res);
 
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toBe("user1");
-    expect(updateIndex.mock.calls[0][1]).toEqual([]);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledTimes(1);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledWith({
+      userId: "user1",
+      organisations: [],
+    });
   });
 
   it("then it should should audit user being removed from org", async () => {
@@ -244,7 +245,7 @@ describe("when removing organisation access", () => {
 
     expect(sendUserRemovedFromOrganisationStub.mock.calls).toHaveLength(0);
     expect(res.flash.mock.calls).toHaveLength(3);
-    expect(updateIndex.mock.calls).toHaveLength(1);
+    expect(updateUserDetailsInSearchIndex.mock.calls).toHaveLength(1);
     expect(deleteUserOrganisation.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls).toHaveLength(1);

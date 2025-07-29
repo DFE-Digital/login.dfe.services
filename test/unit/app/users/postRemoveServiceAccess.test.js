@@ -16,7 +16,11 @@ jest.mock("./../../../../src/infrastructure/access", () => {
   };
 });
 jest.mock("login.dfe.api-client/users", () => {
-  return { deleteUserServiceAccess: jest.fn(), searchUserByIdRaw: jest.fn() };
+  return {
+    deleteUserServiceAccess: jest.fn(),
+    searchUserByIdRaw: jest.fn(),
+    updateUserDetailsInSearchIndex: jest.fn(),
+  };
 });
 
 jest.mock(
@@ -57,11 +61,6 @@ jest.mock("login.dfe.dao", () => {
 });
 
 jest.mock("./../../../../src/app/users/utils");
-jest.mock("./../../../../src/infrastructure/search", () => {
-  return {
-    updateIndex: jest.fn(),
-  };
-});
 
 jest.mock("login.dfe.jobs-client");
 const logger = require("./../../../../src/infrastructure/logger");

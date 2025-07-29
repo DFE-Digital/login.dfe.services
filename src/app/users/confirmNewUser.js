@@ -15,8 +15,11 @@ const {
   getOrganisationAndServiceForUser,
   updateRequestById,
 } = require("./../../infrastructure/organisations");
-const { updateIndex, createIndex } = require("./../../infrastructure/search");
-const { searchUserByIdRaw } = require("login.dfe.api-client/users");
+const { createIndex } = require("./../../infrastructure/search");
+const {
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 const { mapRole } = require("./../../infrastructure/utils");
 const { waitForIndexToUpdate, isSelfManagement } = require("./utils");
 const Account = require("./../../infrastructure/account");
@@ -302,12 +305,10 @@ const post = async (req, res) => {
           roleId: req.session.user.permission,
         };
         currentOrganisationDetails.push(newOrgDetails);
-        await updateIndex(
-          req.params.uid,
-          currentOrganisationDetails,
-          null,
-          req.id,
-        );
+        await updateUserDetailsInSearchIndex({
+          userId: req.params.uid,
+          organisations: currentOrganisationDetails,
+        });
         await waitForIndexToUpdate(
           req.params.uid,
           (updated) =>
@@ -363,7 +364,10 @@ const post = async (req, res) => {
       let currentUserServices = getAllUserDetails.services || [];
       const newServices = req.session.user.services.map((x) => x.serviceId);
       currentUserServices = currentUserServices.concat(newServices);
-      await updateIndex(uid, null, null, currentUserServices, req.id);
+      await updateUserDetailsInSearchIndex({
+        userId: uid,
+        services: currentUserServices,
+      });
       await waitForIndexToUpdate(
         uid,
         (updated) => updated.services.length === currentUserServices.length,

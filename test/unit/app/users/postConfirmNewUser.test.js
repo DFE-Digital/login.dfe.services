@@ -71,13 +71,15 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
 
 jest.mock("./../../../../src/infrastructure/search", () => {
   return {
-    updateIndex: jest.fn(),
     createIndex: jest.fn(),
   };
 });
 
 jest.mock("login.dfe.api-client/users", () => {
-  return { searchUserByIdRaw: jest.fn() };
+  return {
+    searchUserByIdRaw: jest.fn(),
+    updateUserDetailsInSearchIndex: jest.fn(),
+  };
 });
 
 jest.mock("./../../../../src/app/users/utils");
@@ -102,16 +104,16 @@ const {
 const {
   checkCacheForAllServices,
 } = require("./../../../../src/infrastructure/helpers/allServicesAppCache");
-const {
-  updateIndex,
-  createIndex,
-} = require("./../../../../src/infrastructure/search");
+const { createIndex } = require("./../../../../src/infrastructure/search");
 const Account = require("./../../../../src/infrastructure/account");
 const logger = require("./../../../../src/infrastructure/logger");
 
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
-const { searchUserByIdRaw } = require("login.dfe.api-client/users");
+const {
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 const sendUserAddedToOrganisationStub = jest.fn();
 const sendServiceAddedStub = jest.fn();
 const sendServiceRequestApprovedStub = jest.fn();
@@ -384,27 +386,29 @@ describe("when inviting a new user", () => {
 
     await postConfirmNewUser(req, res);
 
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toBe("user1");
-    expect(updateIndex.mock.calls[0][1]).toEqual([
-      {
-        categoryId: "004",
-        id: "org1",
-        name: "organisationId",
-        roleId: 0,
-        statusId: 1,
-      },
-      {
-        categoryId: "001",
-        id: "org2",
-        name: "organisation two",
-        urn: "12345",
-        establishmentNumber: "9876",
-        laNumber: "456",
-        roleId: 0,
-        statusId: 1,
-      },
-    ]);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledTimes(1);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledWith({
+      userId: "user1",
+      organisations: [
+        {
+          categoryId: "004",
+          id: "org1",
+          name: "organisationId",
+          roleId: 0,
+          statusId: 1,
+        },
+        {
+          categoryId: "001",
+          id: "org2",
+          name: "organisation two",
+          urn: "12345",
+          establishmentNumber: "9876",
+          laNumber: "456",
+          roleId: 0,
+          statusId: 1,
+        },
+      ],
+    });
   });
 
   it("then it should should audit an invited user", async () => {

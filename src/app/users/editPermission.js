@@ -3,8 +3,10 @@ const {
   putInvitationInOrganisation,
   getOrganisationAndServiceForUser,
 } = require("./../../infrastructure/organisations");
-const { updateIndex } = require("./../../infrastructure/search");
-const { searchUserByIdRaw } = require("login.dfe.api-client/users");
+const {
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 const {
   isServiceEmailNotificationAllowed,
 } = require("./../../infrastructure/applications");
@@ -83,7 +85,11 @@ const post = async (req, res) => {
     return org;
   });
 
-  await updateIndex(uid, updatedOrganisationDetails, null, null, req.id);
+  await updateUserDetailsInSearchIndex({
+    userId: uid,
+    organisations: updatedOrganisationDetails,
+  });
+
   await waitForIndexToUpdate(
     uid,
     (updated) =>
