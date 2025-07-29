@@ -1,4 +1,3 @@
-jest.mock("./../../../../src/infrastructure/access");
 jest.mock("./../../../../src/infrastructure/config", () =>
   require("./../../../utils/jestMocks").mockConfig(),
 );

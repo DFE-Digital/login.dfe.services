@@ -7,7 +7,7 @@ const {
   checkCacheForAllServices,
 } = require("../../../../src/infrastructure/helpers/allServicesAppCache");
 const { getUserDetails } = require("../../../../src/app/users/utils");
-const { updateUserService } = require("../../../../src/infrastructure/access");
+const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   isServiceEmailNotificationAllowed,
@@ -32,9 +32,9 @@ jest.mock("../../../../src/app/users/utils");
 jest.mock("../../../../src/infrastructure/logger", () =>
   require("./../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("../../../../src/infrastructure/access", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    updateUserService: jest.fn(),
+    updateUserServiceRoles: jest.fn(),
   };
 });
 jest.mock("login.dfe.api-client/services", () => {
@@ -263,12 +263,13 @@ describe("When approving a sub service request", () => {
   it("then it should update the end user service with the new roles", async () => {
     await postApproveRolesRequest(req, res);
 
-    expect(updateUserService.mock.calls).toHaveLength(1);
-    expect(updateUserService.mock.calls[0][0]).toBe("endUser1");
-    expect(updateUserService.mock.calls[0][1]).toBe("service1");
-    expect(updateUserService.mock.calls[0][2]).toBe("organisationId");
-    expect(updateUserService.mock.calls[0][3]).toEqual(["role1"]);
-    expect(updateUserService.mock.calls[0][4]).toBe("correlationId");
+    expect(updateUserServiceRoles.mock.calls).toHaveLength(1);
+    expect(updateUserServiceRoles).toBeCalledWith({
+      userId: "endUser1",
+      serviceId: "service1",
+      organisationId: "organisationId",
+      serviceRoleIds: ["role1"],
+    });
   });
 
   it("then it should check if email notification is allowed for service", async () => {

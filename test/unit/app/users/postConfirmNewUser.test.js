@@ -33,11 +33,14 @@ jest.mock("login.dfe.dao", () => {
     },
   };
 });
-
-jest.mock("./../../../../src/infrastructure/access", () => {
+jest.mock("login.dfe.api-client/invitations", () => {
   return {
-    addInvitationService: jest.fn(),
-    addUserService: jest.fn(),
+    addServiceToInvitation: jest.fn(),
+  };
+});
+jest.mock("login.dfe.api-client/users", () => {
+  return {
+    addServiceToUser: jest.fn(),
   };
 });
 jest.mock("login.dfe.api-client/services", () => {
@@ -83,10 +86,8 @@ jest.mock("./../../../../src/infrastructure/logger", () =>
   require("./../../../utils/jestMocks").mockLogger(),
 );
 
-const {
-  addInvitationService,
-  addUserService,
-} = require("./../../../../src/infrastructure/access");
+const { addServiceToInvitation } = require("login.dfe.api-client/invitations");
+const { addServiceToUser } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   putUserInOrganisation,
@@ -232,8 +233,8 @@ describe("when inviting a new user", () => {
 
     putInvitationInOrganisation.mockReset();
     putUserInOrganisation.mockReset();
-    addInvitationService.mockReset();
-    addUserService.mockReset();
+    addServiceToInvitation.mockReset();
+    addServiceToUser.mockReset();
     createIndex.mockReset();
     getOrganisationById.mockReset().mockReturnValue({
       id: "org2",
@@ -334,13 +335,13 @@ describe("when inviting a new user", () => {
   it("then it should add services to invitation for organisation", async () => {
     req.params.uid = "inv-invite1";
     await postConfirmNewUser(req, res);
-
-    expect(addInvitationService.mock.calls).toHaveLength(1);
-    expect(addInvitationService.mock.calls[0][0]).toBe("invite1");
-    expect(addInvitationService.mock.calls[0][1]).toBe("service1");
-    expect(addInvitationService.mock.calls[0][2]).toBe("org1");
-    expect(addInvitationService.mock.calls[0][3]).toEqual([]);
-    expect(addInvitationService.mock.calls[0][4]).toBe("correlationId");
+    expect(addServiceToInvitation).toHaveBeenCalledTimes(1);
+    expect(addServiceToInvitation).toHaveBeenCalledWith({
+      invitationId: "invite1",
+      serviceId: "service1",
+      organisationId: "org1",
+      serviceRoleIds: [],
+    });
   });
 
   it("then it should add user to organisation if through invite journey", async () => {
@@ -368,12 +369,13 @@ describe("when inviting a new user", () => {
     req.params.uid = "user1";
     await postConfirmNewUser(req, res);
 
-    expect(addUserService.mock.calls).toHaveLength(1);
-    expect(addUserService.mock.calls[0][0]).toBe("user1");
-    expect(addUserService.mock.calls[0][1]).toBe("service1");
-    expect(addUserService.mock.calls[0][2]).toBe("org1");
-    expect(addUserService.mock.calls[0][3]).toEqual([]);
-    expect(addUserService.mock.calls[0][4]).toBe("correlationId");
+    expect(addServiceToUser).toHaveBeenCalledTimes(1);
+    expect(addServiceToUser).toHaveBeenCalledWith({
+      userId: "user1",
+      serviceId: "service1",
+      organisationId: "org1",
+      serviceRoleIds: [],
+    });
   });
 
   it("then it should patch the user with the org added if existing user", async () => {

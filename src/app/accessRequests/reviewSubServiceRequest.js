@@ -1,5 +1,5 @@
 const Account = require("./../../infrastructure/account");
-const { updateUserService } = require("../../infrastructure/access");
+const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { updateServiceRequest } = require("../requestService/utils");
 const {
   getSubServiceRequestVieModel,
@@ -160,13 +160,12 @@ const post = async (req, res) => {
     model.viewModel.role_ids.forEach((element) => {
       requestedIds.push(element.id);
     });
-    await updateUserService(
-      model.viewModel.user_id,
-      model.viewModel.service_id,
-      model.viewModel.org_id,
-      requestedIds,
-      req.params.rid,
-    );
+    await updateUserServiceRoles({
+      userId: model.viewModel.user_id,
+      serviceId: model.viewModel.service_id,
+      organisationId: model.viewModel.org_id,
+      serviceRoleIds: requestedIds,
+    });
     if (request.success) {
       const rolesName = model.viewModel.roles.map((i) => i?.name);
       const serviceName = model.viewModel.Service_name;
