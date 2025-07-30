@@ -1,38 +1,5 @@
 const Account = require("./Account");
-const config = require("./../config");
-const { fetchApi } = require("login.dfe.async-retry");
-const jwtStrategy = require("login.dfe.jwt-strategies");
 const { directories, invitation } = require("login.dfe.dao");
-
-const callDirectoriesApi = async (resource, body, method = "POST") => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-  try {
-    const opts = {
-      method,
-      headers: {
-        authorization: `bearer ${token}`,
-      },
-    };
-    if (method === "POST" || method === "PATCH") {
-      opts.body = body;
-    }
-    const result = await fetchApi(
-      `${config.directories.service.url}/${resource}`,
-      opts,
-    );
-
-    return {
-      success: true,
-      result,
-    };
-  } catch (e) {
-    return {
-      success: false,
-      statusCode: e.statusCode,
-      errorMessage: e.message,
-    };
-  }
-};
 
 const mapInvitationEntity = (entity) => {
   if (!entity) {
@@ -119,15 +86,6 @@ class DirectoriesApiAccount extends Account {
     let entity = await invitation.findInvitationForEmail(email, true);
     let mappedEntity = mapInvitationEntity(entity);
     return mappedEntity;
-  }
-
-  async validatePassword(password) {
-    const username = this.claims.email;
-    const response = await callDirectoriesApi("users/authenticate", {
-      username,
-      password,
-    });
-    return response.success;
   }
 
   async setPassword(password) {
