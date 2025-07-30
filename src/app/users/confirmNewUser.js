@@ -15,10 +15,10 @@ const {
   getOrganisationAndServiceForUser,
   updateRequestById,
 } = require("./../../infrastructure/organisations");
-const { createIndex } = require("./../../infrastructure/search");
 const {
   searchUserByIdRaw,
   updateUserDetailsInSearchIndex,
+  updateUserInSearchIndex,
 } = require("login.dfe.api-client/users");
 const { mapRole } = require("./../../infrastructure/utils");
 const { waitForIndexToUpdate, isSelfManagement } = require("./utils");
@@ -317,7 +317,7 @@ const post = async (req, res) => {
       }
     } else {
       // post new inv to search index
-      const createUserIndex = await createIndex(uid, req.id);
+      const createUserIndex = await updateUserInSearchIndex({ id: uid });
       if (!createUserIndex) {
         logger.error(`Failed to create user in index ${uid}`, {
           correlationId: req.id,

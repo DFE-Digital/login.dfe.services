@@ -69,16 +69,11 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
   createInvite: jest.fn(),
 }));
 
-jest.mock("./../../../../src/infrastructure/search", () => {
-  return {
-    createIndex: jest.fn(),
-  };
-});
-
 jest.mock("login.dfe.api-client/users", () => {
   return {
     searchUserByIdRaw: jest.fn(),
     updateUserDetailsInSearchIndex: jest.fn(),
+    updateUserInSearchIndex: jest.fn(),
   };
 });
 
@@ -104,7 +99,6 @@ const {
 const {
   checkCacheForAllServices,
 } = require("./../../../../src/infrastructure/helpers/allServicesAppCache");
-const { createIndex } = require("./../../../../src/infrastructure/search");
 const Account = require("./../../../../src/infrastructure/account");
 const logger = require("./../../../../src/infrastructure/logger");
 
@@ -113,6 +107,7 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   searchUserByIdRaw,
   updateUserDetailsInSearchIndex,
+  updateUserInSearchIndex,
 } = require("login.dfe.api-client/users");
 const sendUserAddedToOrganisationStub = jest.fn();
 const sendServiceAddedStub = jest.fn();
@@ -239,7 +234,7 @@ describe("when inviting a new user", () => {
     putUserInOrganisation.mockReset();
     addInvitationService.mockReset();
     addUserService.mockReset();
-    createIndex.mockReset();
+    updateUserInSearchIndex.mockReset();
     getOrganisationById.mockReset().mockReturnValue({
       id: "org2",
       name: "organisation two",
