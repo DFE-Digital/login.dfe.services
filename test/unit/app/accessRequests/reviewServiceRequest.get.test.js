@@ -18,9 +18,9 @@ jest.mock("../../../../src/infrastructure/logger", () =>
 jest.mock("login.dfe.dao", () => require("../../../utils/jestMocks").mockDao());
 jest.mock("../../../../src/app/accessRequests/utils");
 jest.mock("login.dfe.policy-engine");
-jest.mock("../../../../src/infrastructure/access", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    updateUserService: jest.fn(),
+    updateUserServiceRoles: jest.fn(),
   };
 });
 

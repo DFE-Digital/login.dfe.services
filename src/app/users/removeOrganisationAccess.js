@@ -10,14 +10,15 @@ const {
   deleteInvitationOrganisation,
   getOrganisationAndServiceForUser,
 } = require("./../../infrastructure/organisations");
-const {
-  removeServiceFromInvitation,
-} = require("./../../infrastructure/access");
+
 const {
   deleteUserServiceAccess,
   searchUserByIdRaw,
   updateUserDetailsInSearchIndex,
 } = require("login.dfe.api-client/users");
+const {
+  deleteServiceAccessFromInvitation,
+} = require("login.dfe.api-client/invitations");
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -75,12 +76,12 @@ const post = async (req, res) => {
     invitedUser = true;
     for (let i = 0; i < servicesForUser.length; i++) {
       const service = servicesForUser[i];
-      await removeServiceFromInvitation(
-        uid.substr(4),
-        service.id,
+      await deleteServiceAccessFromInvitation({
+        invitationId: uid.substr(4),
+
+        serviceId: service.id,
         organisationId,
-        req.id,
-      );
+      });
     }
     await deleteInvitationOrganisation(uid.substr(4), organisationId);
   } else {

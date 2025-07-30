@@ -1,7 +1,6 @@
-jest.mock("./../../../../src/infrastructure/access", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    addInvitationService: jest.fn(),
-    addUserService: jest.fn(),
+    addServiceToUser: jest.fn(),
   };
 });
 jest.mock("login.dfe.api-client/services", () => {
@@ -152,7 +151,7 @@ describe("when displaying the confirm new user view", () => {
     await getConfirmNewUser(req, res);
 
     expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
-    expect(getServiceRolesRaw).toBeCalledWith({ serviceId: "service1" });
+    expect(getServiceRolesRaw).toHaveBeenCalledWith({ serviceId: "service1" });
   });
 
   it("then it should return the confirm new user view", async () => {

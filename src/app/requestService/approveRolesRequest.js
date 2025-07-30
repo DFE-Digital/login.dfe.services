@@ -1,4 +1,4 @@
-const { updateUserService } = require("../../../src/infrastructure/access");
+const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("../users/utils");
 const { actions } = require("../constans/actions");
@@ -214,7 +214,12 @@ const post = async (req, res) => {
     }
   }
 
-  await updateUserService(endUserId, serviceId, orgId, roles, reqId);
+  await updateUserServiceRoles({
+    userId: endUserId,
+    serviceId,
+    organisationId: orgId,
+    serviceRoleIds: roles,
+  });
 
   await createSubServiceAddedBanners(endUserId, service.name, rolesName);
 

@@ -6,13 +6,15 @@ const {
   isRemoveService,
 } = require("./utils");
 const {
-  removeServiceFromInvitation,
-} = require("./../../infrastructure/access");
-const {
   deleteUserServiceAccess,
   searchUserByIdRaw,
   updateUserDetailsInSearchIndex,
 } = require("login.dfe.api-client/users");
+
+const {
+  deleteServiceAccessFromInvitation,
+} = require("login.dfe.api-client/invitations");
+
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const {
@@ -96,12 +98,11 @@ const post = async (req, res) => {
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
 
   if (uid.startsWith("inv-")) {
-    await removeServiceFromInvitation(
-      uid.substr(4),
+    await deleteServiceAccessFromInvitation({
+      invitationId: uid.substr(4),
       serviceId,
       organisationId,
-      req.id,
-    );
+    });
   } else {
     await deleteUserServiceAccess({ userId: uid, serviceId, organisationId });
     if (isEmailAllowed) {
