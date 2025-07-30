@@ -3,7 +3,6 @@ const { mockAdapterConfig } = require("../../../../utils/jestMocks");
 jest.mock("login.dfe.async-retry", () => ({
   fetchApi: jest.fn(),
 }));
-jest.mock("login.dfe.jwt-strategies");
 jest.mock("./../../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
@@ -34,15 +33,8 @@ describe("When setting a users password", () => {
   const password = "new-password";
 
   let account;
-  let getBearerToken;
 
   beforeEach(() => {
-    getBearerToken = jest.fn().mockReturnValue("token");
-    const jwtStrategy = require("login.dfe.jwt-strategies");
-    jwtStrategy.mockImplementation(() => ({
-      getBearerToken,
-    }));
-
     fetchApi.mockReset();
     const Account = require("./../../../../../src/infrastructure/account/DirectoriesApiAccount");
     account = Account.fromContext(user);
