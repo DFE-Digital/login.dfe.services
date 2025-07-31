@@ -10,8 +10,13 @@ jest.mock("login.dfe.dao", () =>
 jest.mock("./../../../../src/app/accessRequests/utils");
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("./../../../../src/infrastructure/organisations");
-jest.mock("./../../../../src/infrastructure/search");
 jest.mock("login.dfe.jobs-client");
+jest.mock("login.dfe.api-client/users", () => {
+  return {
+    searchUserByIdRaw: jest.fn(),
+    updateUserDetailsInSearchIndex: jest.fn(),
+  };
+});
 
 const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 const {
@@ -24,9 +29,9 @@ const {
   getOrganisationById,
 } = require("./../../../../src/infrastructure/organisations");
 const {
-  getById,
-  updateIndex,
-} = require("./../../../../src/infrastructure/search");
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 const {
   getAndMapOrgRequest,
 } = require("./../../../../src/app/accessRequests/utils");
@@ -79,8 +84,8 @@ describe("when reviewing an organisation request", () => {
         id: 1,
       },
     });
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [],
     });
     getAndMapOrgRequest.mockReset().mockReturnValue({
@@ -240,21 +245,23 @@ describe("when reviewing an organisation request", () => {
 
   it("then it should update the search index with the new org", async () => {
     await post(req, res);
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toBe("userId");
-    expect(updateIndex.mock.calls[0][1]).toEqual([
-      {
-        categoryId: "001",
-        establishmentNumber: undefined,
-        id: "org1",
-        laNumber: undefined,
-        name: "organisation two",
-        roleId: 0,
-        statusId: 1,
-        uid: undefined,
-        urn: undefined,
-      },
-    ]);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledTimes(1);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenLastCalledWith({
+      userId: "userId",
+      organisations: [
+        {
+          categoryId: "001",
+          establishmentNumber: undefined,
+          id: "org1",
+          laNumber: undefined,
+          name: "organisation two",
+          roleId: 0,
+          statusId: 1,
+          uid: undefined,
+          urn: undefined,
+        },
+      ],
+    });
   });
 
   it("then it should should audit approved org request", async () => {

@@ -1,14 +1,10 @@
 const { mapUserStatus } = require("./../../infrastructure/utils");
-const {
-  getAllUsersForOrg,
-  searchForUsers,
-} = require("../../infrastructure/search");
 const { getById } = require("../../infrastructure/account");
 const { getApproverOrgsFromReq } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { actions } = require("../constans/actions");
 const he = require("he");
-
+const { searchUsersRaw } = require("login.dfe.api-client/users");
 const clearUserSessionData = (req) => {
   if (req.session.user) {
     req.session.user = undefined;
@@ -46,25 +42,25 @@ const search = async (req) => {
 
   let usersForOrganisation;
   if (paramsSource.searchCriteria && paramsSource.searchCriteria.length >= 3) {
-    usersForOrganisation = await searchForUsers(
-      `${paramsSource.searchCriteria}*`,
-      page,
-      sortBy,
-      sortAsc ? "asc" : "desc",
-      {
-        filter_organisations: filteredOrgIds,
+    usersForOrganisation = await searchUsersRaw({
+      searchCriteria: `${paramsSource.searchCriteria}*`,
+      pageNumber: page,
+      filterBy: {
+        organisationIds: filteredOrgIds,
       },
-      ["firstName", "lastName"],
-      req.id,
-    );
-  } else {
-    usersForOrganisation = await getAllUsersForOrg(
-      page,
-      filteredOrgIds,
+      searchFields: ["firstName", "lastName"],
       sortBy,
-      sortAsc ? "asc" : "desc",
-      req.id,
-    );
+      sortDirection: sortAsc ? "asc" : "desc",
+    });
+  } else {
+    usersForOrganisation = await searchUsersRaw({
+      pageNumber: page,
+      filterBy: {
+        organisationIds: filteredOrgIds,
+      },
+      sortBy,
+      sortDirection: sortAsc ? "asc" : "desc",
+    });
   }
 
   if (usersForOrganisation.users.length) {

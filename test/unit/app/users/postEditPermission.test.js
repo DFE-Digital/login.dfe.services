@@ -15,10 +15,10 @@ jest.mock("./../../../../src/infrastructure/organisations", () => {
   };
 });
 
-jest.mock("./../../../../src/infrastructure/search", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    getById: jest.fn(),
-    updateIndex: jest.fn(),
+    searchUserByIdRaw: jest.fn(),
+    updateUserDetailsInSearchIndex: jest.fn(),
   };
 });
 
@@ -31,10 +31,11 @@ const {
   putInvitationInOrganisation,
   getOrganisationAndServiceForUser,
 } = require("./../../../../src/infrastructure/organisations");
+
 const {
-  getById,
-  updateIndex,
-} = require("./../../../../src/infrastructure/search");
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
@@ -111,8 +112,8 @@ describe("when editing organisation permission level", () => {
       lastName: "name",
     });
 
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [
         {
           id: "org1",
@@ -166,17 +167,19 @@ describe("when editing organisation permission level", () => {
 
   it("then it should update the search index with the new roleId", async () => {
     await postEditPermission(req, res);
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toBe("user1");
-    expect(updateIndex.mock.calls[0][1]).toEqual([
-      {
-        categoryId: "004",
-        id: "org1",
-        name: "organisationId",
-        roleId: 10000,
-        statusId: 1,
-      },
-    ]);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledTimes(1);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledWith({
+      userId: "user1",
+      organisations: [
+        {
+          categoryId: "004",
+          id: "org1",
+          name: "organisationId",
+          roleId: 10000,
+          statusId: 1,
+        },
+      ],
+    });
   });
 
   it("then it should should audit permission level being edited", async () => {

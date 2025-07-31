@@ -14,10 +14,10 @@ const {
   updateRequestById,
 } = require("./../../infrastructure/organisations");
 const {
-  getById,
-  updateIndex,
-  createIndex,
-} = require("./../../infrastructure/search");
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+  updateUserInSearchIndex,
+} = require("login.dfe.api-client/users");
 const { mapRole } = require("./../../infrastructure/utils");
 const { waitForIndexToUpdate, isSelfManagement } = require("./utils");
 const Account = require("./../../infrastructure/account");
@@ -268,7 +268,9 @@ const post = async (req, res) => {
   if (req.session.user.isInvite) {
     if (req.params.uid) {
       // patch search index with organisation added to existing user or inv
-      const getAllUserDetails = await getById(req.params.uid, req.id);
+      const getAllUserDetails = await searchUserByIdRaw({
+        userId: req.params.uid,
+      });
       if (!getAllUserDetails) {
         logger.error(
           `Failed to find user ${req.params.uid} when confirming change of user permissions`,
@@ -299,12 +301,10 @@ const post = async (req, res) => {
           roleId: req.session.user.permission,
         };
         currentOrganisationDetails.push(newOrgDetails);
-        await updateIndex(
-          req.params.uid,
-          currentOrganisationDetails,
-          null,
-          req.id,
-        );
+        await updateUserDetailsInSearchIndex({
+          userId: req.params.uid,
+          organisations: currentOrganisationDetails,
+        });
         await waitForIndexToUpdate(
           req.params.uid,
           (updated) =>
@@ -313,7 +313,7 @@ const post = async (req, res) => {
       }
     } else {
       // post new inv to search index
-      const createUserIndex = await createIndex(uid, req.id);
+      const createUserIndex = await updateUserInSearchIndex({ id: uid });
       if (!createUserIndex) {
         logger.error(`Failed to create user in index ${uid}`, {
           correlationId: req.id,
@@ -350,7 +350,7 @@ const post = async (req, res) => {
     );
     res.redirect(`/approvals/users`);
   } else {
-    const getAllUserDetails = await getById(uid, req.id);
+    const getAllUserDetails = await searchUserByIdRaw({ userId: uid });
     if (!getAllUserDetails) {
       logger.error(
         `Failed to find user ${uid} when confirming change of user services`,
@@ -360,7 +360,10 @@ const post = async (req, res) => {
       let currentUserServices = getAllUserDetails.services || [];
       const newServices = req.session.user.services.map((x) => x.serviceId);
       currentUserServices = currentUserServices.concat(newServices);
-      await updateIndex(uid, null, null, currentUserServices, req.id);
+      await updateUserDetailsInSearchIndex({
+        userId: uid,
+        services: currentUserServices,
+      });
       await waitForIndexToUpdate(
         uid,
         (updated) => updated.services.length === currentUserServices.length,

@@ -72,11 +72,12 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
   createInvite: jest.fn(),
 }));
 
-jest.mock("./../../../../src/infrastructure/search", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    getById: jest.fn(),
-    updateIndex: jest.fn(),
-    createIndex: jest.fn(),
+    searchUserByIdRaw: jest.fn(),
+    updateUserDetailsInSearchIndex: jest.fn(),
+    updateUserInSearchIndex: jest.fn(),
+    addServiceToUser: jest.fn(),
   };
 });
 
@@ -87,7 +88,6 @@ jest.mock("./../../../../src/infrastructure/logger", () =>
 );
 
 const { addServiceToInvitation } = require("login.dfe.api-client/invitations");
-const { addServiceToUser } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   putUserInOrganisation,
@@ -100,16 +100,17 @@ const {
 const {
   checkCacheForAllServices,
 } = require("./../../../../src/infrastructure/helpers/allServicesAppCache");
-const {
-  getById,
-  updateIndex,
-  createIndex,
-} = require("./../../../../src/infrastructure/search");
 const Account = require("./../../../../src/infrastructure/account");
 const logger = require("./../../../../src/infrastructure/logger");
 
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
+const {
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+  updateUserInSearchIndex,
+  addServiceToUser,
+} = require("login.dfe.api-client/users");
 const sendUserAddedToOrganisationStub = jest.fn();
 const sendServiceAddedStub = jest.fn();
 const sendServiceRequestApprovedStub = jest.fn();
@@ -235,7 +236,8 @@ describe("when inviting a new user", () => {
     putUserInOrganisation.mockReset();
     addServiceToInvitation.mockReset();
     addServiceToUser.mockReset();
-    createIndex.mockReset();
+    updateUserInSearchIndex.mockReset();
+    updateUserInSearchIndex.mockReset();
     getOrganisationById.mockReset().mockReturnValue({
       id: "org2",
       name: "organisation two",
@@ -265,8 +267,8 @@ describe("when inviting a new user", () => {
       companyRegistrationNumber: null,
     });
 
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [
         {
           id: "org1",
@@ -383,27 +385,29 @@ describe("when inviting a new user", () => {
 
     await postConfirmNewUser(req, res);
 
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toBe("user1");
-    expect(updateIndex.mock.calls[0][1]).toEqual([
-      {
-        categoryId: "004",
-        id: "org1",
-        name: "organisationId",
-        roleId: 0,
-        statusId: 1,
-      },
-      {
-        categoryId: "001",
-        id: "org2",
-        name: "organisation two",
-        urn: "12345",
-        establishmentNumber: "9876",
-        laNumber: "456",
-        roleId: 0,
-        statusId: 1,
-      },
-    ]);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledTimes(1);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledWith({
+      userId: "user1",
+      organisations: [
+        {
+          categoryId: "004",
+          id: "org1",
+          name: "organisationId",
+          roleId: 0,
+          statusId: 1,
+        },
+        {
+          categoryId: "001",
+          id: "org2",
+          name: "organisation two",
+          urn: "12345",
+          establishmentNumber: "9876",
+          laNumber: "456",
+          roleId: 0,
+          statusId: 1,
+        },
+      ],
+    });
   });
 
   it("then it should should audit an invited user", async () => {

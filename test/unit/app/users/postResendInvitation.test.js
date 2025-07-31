@@ -15,15 +15,18 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
   updateInvite: jest.fn(),
 }));
 
-jest.mock("./../../../../src/infrastructure/search", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    updateIndex: jest.fn(),
+    updateUserDetailsInSearchIndex: jest.fn(),
   };
 });
+
 jest.mock("./../../../../src/app/users/utils");
 
 const Account = require("./../../../../src/infrastructure/account");
-const { updateIndex } = require("./../../../../src/infrastructure/search");
+const {
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 const logger = require("./../../../../src/infrastructure/logger");
 const config = require("../../../../src/infrastructure/config");
 
@@ -246,12 +249,11 @@ describe("when resending an invitation", () => {
 
   it("then it should update the search index with the new email if email changed", async () => {
     await postResendInvitation(req, res);
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toBe("user1");
-    expect(updateIndex.mock.calls[0][1]).toEqual(null);
-    expect(updateIndex.mock.calls[0][2]).toEqual("johndoe@someschool.com");
-    expect(updateIndex.mock.calls[0][3]).toEqual(null);
-    expect(updateIndex.mock.calls[0][4]).toEqual("correlationId");
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledTimes(1);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledWith({
+      userId: "user1",
+      userEmail: "johndoe@someschool.com",
+    });
   });
 
   it("then it should resend invite if email not changed", async () => {

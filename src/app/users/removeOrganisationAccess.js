@@ -10,11 +10,15 @@ const {
   deleteInvitationOrganisation,
   getOrganisationAndServiceForUser,
 } = require("./../../infrastructure/organisations");
+
+const {
+  deleteUserServiceAccess,
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 const {
   deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
-const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
-const { getById, updateIndex } = require("./../../infrastructure/search");
 
 const get = async (req, res) => {
   if (!req.session.user) {
@@ -61,7 +65,9 @@ const post = async (req, res) => {
     organisationId,
     req.id,
   );
-  const userDetails = await getById(uid, req.id);
+  const userDetails = await searchUserByIdRaw({
+    userId: uid,
+  });
   const currentOrganisationDetails = userDetails.organisations;
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
   var invitedUser = false;
@@ -109,7 +115,11 @@ const post = async (req, res) => {
   const updatedOrganisationDetails = currentOrganisationDetails.filter(
     (org) => org.id !== organisationId,
   );
-  await updateIndex(uid, updatedOrganisationDetails, null, null, req.id);
+  await updateUserDetailsInSearchIndex({
+    userId: uid,
+    organisations: updatedOrganisationDetails,
+  });
+
   await waitForIndexToUpdate(
     uid,
     (updated) =>

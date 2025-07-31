@@ -19,12 +19,13 @@ jest.mock("login.dfe.api-client/invitations", () => {
   };
 });
 
-jest.mock("./../../../../src/infrastructure/search", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    getById: jest.fn(),
-    updateIndex: jest.fn(),
+    searchUserByIdRaw: jest.fn(),
+    updateUserDetailsInSearchIndex: jest.fn(),
   };
 });
+
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
@@ -37,10 +38,11 @@ const {
   deleteInvitationOrganisation,
   deleteUserOrganisation,
 } = require("./../../../../src/infrastructure/organisations");
+
 const {
-  getById,
-  updateIndex,
-} = require("./../../../../src/infrastructure/search");
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 
 const sendUserRemovedFromOrganisationStub = jest.fn();
 
@@ -106,8 +108,8 @@ describe("when removing organisation access", () => {
       status: "active",
     });
 
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [
         {
           id: "org1",
@@ -150,9 +152,11 @@ describe("when removing organisation access", () => {
   it("then it should patch the user with the org removed", async () => {
     await postRemoveOrganisationAccess(req, res);
 
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toBe("user1");
-    expect(updateIndex.mock.calls[0][1]).toEqual([]);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledTimes(1);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledWith({
+      userId: "user1",
+      organisations: [],
+    });
   });
 
   it("then it should should audit user being removed from org", async () => {
@@ -222,8 +226,8 @@ describe("when removing organisation access", () => {
     );
   });
   it("then it should not send an email notification to deactivated user", async () => {
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [
         {
           id: "org1",
@@ -240,7 +244,7 @@ describe("when removing organisation access", () => {
 
     expect(sendUserRemovedFromOrganisationStub.mock.calls).toHaveLength(0);
     expect(res.flash.mock.calls).toHaveLength(3);
-    expect(updateIndex.mock.calls).toHaveLength(1);
+    expect(updateUserDetailsInSearchIndex.mock.calls).toHaveLength(1);
     expect(deleteUserOrganisation.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls).toHaveLength(1);
