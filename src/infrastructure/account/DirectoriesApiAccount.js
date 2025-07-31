@@ -88,11 +88,6 @@ class DirectoriesApiAccount extends Account {
     return mappedEntity;
   }
 
-  async setPassword(password) {
-    const uid = this.claims.sub;
-    return await directories.changePassword(uid, password);
-  }
-
   static async getUsersById(ids) {
     let idList = [];
 

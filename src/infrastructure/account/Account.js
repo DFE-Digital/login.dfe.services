@@ -31,9 +31,6 @@ class Account {
     return Promise.resolve(null);
   }
 
-  static async setPassword() {
-    return Promise.resolve(null);
-  }
   static async getUsersById() {
     return Promise.resolve(null);
   }
