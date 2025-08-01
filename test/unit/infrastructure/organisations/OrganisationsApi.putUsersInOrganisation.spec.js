@@ -1,9 +1,6 @@
 jest.mock("login.dfe.async-retry", () => ({
   fetchApi: jest.fn(),
 }));
-jest.mock("login.dfe.jwt-strategies", () => () => ({
-  getBearerToken: () => "token",
-}));
 jest.mock("./../../../../src/infrastructure/config", () => {
   return {
     organisations: {
