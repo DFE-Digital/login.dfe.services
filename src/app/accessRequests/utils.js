@@ -13,6 +13,7 @@ const {
 } = require("./../../infrastructure/organisations");
 
 const { services } = require("login.dfe.dao");
+const { getUserService } = require("login.dfe.api-client/users");
 
 const getSubServiceRequestVieModel = async (model, requestId, req) => {
   let viewModel = {};
@@ -82,6 +83,16 @@ const getAndMapOrgRequest = async (req) => {
     const approver = request.actioned_by
       ? await Account.getById(request.actioned_by)
       : null;
+    // support service id and organisation needs to be put in config
+    // const supportServiceId = config.support_service_id
+    // const supportOrganisationId = config.support_organisation_id
+    // TODO if approver is present, check if they're a support user by calling getUserService from api-client
+    // const response = getUserService(request.actioned_by, supportServiceId, supportOrganisationId)
+    // If (response.status !== 404) {
+    //  approverName = 'generic approver name';
+    //  approverEmail = newApprover.dfesignin@education.gov.uk;
+    // }
+
     const user = await Account.getById(request.user_id);
     const usersName = user
       ? `${user.claims.given_name} ${user.claims.family_name}`
@@ -115,6 +126,15 @@ const getAndMapServiceRequest = async (serviceReqId) => {
     const approver = userServiceRequest.actioned_by
       ? await Account.getById(userServiceRequest.actioned_by)
       : null;
+    // support service id and organisation needs to be put in config
+    // const supportServiceId = config.support_service_id
+    // const supportOrganisationId = config.support_organisation_id
+    // TODO if approver is present, check if they're a support user by calling getUserService from api-client
+    // const response = getUserService(request.actioned_by, supportServiceId, supportOrganisationId)
+    // If (response.status !== 404) {
+    //  approverName = 'generic approver name';
+    //  approverEmail = newApprover.dfesignin@education.gov.uk;
+    // }
     const endUser = await Account.getById(userServiceRequest.user_id);
     const endUsersGivenName = endUser ? `${endUser.claims.given_name}` : "";
     const endUsersFamilyName = endUser ? `${endUser.claims.family_name}` : "";
