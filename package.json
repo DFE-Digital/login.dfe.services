@@ -9,7 +9,7 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "dev": "settings='./config/login.dfe.services.dev.json' node src/index.js",
+    "dev": "node src/index.js",
     "dev:checks": "npm run lint && npm run test",
     "start": "node src/index.js",
     "format": "prettier . --write",
