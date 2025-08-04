@@ -69,6 +69,16 @@ const adapterSchema = new SimpleSchema({
   },
 });
 
+const accessIdentifiers = new SimpleSchema({
+  identifiers: {
+    type: Object,
+  },
+  'identifiers.service': patterns.uuid,
+  'identifiers.organisation': patterns.uuid,
+});
+
+accessIdentifiers.extend(schemas.apiClient);
+
 const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
   hostingEnvironment: schemas.hostingEnvironment,
@@ -76,7 +86,7 @@ const schema = new SimpleSchema({
   directories: schemas.apiClient,
   organisations: schemas.apiClient,
   applications: schemas.apiClient,
-  access: schemas.apiClient,
+  access: accessIdentifiers,
   search: schemas.apiClient,
   database: schemas.sequelizeConnection,
   toggles: togglesSchema,
