@@ -308,13 +308,6 @@ const init = async () => {
         }`,
       );
     });
-  } else if (config.hostingEnvironment.env === "docker") {
-    process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
-    app.listen(config.hostingEnvironment.port, () => {
-      logger.info(
-        `Server listening on http://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`,
-      );
-    });
   } else {
     app.listen(process.env.PORT, () => {
       logger.info(
