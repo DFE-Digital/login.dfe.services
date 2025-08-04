@@ -26,7 +26,12 @@ const get = async (req, res) => {
     : "";
 
   if (request.approverEmail) {
-    res.flash("warn", `Request already actioned by ${request.approverEmail}`);
+    res.flash("title", `Warning`);
+    res.flash("heading", `Request already actioned`);
+    res.flash(
+      "message",
+      `Request already actioned by ${request.approverEmail}`,
+    );
     return res.redirect(`/access-requests/requests`);
   }
   return res.render("accessRequests/views/reviewOrganisationRequest", {

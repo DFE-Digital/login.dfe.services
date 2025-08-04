@@ -93,14 +93,14 @@ const getAndMapOrgRequest = async (req) => {
       const supportOrganisationId = config.access.identifiers.organisation;
 
       // If approver is present, check if they're a support user by calling getUserService from api-client
-      const response = getUserService(
-        request.actioned_by,
-        supportServiceId,
-        supportOrganisationId,
-      );
-      if (response.status !== 404) {
-        approverName = "generic approver name";
-        approverEmail = "newApprover.dfesignin@education.gov.uk";
+      const response = await getUserService({
+        userId: request.actioned_by,
+        serviceId: supportServiceId,
+        organisationId: supportOrganisationId,
+      });
+      if (response !== null) {
+        approverName = "DfE Sign-in support team";
+        approverEmail = "NewApprover.dfesignin@education.gov.uk";
       } else {
         approverName = `${approver.given_name} ${approver.family_name}`;
         approverEmail = approver.email;
@@ -146,14 +146,14 @@ const getAndMapServiceRequest = async (serviceReqId) => {
       const supportOrganisationId = config.access.identifiers.organisation;
 
       // If approver is present, check if they're a support user by calling getUserService from api-client
-      const response = getUserService(
-        userServiceRequest.actioned_by,
-        supportServiceId,
-        supportOrganisationId,
-      );
-      if (response.status !== 404) {
-        approverName = "generic approver name";
-        approverEmail = "newApprover.dfesignin@education.gov.uk";
+      const response = await getUserService({
+        userId: userServiceRequest.actioned_by,
+        serviceId: supportServiceId,
+        organisationId: supportOrganisationId,
+      });
+      if (response !== null) {
+        approverName = "DfE Sign-in support team";
+        approverEmail = "NewApprover.dfesignin@education.gov.uk";
       } else {
         approverName = `${approver.given_name} ${approver.family_name}`;
         approverEmail = approver.email;
