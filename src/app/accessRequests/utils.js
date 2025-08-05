@@ -77,6 +77,13 @@ const getRoleAndServiceNames = async (subModel, requestId, req) => {
   return subModel;
 };
 
+/**
+ * Retrieves and maps data for a user organisation request.  Requires `params.rid` to be
+ * populated to find the request.
+ *
+ * @param {Object} [req] - request object that will contain the user organisation request id
+ * @returns {Object} An object representing the request with the data tidied and mapped
+ */
 const getAndMapOrgRequest = async (req) => {
   const request = await getRequestById(req.params.rid, req.id);
   let mappedRequest;
@@ -121,6 +128,12 @@ const getAndMapOrgRequest = async (req) => {
   return mappedRequest;
 };
 
+/**
+ * Deduplicates provided array of user ids and searches for user data based on those ids
+ *
+ * @param {Array} [usersForApproval] - Array of userIds
+ * @returns {Array} An array of user details for the provided ids
+ */
 const getUserDetails = async (usersForApproval) => {
   const allUserId = flatten(usersForApproval.map((user) => user.user_id));
   if (allUserId.length === 0) {
@@ -130,6 +143,12 @@ const getUserDetails = async (usersForApproval) => {
   return await Account.getUsersById(distinctUserIds);
 };
 
+/**
+ * Retrieves and maps data for a user service request
+ *
+ * @param {String} [serviceReqId] - Id of the user service request
+ * @returns {Object} An object representing the request with the data tidied and mapped
+ */
 const getAndMapServiceRequest = async (serviceReqId) => {
   const userServiceRequest = await services.getUserServiceRequest(serviceReqId);
   let mappedServiceRequest;
