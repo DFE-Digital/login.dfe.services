@@ -26,10 +26,10 @@ const config = {
   },
   hostingEnvironment: {
     useDevViews: false,
-    env: "azure",
-    host: process.env.STANDALONE_SERVICES_HOST_NAME,
+    env: process.env.LOCAL_ENV || "azure",
+    host: process.env.LOCAL_HOST || process.env.STANDALONE_SERVICES_HOST_NAME,
+    port: process.env.LOCAL_PORT_SERVICES || 443,
     hstsMaxAge: 86400,
-    port: 443,
     sslCert: process.env.LOCAL_SSL_CERT ? process.env.LOCAL_SSL_CERT.replace(/\\n/g, '\n') : "",
     sslKey: process.env.LOCAL_SSL_KEY ? process.env.LOCAL_SSL_KEY.replace(/\\n/g, '\n') : "",
     protocol: "https",
