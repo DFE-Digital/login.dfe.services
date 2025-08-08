@@ -97,4 +97,38 @@ describe("when reviewing an organisation request", () => {
       },
     });
   });
+
+  it("should flash a message if there is an approver email in the request", async () => {
+    getAndMapOrgRequest.mockReset().mockReturnValue({
+      usersName: "John Doe",
+      usersEmail: "john.doe@email.com",
+      id: "requestId",
+      org_id: "org1",
+      org_name: "Org 1",
+      user_id: "userId",
+      created_date: "2019-05-01",
+      actioned_date: null,
+      actioned_by: null,
+      actioned_reason: null,
+      approverEmail: "testUser@example.com",
+      reason: "",
+      status: {
+        id: 0,
+        name: "Pending",
+      },
+    });
+    await get(req, res);
+
+    expect(res.flash.mock.calls).toHaveLength(3);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/access-requests/requests");
+    expect(res.flash.mock.calls[0][0]).toBe("title");
+    expect(res.flash.mock.calls[0][1]).toBe("Important");
+    expect(res.flash.mock.calls[1][0]).toBe("heading");
+    expect(res.flash.mock.calls[1][1]).toBe("Request already actioned");
+    expect(res.flash.mock.calls[2][0]).toBe("message");
+    expect(res.flash.mock.calls[2][1]).toBe(
+      "Request already actioned by testUser@example.com",
+    );
+  });
 });

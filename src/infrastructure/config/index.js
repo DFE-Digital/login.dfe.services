@@ -93,7 +93,11 @@ const config = {
         clientSecret: process.env.AAD_SHD_CLIENT_SECRET,
         resource: process.env.AAD_SHD_APP_ID
       }
-    }
+    },
+    identifiers: {
+      service: process.env.IDENTIFIER_SUPPORT_SVC_ID,
+      organisation: process.env.IDENTIFIER_SUPPORT_ORG_ID,
+    },
   },
   applications: {
     type: "api",
