@@ -174,12 +174,38 @@ const generateFlashMessages = (
   return flashMessages;
 };
 
-const isAllowedToApproveReq = async (req, res, next) => {
+/**
+ * Middleware to verify a user has the approver role for an organisation when
+ * dealing with service requests.
+ */
+const isAllowedToApproveServiceReq = async (req, res, next) => {
   if (req.userOrganisations && req.params.rid) {
     const serviceSubServiceReq = await services.getUserServiceRequest(
       req.params.rid,
     );
     const orgId = serviceSubServiceReq.dataValues.organisation_id;
+    const userApproverOrgs = req.userOrganisations.filter(
+      (x) => x.role.id === 10000,
+    );
+    if (
+      userApproverOrgs.find(
+        (x) => x.organisation.id.toLowerCase() === orgId.toLowerCase(),
+      )
+    ) {
+      return next();
+    }
+  }
+  return res.status(401).render("errors/views/notAuthorised");
+};
+
+/**
+ * Middleware to verify a user has the approver role for an organisation when
+ * dealing with organisation requests.
+ */
+const isAllowedToApproveOrganisationReq = async (req, res, next) => {
+  if (req.userOrganisations && req.params.rid) {
+    const request = await getRequestById(req.params.rid, req.id);
+    const orgId = request.organisation_id;
     const userApproverOrgs = req.userOrganisations.filter(
       (x) => x.role.id === 10000,
     );
@@ -223,6 +249,7 @@ module.exports = {
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
   generateFlashMessages,
-  isAllowedToApproveReq,
+  isAllowedToApproveServiceReq,
+  isAllowedToApproveOrganisationReq,
   getOrganisationPermissionLevel,
 };

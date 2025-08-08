@@ -5,7 +5,10 @@ const {
 } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
 const { asyncWrapper } = require("login.dfe.express-error-handling");
-const { isAllowedToApproveReq } = require("./utils.js");
+const {
+  isAllowedToApproveServiceReq,
+  isAllowedToApproveOrganisationReq,
+} = require("./utils.js");
 const router = express.Router({ mergeParams: true });
 const {
   get: getAllRequestsForApproval,
@@ -56,25 +59,25 @@ const action = (csrf) => {
   router.get(
     "/subService-requests/:rid",
     csrf,
-    isAllowedToApproveReq,
+    isAllowedToApproveServiceReq,
     asyncWrapper(getReviewSubServiceRequest),
   );
   router.post(
     "/subService-requests/:rid",
     csrf,
-    isAllowedToApproveReq,
+    isAllowedToApproveServiceReq,
     asyncWrapper(postReviewSubServiceRequest),
   );
   router.get(
     "/subService-requests/:rid/rejected",
     csrf,
-    isAllowedToApproveReq,
+    isAllowedToApproveServiceReq,
     asyncWrapper(getRejectSubServiceRequest),
   );
   router.post(
     "/subService-requests/:rid/rejected",
     csrf,
-    isAllowedToApproveReq,
+    isAllowedToApproveServiceReq,
     asyncWrapper(postRejectSubServiceRequest),
   );
   router.get(
@@ -92,51 +95,51 @@ const action = (csrf) => {
   router.get(
     "/organisation-requests/:rid",
     csrf,
-    isApproverInSomeOrgs,
+    isAllowedToApproveOrganisationReq,
     asyncWrapper(getReviewOrganisationRequest),
   );
   router.post(
     "/organisation-requests/:rid",
     csrf,
-    isApproverInSomeOrgs,
+    isAllowedToApproveOrganisationReq,
     asyncWrapper(postReviewOrganisationRequest),
   );
   router.get(
     "/organisation-requests/:rid/rejected",
     csrf,
-    isApproverInSomeOrgs,
+    isAllowedToApproveOrganisationReq,
     asyncWrapper(getRejectOrganisationRequest),
   );
   router.post(
     "/organisation-requests/:rid/rejected",
     csrf,
-    isApproverInSomeOrgs,
+    isAllowedToApproveOrganisationReq,
     asyncWrapper(postRejectOrganisationRequest),
   );
 
   router.get(
     "/service-requests/:rid/services/:sid/roles/:rolesIds?",
     csrf,
-    isAllowedToApproveReq,
+    isAllowedToApproveServiceReq,
     asyncWrapper(getReviewServiceRequest),
   );
   router.post(
     "/service-requests/:rid/services/:sid/roles/:rolesIds?",
     csrf,
-    isAllowedToApproveReq,
+    isAllowedToApproveServiceReq,
     asyncWrapper(postReviewServiceRequest),
   );
 
   router.get(
     "/service-requests/:rid/services/:sid/roles/:rolesIds?/rejected",
     csrf,
-    isAllowedToApproveReq,
+    isAllowedToApproveServiceReq,
     asyncWrapper(getRejectServiceRequest),
   );
   router.post(
     "/service-requests/:rid/services/:sid/roles/:rolesIds?/rejected",
     csrf,
-    isAllowedToApproveReq,
+    isAllowedToApproveServiceReq,
     asyncWrapper(postRejectServiceRequest),
   );
 
