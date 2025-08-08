@@ -20,7 +20,7 @@ let req;
 let res;
 let next;
 
-describe("utils.getAndMapServiceRequest function", () => {
+describe("utils.isAllowedToApproveOrganisationReq function", () => {
   beforeEach(() => {
     // Removed a number of fields from userOrganisations for brevity
     const userOrganisations = [
@@ -123,14 +123,15 @@ describe("utils.getAndMapServiceRequest function", () => {
     });
   });
 
-  it("should invoke the next function if the user is an approver", async () => {
+  it("should invoke the next function if the user is an approver for the organisation", async () => {
+    // User is approver for org-1 and the request is for org-1
     await isAllowedToApproveOrganisationReq(req, res, next);
     expect(next).toHaveBeenCalledTimes(1);
     expect(res.status).toHaveBeenCalledTimes(0);
   });
 
-  it("should invoke the next function if the user is NOT an approver", async () => {
-    // User is an 'end user' for org-2
+  it("should render the notAuthorised page with a 401 if the user is NOT an approver", async () => {
+    // User is approver for org-1 but is an 'end user' for org-2
     getRequestById.mockReset().mockReturnValue({
       usersName: "John Doe",
       usersEmail: "john.doe@email.com",
@@ -149,6 +150,55 @@ describe("utils.getAndMapServiceRequest function", () => {
         name: "Pending",
       },
     });
+    await isAllowedToApproveOrganisationReq(req, res, next);
+    expect(next).toHaveBeenCalledTimes(0);
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.render).toHaveBeenCalledWith("errors/views/notAuthorised");
+  });
+
+  it("should render the notAuthorised page with a 401 if the user is an approver for another org", async () => {
+    // User only approver for org-1 but isn't associated with org-3 at all
+    getRequestById.mockReset().mockReturnValue({
+      usersName: "Another Person",
+      usersEmail: "another-person@email.com",
+      id: "org-req-1",
+      org_id: "org-3",
+      organisation_id: "org-3",
+      org_name: "Organisation 3",
+      user_id: "user-2",
+      created_date: "2025-05-01",
+      actioned_date: null,
+      actioned_by: null,
+      actioned_reason: null,
+      reason: "",
+      status: {
+        id: 0,
+        name: "Pending",
+      },
+    });
+    await isAllowedToApproveOrganisationReq(req, res, next);
+    expect(next).toHaveBeenCalledTimes(0);
+    expect(res.status).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.render).toHaveBeenCalledWith("errors/views/notAuthorised");
+  });
+
+  it("should render the notAuthorised page with a 401 if the user has no organisations assiociated with thier account", async () => {
+    req = mockRequest({
+      userOrganisations: [],
+      params: {
+        rid: "org-req-1",
+      },
+      session: {
+        user: { sub: "user1", email: "email@email.com" },
+      },
+      user: {
+        sub: "user1",
+        email: "email@email.com",
+      },
+    });
+
     await isAllowedToApproveOrganisationReq(req, res, next);
     expect(next).toHaveBeenCalledTimes(0);
     expect(res.status).toHaveBeenCalledTimes(1);
