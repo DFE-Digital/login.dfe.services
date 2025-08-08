@@ -18,6 +18,7 @@ const { getUserService } = require("login.dfe.api-client/users");
 const {
   getAndMapOrgRequest,
 } = require("../../../../src/app/accessRequests/utils");
+const DirectoriesApiAccount = require("../../../../src/infrastructure/account/DirectoriesApiAccount");
 
 let req;
 
@@ -50,14 +51,14 @@ describe("utils.getAndMapOrgRequest", () => {
       name: "support service",
     });
 
-    Account.getById.mockReset().mockReturnValue({
-      claims: {
+    Account.getById.mockReset().mockReturnValue(
+      new DirectoriesApiAccount({
         sub: "user-id-2",
         given_name: "User",
         family_name: "One",
         email: "user.one@unit.tests",
-      },
-    });
+      }),
+    );
   });
 
   it("should retrieve and map the request when there is no approver", async () => {
@@ -146,20 +147,22 @@ describe("utils.getAndMapOrgRequest", () => {
 
     Account.getById
       .mockReset()
-      .mockReturnValueOnce({
-        sub: "approver-user-1",
-        given_name: "Approver User",
-        family_name: "Test",
-        email: "approver-user.one@unit.tests",
-      })
-      .mockReturnValue({
-        claims: {
+      .mockReturnValueOnce(
+        new DirectoriesApiAccount({
+          sub: "approver-user-1",
+          given_name: "Approver User",
+          family_name: "Test",
+          email: "approver-user.one@unit.tests",
+        }),
+      )
+      .mockReturnValue(
+        new DirectoriesApiAccount({
           sub: "user-id-2",
           given_name: "User",
           family_name: "One",
           email: "user.one@unit.tests",
-        },
-      });
+        }),
+      );
 
     getUserService.mockReset().mockReturnValue(null);
 

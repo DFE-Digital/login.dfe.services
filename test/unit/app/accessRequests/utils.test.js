@@ -41,7 +41,7 @@ describe("AccessRequests utils", () => {
       });
     });
 
-    it("should say request is rejected when provided with a request status of 0", () => {
+    it("should say request is rejected when provided with a request status of -1", () => {
       const result = generateFlashMessages(
         requestType,
         -1,

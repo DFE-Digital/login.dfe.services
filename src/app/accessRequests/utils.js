@@ -109,16 +109,14 @@ const getAndMapOrgRequest = async (req) => {
         approverName = "DfE Sign-in support team";
         approverEmail = "NewApprover.dfesignin@education.gov.uk";
       } else {
-        approverName = `${approver.given_name} ${approver.family_name}`;
+        approverName = approver.name;
         approverEmail = approver.email;
       }
     }
 
     const user = await Account.getById(request.user_id);
-    const usersName = user
-      ? `${user.claims.given_name} ${user.claims.family_name}`
-      : "";
-    const usersEmail = user ? user.claims.email : "";
+    const usersName = user ? user.name : "";
+    const usersEmail = user ? user.email : "";
 
     mappedRequest = Object.assign(
       { usersName, usersEmail, approverName, approverEmail },
@@ -174,7 +172,7 @@ const getAndMapServiceRequest = async (serviceReqId) => {
         approverName = "DfE Sign-in support team";
         approverEmail = "NewApprover.dfesignin@education.gov.uk";
       } else {
-        approverName = `${approver.given_name} ${approver.family_name}`;
+        approverName = approver.name;
         approverEmail = approver.email;
       }
     }

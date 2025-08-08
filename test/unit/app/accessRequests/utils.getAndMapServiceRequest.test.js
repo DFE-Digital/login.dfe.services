@@ -20,6 +20,7 @@ const { getUserService } = require("login.dfe.api-client/users");
 const {
   getAndMapServiceRequest,
 } = require("../../../../src/app/accessRequests/utils");
+const DirectoriesApiAccount = require("../../../../src/infrastructure/account/DirectoriesApiAccount");
 
 const serviceRequestId = "service-req-1";
 
@@ -46,14 +47,14 @@ describe("utils.getAndMapServiceRequest function", () => {
       name: "support service",
     });
 
-    Account.getById.mockReset().mockReturnValue({
-      claims: {
+    Account.getById.mockReset().mockReturnValue(
+      new DirectoriesApiAccount({
         sub: "user-id-2",
         given_name: "User",
         family_name: "One",
         email: "user.one@unit.tests",
-      },
-    });
+      }),
+    );
   });
 
   it("should retrieve and map the request when there is no approver", async () => {
@@ -99,20 +100,22 @@ describe("utils.getAndMapServiceRequest function", () => {
     });
     Account.getById
       .mockReset()
-      .mockReturnValueOnce({
-        sub: "approver-user-1",
-        given_name: "Approver User",
-        family_name: "Test",
-        email: "approver-user.one@unit.tests",
-      })
-      .mockReturnValue({
-        claims: {
+      .mockReturnValueOnce(
+        new DirectoriesApiAccount({
+          sub: "approver-user-1",
+          given_name: "Approver User",
+          family_name: "Test",
+          email: "approver-user.one@unit.tests",
+        }),
+      )
+      .mockReturnValue(
+        new DirectoriesApiAccount({
           sub: "user-id-2",
           given_name: "User",
           family_name: "One",
           email: "user.one@unit.tests",
-        },
-      });
+        }),
+      );
 
     const result = await getAndMapServiceRequest(serviceRequestId);
 
@@ -158,20 +161,22 @@ describe("utils.getAndMapServiceRequest function", () => {
 
     Account.getById
       .mockReset()
-      .mockReturnValueOnce({
-        sub: "approver-user-1",
-        given_name: "Approver User",
-        family_name: "Test",
-        email: "approver-user.one@unit.tests",
-      })
-      .mockReturnValue({
-        claims: {
+      .mockReturnValueOnce(
+        new DirectoriesApiAccount({
+          sub: "approver-user-1",
+          given_name: "Approver User",
+          family_name: "Test",
+          email: "approver-user.one@unit.tests",
+        }),
+      )
+      .mockReturnValue(
+        new DirectoriesApiAccount({
           sub: "user-id-2",
           given_name: "User",
           family_name: "One",
           email: "user.one@unit.tests",
-        },
-      });
+        }),
+      );
 
     getUserService.mockReset().mockReturnValue(null);
 
