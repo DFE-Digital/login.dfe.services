@@ -294,4 +294,37 @@ describe("when reviewing an organisation request", () => {
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/access-requests/requests");
   });
+
+  it("should log an error and not update search index or send an email if the user is not found", async () => {
+    searchUserByIdRaw.mockReturnValue(null);
+    await post(req, res);
+
+    expect(updateUserDetailsInSearchIndex.mock.calls).toHaveLength(0);
+    expect(sendAccessRequest.mock.calls).toHaveLength(0);
+
+    expect(logger.error.mock.calls).toHaveLength(1);
+    expect(logger.error.mock.calls[0][0]).toBe(
+      "Failed to find user userId when confirming change of organisations",
+    );
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0].message).toBe(
+      "email@email.com (id: user1) approved organisation request for org1)",
+    );
+  });
+
+  it("should log an error and not update search index or send an email if the organisation is not found", async () => {
+    getOrganisationById.mockReturnValue(null);
+    await post(req, res);
+
+    expect(updateUserDetailsInSearchIndex.mock.calls).toHaveLength(0);
+    expect(sendAccessRequest.mock.calls).toHaveLength(0);
+    expect(logger.error.mock.calls).toHaveLength(1);
+    expect(logger.error.mock.calls[0][0]).toBe(
+      "Failed to find organisation org1 when confirming change of organisations",
+    );
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0].message).toBe(
+      "email@email.com (id: user1) approved organisation request for org1)",
+    );
+  });
 });

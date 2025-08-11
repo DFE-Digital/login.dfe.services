@@ -26,7 +26,12 @@ const get = async (req, res) => {
     : "";
 
   if (request.approverEmail) {
-    res.flash("warn", `Request already actioned by ${request.approverEmail}`);
+    res.flash("title", `Important`);
+    res.flash("heading", `Request already actioned`);
+    res.flash(
+      "message",
+      `Request already actioned by ${request.approverEmail}`,
+    );
     return res.redirect(`/access-requests/requests`);
   }
   return res.render("accessRequests/views/reviewOrganisationRequest", {
@@ -136,16 +141,16 @@ const post = async (req, res) => {
       (updated) =>
         updated.organisations.length === currentOrganisationDetails.length,
     );
-  }
 
-  //send approved email
-  await notificationClient.sendAccessRequest(
-    model.request.usersEmail,
-    model.request.usersName,
-    organisation.name,
-    true,
-    null,
-  );
+    //send approved email
+    await notificationClient.sendAccessRequest(
+      model.request.usersEmail,
+      model.request.usersName,
+      organisation.name,
+      true,
+      null,
+    );
+  }
 
   //audit organisation approved
   logger.audit({

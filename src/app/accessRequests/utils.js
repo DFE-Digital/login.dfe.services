@@ -1,3 +1,4 @@
+const config = require("./../../infrastructure/config");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const Account = require("./../../infrastructure/account");
 const flatten = require("lodash/flatten");
@@ -13,6 +14,7 @@ const {
 } = require("./../../infrastructure/organisations");
 
 const { services } = require("login.dfe.dao");
+const { getUserService } = require("login.dfe.api-client/users");
 
 const getSubServiceRequestVieModel = async (model, requestId, req) => {
   let viewModel = {};
@@ -75,22 +77,47 @@ const getRoleAndServiceNames = async (subModel, requestId, req) => {
   return subModel;
 };
 
+/**
+ * Retrieves and maps data for a user organisation request.  Requires `params.rid` to be
+ * populated to find the request.
+ *
+ * @param {Object} [req] - request object that will contain the user organisation request id
+ * @returns {Object} An object representing the request with the data tidied and mapped
+ */
 const getAndMapOrgRequest = async (req) => {
   const request = await getRequestById(req.params.rid, req.id);
   let mappedRequest;
   if (request) {
+    let approverName = "";
+    let approverEmail = "";
+
     const approver = request.actioned_by
       ? await Account.getById(request.actioned_by)
       : null;
+
+    if (approver) {
+      const supportServiceId = config.access.identifiers.service;
+      const supportOrganisationId = config.access.identifiers.organisation;
+
+      // If approver is present, check if they're a support user by calling getUserService from api-client
+      const response = await getUserService({
+        userId: request.actioned_by,
+        serviceId: supportServiceId,
+        organisationId: supportOrganisationId,
+      });
+      if (response !== null) {
+        approverName = "DfE Sign-in support team";
+        approverEmail = "NewApprover.dfesignin@education.gov.uk";
+      } else {
+        approverName = approver.name;
+        approverEmail = approver.email;
+      }
+    }
+
     const user = await Account.getById(request.user_id);
-    const usersName = user
-      ? `${user.claims.given_name} ${user.claims.family_name}`
-      : "";
-    const usersEmail = user ? user.claims.email : "";
-    const approverName = approver
-      ? `${approver.given_name} ${approver.family_name}`
-      : "";
-    const approverEmail = approver ? approver.email : "";
+    const usersName = user ? user.name : "";
+    const usersEmail = user ? user.email : "";
+
     mappedRequest = Object.assign(
       { usersName, usersEmail, approverName, approverEmail },
       request,
@@ -99,6 +126,12 @@ const getAndMapOrgRequest = async (req) => {
   return mappedRequest;
 };
 
+/**
+ * Deduplicates provided array of user ids and searches for user data based on those ids
+ *
+ * @param {Array} [usersForApproval] - Array of userIds
+ * @returns {Array} An array of user details for the provided ids
+ */
 const getUserDetails = async (usersForApproval) => {
   const allUserId = flatten(usersForApproval.map((user) => user.user_id));
   if (allUserId.length === 0) {
@@ -108,21 +141,47 @@ const getUserDetails = async (usersForApproval) => {
   return await Account.getUsersById(distinctUserIds);
 };
 
+/**
+ * Retrieves and maps data for a user service request
+ *
+ * @param {String} [serviceReqId] - Id of the user service request
+ * @returns {Object} An object representing the request with the data tidied and mapped
+ */
 const getAndMapServiceRequest = async (serviceReqId) => {
   const userServiceRequest = await services.getUserServiceRequest(serviceReqId);
   let mappedServiceRequest;
   if (userServiceRequest) {
+    let approverName = "";
+    let approverEmail = "";
+
     const approver = userServiceRequest.actioned_by
       ? await Account.getById(userServiceRequest.actioned_by)
       : null;
+
+    if (approver) {
+      const supportServiceId = config.access.identifiers.service;
+      const supportOrganisationId = config.access.identifiers.organisation;
+
+      // If approver is present, check if they're a support user by calling getUserService from api-client
+      const response = await getUserService({
+        userId: userServiceRequest.actioned_by,
+        serviceId: supportServiceId,
+        organisationId: supportOrganisationId,
+      });
+      if (response !== null) {
+        approverName = "DfE Sign-in support team";
+        approverEmail = "NewApprover.dfesignin@education.gov.uk";
+      } else {
+        approverName = approver.name;
+        approverEmail = approver.email;
+      }
+    }
+
     const endUser = await Account.getById(userServiceRequest.user_id);
     const endUsersGivenName = endUser ? `${endUser.claims.given_name}` : "";
     const endUsersFamilyName = endUser ? `${endUser.claims.family_name}` : "";
     const endUsersEmail = endUser ? endUser.claims.email : "";
-    const approverName = approver
-      ? `${approver.given_name} ${approver.family_name}`
-      : "";
-    const approverEmail = approver ? approver.email : "";
+
     const organisation = await getOrganisationById(
       userServiceRequest.organisation_id,
       serviceReqId,
