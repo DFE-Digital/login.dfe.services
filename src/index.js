@@ -242,6 +242,8 @@ const init = async () => {
       help: config.hostingEnvironment.helpUrl,
       profile: config.hostingEnvironment.profileUrl,
       interactions: config.hostingEnvironment.interactionsUrl,
+      accessibilityStatementUrl:
+        config.hostingEnvironment.accessibilityStatementUrl,
       assets: assetsUrl,
       survey: config.hostingEnvironment.surveyUrl,
     },
