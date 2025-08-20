@@ -80,6 +80,7 @@ const getViewModel = async (req) => {
       ? `${req.session.user.firstName} ${req.session.user.lastName}`
       : "",
     user: req.session.user,
+    title: `Select sub-service for ${serviceDetails?.name}`,
     validationMessages: {},
     backLink: buildBackLink(req),
     currentPage: "services",
