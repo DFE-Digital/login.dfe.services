@@ -46,6 +46,7 @@ const buildModel = async (req, results) => {
     req.method.toUpperCase() === "POST" ? req.body : req.query;
 
   const model = {
+    title: "Request an organisation - DfE Sign-in",
     criteria: inputSource.criteria || "",
     currentPage: "organisations",
     validationMessages: {},
