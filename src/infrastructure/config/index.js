@@ -37,6 +37,7 @@ const config = {
     csrfSecret: process.env.CSRF_ENCRYPTION_SECRET_SVC,
     gaTrackingId: process.env.GOOGLE_ANALYTICS_ID,
     serviceId: process.env.SERVICE_ID,
+    accessibilityStatementUrl: process.env.ACCESSIBILITY_STATEMENT_URL,
     profileUrl: "https://" + process.env.STANDALONE_PROFILE_HOST_NAME,
     interactionsUrl: "https://" + process.env.STANDALONE_INTERACTIONS_HOST_NAME,
     helpUrl: "https://" + process.env.STANDALONE_HELP_HOST_NAME,
