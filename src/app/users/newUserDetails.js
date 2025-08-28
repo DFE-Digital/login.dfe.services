@@ -25,6 +25,7 @@ const get = (req, res) => {
     firstName: "",
     lastName: "",
     email: "",
+    title: "Invite user - DfE Sign-in",
     validationMessages: {},
     backLink: buildBackLink(req),
     currentPage: "users",

@@ -20,6 +20,7 @@ const get = async (req, res) => {
     user: {
       name: `${req.session.user.firstName} ${req.session.user.lastName}`,
     },
+    title: "Confirm resend invitation email - DfE Sign-in",
     email: req.session.user.email,
     uid: req.params.uid,
     validationMessages: {},

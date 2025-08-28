@@ -37,6 +37,7 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     backLink: buildBackLink(req),
     user: `${req.session.user.firstName} ${req.session.user.lastName}`,
+    title: "Permission level - DfE Sign-in",
     organisation,
     selectedLevel: req.session.user.permission || 0,
     validationMessages: {},

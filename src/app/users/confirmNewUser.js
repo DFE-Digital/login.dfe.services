@@ -90,17 +90,21 @@ const get = async (req, res) => {
     serviceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.MANAGE_SERVICE}`;
   }
 
+  const sessionUser = req.session.user || {};
+  const {
+    firstName = "",
+    lastName = "",
+    email = "",
+    isInvite = false,
+    uid = "",
+  } = sessionUser;
+
   const model = {
     backLink: buildBackLink(req, services),
     currentPage: "users",
     csrfToken: req.csrfToken(),
-    user: {
-      firstName: req.session.user.firstName,
-      lastName: req.session.user.lastName,
-      email: req.session.user.email,
-      isInvite: req.session.user.isInvite ? req.session.user.isInvite : false,
-      uid: req.session.user.uid ? req.session.user.uid : "",
-    },
+    user: { firstName, lastName, email, isInvite, uid },
+    title: `Review new service for ${firstName} ${lastName} - DfE Sign-in`,
     services,
     subServiceUrl,
     serviceUrl,

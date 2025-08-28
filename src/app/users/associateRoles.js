@@ -189,6 +189,7 @@ const getViewModel = async (req) => {
     csrfToken: req.csrfToken(),
     name: `${req.session.user.firstName} ${req.session.user.lastName}`,
     user: req.session.user,
+    title: `Select sub-service for ${serviceDetails?.name} - DfE Sign-in`,
     validationMessages: {},
     backLink: buildBackLink(req, currentServiceIndex),
     cancelLink: buildCancelLink(req),
