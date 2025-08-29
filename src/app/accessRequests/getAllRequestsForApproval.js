@@ -3,7 +3,9 @@ const {
 } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
-const { generateRequestSummary } = require("../helpers/generateRequestSummary");
+const {
+  generateRequestSummary,
+} = require("../helpers/generateRequestSummaryHelper");
 
 const getAllRequestsForApproval = async (req) => {
   const pageSize = 5;
