@@ -3,6 +3,7 @@ const {
 } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
+const { generateRequestSummary } = require("../helpers/generateRequestSummary");
 
 const getAllRequestsForApproval = async (req) => {
   const pageSize = 5;
@@ -12,31 +13,44 @@ const getAllRequestsForApproval = async (req) => {
   if (isNaN(pageNumber)) {
     pageNumber = 1;
   }
+
   const allRequestsForApprover = await getAllRequestTypesForApproverRaw({
     userId: req.user.sub,
     pageNumber,
     pageSize,
   });
+
   let { requests } = allRequestsForApprover;
+
   if (requests) {
     const userList = (await getUserDetails(requests)) || [];
 
-    requests = requests.map((user) => {
+    // First map: enrich with user details
+    requests = requests.map((request) => {
       const userFound = userList.find(
-        (c) => c.claims.sub.toLowerCase() === user.user_id.toLowerCase(),
+        (c) => c.claims.sub.toLowerCase() === request.user_id.toLowerCase(),
       );
       const usersEmail = userFound ? userFound.claims.email : "";
       const userName = userFound
         ? `${userFound.claims.given_name} ${userFound.claims.family_name}`
         : "";
-      const formattedCreatedDate = user.created_date
-        ? dateFormat(user.created_date, "shortDateFormat")
+      const formattedCreatedDate = request.created_date
+        ? dateFormat(request.created_date, "shortDateFormat")
         : "";
-      return Object.assign(
-        { usersEmail, userName, formattedCreatedDate },
-        user,
-      );
+
+      return {
+        ...request,
+        usersEmail,
+        userName,
+        formattedCreatedDate,
+      };
     });
+
+    // Second map: add summary using helper
+    requests = requests.map((request, index) => ({
+      ...request,
+      summary: generateRequestSummary(request, index),
+    }));
   }
 
   return {

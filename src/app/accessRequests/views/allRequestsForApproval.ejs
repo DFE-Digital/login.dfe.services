@@ -86,10 +86,7 @@
                             Name
                         </th>
                         <th scope="col" class="govuk-table__header">
-                            Request type
-                        </th>
-                        <th scope="col" class="govuk-table__header">
-                            Organisation
+                            Summary
                         </th>
                         <th scope="col" class="govuk-table__header">
                             Status
@@ -120,16 +117,13 @@
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <%= request.userName %>
                                 </td>
-                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                                    <%= request.request_type.name %>
-                                </td>
-                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                                    <%= request.org_name %>
+                                <td id="<%= request.id %>" class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                    <%= request.summary %>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <%= request.status.name %>
                                 </td>
-                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                <td aria-describedby="<%= request.id %>" class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <% if(request.request_type.id  === 'service') { %>
                                     <a class="govuk-link" href="<%= request.request_type.id %>-requests/<%= request.id %>/services/<%= request.service_id %>/roles/<%=encodeURIComponent(request.role_ids) %>">
                                         Review
