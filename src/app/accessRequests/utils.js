@@ -142,6 +142,78 @@ const getUserDetails = async (usersForApproval) => {
 };
 
 /**
+ * Retrieves and maps service and sub-service (role) data for a user service request.
+ *
+ * Adds `serviceName`, a sorted `subServices` array (role objects) based on `roleIds`,
+ * and `subServiceNames` (comma-separated role names from `subServices`).
+ * Returns a new object; does not mutate the input.
+ *
+ * @param {Object} userRequest
+ * @param {string|number} userRequest.serviceId - The service ID on the request.
+ * @param {string|number} userRequest.requestId - The request ID (used for caching lookup).
+ * @param {Array<string|number>} [userRequest.roleIds] - Role IDs to attach as subServices.
+ * @returns {Promise<Object>} A new request object with `serviceName` (if found), `subServices` (roles),
+ * and `subServiceNames` (if at least one role name is present).
+ */
+const getMappedRequestServiceWithSubServices = async (userRequest) => {
+  if (!userRequest || typeof userRequest !== "object") {
+    throw new TypeError("userRequest must be a non-null object");
+  }
+
+  const { service_id, id, role_ids = [] } = userRequest;
+
+  // Fetch concurrently
+  const [allServices, allRolesOfServiceUnsorted] = await Promise.all([
+    checkCacheForAllServices(id),
+    getServiceRolesRaw({ serviceId: service_id }),
+  ]);
+
+  // Resolve service name (== handles '1' vs 1 safely here)
+  const serviceName = Array.isArray(allServices?.services)
+    ? allServices.services.find((s) => s?.id == service_id)?.name
+    : undefined;
+
+  // Ensure an array
+  const roles = Array.isArray(allRolesOfServiceUnsorted)
+    ? allRolesOfServiceUnsorted
+    : [];
+
+  // Build a lookup map with **string** keys
+  const rolesById = new Map(roles.map((r) => [String(r?.id), r]));
+
+  // Filter, dedupe, and normalize **role_ids** to strings
+  const uniqueRoleIds = [
+    ...new Set(
+      (Array.isArray(role_ids) ? role_ids : [])
+        .filter((id) => id != null)
+        .map((id) => String(id)),
+    ),
+  ];
+
+  // Map the role ids to role objects via the Map, filter unknowns, and sort by name
+  const subServices = uniqueRoleIds
+    .map((id) => rolesById.get(id))
+    .filter(Boolean)
+    .sort((a, b) => {
+      const an = a?.name ?? "";
+      const bn = b?.name ?? "";
+      return an.localeCompare(bn, undefined, { sensitivity: "base" });
+    });
+
+  const subServiceNames = subServices
+    .map((r) => r?.name?.trim())
+    .filter(Boolean)
+    .join(", ");
+
+  return {
+    ...userRequest,
+    ...(serviceName ? { serviceName } : {}),
+    subServices,
+    ...(subServiceNames ? { subServiceNames } : {}),
+  };
+};
+
+/**
  * Retrieves and maps data for a user service request
  *
  * @param {String} [serviceReqId] - Id of the user service request
@@ -311,4 +383,5 @@ module.exports = {
   isAllowedToApproveServiceReq,
   isAllowedToApproveOrganisationReq,
   getOrganisationPermissionLevel,
+  getMappedRequestServiceWithSubServices,
 };

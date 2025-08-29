@@ -86,10 +86,7 @@
                             Name
                         </th>
                         <th scope="col" class="govuk-table__header">
-                            Request type
-                        </th>
-                        <th scope="col" class="govuk-table__header">
-                            Organisation
+                            Summary
                         </th>
                         <th scope="col" class="govuk-table__header">
                             Status
@@ -121,21 +118,21 @@
                                     <%= request.userName %>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                                    <%= request.request_type.name %>
-                                </td>
-                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                                    <%= request.org_name %>
+                                    <span>
+                                        <%= request.summary %>
+                                    </span>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <%= request.status.name %>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                    <span id="<%= request.id %>" class="govuk-visually-hidden">Review <%= request.summary %></span>
                                     <% if(request.request_type.id  === 'service') { %>
-                                    <a class="govuk-link" href="<%= request.request_type.id %>-requests/<%= request.id %>/services/<%= request.service_id %>/roles/<%=encodeURIComponent(request.role_ids) %>">
-                                        Review
-                                    </a>
+                                        <a aria-describedby="<%= request.id %>" class="govuk-link" href="<%= request.request_type.id %>-requests/<%= request.id %>/services/<%= request.service_id %>/roles/<%=encodeURIComponent(request.role_ids) %>">
+                                            Review
+                                        </a>
                                     <% } else { %>
-                                        <a class="govuk-link" href="<%= request.request_type.id %>-requests/<%= request.id %>">
+                                        <a aria-describedby="<%= request.id %>" class="govuk-link" href="<%= request.request_type.id %>-requests/<%= request.id %>">
                                             Review
                                         </a>
                                     <% } %>
