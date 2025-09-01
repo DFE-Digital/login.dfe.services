@@ -185,11 +185,16 @@ const getViewModel = async (req) => {
     req.session.subServiceReqId
       ? true
       : false;
+
+  const title = req.session.user?.isInvite
+    ? "Select roles - DfE Sign-in"
+    : `Select sub-service for ${serviceDetails?.name} - DfE Sign-in`;
+
   return {
     csrfToken: req.csrfToken(),
     name: `${req.session.user.firstName} ${req.session.user.lastName}`,
     user: req.session.user,
-    title: `Select sub-service for ${serviceDetails?.name} - DfE Sign-in`,
+    title,
     validationMessages: {},
     backLink: buildBackLink(req, currentServiceIndex),
     cancelLink: buildCancelLink(req),
