@@ -63,7 +63,8 @@ const validate = async (req) => {
 const get = async (req, res) => {
   const model = await getAndMapServiceRequest(req.params.rid);
   const viewModel = await getSubServiceRequestVieModel(model, req.id, req);
-  req.session.rid = req.params.rid;
+  ((viewModel.title = "Review request - DfE Sign-in"),
+    (req.session.rid = req.params.rid));
   if (req.session.roleIds !== undefined) {
     if (req.session.roleIds !== viewModel.role_ids) {
       viewModel.role_ids = req.session.roleIds;
