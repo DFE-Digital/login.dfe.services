@@ -98,7 +98,7 @@ const get = async (req, res) => {
       ? `${req.session.user.firstName} ${req.session.user.lastName}`
       : "",
     user: req.session.user,
-    title: `Select service - DfE Sign-in`,
+    title: `Select a service - DfE Sign-in`,
     validationMessages: {},
     backLink: buildBackLink(req),
     currentPage: "services",
