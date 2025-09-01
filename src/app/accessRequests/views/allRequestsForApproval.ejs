@@ -117,8 +117,10 @@
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <%= request.userName %>
                                 </td>
-                                <td id="<%= request.id %>" class="govuk-table__cell govuk-body govuk-!-font-size-16">
-                                    <%= request.summary %>
+                                <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
+                                    <span id="<%= request.id %>">
+                                        <%= request.summary %>
+                                    </span>
                                 </td>
                                 <td class="govuk-table__cell govuk-body govuk-!-font-size-16">
                                     <%= request.status.name %>
