@@ -1,4 +1,6 @@
-const generateRequestSummary = require("../../../../src/app/helpers/generateRequestSummaryHelper");
+const {
+  generateRequestSummary,
+} = require("../../../../src/app/helpers/generateRequestSummaryHelper");
 
 describe("when generating a summary of an access request for presentation", () => {
   it("should generate summary for service request", () => {

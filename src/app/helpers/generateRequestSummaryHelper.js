@@ -33,4 +33,6 @@ function generateRequestSummary(request, index = 0) {
   }
 }
 
-module.exports = generateRequestSummary;
+module.exports = {
+  generateRequestSummary,
+};
