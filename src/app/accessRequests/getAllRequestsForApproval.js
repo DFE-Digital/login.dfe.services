@@ -1,7 +1,10 @@
 const {
   getAllRequestTypesForApproverRaw,
 } = require("login.dfe.api-client/services");
-const { getUserDetails } = require("./utils");
+const {
+  getUserDetails,
+  getMappedRequestServiceWithSubServices,
+} = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const {
   generateRequestSummary,
@@ -48,7 +51,14 @@ const getAllRequestsForApproval = async (req) => {
       };
     });
 
-    // Second map: add summary using helper
+    // Second map: enrich with service and sub-service (role) details
+    requests = await Promise.all(
+      requests.map(async (request) =>
+        getMappedRequestServiceWithSubServices(request),
+      ),
+    );
+
+    // Third map: add summary using helper
     requests = requests.map((request, index) => ({
       ...request,
       summary: generateRequestSummary(request, index),
