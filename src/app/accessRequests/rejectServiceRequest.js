@@ -111,6 +111,21 @@ const post = async (req, res) => {
     reason,
   );
 
+  // const approvers = get list of other active approvers for org;
+
+  // await Promise.all(
+  //   approvers.map(async (approver) => {
+  //   await notificationClient.sendServiceRequestRejectedToOtherApprovers(
+  //     endUsersEmail,
+  //     endUsersGivenName,
+  //     endUsersFamilyName,
+  //     organisation.name,
+  //     service.name,
+  //     selectedRoles.map((i) => i.name),
+  //     reason
+  //   );
+  // });
+
   logger.audit({
     type: "services",
     subType: "access-request-rejected",

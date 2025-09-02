@@ -194,6 +194,21 @@ const post = async (req, res) => {
           rolesName,
           permissionLevel,
         );
+
+        // const approvers = get list of other active approvers for org;
+
+        // await Promise.all(
+        // approvers.map(async (approver) => {
+        // await notificationClient.sendServiceRequestOutcomeToOtherApprovers(
+        //   model.viewModel.endUsersEmail,
+        //   model.viewModel.endUsersGivenName,
+        //   model.viewModel.endUsersFamilyName,
+        //   model.viewModel.org_name,
+        //   serviceName,
+        //   rolesName,
+        //   permissionLevel,
+        // );
+        // });
       }
 
       logger.audit({

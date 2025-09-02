@@ -147,7 +147,22 @@ const post = async (req, res) => {
           model.viewModel.roles.map((i) => i.name),
           model.reason,
         );
+
+        // const approvers = get list of other active approvers for org;
+
+        // await Promise.all(
+        //   approvers.map(async (approver) => {
+        //   await notificationClient.sendSubServiceRequestRejectedToOtherApprovers(
+        //   model.viewModel.endUsersEmail,
+        //   model.viewModel.endUsersGivenName,
+        //   model.viewModel.endUsersFamilyName,
+        //   model.viewModel.org_name,
+        //   model.viewModel.Service_name,
+        //   model.viewModel.roles.map((i) => i.name),
+        //   model.reason,
+        // );
       }
+
       logger.audit({
         type: "sub-service",
         subType: "sub-service request Rejected",

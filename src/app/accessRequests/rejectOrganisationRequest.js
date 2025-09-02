@@ -1,7 +1,12 @@
 const { getAndMapOrgRequest } = require("./utils");
-const { updateRequestById } = require("./../../infrastructure/organisations");
+const {
+  updateRequestById,
+  getOrganisationAndServiceForUser,
+} = require("./../../infrastructure/organisations");
+const Account = require("./../../infrastructure/account");
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
+const { getApproversDetails } = require("../../infrastructure/helpers/common");
 const { NotificationClient } = require("login.dfe.jobs-client");
 
 const notificationClient = new NotificationClient({
@@ -40,6 +45,7 @@ const validate = async (req) => {
 };
 
 const post = async (req, res) => {
+  const correlationId = req.id;
   const model = await validate(req);
 
   if (Object.keys(model.validationMessages).length > 0) {
@@ -55,7 +61,7 @@ const post = async (req, res) => {
     req.user.sub,
     model.reason,
     actionedDate,
-    req.id,
+    correlationId,
   );
 
   //send rejected email
@@ -65,6 +71,31 @@ const post = async (req, res) => {
     model.request.org_name,
     false,
     model.reason,
+  );
+
+  // send rejection notification email to all other active approvers in org
+  const account = Account.fromContext(req.user);
+  const organisations = await getOrganisationAndServiceForUser(account.id);
+  const organisation = organisations.find(
+    (organisation) =>
+      organisation.organisation.id === model.request.organisation_id,
+  );
+  const approvers = await getApproversDetails([organisation], correlationId);
+
+  await Promise.all(
+    approvers.map(async (approver) => {
+      console.log(approver);
+      if (approver.claims.status === 1 && account.email !== approver.email) {
+        console.log("send email");
+        // await notificationClient.sendOrganisationRequestOutcomeToOtherApprovers(
+        //   model.request.usersEmail,
+        //   model.request.usersName,
+        //   model.request.org_name,
+        //   false,
+        //   model.reason,
+        // );
+      }
+    }),
   );
 
   //audit organisation rejected

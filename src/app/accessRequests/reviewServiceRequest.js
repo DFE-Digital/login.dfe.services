@@ -214,6 +214,20 @@ const post = async (req, res) => {
       selectedRoles.map((i) => i.name),
     );
 
+    // const approvers = get list of other active approvers for org;
+
+    // await Promise.all(
+    // approvers.map(async (approver) => {
+    // await notificationClient.sendServiceRequestOutcomeToOtherApprovers(
+    //   endUsersEmail,
+    //   endUsersGivenName,
+    //   endUsersFamilyName,
+    //   organisation.name,
+    //   service.name,
+    //   selectedRoles.map((i) => i.name),
+    // );
+    // });
+
     logger.audit({
       type: "services",
       subType: "access-request-approved",
