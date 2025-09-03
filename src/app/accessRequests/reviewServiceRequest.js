@@ -1,5 +1,10 @@
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
+const Account = require("./../../infrastructure/account");
+const {
+  getOrganisationAndServiceForUser,
+} = require("./../../infrastructure/organisations");
+const { getApproversDetails } = require("../../infrastructure/helpers/common");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { addServiceToUser } = require("login.dfe.api-client/users");
 const { updateServiceRequest } = require("../requestService/utils");
@@ -150,6 +155,7 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
+  const correlationId = req.id;
   let model = await getViewModel(req);
   model = await validateModel(model, req.params, res);
   if (model) {
@@ -214,19 +220,33 @@ const post = async (req, res) => {
       selectedRoles.map((i) => i.name),
     );
 
-    // const approvers = get list of other active approvers for org;
+    const account = Account.fromContext(req.user);
+    const organisations = await getOrganisationAndServiceForUser(account.id);
+    const organisationWithApprovers = organisations.find(
+      (organisation) =>
+        organisation.organisation.id === model.request.organisation.id,
+    );
+    const approvers = await getApproversDetails(
+      [organisationWithApprovers],
+      correlationId,
+    );
 
-    // await Promise.all(
-    // approvers.map(async (approver) => {
-    // await notificationClient.sendServiceRequestOutcomeToOtherApprovers(
-    //   endUsersEmail,
-    //   endUsersGivenName,
-    //   endUsersFamilyName,
-    //   organisation.name,
-    //   service.name,
-    //   selectedRoles.map((i) => i.name),
-    // );
-    // });
+    await Promise.all(
+      approvers.map(async (approver) => {
+        console.log(approver);
+        if (approver.claims.status === 1 && account.email !== approver.email) {
+          console.log("send email");
+          // await notificationClient.sendServiceRequestOutcomeToOtherApprovers(
+          //   endUsersEmail,
+          //   endUsersGivenName,
+          //   endUsersFamilyName,
+          //   organisation.name,
+          //   service.name,
+          //   selectedRoles.map((i) => i.name),
+          // );
+        }
+      }),
+    );
 
     logger.audit({
       type: "services",

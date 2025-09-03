@@ -4,6 +4,10 @@ const {
   isServiceEmailNotificationAllowed,
 } = require("../../../src/infrastructure/applications");
 const {
+  getOrganisationAndServiceForUser,
+} = require("./../../infrastructure/organisations");
+const { getApproversDetails } = require("../../infrastructure/helpers/common");
+const {
   getSubServiceRequestVieModel,
   getAndMapServiceRequest,
   getRoleAndServiceNames,
@@ -99,6 +103,7 @@ const get = async (req, res) => {
   });
 };
 const post = async (req, res) => {
+  const correlationId = req.id;
   const model = await validate(req);
 
   if (Object.keys(model.viewModel.validationMessages).length > 0) {
@@ -148,19 +153,39 @@ const post = async (req, res) => {
           model.reason,
         );
 
-        // const approvers = get list of other active approvers for org;
+        const account = Account.fromContext(req.user);
+        const organisations = await getOrganisationAndServiceForUser(
+          account.id,
+        );
+        const organisationWithApprovers = organisations.find(
+          (organisation) =>
+            organisation.organisation.id === model.viewModel.org_id,
+        );
+        const approvers = await getApproversDetails(
+          [organisationWithApprovers],
+          correlationId,
+        );
 
-        // await Promise.all(
-        //   approvers.map(async (approver) => {
-        //   await notificationClient.sendSubServiceRequestRejectedToOtherApprovers(
-        //   model.viewModel.endUsersEmail,
-        //   model.viewModel.endUsersGivenName,
-        //   model.viewModel.endUsersFamilyName,
-        //   model.viewModel.org_name,
-        //   model.viewModel.Service_name,
-        //   model.viewModel.roles.map((i) => i.name),
-        //   model.reason,
-        // );
+        await Promise.all(
+          approvers.map(async (approver) => {
+            console.log(approver);
+            if (
+              approver.claims.status === 1 &&
+              account.email !== approver.email
+            ) {
+              console.log("send email");
+              //   await notificationClient.sendSubServiceRequestRejectedToOtherApprovers(
+              //   model.viewModel.endUsersEmail,
+              //   model.viewModel.endUsersGivenName,
+              //   model.viewModel.endUsersFamilyName,
+              //   model.viewModel.org_name,
+              //   model.viewModel.Service_name,
+              //   model.viewModel.roles.map((i) => i.name),
+              //   model.reason,
+              // );
+            }
+          }),
+        );
       }
 
       logger.audit({
