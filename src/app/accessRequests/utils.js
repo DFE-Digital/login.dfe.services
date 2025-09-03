@@ -187,7 +187,7 @@ const getMappedRequestServiceWithSubServices = async (userRequest) => {
   const rolesById = new Map(roles.map((r) => [r?.id, r]));
 
   // Normalise, dedupe, and filter out falsy/unknown roleIds
-  const uniqueRoleIds = [...new Set(role_ids.filter((id) => id != null))];
+  const uniqueRoleIds = [...new Set(rolesById.filter((id) => id != null))];
 
   // Map roleIds -> role objects, filter unknowns, then sort by name (case-insensitive)
   const subServices = uniqueRoleIds
