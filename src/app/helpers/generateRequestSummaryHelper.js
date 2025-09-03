@@ -7,12 +7,12 @@
  */
 function generateRequestSummary(request, index = 0) {
   const typeName = request?.request_type?.name?.toLowerCase();
-  const { Service_name, org_name, subserviceName } = request;
+  const { serviceName, org_name, subServiceNames } = request;
 
   switch (typeName) {
     case "service access":
-      if (Service_name && org_name) {
-        return `Service request for ${Service_name} for ${org_name}`;
+      if (serviceName && org_name) {
+        return `Service request for ${serviceName} for ${org_name}`;
       }
       return `Error in request ${index + 1}: Missing serviceName or organisationName`;
 
@@ -23,10 +23,10 @@ function generateRequestSummary(request, index = 0) {
       return `Error in request ${index + 1}: Missing organisationName`;
 
     case "sub-service access":
-      if (subserviceName && Service_name && org_name) {
-        return `Subservice request for ${subserviceName} for ${Service_name} for ${org_name}`;
+      if (subServiceNames && serviceName && org_name) {
+        return `Subservice request for ${subServiceNames} for ${serviceName} for ${org_name}`;
       }
-      return `Error in request ${index + 1}: Missing subserviceName, serviceName, or organisationName`;
+      return `Error in request ${index + 1}: Missing subServiceNames, serviceName, or organisationName`;
 
     default:
       return `Error in request ${index + 1}: Invalid request type`;

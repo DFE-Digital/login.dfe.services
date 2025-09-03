@@ -162,54 +162,49 @@ const getMappedRequestServiceWithSubServices = async (userRequest) => {
 
   const { service_id, id, role_ids = [] } = userRequest;
 
-  //const allServices = await checkCacheForAllServices(id);
+  // Fetch concurrently
+  const [allServices, allRolesOfServiceUnsorted] = await Promise.all([
+    checkCacheForAllServices(id),
+    getServiceRolesRaw({ serviceId: service_id }),
+  ]);
 
-  // Fetch services + roles concurrently for better performance
-  const allServices = await checkCacheForAllServices(id);
-  const allRolesOfServiceUnsorted = await getServiceRolesRaw({
-    serviceId: service_id,
-  });
-  // const [allServices, allRolesOfServiceUnsorted] = await Promise.all([
-  //   checkCacheForAllServices(id),
-  //   getServiceRolesRaw({ service_id }),
-  // ]);
+  // Resolve service name (== handles '1' vs 1 safely here)
+  const serviceName = Array.isArray(allServices?.services)
+    ? allServices.services.find((s) => s?.id == service_id)?.name
+    : undefined;
 
-  // Resolve service name safely
-  const serviceName = allServices?.services?.find(
-    (s) => s?.id === service_id,
-  )?.name;
-
-  // Build a lookup map for roles by id (fast O(1) lookup)
+  // Ensure an array
   const roles = Array.isArray(allRolesOfServiceUnsorted)
     ? allRolesOfServiceUnsorted
     : [];
 
-  const rolesById = new Map(roles.map((r) => [r?.id, r]));
+  // Build a lookup map with **string** keys
+  const rolesById = new Map(roles.map((r) => [String(r?.id), r]));
 
-  // Normalise, filter, and dedupe the incoming role_ids
+  // Filter, dedupe, and normalize **role_ids** to strings
   const uniqueRoleIds = [
     ...new Set(
-      (Array.isArray(role_ids) ? role_ids : []).filter((id) => id != null),
+      (Array.isArray(role_ids) ? role_ids : [])
+        .filter((id) => id != null)
+        .map((id) => String(id)),
     ),
   ];
 
-  // Map roleIds -> role objects, filter unknowns, then sort by name (case-insensitive)
+  // Map the role ids to role objects via the Map, filter unknowns, and sort by name
   const subServices = uniqueRoleIds
     .map((id) => rolesById.get(id))
     .filter(Boolean)
-    .sort((a, b) =>
-      (a?.name ?? "").localeCompare(b?.name ?? "", undefined, {
-        sensitivity: "base",
-      }),
-    );
+    .sort((a, b) => {
+      const an = a?.name ?? "";
+      const bn = b?.name ?? "";
+      return an.localeCompare(bn, undefined, { sensitivity: "base" });
+    });
 
-  // Build a comma-separated list of sub-service names (trim + remove falsy)
   const subServiceNames = subServices
     .map((r) => r?.name?.trim())
     .filter(Boolean)
     .join(", ");
 
-  // Return a new object (no mutation)
   return {
     ...userRequest,
     ...(serviceName ? { serviceName } : {}),
