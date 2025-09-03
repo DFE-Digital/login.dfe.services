@@ -160,17 +160,23 @@ const getMappedRequestServiceWithSubServices = async (userRequest) => {
     throw new TypeError("userRequest must be a non-null object");
   }
 
-  const { serviceId, requestId, roleIds = [] } = userRequest;
+  const { service_id, id, role_ids = [] } = userRequest;
+
+  //const allServices = await checkCacheForAllServices(id);
 
   // Fetch services + roles concurrently for better performance
-  const [allServices, allRolesOfServiceUnsorted] = await Promise.all([
-    checkCacheForAllServices(requestId),
-    getServiceRolesRaw({ serviceId }),
-  ]);
+  const allServices = await checkCacheForAllServices(id);
+  const allRolesOfServiceUnsorted = await getServiceRolesRaw({
+    serviceId: service_id,
+  });
+  // const [allServices, allRolesOfServiceUnsorted] = await Promise.all([
+  //   checkCacheForAllServices(id),
+  //   getServiceRolesRaw({ service_id }),
+  // ]);
 
   // Resolve service name safely
   const serviceName = allServices?.services?.find(
-    (s) => s?.id === serviceId,
+    (s) => s?.id === service_id,
   )?.name;
 
   // Build a lookup map for roles by id (fast O(1) lookup)
@@ -181,7 +187,7 @@ const getMappedRequestServiceWithSubServices = async (userRequest) => {
   const rolesById = new Map(roles.map((r) => [r?.id, r]));
 
   // Normalise, dedupe, and filter out falsy/unknown roleIds
-  const uniqueRoleIds = [...new Set(roleIds.filter((id) => id != null))];
+  const uniqueRoleIds = [...new Set(role_ids.filter((id) => id != null))];
 
   // Map roleIds -> role objects, filter unknowns, then sort by name (case-insensitive)
   const subServices = uniqueRoleIds
