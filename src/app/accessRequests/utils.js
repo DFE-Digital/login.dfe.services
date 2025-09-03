@@ -186,18 +186,22 @@ const getMappedRequestServiceWithSubServices = async (userRequest) => {
 
   const rolesById = new Map(roles.map((r) => [r?.id, r]));
 
-  // Normalise, dedupe, and filter out falsy/unknown roleIds
-  const uniqueRoleIds = [...new Set(rolesById.filter((id) => id != null))];
+  // Normalise, filter, and dedupe the incoming role_ids
+  const uniqueRoleIds = [
+    ...new Set(
+      (Array.isArray(role_ids) ? role_ids : []).filter((id) => id != null),
+    ),
+  ];
 
   // Map roleIds -> role objects, filter unknowns, then sort by name (case-insensitive)
   const subServices = uniqueRoleIds
     .map((id) => rolesById.get(id))
     .filter(Boolean)
-    .sort((a, b) => {
-      const an = a?.name ?? "";
-      const bn = b?.name ?? "";
-      return an.localeCompare(bn, undefined, { sensitivity: "base" });
-    });
+    .sort((a, b) =>
+      (a?.name ?? "").localeCompare(b?.name ?? "", undefined, {
+        sensitivity: "base",
+      }),
+    );
 
   // Build a comma-separated list of sub-service names (trim + remove falsy)
   const subServiceNames = subServices
