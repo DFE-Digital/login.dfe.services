@@ -174,7 +174,7 @@ const post = async (req, res) => {
               account.email !== approver.email
             ) {
               console.log("send email");
-              //   await notificationClient.sendSubServiceRequestRejectedToOtherApprovers(
+              //   await notificationClient.sendSubServiceRequestRejectedToApprovers(
               //   model.viewModel.endUsersEmail,
               //   model.viewModel.endUsersGivenName,
               //   model.viewModel.endUsersFamilyName,

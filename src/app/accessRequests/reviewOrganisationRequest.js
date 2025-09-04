@@ -2,12 +2,10 @@ const {
   putUserInOrganisation,
   updateRequestById,
   getOrganisationById,
-  getOrganisationAndServiceForUser,
 } = require("./../../infrastructure/organisations");
 const Account = require("./../../infrastructure/account");
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
-const { getApproversDetails } = require("../../infrastructure/helpers/common");
 const {
   searchUserByIdRaw,
   updateUserDetailsInSearchIndex,
@@ -160,28 +158,16 @@ const post = async (req, res) => {
     );
 
     const account = Account.fromContext(req.user);
-    const organisations = await getOrganisationAndServiceForUser(account.id);
-    const organisation = organisations.find(
-      (organisation) =>
-        organisation.organisation.id === model.request.organisation_id,
-    );
-    const approvers = await getApproversDetails([organisation], correlationId);
-
-    await Promise.all(
-      approvers.map(async (approver) => {
-        console.log(approver);
-        if (approver.claims.status === 1 && account.email !== approver.email) {
-          console.log("send email");
-          // await notificationClient.sendOrganisationRequestOutcomeToOtherApprovers(
-          //   model.request.usersEmail,
-          //   model.request.usersName,
-          //   organisation.name,
-          //   true,
-          //   null,
-          // );
-        }
-      }),
-    );
+    console.log(`send email to everyone except ${account.id}`);
+    // await notificationClient.sendOrganisationRequestOutcomeToApprovers(
+    //   model.request.organisation_id, //organisationId
+    //   account.id, // approverUserId, so we know who to not send an email to
+    //   model.request.usersEmail,
+    //   model.request.usersName,
+    //   organisation.name,
+    //   true,
+    //   null,
+    // );
   }
 
   //audit organisation approved

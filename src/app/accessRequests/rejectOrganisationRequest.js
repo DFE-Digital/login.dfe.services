@@ -73,30 +73,17 @@ const post = async (req, res) => {
     model.reason,
   );
 
-  // send rejection notification email to all other active approvers in org
   const account = Account.fromContext(req.user);
-  const organisations = await getOrganisationAndServiceForUser(account.id);
-  const organisation = organisations.find(
-    (organisation) =>
-      organisation.organisation.id === model.request.organisation_id,
-  );
-  const approvers = await getApproversDetails([organisation], correlationId);
-
-  await Promise.all(
-    approvers.map(async (approver) => {
-      console.log(approver);
-      if (approver.claims.status === 1 && account.email !== approver.email) {
-        console.log("send email");
-        // await notificationClient.sendOrganisationRequestOutcomeToOtherApprovers(
-        //   model.request.usersEmail,
-        //   model.request.usersName,
-        //   model.request.org_name,
-        //   false,
-        //   model.reason,
-        // );
-      }
-    }),
-  );
+  console.log(`send email to everyone except ${account.id}`);
+  // await notificationClient.sendOrganisationRequestOutcomeToApprovers(
+  //   model.request.organisation_id, //organisationId
+  //   account.id, // approverUserId, so we know who to not send an email to
+  //   model.request.usersEmail,
+  //   model.request.usersName,
+  //   model.request.org_name,
+  //   false,
+  //   model.reason,
+  // );
 
   //audit organisation rejected
   logger.audit({
