@@ -71,7 +71,7 @@ const action = async (req, res) => {
     csrfToken: req.csrfToken(),
     visibleUserOrgs,
     user,
-    title: `${user.firstName} ${user.lastName} - DfE Sign-in`,
+    title: `${user.firstName} ${user.lastName}`,
     isInvitation: req.params.uid.startsWith("inv-"),
     isSelfManage: isSelfManagement(req),
   });

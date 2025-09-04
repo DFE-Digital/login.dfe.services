@@ -10,7 +10,7 @@ const get = async (req, res) => {
     currentPage: "users",
     csrfToken: req.csrfToken(),
     user: req.session.user,
-    title: "This user has a DfE Sign-in account - DfE Sign-in",
+    title: "This user has a DfE Sign-in account",
     organisationDetails,
   });
 };

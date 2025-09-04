@@ -76,7 +76,7 @@ const get = async (req, res) => {
       isInvite: req.session.user.isInvite ? req.session.user.isInvite : false,
       uid: req.session.user.uid ? req.session.user.uid : "",
     },
-    title: "Review new service - DfE Sign-in",
+    title: "Review new service",
     services,
     organisationDetails,
   };

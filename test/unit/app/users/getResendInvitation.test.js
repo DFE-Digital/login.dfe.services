@@ -28,7 +28,7 @@ describe("when displaying the resend invitation view", () => {
         uid: "userid",
       },
     };
-    ((req.title = "Confirm resend invitation email - DfE Sign-in"),
+    ((req.title = "Confirm resend invitation email"),
       (req.user = {
         sub: "user1",
         email: "user.one@unit.test",

@@ -172,7 +172,7 @@ describe("when reviewing a service request", () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      title: "Review service request - DfE Sign-in",
+      title: "Review service request",
       currentPage: "requests",
     });
   });

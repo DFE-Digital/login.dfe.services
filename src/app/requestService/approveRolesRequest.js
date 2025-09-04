@@ -34,7 +34,7 @@ const validate = async (req) => {
   const model = {
     csrfToken: req.csrfToken(),
     currentPage: "users",
-    title: "Review sub-service request - DfE Sign-in",
+    title: "Review sub-service request",
     organisationDetails,
     endUserName: `${endUser.firstName} ${endUser.lastName}`,
     endUserEmail: endUser.email,

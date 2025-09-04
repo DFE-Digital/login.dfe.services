@@ -27,7 +27,7 @@ const get = async (req, res) => {
   const linkToUserDetailsPage = `/approvals/users/${req.params.uid}`;
   return res.render("users/views/editPermission", {
     csrfToken: req.csrfToken(),
-    title: `Confirm ${userRole} access - DfE Sign-in`,
+    title: `Confirm ${userRole} access`,
     userRole,
     organisationDetails,
     currentPage: "users",

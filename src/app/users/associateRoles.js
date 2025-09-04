@@ -187,8 +187,8 @@ const getViewModel = async (req) => {
       : false;
 
   const title = req.session.user?.isInvite
-    ? "Select roles - DfE Sign-in"
-    : `Select a sub-service for ${serviceDetails?.name} - DfE Sign-in`;
+    ? "Select roles"
+    : `Select a sub-service for ${serviceDetails?.name}`;
 
   return {
     csrfToken: req.csrfToken(),

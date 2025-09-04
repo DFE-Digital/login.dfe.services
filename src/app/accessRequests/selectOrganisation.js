@@ -47,7 +47,7 @@ const get = async (req, res) => {
 
   return res.render("accessRequests/views/selectOrganisation", {
     csrfToken: req.csrfToken(),
-    title: "Select Organisation - DfE Sign-in",
+    title: "Select Organisation",
     organisations: orgs,
     selectedOrganisation: null,
     backLink: true,
@@ -62,7 +62,7 @@ const post = async (req, res) => {
     const orgs = await mapOrganisationsWithRequest(req);
     return res.render("accessRequests/views/selectOrganisation", {
       csrfToken: req.csrfToken(),
-      title: "Select Organisation - DfE Sign-in",
+      title: "Select Organisation",
       organisations: orgs,
       selectedOrganisation: selectedOrg,
       backLink: true,

@@ -143,7 +143,7 @@ describe("when reviewing an organisation request", () => {
         usersName: "John Doe",
       },
       selectedResponse: null,
-      title: "Review request - DfE Sign-in",
+      title: "Review request",
       validationMessages: {
         selectedResponse: "Approve or Reject must be selected",
       },
@@ -204,7 +204,7 @@ describe("when reviewing an organisation request", () => {
         approverEmail: "jane.doe@email.com",
       },
       selectedResponse: "approve",
-      title: "Review request - DfE Sign-in",
+      title: "Review request",
       validationMessages: {
         selectedResponse: "Request already actioned by jane.doe@email.com",
       },

@@ -36,7 +36,7 @@ const get = async (req, res) => {
   }
   return res.render("accessRequests/views/reviewOrganisationRequest", {
     csrfToken: req.csrfToken(),
-    title: "Review request - DfE Sign-in",
+    title: "Review request",
     backLink: `/access-requests/requests`,
     cancelLink: `/access-requests/requests`,
     request,
@@ -49,7 +49,7 @@ const get = async (req, res) => {
 const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const model = {
-    title: "Review request - DfE Sign-in",
+    title: "Review request",
     backLink: `/access-requests/requests`,
     cancelLink: `/access-requests/requests`,
     request,

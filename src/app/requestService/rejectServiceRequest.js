@@ -56,7 +56,7 @@ const getViewModel = async (req) => {
       email: req.session.user.email,
       uid: req.session.user.uid ? req.session.user.uid : "",
     },
-    title: "Reject service request - DfE Sign-in",
+    title: "Reject service request",
     validationMessages: {},
     endUserName: `${endUser.firstName} ${endUser.lastName}`,
     endUserEmail: endUser.email,

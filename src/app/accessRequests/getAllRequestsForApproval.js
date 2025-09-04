@@ -41,7 +41,7 @@ const getAllRequestsForApproval = async (req) => {
 
   return {
     csrfToken: req.csrfToken(),
-    title: "Requests - DfE Sign-in",
+    title: "Requests",
     currentPage: "requests",
     requests,
     pageNumber,
@@ -54,7 +54,7 @@ const buildModel = async (req) => {
   const pagedRequests = await getAllRequestsForApproval(req);
   return {
     csrfToken: req.csrfToken(),
-    title: "Requests - DfE Sign-in",
+    title: "Requests",
     currentPage: "requests",
     requests: pagedRequests.requests,
     page: pagedRequests.pageNumber,
