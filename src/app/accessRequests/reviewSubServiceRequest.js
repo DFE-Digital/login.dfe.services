@@ -13,10 +13,6 @@ const { createSubServiceAddedBanners } = require("../home/userBannersHandlers");
 const {
   isServiceEmailNotificationAllowed,
 } = require("../../../src/infrastructure/applications");
-const {
-  getOrganisationAndServiceForUser,
-} = require("./../../infrastructure/organisations");
-const { getApproversDetails } = require("../../infrastructure/helpers/common");
 const { actions } = require("../constans/actions");
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
@@ -201,38 +197,19 @@ const post = async (req, res) => {
         );
 
         const account = Account.fromContext(req.user);
-        const organisations = await getOrganisationAndServiceForUser(
-          account.id,
-        );
-        const organisationWithApprovers = organisations.find(
-          (organisation) =>
-            organisation.organisation.id === model.viewModel.org_id,
-        );
-        const approvers = await getApproversDetails(
-          [organisationWithApprovers],
-          correlationId,
-        );
-
-        await Promise.all(
-          approvers.map(async (approver) => {
-            console.log(approver);
-            if (
-              approver.claims.status === 1 &&
-              account.email !== approver.email
-            ) {
-              console.log("send email");
-              // await notificationClient.sendServiceRequestOutcomeToOtherApprovers(
-              //   model.viewModel.endUsersEmail,
-              //   model.viewModel.endUsersGivenName,
-              //   model.viewModel.endUsersFamilyName,
-              //   model.viewModel.org_name,
-              //   serviceName,
-              //   rolesName,
-              //   permissionLevel,
-              // );
-            }
-          }),
-        );
+        console.log(`send email to everyone except ${account.id}`);
+        // const endUsersName = model.viewModel.endUsersGivenName + ' ' + model.viewModel.endUsersFamilyName;
+        // await notificationClient.sendSubServiceRequestOutcomeToApprovers(
+        //   model.viewModel.org_id,
+        //   account.id,
+        //   model.viewModel.endUsersEmail,
+        //   endUsersName,
+        //   model.viewModel.org_name,
+        //   model.viewModel.Service_name,
+        //   model.viewModel.roles.map((i) => i.name),
+        //   true,
+        //   model.reason,
+        // );
       }
 
       logger.audit({
