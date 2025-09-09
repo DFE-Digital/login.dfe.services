@@ -90,17 +90,28 @@ const get = async (req, res) => {
     serviceUrl = `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.MANAGE_SERVICE}`;
   }
 
+  const user = {
+    firstName: req.session.user.firstName,
+    lastName: req.session.user.lastName,
+    email: req.session.user.email,
+    isInvite: req.session.user.isInvite ? req.session.user.isInvite : false,
+    uid: req.session.user.uid ? req.session.user.uid : "",
+  };
+
+  const isSelfManage = isSelfManagement(req);
+
+  const title = isSelfManage
+    ? "Review new service"
+    : user.isInvite
+      ? `Review invite details`
+      : `Review new service for ${user.firstName} ${user.lastName}`;
+
   const model = {
     backLink: buildBackLink(req, services),
     currentPage: "users",
     csrfToken: req.csrfToken(),
-    user: {
-      firstName: req.session.user.firstName,
-      lastName: req.session.user.lastName,
-      email: req.session.user.email,
-      isInvite: req.session.user.isInvite ? req.session.user.isInvite : false,
-      uid: req.session.user.uid ? req.session.user.uid : "",
-    },
+    user,
+    title,
     services,
     subServiceUrl,
     serviceUrl,

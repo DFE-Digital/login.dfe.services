@@ -72,6 +72,7 @@ const getViewModel = async (req) => {
       lastName: req.session.user.lastName,
       email: req.session.user.email,
     },
+    title: `Select a sub-service for ${userService.name}`,
     serviceRoles,
     serviceDetails: application,
     userService,

@@ -37,6 +37,7 @@ const validate = async (req) => {
   const model = {
     csrfToken: req.csrfToken(),
     currentPage: "users",
+    title: `Review new service for ${endUser.firstName} ${endUser.lastName}`,
     organisationDetails,
     endUserName: `${endUser.firstName} ${endUser.lastName}`,
     endUserEmail: endUser.email,

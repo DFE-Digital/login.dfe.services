@@ -46,6 +46,7 @@ const get = async (req, res) => {
       lastName: req.session.user.lastName,
       email: req.session.user.email,
     },
+    title: "Confirm removal from organisation",
     currentPage: "users",
     backLink: linkToUserDetailsPage,
     cancelLink: linkToUserDetailsPage,

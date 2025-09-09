@@ -74,6 +74,7 @@ const get = async (req, res) => {
       lastName: req.session.user.lastName,
       email: req.session.user.email,
     },
+    title: "Confirm service removal",
   };
   return renderRemoveServicePage(req, res, model);
 };

@@ -80,7 +80,7 @@ describe("when selecting an organisation to manage requests", () => {
       currentPage: "requests",
       selectedOrganisation: undefined,
       organisations: req.userOrganisations,
-      title: "Select Organisation - DfE Sign-in",
+      title: "Select Organisation",
       validationMessages: {
         selectedOrganisation: "An organisation must be selected",
       },

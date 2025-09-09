@@ -142,7 +142,7 @@ describe("when rejecting an organisation request", () => {
         approverEmail: "jane.doe@email.com",
       },
       reason: "reason for rejection",
-      title: "Reason for rejection - DfE Sign-in",
+      title: "Reason for rejection",
       validationMessages: {
         reason: "Request already actioned by jane.doe@email.com",
       },
@@ -182,7 +182,7 @@ describe("when rejecting an organisation request", () => {
         usersName: "John Doe",
       },
       reason: req.body.reason,
-      title: "Reason for rejection - DfE Sign-in",
+      title: "Reason for rejection",
       validationMessages: {
         reason: "Reason cannot be longer than 1000 characters",
       },

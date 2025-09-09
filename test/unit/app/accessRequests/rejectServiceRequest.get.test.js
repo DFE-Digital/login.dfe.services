@@ -57,7 +57,7 @@ describe("when reviewing a service request", () => {
   it("then it should include the page title", async () => {
     await get(req, res);
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      title: "Reason for rejection - DfE Sign-in",
+      title: "Reason for rejection",
     });
   });
 
