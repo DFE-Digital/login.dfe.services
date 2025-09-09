@@ -15,7 +15,6 @@ const {
 } = require("../../../../src/app/accessRequests/rejectSubServiceRequest");
 
 const Account = require("../../../../src/infrastructure/account");
-//jest.mock('login.dfe.policy-engine');
 jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
@@ -28,11 +27,6 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
   fromContext: jest.fn(),
   getById: jest.fn(),
 }));
-/*jest.mock('../../../../src/infrastructure/helpers/allServicesAppCache', () => {
-  return {
-    checkCacheForAllServices: jest.fn(),
-  };
-});*/
 jest.mock("../../../../src/app/accessRequests/utils", () => {
   return {
     getAndMapServiceRequest: jest.fn(),
@@ -215,6 +209,10 @@ describe("When actioning a sub-service request for rejection", () => {
 
     res = mockResponse();
     sendAccessRequest.mockReset();
+
+    Account.fromContext.mockReset().mockReturnValue({
+      id: "user1",
+    });
 
     Account.getById.mockReset().mockReturnValue({
       claims: {

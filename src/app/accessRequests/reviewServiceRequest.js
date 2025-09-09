@@ -1,10 +1,6 @@
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const Account = require("./../../infrastructure/account");
-const {
-  getOrganisationAndServiceForUser,
-} = require("./../../infrastructure/organisations");
-const { getApproversDetails } = require("../../infrastructure/helpers/common");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { addServiceToUser } = require("login.dfe.api-client/users");
 const { updateServiceRequest } = require("../requestService/utils");
@@ -221,31 +217,17 @@ const post = async (req, res) => {
     );
 
     const account = Account.fromContext(req.user);
-    const organisations = await getOrganisationAndServiceForUser(account.id);
-    const organisationWithApprovers = organisations.find(
-      (organisation) =>
-        organisation.organisation.id === model.request.organisation.id,
-    );
-    const approvers = await getApproversDetails(
-      [organisationWithApprovers],
-      correlationId,
-    );
-
-    await Promise.all(
-      approvers.map(async (approver) => {
-        console.log(approver);
-        if (approver.claims.status === 1 && account.email !== approver.email) {
-          console.log("send email");
-          // await notificationClient.sendServiceRequestOutcomeToOtherApprovers(
-          //   endUsersEmail,
-          //   endUsersGivenName,
-          //   endUsersFamilyName,
-          //   organisation.name,
-          //   service.name,
-          //   selectedRoles.map((i) => i.name),
-          // );
-        }
-      }),
+    const endUsersName = endUsersGivenName + " " + endUsersFamilyName;
+    await notificationClient.sendServiceRequestOutcomeToApprovers(
+      organisation.id,
+      account.id,
+      endUsersEmail,
+      endUsersName,
+      organisation.name,
+      service.name,
+      selectedRoles.map((i) => i.name),
+      true,
+      null,
     );
 
     logger.audit({

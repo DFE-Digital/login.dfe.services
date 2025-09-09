@@ -158,16 +158,15 @@ const post = async (req, res) => {
     );
 
     const account = Account.fromContext(req.user);
-    console.log(`send email to everyone except ${account.id}`);
-    // await notificationClient.sendOrganisationRequestOutcomeToApprovers(
-    //   model.request.organisation_id, //organisationId
-    //   account.id, // approverUserId, so we know who to not send an email to
-    //   model.request.usersEmail,
-    //   model.request.usersName,
-    //   organisation.name,
-    //   true,
-    //   null,
-    // );
+    await notificationClient.sendOrganisationRequestOutcomeToApprovers(
+      model.request.organisation_id,
+      account.id,
+      model.request.usersEmail,
+      model.request.usersName,
+      organisation.name,
+      true,
+      null,
+    );
   }
 
   //audit organisation approved

@@ -99,7 +99,6 @@ const get = async (req, res) => {
   });
 };
 const post = async (req, res) => {
-  const correlationId = req.id;
   const model = await validate(req);
 
   if (Object.keys(model.viewModel.validationMessages).length > 0) {
@@ -150,19 +149,21 @@ const post = async (req, res) => {
         );
 
         const account = Account.fromContext(req.user);
-        console.log(`send email to everyone except ${account.id}`);
-        // const endUsersName = model.viewModel.endUsersGivenName + ' ' + model.viewModel.endUsersFamilyName;
-        // await notificationClient.sendSubServiceRequestOutcomeToApprovers(
-        //   model.viewModel.org_id,
-        //   account.id,
-        //   model.viewModel.endUsersEmail,
-        //   endUsersName,
-        //   model.viewModel.org_name,
-        //   model.viewModel.Service_name,
-        //   model.viewModel.roles.map((i) => i.name),
-        //   false,
-        //   model.reason,
-        // );
+        const endUsersName =
+          model.viewModel.endUsersGivenName +
+          " " +
+          model.viewModel.endUsersFamilyName;
+        await notificationClient.sendSubServiceRequestOutcomeToApprovers(
+          model.viewModel.org_id,
+          account.id,
+          model.viewModel.endUsersEmail,
+          endUsersName,
+          model.viewModel.org_name,
+          model.viewModel.Service_name,
+          model.viewModel.roles.map((i) => i.name),
+          false,
+          model.reason,
+        );
       }
 
       logger.audit({

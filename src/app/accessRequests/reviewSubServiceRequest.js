@@ -197,19 +197,21 @@ const post = async (req, res) => {
         );
 
         const account = Account.fromContext(req.user);
-        console.log(`send email to everyone except ${account.id}`);
-        // const endUsersName = model.viewModel.endUsersGivenName + ' ' + model.viewModel.endUsersFamilyName;
-        // await notificationClient.sendSubServiceRequestOutcomeToApprovers(
-        //   model.viewModel.org_id,
-        //   account.id,
-        //   model.viewModel.endUsersEmail,
-        //   endUsersName,
-        //   model.viewModel.org_name,
-        //   model.viewModel.Service_name,
-        //   model.viewModel.roles.map((i) => i.name),
-        //   true,
-        //   model.reason,
-        // );
+        const endUsersName =
+          model.viewModel.endUsersGivenName +
+          " " +
+          model.viewModel.endUsersFamilyName;
+        await notificationClient.sendSubServiceRequestOutcomeToApprovers(
+          model.viewModel.org_id,
+          account.id,
+          model.viewModel.endUsersEmail,
+          endUsersName,
+          model.viewModel.org_name,
+          model.viewModel.Service_name,
+          model.viewModel.roles.map((i) => i.name),
+          true,
+          null,
+        );
       }
 
       logger.audit({

@@ -22,6 +22,8 @@ const {
 } = require("../../../../src/infrastructure/applications");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const sendAccessRequest = jest.fn();
+const sendSubServiceRequestOutcomeToApprovers = jest.fn();
+const sendSubServiceRequestApproved = jest.fn();
 
 const Account = require("../../../../src/infrastructure/account");
 jest.mock("login.dfe.policy-engine");
@@ -158,8 +160,6 @@ const model = {
 };
 jest.mock("../../../../src/app/users/utils");
 
-const sendSubServiceRequestApproved = jest.fn();
-
 describe("When reviewing a sub-service request for approving", () => {
   let req;
   let res;
@@ -232,6 +232,10 @@ describe("When reviewing a sub-service request for approving", () => {
     res = mockResponse();
     sendAccessRequest.mockReset();
 
+    Account.fromContext.mockReset().mockReturnValue({
+      id: "user1",
+    });
+
     Account.getById.mockReset().mockReturnValue([
       {
         claims: {
@@ -260,6 +264,7 @@ describe("When reviewing a sub-service request for approving", () => {
     sendSubServiceRequestApproved.mockReset();
     NotificationClient.mockReset().mockImplementation(() => ({
       sendSubServiceRequestApproved,
+      sendSubServiceRequestOutcomeToApprovers,
     }));
   });
 

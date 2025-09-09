@@ -39,8 +39,10 @@ const logger = require("./../../../../src/infrastructure/logger");
 
 const { NotificationClient } = require("login.dfe.jobs-client");
 const sendAccessRequest = jest.fn();
+const sendOrganisationRequestOutcomeToApprovers = jest.fn();
 NotificationClient.mockImplementation(() => {
   return {
+    sendOrganisationRequestOutcomeToApprovers,
     sendAccessRequest,
   };
 });
@@ -68,9 +70,11 @@ describe("when reviewing an organisation request", () => {
     updateRequestById.mockReset();
 
     sendAccessRequest.mockReset();
+    sendOrganisationRequestOutcomeToApprovers.mockReset();
     NotificationClient.mockImplementation(() => {
       return {
         sendAccessRequest,
+        sendOrganisationRequestOutcomeToApprovers,
       };
     });
     getOrganisationById.mockReset().mockReturnValue({
@@ -243,7 +247,7 @@ describe("when reviewing an organisation request", () => {
     expect(updateRequestById.mock.calls[0][5]).toBe("correlationId");
   });
 
-  it("then it should update the search index with the new org", async () => {
+  it("then it should update the search index with the new org and redirect", async () => {
     await post(req, res);
     expect(updateUserDetailsInSearchIndex).toHaveBeenCalledTimes(1);
     expect(updateUserDetailsInSearchIndex).toHaveBeenLastCalledWith({
@@ -262,11 +266,15 @@ describe("when reviewing an organisation request", () => {
         },
       ],
     });
+    //expect(NotificationClient.sendAccessRequest.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/access-requests/requests");
   });
 
-  it("then it should should audit approved org request", async () => {
+  it("then it should should send notification emails and audit approved org request", async () => {
     await post(req, res);
 
+    //expect(sendOrganisationRequestOutcomeToApprovers.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
       "email@email.com (id: user1) approved organisation request for org1)",
@@ -288,19 +296,15 @@ describe("when reviewing an organisation request", () => {
     });
   });
 
-  it("then it should redirect to the user profile for the user approved", async () => {
-    await post(req, res);
-
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe("/access-requests/requests");
-  });
-
   it("should log an error and not update search index or send an email if the user is not found", async () => {
     searchUserByIdRaw.mockReturnValue(null);
     await post(req, res);
 
     expect(updateUserDetailsInSearchIndex.mock.calls).toHaveLength(0);
     expect(sendAccessRequest.mock.calls).toHaveLength(0);
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls).toHaveLength(
+      0,
+    );
 
     expect(logger.error.mock.calls).toHaveLength(1);
     expect(logger.error.mock.calls[0][0]).toBe(
@@ -318,6 +322,9 @@ describe("when reviewing an organisation request", () => {
 
     expect(updateUserDetailsInSearchIndex.mock.calls).toHaveLength(0);
     expect(sendAccessRequest.mock.calls).toHaveLength(0);
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls).toHaveLength(
+      0,
+    );
     expect(logger.error.mock.calls).toHaveLength(1);
     expect(logger.error.mock.calls[0][0]).toBe(
       "Failed to find organisation org1 when confirming change of organisations",

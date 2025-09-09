@@ -1,12 +1,8 @@
 const { getAndMapOrgRequest } = require("./utils");
-const {
-  updateRequestById,
-  getOrganisationAndServiceForUser,
-} = require("./../../infrastructure/organisations");
+const { updateRequestById } = require("./../../infrastructure/organisations");
 const Account = require("./../../infrastructure/account");
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
-const { getApproversDetails } = require("../../infrastructure/helpers/common");
 const { NotificationClient } = require("login.dfe.jobs-client");
 
 const notificationClient = new NotificationClient({
@@ -74,16 +70,15 @@ const post = async (req, res) => {
   );
 
   const account = Account.fromContext(req.user);
-  console.log(`send email to everyone except ${account.id}`);
-  // await notificationClient.sendOrganisationRequestOutcomeToApprovers(
-  //   model.request.organisation_id, //organisationId
-  //   account.id, // approverUserId, so we know who to not send an email to
-  //   model.request.usersEmail,
-  //   model.request.usersName,
-  //   model.request.org_name,
-  //   false,
-  //   model.reason,
-  // );
+  await notificationClient.sendOrganisationRequestOutcomeToApprovers(
+    model.request.organisation_id,
+    account.id,
+    model.request.usersEmail,
+    model.request.usersName,
+    model.request.org_name,
+    false,
+    model.reason,
+  );
 
   //audit organisation rejected
   logger.audit({
