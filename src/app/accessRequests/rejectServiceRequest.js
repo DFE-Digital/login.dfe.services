@@ -115,10 +115,10 @@ const post = async (req, res) => {
   const account = Account.fromContext(req.user);
   const endUsersName = endUsersGivenName + " " + endUsersFamilyName;
   await notificationClient.sendServiceRequestOutcomeToApprovers(
-    organisation.id,
     account.id,
     endUsersEmail,
     endUsersName,
+    organisation.id,
     organisation.name,
     service.name,
     selectedRoles.map((i) => i.name),

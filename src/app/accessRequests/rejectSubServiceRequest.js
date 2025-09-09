@@ -154,10 +154,10 @@ const post = async (req, res) => {
           " " +
           model.viewModel.endUsersFamilyName;
         await notificationClient.sendSubServiceRequestOutcomeToApprovers(
-          model.viewModel.org_id,
           account.id,
           model.viewModel.endUsersEmail,
           endUsersName,
+          model.viewModel.org_id,
           model.viewModel.org_name,
           model.viewModel.Service_name,
           model.viewModel.roles.map((i) => i.name),

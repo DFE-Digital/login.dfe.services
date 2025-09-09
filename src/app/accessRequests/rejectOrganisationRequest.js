@@ -71,10 +71,10 @@ const post = async (req, res) => {
 
   const account = Account.fromContext(req.user);
   await notificationClient.sendOrganisationRequestOutcomeToApprovers(
-    model.request.organisation_id,
     account.id,
     model.request.usersEmail,
     model.request.usersName,
+    model.request.organisation_id,
     model.request.org_name,
     false,
     model.reason,

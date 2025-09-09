@@ -151,7 +151,6 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
-  const correlationId = req.id;
   let model = await getViewModel(req);
   model = await validateModel(model, req.params, res);
   if (model) {
@@ -219,10 +218,10 @@ const post = async (req, res) => {
     const account = Account.fromContext(req.user);
     const endUsersName = endUsersGivenName + " " + endUsersFamilyName;
     await notificationClient.sendServiceRequestOutcomeToApprovers(
-      organisation.id,
       account.id,
       endUsersEmail,
       endUsersName,
+      organisation.id,
       organisation.name,
       service.name,
       selectedRoles.map((i) => i.name),
