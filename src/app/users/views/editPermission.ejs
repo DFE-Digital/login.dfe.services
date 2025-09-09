@@ -2,7 +2,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-xl">
-                Confirm <%=locals.user.organisation.roleId === 10000 ? 'remove approver' : 'approver';%> access
+                Confirm <%=locals.userRole;%> access
             </h1>
             <p class="govuk-body-l">Please review these details before <%=locals.user.organisation.roleId === 10000 ? 'removing' : 'granting';%> approver access to <%=locals.organisationDetails.organisation.name%> for <%= locals.user.firstName %> <%= locals.user.lastName %></p>
             <% if(locals.user.organisation.roleId !== 10000) { %>

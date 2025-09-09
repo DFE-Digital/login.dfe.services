@@ -28,7 +28,7 @@ const get = async (req, res) => {
   const organisation = await getOrganisationById(organisationId, req.id);
   return res.render("requestOrganisation/views/review", {
     csrfToken: req.csrfToken(),
-    title: "Confirm Request - DfE Sign-in",
+    title: "Confirm Request",
     organisation,
     reason: "",
     currentPage: "organisations",
@@ -46,7 +46,7 @@ const validate = async (req) => {
     ? config.organisationRequests.requestLimit
     : 10;
   const model = {
-    title: "Confirm Request - DfE Sign-in",
+    title: "Confirm Request",
     organisation,
     reason: req.body.reason,
     currentPage: "organisations",

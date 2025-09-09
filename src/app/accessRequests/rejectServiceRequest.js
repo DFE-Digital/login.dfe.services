@@ -17,7 +17,7 @@ const getViewModel = (req) => {
   const backLink = `/access-requests/service-requests/${rid}/services/${sid}/roles/${encodedRids}`;
   const model = {
     csrfToken: req.csrfToken(),
-    title: "Reason for rejection - DfE Sign-in",
+    title: "Reason for rejection",
     backLink,
     cancelLink: `/access-requests/requests`,
     reason: "",

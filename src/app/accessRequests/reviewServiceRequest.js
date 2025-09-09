@@ -46,7 +46,7 @@ const getViewModel = async (req) => {
 
   let model = {
     csrfToken: req.csrfToken(),
-    title: "Review service request - DfE Sign-in",
+    title: "Review service request",
     backLink: `/access-requests/requests`,
     cancelLink: `/access-requests/requests`,
     request,

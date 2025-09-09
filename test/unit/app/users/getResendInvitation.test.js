@@ -28,22 +28,23 @@ describe("when displaying the resend invitation view", () => {
         uid: "userid",
       },
     };
-    req.user = {
-      sub: "user1",
-      email: "user.one@unit.test",
-      organisations: [
-        {
-          organisation: {
-            id: "organisationId",
-            name: "organisationName",
+    ((req.title = "Confirm resend invitation email"),
+      (req.user = {
+        sub: "user1",
+        email: "user.one@unit.test",
+        organisations: [
+          {
+            organisation: {
+              id: "organisationId",
+              name: "organisationName",
+            },
+            role: {
+              id: 0,
+              name: "category name",
+            },
           },
-          role: {
-            id: 0,
-            name: "category name",
-          },
-        },
-      ],
-    };
+        ],
+      }));
     res = mockResponse();
 
     getResendInvitation =
