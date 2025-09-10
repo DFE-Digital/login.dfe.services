@@ -24,27 +24,9 @@ jest.mock("../../../../src/infrastructure/config", () => {
 jest.mock("../../../../src/infrastructure/logger", () =>
   require("../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("./../../../../src/infrastructure/account", () => ({
-  fromContext: jest.fn(),
-  getById: jest.fn(),
-}));
-
-jest.mock("../../../../src/app/accessRequests/utils", () => {
-  return {
-    getAndMapServiceRequest: jest.fn(),
-    getSubServiceRequestVieModel: jest.fn(),
-  };
-});
-
-jest.mock("../../../../src/app/requestService/utils", () => {
-  return {
-    updateServiceRequest: jest.fn(),
-  };
-});
-
-jest.mock("../../../../src/infrastructure/config", () => {
-  return mockAdapterConfig();
-});
+jest.mock("../../../../src/infrastructure/account");
+jest.mock("../../../../src/app/accessRequests/utils");
+jest.mock("../../../../src/app/requestService/utils");
 jest.mock("login.dfe.dao", () => {
   return {
     services: {
@@ -101,6 +83,7 @@ const model = {
 };
 jest.mock("../../../../src/app/users/utils");
 
+// TODO: These tests need to be folded into the reviewSubServiceRequest.post test
 describe("When reviewing a sub-service request for rejecting", () => {
   let req;
   let res;

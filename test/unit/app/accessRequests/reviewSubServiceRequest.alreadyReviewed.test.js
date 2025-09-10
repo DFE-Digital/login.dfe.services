@@ -2,7 +2,6 @@ const {
   mockRequest,
   mockResponse,
   mockAdapterConfig,
-  mockConfig,
 } = require("../../../utils/jestMocks");
 const {
   getSubServiceRequestVieModel,
@@ -14,28 +13,11 @@ jest.mock("login.dfe.policy-engine");
 jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
-jest.mock("../../../../src/infrastructure/config", () => {
-  return mockConfig();
-});
 jest.mock("../../../../src/infrastructure/logger", () =>
   require("../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("./../../../../src/infrastructure/account", () => ({
-  fromContext: jest.fn(),
-  getById: jest.fn(),
-}));
-
-jest.mock("../../../../src/app/accessRequests/utils", () => {
-  return {
-    getAndMapServiceRequest: jest.fn(),
-    getSubServiceRequestVieModel: jest.fn(),
-    generateFlashMessages: jest.fn(),
-  };
-});
-
-jest.mock("../../../../src/infrastructure/config", () => {
-  return mockAdapterConfig();
-});
+jest.mock("./../../../../src/infrastructure/account");
+jest.mock("../../../../src/app/accessRequests/utils");
 jest.mock("login.dfe.dao", () => {
   return {
     services: {
@@ -43,35 +25,24 @@ jest.mock("login.dfe.dao", () => {
     },
   };
 });
+
 const listRoles = [
   {
-    code: "ASP_School_Anon",
+    code: "ASP_School_Anon_1",
     id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
+    name: "ASP School Anon_1",
     numericId: "124",
   },
   {
-    code: "ASP_School_Anon",
+    code: "ASP_School_Anon_2",
     id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
+    name: "ASP School Anon 2",
     numericId: "124",
   },
   {
-    code: "ASP_School_Anon",
+    code: "ASP_School_Anon_3",
     id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
-    numericId: "124",
-  },
-  {
-    code: "ASP_School_Anon",
-    id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
-    numericId: "124",
-  },
-  {
-    code: "ASP_School_Anon",
-    id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
+    name: "ASP School Anon 3",
     numericId: "124",
   },
 ];
@@ -131,6 +102,8 @@ const request = {
 
 jest.mock("../../../../src/app/users/utils");
 
+// TODO: These tests need to be folded into the reviewSubServiceRequest.get
+// and reviewSubServiceRequest.post tests.
 describe("When reviewing a sub-service request for approving", () => {
   let req;
   let res;

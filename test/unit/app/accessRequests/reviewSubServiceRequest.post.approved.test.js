@@ -27,35 +27,18 @@ const sendSubServiceRequestApproved = jest.fn();
 const Account = require("../../../../src/infrastructure/account");
 jest.mock("login.dfe.policy-engine");
 jest.mock("login.dfe.jobs-client");
+jest.mock("login.dfe.api-client/users");
 jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
 jest.mock("../../../../src/infrastructure/logger", () =>
   require("../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("./../../../../src/infrastructure/account", () => ({
-  fromContext: jest.fn(),
-  getById: jest.fn(),
-}));
-jest.mock("../../../../src/app/home/userBannersHandlers", () => {
-  return { createSubServiceAddedBanners: jest.fn() };
-});
-jest.mock("../../../../src/app/accessRequests/utils", () => {
-  return {
-    getAndMapServiceRequest: jest.fn(),
-    getSubServiceRequestVieModel: jest.fn(),
-    getOrganisationPermissionLevel: jest.fn(),
-  };
-});
-jest.mock("../../../../src/infrastructure/applications", () => {
-  return { isServiceEmailNotificationAllowed: jest.fn() };
-});
-
-jest.mock("../../../../src/app/requestService/utils", () => {
-  return {
-    updateServiceRequest: jest.fn(),
-  };
-});
+jest.mock("../../../../src/app/home/userBannersHandlers");
+jest.mock("../../../../src/app/accessRequests/utils");
+jest.mock("../../../../src/app/requestService/utils");
+jest.mock("../../../../src/infrastructure/account");
+jest.mock("../../../../src/infrastructure/applications");
 
 jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
@@ -66,12 +49,6 @@ jest.mock("login.dfe.dao", () => {
       getUserServiceRequest: jest.fn(),
       updateUserPendingServiceRequest: jest.fn(),
     },
-  };
-});
-
-jest.mock("login.dfe.api-client/users", () => {
-  return {
-    updateUserServiceRoles: jest.fn(),
   };
 });
 
@@ -147,6 +124,7 @@ const model = {
 };
 jest.mock("../../../../src/app/users/utils");
 
+// TODO: These tests need to be folded into the reviewSubServiceRequest.post test
 describe("When reviewing a sub-service request for approving", () => {
   let req;
   let res;
