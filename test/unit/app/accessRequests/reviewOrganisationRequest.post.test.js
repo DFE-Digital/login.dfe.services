@@ -10,7 +10,11 @@ jest.mock("login.dfe.dao", () =>
 jest.mock("./../../../../src/app/accessRequests/utils");
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("./../../../../src/infrastructure/organisations");
+const { NotificationClient } = require("login.dfe.jobs-client");
 jest.mock("login.dfe.jobs-client");
+const sendAccessRequest = jest.fn();
+const sendOrganisationRequestOutcomeToApprovers = jest.fn();
+
 jest.mock("login.dfe.api-client/users", () => {
   return {
     searchUserByIdRaw: jest.fn(),
@@ -37,16 +41,6 @@ const {
 } = require("./../../../../src/app/accessRequests/utils");
 const logger = require("./../../../../src/infrastructure/logger");
 
-const { NotificationClient } = require("login.dfe.jobs-client");
-const sendAccessRequest = jest.fn();
-const sendOrganisationRequestOutcomeToApprovers = jest.fn();
-NotificationClient.mockImplementation(() => {
-  return {
-    sendOrganisationRequestOutcomeToApprovers,
-    sendAccessRequest,
-  };
-});
-
 Date.now = jest.fn(() => "2019-01-02");
 
 describe("when reviewing an organisation request", () => {
@@ -71,6 +65,12 @@ describe("when reviewing an organisation request", () => {
 
     sendAccessRequest.mockReset();
     sendOrganisationRequestOutcomeToApprovers.mockReset();
+
+    NotificationClient.mockReset().mockImplementation(() => ({
+      sendAccessRequest,
+      sendOrganisationRequestOutcomeToApprovers,
+    }));
+
     NotificationClient.mockImplementation(() => {
       return {
         sendAccessRequest,
@@ -215,7 +215,7 @@ describe("when reviewing an organisation request", () => {
     });
   });
 
-  it("then it should redirect to rejection reason if reject", async () => {
+  it("then it should redirect to rejection reason if selectedResponse is reject", async () => {
     req.body.selectedResponse = "reject";
 
     await post(req, res);
@@ -224,7 +224,7 @@ describe("when reviewing an organisation request", () => {
     expect(res.redirect.mock.calls[0][0]).toBe("requestId/rejected");
   });
 
-  it("then it should put the user in the organisation if approved", async () => {
+  it("then it should put the user in the organisation if approved and patch the request as complete", async () => {
     await post(req, res);
 
     expect(putUserInOrganisation.mock.calls).toHaveLength(1);
@@ -233,10 +233,6 @@ describe("when reviewing an organisation request", () => {
     expect(putUserInOrganisation.mock.calls[0][2]).toBe(0);
     expect(putUserInOrganisation.mock.calls[0][3]).toBe(null);
     expect(putUserInOrganisation.mock.calls[0][4]).toBe("correlationId");
-  });
-
-  it("then it should patch the request as complete", async () => {
-    await post(req, res);
 
     expect(updateRequestById.mock.calls).toHaveLength(1);
     expect(updateRequestById.mock.calls[0][0]).toBe("requestId");
@@ -266,7 +262,10 @@ describe("when reviewing an organisation request", () => {
         },
       ],
     });
-    //expect(NotificationClient.sendAccessRequest.mock.calls).toHaveLength(1);
+    expect(sendAccessRequest.mock.calls).toHaveLength(1);
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls).toHaveLength(
+      1,
+    );
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/access-requests/requests");
   });
@@ -274,7 +273,11 @@ describe("when reviewing an organisation request", () => {
   it("then it should should send notification emails and audit approved org request", async () => {
     await post(req, res);
 
-    //expect(sendOrganisationRequestOutcomeToApprovers.mock.calls).toHaveLength(1);
+    expect(sendAccessRequest.mock.calls).toHaveLength(1);
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls).toHaveLength(
+      1,
+    );
+
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
       "email@email.com (id: user1) approved organisation request for org1)",

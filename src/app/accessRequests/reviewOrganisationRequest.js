@@ -16,10 +16,6 @@ const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getAndMapOrgRequest } = require("./utils");
 const { NotificationClient } = require("login.dfe.jobs-client");
 
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
-
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);
 
@@ -69,6 +65,9 @@ const validate = async (req) => {
 };
 
 const post = async (req, res) => {
+  const notificationClient = new NotificationClient({
+    connectionString: config.notifications.connectionString,
+  });
   const correlationId = req.id;
   const model = await validate(req);
 
@@ -148,6 +147,7 @@ const post = async (req, res) => {
         updated.organisations.length === currentOrganisationDetails.length,
     );
 
+    console.log("about to call sendaccess request");
     //send approved email
     await notificationClient.sendAccessRequest(
       model.request.usersEmail,

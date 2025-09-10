@@ -13,7 +13,7 @@ jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
 jest.mock("../../../../src/infrastructure/logger", () =>
-  require("./../../../utils/jestMocks").mockLogger(),
+  require("../../../utils/jestMocks").mockLogger(),
 );
 jest.mock("./../../../../src/infrastructure/account", () => ({
   fromContext: jest.fn(),

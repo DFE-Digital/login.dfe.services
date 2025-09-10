@@ -26,11 +26,7 @@ const logger = require("./../../../../src/infrastructure/logger");
 
 const { NotificationClient } = require("login.dfe.jobs-client");
 const sendAccessRequest = jest.fn();
-NotificationClient.mockImplementation(() => {
-  return {
-    sendAccessRequest,
-  };
-});
+const sendOrganisationRequestOutcomeToApprovers = jest.fn();
 
 Date.now = jest.fn(() => "2019-01-02");
 
@@ -63,9 +59,11 @@ describe("when rejecting an organisation request", () => {
     updateRequestById.mockReset();
 
     sendAccessRequest.mockReset();
+    sendOrganisationRequestOutcomeToApprovers.mockReset();
     NotificationClient.mockImplementation(() => {
       return {
         sendAccessRequest,
+        sendOrganisationRequestOutcomeToApprovers,
       };
     });
     getAndMapOrgRequest.mockReset().mockReturnValue({
@@ -199,6 +197,11 @@ describe("when rejecting an organisation request", () => {
     expect(updateRequestById.mock.calls[0][3]).toBe("reason for rejection");
     expect(updateRequestById.mock.calls[0][4]).toBe("2019-01-02");
     expect(updateRequestById.mock.calls[0][5]).toBe("correlationId");
+
+    expect(sendAccessRequest.mock.calls).toHaveLength(1);
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls).toHaveLength(
+      1,
+    );
   });
 
   it("then it should should audit rejected org request", async () => {

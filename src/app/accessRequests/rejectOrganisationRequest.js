@@ -5,10 +5,6 @@ const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
 
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
-
 const get = async (req, res) => {
   return res.render("accessRequests/views/rejectOrganisationRequest", {
     csrfToken: req.csrfToken(),
@@ -41,6 +37,9 @@ const validate = async (req) => {
 };
 
 const post = async (req, res) => {
+  const notificationClient = new NotificationClient({
+    connectionString: config.notifications.connectionString,
+  });
   const correlationId = req.id;
   const model = await validate(req);
 
