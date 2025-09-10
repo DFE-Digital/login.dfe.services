@@ -2,7 +2,7 @@ const { mapUserStatus } = require("./../../infrastructure/utils");
 const { getById } = require("../../infrastructure/account");
 const { getApproverOrgsFromReq } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 const he = require("he");
 const { searchUsersRaw } = require("login.dfe.api-client/users");
 const clearUserSessionData = (req) => {

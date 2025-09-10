@@ -14,7 +14,7 @@ const {
 } = require("./../../infrastructure/organisations");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 const logger = require("../../infrastructure/logger");
 
 const renderAssociateRolesPage = (req, res, model) => {

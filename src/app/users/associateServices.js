@@ -16,7 +16,7 @@ const {
 const {
   checkCacheForAllServices,
 } = require("../../infrastructure/helpers/allServicesAppCache");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 
 const policyEngine = new PolicyEngine(config);
 

@@ -7,14 +7,11 @@ const { updateServiceRequest } = require("../requestService/utils");
 const { getAndMapServiceRequest, generateFlashMessages } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { services: daoServices } = require("login.dfe.dao");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
 const { createUserBanners } = require("../home/userBannersHandlers");
 const { NotificationClient } = require("login.dfe.jobs-client");
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
 
 const getViewModel = async (req) => {
   const request = await getAndMapServiceRequest(req.params.rid);
@@ -151,6 +148,9 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
+  const notificationClient = new NotificationClient({
+    connectionString: config.notifications.connectionString,
+  });
   let model = await getViewModel(req);
   model = await validateModel(model, req.params, res);
   if (model) {

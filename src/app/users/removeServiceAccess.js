@@ -20,7 +20,7 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   isServiceEmailNotificationAllowed,
 } = require("./../../infrastructure/applications");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 
 const renderRemoveServicePage = (req, res, model) => {
   const isManage = isUserManagement(req);

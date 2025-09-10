@@ -5,7 +5,7 @@ const {
   RoleSelectionConstraintCheck,
 } = require("../users/utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
 const { checkForActiveRequests } = require("./utils");

@@ -7,10 +7,6 @@ const { updateServiceRequest } = require("../requestService/utils");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { services: daoServices } = require("login.dfe.dao");
 
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
-
 const getViewModel = (req) => {
   const { rid, sid, rolesIds } = req.params;
   const encodedRids = encodeURIComponent(rolesIds);
@@ -47,6 +43,9 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
+  const notificationClient = new NotificationClient({
+    connectionString: config.notifications.connectionString,
+  });
   const { rid } = req.params;
   const model = await validate(req);
   const roleIds = model.request.dataValues.role_ids;

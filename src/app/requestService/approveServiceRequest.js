@@ -2,7 +2,7 @@ const {
   getOrganisationAndServiceForUser,
 } = require("../../infrastructure/organisations");
 const { getUserDetails } = require("../users/utils");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");

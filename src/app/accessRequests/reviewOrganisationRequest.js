@@ -147,7 +147,6 @@ const post = async (req, res) => {
         updated.organisations.length === currentOrganisationDetails.length,
     );
 
-    console.log("about to call sendaccess request");
     //send approved email
     await notificationClient.sendAccessRequest(
       model.request.usersEmail,

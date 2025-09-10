@@ -263,9 +263,37 @@ describe("when reviewing an organisation request", () => {
       ],
     });
     expect(sendAccessRequest.mock.calls).toHaveLength(1);
+    expect(sendAccessRequest.mock.calls[0][0]).toBe("john.doe@email.com");
+    expect(sendAccessRequest.mock.calls[0][1]).toBe("John Doe");
+    expect(sendAccessRequest.mock.calls[0][2]).toBe("organisation two");
+    expect(sendAccessRequest.mock.calls[0][3]).toBe(true);
+    expect(sendAccessRequest.mock.calls[0][4]).toBe(null);
+
     expect(sendOrganisationRequestOutcomeToApprovers.mock.calls).toHaveLength(
       1,
     );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][0]).toBe(
+      "user1",
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][1]).toBe(
+      "john.doe@email.com",
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][2]).toBe(
+      "John Doe",
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][3]).toBe(
+      undefined,
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][4]).toBe(
+      "organisation two",
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][5]).toBe(
+      true,
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][6]).toBe(
+      null,
+    );
+
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/access-requests/requests");
   });

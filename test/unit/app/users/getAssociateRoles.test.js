@@ -32,7 +32,7 @@ const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   getOrganisationAndServiceForUserV2,
 } = require("./../../../../src/infrastructure/organisations");
-const { actions } = require("../../../../src/app/constans/actions");
+const { actions } = require("../../../../src/app/constants/actions");
 const {
   RoleSelectionConstraintCheck,
 } = require("../../../../src/app/users/utils");

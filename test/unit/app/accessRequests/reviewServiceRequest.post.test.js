@@ -57,11 +57,7 @@ jest.mock("../../../../src/app/requestService/utils", () => {
 });
 
 const sendServiceRequestApproved = jest.fn();
-NotificationClient.mockImplementation(() => {
-  return {
-    sendServiceRequestApproved,
-  };
-});
+const sendServiceRequestOutcomeToApprovers = jest.fn();
 
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
@@ -205,6 +201,13 @@ describe("when reviewing a service request", () => {
         rolesAvailableToUser: ["role1-id-1"],
       });
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
+
+    NotificationClient.mockImplementation(() => {
+      return {
+        sendServiceRequestApproved,
+        sendServiceRequestOutcomeToApprovers,
+      };
+    });
   });
 
   it("then it should render error message if no response selected", async () => {
@@ -259,6 +262,45 @@ describe("when reviewing a service request", () => {
     expect(updateServiceRequest.mock.calls[0][1]).toBe(1);
     expect(updateServiceRequest.mock.calls[0][2]).toBe("approver-user-id");
     expect(updateServiceRequest.mock.calls[0][3]).toBe(undefined);
+
+    expect(sendServiceRequestApproved.mock.calls).toHaveLength(1);
+    expect(sendServiceRequestApproved.mock.calls[0][0]).toBe(
+      "john.doe@education.co.uk",
+    );
+    expect(sendServiceRequestApproved.mock.calls[0][1]).toBe("John");
+    expect(sendServiceRequestApproved.mock.calls[0][2]).toBe("Doe");
+    expect(sendServiceRequestApproved.mock.calls[0][3]).toBe(
+      "Test Organisation",
+    );
+    expect(sendServiceRequestApproved.mock.calls[0][4]).toBe("Test Service");
+    expect(sendServiceRequestApproved.mock.calls[0][5]).toStrictEqual([
+      "Test role one",
+    ]);
+
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls).toHaveLength(1);
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][0]).toBe(
+      "approver-user-id",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][1]).toBe(
+      "john.doe@education.co.uk",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][2]).toBe(
+      "John Doe",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][3]).toBe(
+      "organisation-id",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][4]).toBe(
+      "Test Organisation",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][5]).toBe(
+      "Test Service",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][6]).toStrictEqual(
+      ["Test role one"],
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][7]).toBe(true);
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][8]).toBe(null);
   });
 
   it("then it should redirect to request page and generate flash message if request already approved", async () => {

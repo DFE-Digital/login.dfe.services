@@ -15,11 +15,20 @@ const {
 } = require("../../../../src/app/accessRequests/rejectSubServiceRequest");
 
 const Account = require("../../../../src/infrastructure/account");
+const {
+  isServiceEmailNotificationAllowed,
+} = require("../../../../src/infrastructure/applications");
+jest.mock("../../../../src/infrastructure/applications", () => {
+  return { isServiceEmailNotificationAllowed: jest.fn() };
+});
 jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
 jest.mock("login.dfe.jobs-client");
-const sendAccessRequest = jest.fn();
+const { NotificationClient } = require("login.dfe.jobs-client");
+const sendSubServiceRequestRejected = jest.fn();
+const sendSubServiceRequestOutcomeToApprovers = jest.fn();
+
 jest.mock("../../../../src/infrastructure/logger", () =>
   require("../../../utils/jestMocks").mockLogger(),
 );
@@ -51,40 +60,28 @@ jest.mock("login.dfe.dao", () => {
 jest.mock("../../../../src/app/users/utils");
 const listRoles = [
   {
-    code: "ASP_School_Anon",
+    code: "ASP_School_Anon_1",
     id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
+    name: "ASP School Anon 1",
     numericId: "124",
   },
   {
-    code: "ASP_School_Anon",
+    code: "ASP_School_Anon_2",
     id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
+    name: "ASP School Anon 2",
     numericId: "124",
   },
   {
-    code: "ASP_School_Anon",
+    code: "ASP_School_Anon_3",
     id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
-    numericId: "124",
-  },
-  {
-    code: "ASP_School_Anon",
-    id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
-    numericId: "124",
-  },
-  {
-    code: "ASP_School_Anon",
-    id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon",
+    name: "ASP School Anon 3",
     numericId: "124",
   },
 ];
 const viewModel = {
-  endUsersEmail: "b@b.gov.uk",
-  endUsersFamilyName: "b",
-  endUsersGivenName: "b",
+  endUsersEmail: "testUser@example.gov.uk",
+  endUsersGivenName: "Test",
+  endUsersFamilyName: "User",
   org_name: "org1",
   org_id: "org1",
   user_id: "endUser1",
@@ -169,9 +166,9 @@ describe("When actioning a sub-service request for rejection", () => {
           updatedAt: new Date(),
           user_id: "endUser1",
         },
-        endUsersEmail: "b@b.gov.uk",
-        endUsersFamilyName: "b",
-        endUsersGvenName: "b",
+        endUsersEmail: "testUser@example.gov.uk",
+        endUsersGivenName: "Test",
+        endUsersFamilyName: "User",
         isNewRecord: false,
         organisation: { id: "org1", name: "accademic organisatioon" },
       },
@@ -185,9 +182,9 @@ describe("When actioning a sub-service request for rejection", () => {
         currentPage: "requests",
       },
       viewModel: {
-        endUsersEmail: "b@b.gov.uk",
-        endUsersFamilyName: "b",
-        endUsersGivenName: "b",
+        endUsersEmail: "testUser@example.gov.uk",
+        endUsersGivenName: "Test",
+        endUsersFamilyName: "User",
         org_name: "org1",
         org_id: "org1",
         user_id: "endUser1",
@@ -208,7 +205,6 @@ describe("When actioning a sub-service request for rejection", () => {
     });
 
     res = mockResponse();
-    sendAccessRequest.mockReset();
 
     Account.fromContext.mockReset().mockReturnValue({
       id: "user1",
@@ -217,10 +213,20 @@ describe("When actioning a sub-service request for rejection", () => {
     Account.getById.mockReset().mockReturnValue({
       claims: {
         sub: "user1",
-        given_name: "User",
-        family_name: "One",
-        email: "user.one@unit.tests",
+        given_name: "Test",
+        family_name: "User",
+        email: "test.user@unit.tests",
       },
+    });
+
+    isServiceEmailNotificationAllowed.mockReset().mockReturnValue(true);
+    sendSubServiceRequestRejected.mockReset();
+    sendSubServiceRequestOutcomeToApprovers.mockReset();
+    NotificationClient.mockImplementation(() => {
+      return {
+        sendSubServiceRequestRejected,
+        sendSubServiceRequestOutcomeToApprovers,
+      };
     });
 
     updateServiceRequest.mockReset();
@@ -244,6 +250,57 @@ describe("When actioning a sub-service request for rejection", () => {
     expect(res.flash.mock.calls[2][0]).toBe("message");
     expect(res.flash.mock.calls[2][1]).toBe(
       "The user who raised the request will receive an email to tell them their sub-service access request has been rejected.",
+    );
+  });
+
+  it("should send emails to the correct people", async () => {
+    await post(req, res);
+    expect(sendSubServiceRequestRejected.mock.calls).toHaveLength(1);
+    expect(sendSubServiceRequestRejected.mock.calls[0][0]).toBe(
+      "testUser@example.gov.uk",
+    );
+    expect(sendSubServiceRequestRejected.mock.calls[0][1]).toBe("Test");
+    expect(sendSubServiceRequestRejected.mock.calls[0][2]).toBe("User");
+    expect(sendSubServiceRequestRejected.mock.calls[0][3]).toBe("org1");
+    expect(sendSubServiceRequestRejected.mock.calls[0][4]).toBe(undefined);
+    expect(sendSubServiceRequestRejected.mock.calls[0][5]).toStrictEqual([
+      "ASP School Anon 1",
+      "ASP School Anon 2",
+      "ASP School Anon 3",
+    ]);
+    expect(sendSubServiceRequestRejected.mock.calls[0][6]).toBe("not needed");
+
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls).toHaveLength(1);
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][0]).toBe(
+      "user1",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][1]).toBe(
+      "testUser@example.gov.uk",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][2]).toBe(
+      "Test User",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][3]).toBe(
+      "org1",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][4]).toBe(
+      "org1",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][5]).toBe(
+      undefined,
+    );
+    expect(
+      sendSubServiceRequestOutcomeToApprovers.mock.calls[0][6],
+    ).toStrictEqual([
+      "ASP School Anon 1",
+      "ASP School Anon 2",
+      "ASP School Anon 3",
+    ]);
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][7]).toBe(
+      false,
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][8]).toBe(
+      "not needed",
     );
   });
 });

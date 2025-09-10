@@ -18,7 +18,7 @@ const {
   mockConfig,
 } = require("./../../../utils/jestMocks");
 const PolicyEngine = require("login.dfe.policy-engine");
-const { actions } = require("../../../../src/app/constans/actions");
+const { actions } = require("../../../../src/app/constants/actions");
 const {
   getOrganisationAndServiceForUserV2,
 } = require("./../../../../src/infrastructure/organisations");

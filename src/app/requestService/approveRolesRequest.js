@@ -1,7 +1,7 @@
 const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("../users/utils");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 const {
   checkCacheForAllServices,
 } = require("../../infrastructure/helpers/allServicesAppCache");
