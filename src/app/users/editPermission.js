@@ -22,9 +22,13 @@ const get = async (req, res) => {
   const organisationDetails = req.userOrganisations.find(
     (x) => x.organisation.id === organisationId,
   );
+  const userRole =
+    user.organisation?.roleId === 10000 ? "remove approver" : "approver";
   const linkToUserDetailsPage = `/approvals/users/${req.params.uid}`;
   return res.render("users/views/editPermission", {
     csrfToken: req.csrfToken(),
+    title: `Confirm ${userRole} access`,
+    userRole,
     organisationDetails,
     currentPage: "users",
     backLink: linkToUserDetailsPage,

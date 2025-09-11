@@ -170,7 +170,7 @@ describe("when displaying the pending access requests for approver ", () => {
     await getAllRequestsForApproval(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      title: "Requests - DfE Sign-in",
+      title: "Requests",
     });
   });
 

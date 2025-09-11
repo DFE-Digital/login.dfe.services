@@ -134,7 +134,7 @@ describe("when reviewing an organisation request", () => {
         },
       },
       reason: req.body.reason,
-      title: "Confirm Request - DfE Sign-in",
+      title: "Confirm Request",
       validationMessages: {
         reason: "Enter a reason for request",
       },
@@ -164,7 +164,7 @@ describe("when reviewing an organisation request", () => {
         },
       },
       reason: req.body.reason,
-      title: "Confirm Request - DfE Sign-in",
+      title: "Confirm Request",
       validationMessages: {
         reason: "Reason cannot be longer than 200 characters",
       },
@@ -238,7 +238,7 @@ describe("when reviewing an organisation request", () => {
         },
       },
       reason: req.body.reason,
-      title: "Confirm Request - DfE Sign-in",
+      title: "Confirm Request",
       validationMessages: {
         limitOrg: "Organisation has reached the limit for requests",
         limit:

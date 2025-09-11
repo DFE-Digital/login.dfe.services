@@ -144,11 +144,14 @@ const get = async (req, res) => {
   const name = req.session.user
     ? `${req.session.user.firstName} ${req.session.user.lastName}`
     : "";
-  const title = isRemoveUserServiceUrl
-    ? "Remove which service?"
-    : isEditService(req)
-      ? `Edit which service for ${name}`
-      : `Select a service for ${name}`;
+  const isInvite = req.session.user.isInvite;
+  const title = isInvite
+    ? "Select services"
+    : isRemoveUserServiceUrl
+      ? "Remove which service?"
+      : isEditService(req)
+        ? `Edit which service for ${name}`
+        : `Select a service for ${name}`;
   const subHeading = isRemoveUserServiceUrl
     ? ""
     : isEditService(req)
@@ -172,7 +175,7 @@ const get = async (req, res) => {
     organisationDetails,
     services: externalServices,
     selectedServices: req.session.user.services || [],
-    isInvite: req.session.user.isInvite,
+    isInvite,
     isReviewServiceReqAmend,
   };
 

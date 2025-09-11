@@ -33,7 +33,7 @@ const validate = async (req) => {
   }
 
   const model = {
-    title: "Reason for rejection - DfE Sign-in",
+    title: "Reason for rejection",
     backLink: `/access-requests/subService-requests/${req.params.rid}`,
     cancelLink: `/access-requests/requests`,
     reason: req.body.reason,
@@ -90,7 +90,7 @@ const get = async (req, res) => {
   viewModel.backLink = `/access-requests/requests`;
   return res.render("accessRequests/views/rejectSubServiceRequest", {
     csrfToken: req.csrfToken(),
-    title: "Reason for rejection - DfE Sign-in",
+    title: "Reason for rejection",
     backLink: `/access-requests/subService-requests/${req.params.rid}`,
     cancelLink: `/access-requests/requests`,
     reason: "",

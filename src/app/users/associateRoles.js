@@ -185,10 +185,16 @@ const getViewModel = async (req) => {
     req.session.subServiceReqId
       ? true
       : false;
+
+  const title = req.session.user?.isInvite
+    ? "Select roles"
+    : `Select a sub-service for ${serviceDetails?.name}`;
+
   return {
     csrfToken: req.csrfToken(),
     name: `${req.session.user.firstName} ${req.session.user.lastName}`,
     user: req.session.user,
+    title,
     validationMessages: {},
     backLink: buildBackLink(req, currentServiceIndex),
     cancelLink: buildCancelLink(req),

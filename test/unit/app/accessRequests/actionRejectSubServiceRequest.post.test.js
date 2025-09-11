@@ -183,7 +183,7 @@ describe("When actioning a sub-service request for rejection", () => {
       },
       model: {
         csrfToken: "abcde",
-        title: "Reason for rejection - DfE Sign-in",
+        title: "Reason for rejection",
         backLink: `/access-requests/subService-requests/request1`,
         cancelLink: `/access-requests/requests`,
         reason: "not needed",
