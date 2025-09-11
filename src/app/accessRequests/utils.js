@@ -160,7 +160,7 @@ const getMappedRequestServiceWithSubServices = async (userRequest) => {
     throw new TypeError("userRequest must be a non-null object");
   }
 
-  const { service_id, id = [] } = userRequest;
+  const { service_id, id, role_ids = [] } = userRequest;
 
   // Fetch concurrently
   const [allServices, allRolesOfServiceUnsorted] = await Promise.all([
@@ -173,12 +173,19 @@ const getMappedRequestServiceWithSubServices = async (userRequest) => {
     ? allServices.services.find((s) => s?.id == service_id)?.name
     : undefined;
 
+  // Build a fast lookup set for IDs (normalize to string to match '1' vs 1)
+  const roleIdsSet = new Set(
+    Array.isArray(role_ids) ? role_ids.map((id) => String(id)) : [],
+  );
+
   const subServiceNames = Array.isArray(allRolesOfServiceUnsorted)
     ? allRolesOfServiceUnsorted
-        // Get trimmed names safely; non-strings become empty strings
+        // keep only items with an id present in role_ids
+        .filter((r) => roleIdsSet.has(String(r?.id)))
+        // map to trimmed names safely
         .map((r) => (typeof r?.name === "string" ? r.name.trim() : ""))
-        .filter(Boolean) // remove empty/undefined
-        // Case-insensitive, numeric-aware sort (e.g., "Item 2" < "Item 10")
+        .filter(Boolean)
+        // case-insensitive, numeric-aware sort
         .sort((a, b) =>
           a.localeCompare(b, undefined, { sensitivity: "base", numeric: true }),
         )
