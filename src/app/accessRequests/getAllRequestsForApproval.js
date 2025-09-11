@@ -53,9 +53,14 @@ const getAllRequestsForApproval = async (req) => {
 
     // Second map: enrich with service and sub-service (role) details
     requests = await Promise.all(
-      requests.map(async (request) =>
-        getMappedRequestServiceWithSubServices(request),
-      ),
+      requests.map(async (request) => {
+        if (
+          request?.request_type?.name?.toLowerCase() !== "organisation access"
+        ) {
+          return await getMappedRequestServiceWithSubServices(request);
+        }
+        return request;
+      }),
     );
 
     // Third map: add summary using helper
