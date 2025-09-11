@@ -173,42 +173,24 @@ const getMappedRequestServiceWithSubServices = async (userRequest) => {
     ? allServices.services.find((s) => s?.id == service_id)?.name
     : undefined;
 
-  // Ensure an array
-  const roles = Array.isArray(allRolesOfServiceUnsorted)
+  const subServiceNames = Array.isArray(allRolesOfServiceUnsorted)
     ? allRolesOfServiceUnsorted
-    : [];
-
-  // Build a lookup map with **string** keys
-  const rolesById = new Map(roles.map((r) => [String(r?.id), r]));
-
-  // Filter, dedupe, and normalize **role_ids** to strings
-  const uniqueRoleIds = [
-    ...new Set(
-      (Array.isArray(role_ids) ? role_ids : [])
-        .filter((id) => id != null)
-        .map((id) => String(id)),
-    ),
-  ];
-
-  // Map the role ids to role objects via the Map, filter unknowns, and sort by name
-  const subServices = uniqueRoleIds
-    .map((id) => rolesById.get(id))
-    .filter(Boolean)
-    .sort((a, b) => {
-      const an = a?.name ?? "";
-      const bn = b?.name ?? "";
-      return an.localeCompare(bn, undefined, { sensitivity: "base" });
-    });
-
-  const subServiceNames = subServices
-    .map((r) => r?.name?.trim())
-    .filter(Boolean)
-    .join(", ");
+        // keep only items with an id present in role_ids
+        //.filter((r) => roleIdsSet.has(String(r?.id)))
+        .filter((role) => role_ids.includes(role.id))
+        // map to trimmed names safely
+        .map((r) => (typeof r?.name === "string" ? r.name.trim() : ""))
+        .filter(Boolean)
+        // case-insensitive, numeric-aware sort
+        .sort((a, b) =>
+          a.localeCompare(b, undefined, { sensitivity: "base", numeric: true }),
+        )
+        .join(", ")
+    : "";
 
   return {
     ...userRequest,
     ...(serviceName ? { serviceName } : {}),
-    subServices,
     ...(subServiceNames ? { subServiceNames } : {}),
   };
 };
