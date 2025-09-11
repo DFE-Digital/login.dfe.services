@@ -160,7 +160,7 @@ const getMappedRequestServiceWithSubServices = async (userRequest) => {
     throw new TypeError("userRequest must be a non-null object");
   }
 
-  const { service_id, id, role_ids = [] } = userRequest;
+  const { service_id, id = [] } = userRequest;
 
   // Fetch concurrently
   const [allServices, allRolesOfServiceUnsorted] = await Promise.all([
