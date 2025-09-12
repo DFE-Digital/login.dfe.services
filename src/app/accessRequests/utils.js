@@ -176,7 +176,6 @@ const getMappedRequestServiceWithSubServices = async (userRequest) => {
   const subServiceNames = Array.isArray(allRolesOfServiceUnsorted)
     ? allRolesOfServiceUnsorted
         // keep only items with an id present in role_ids
-        //.filter((r) => roleIdsSet.has(String(r?.id)))
         .filter((role) => role_ids.includes(role.id))
         // map to trimmed names safely
         .map((r) => (typeof r?.name === "string" ? r.name.trim() : ""))
