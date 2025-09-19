@@ -73,11 +73,13 @@
                             </span>
                         <% } %>
                         <div class="govuk-grid-row">
-                            <div class="govuk-grid-column-two-thirds">
+                            <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-2">
                                 <input class="govuk-input govuk-grid-column-two-thirds <%= (locals.validations.searchUser !== undefined) ? 'govuk-input--error' : '' %>" id="searchCriteria" name="searchCriteria"
                                     type="text" aria-describedby="search-user-hint" value="<%=locals.searchCriteria%>" >
                             </div>
-                            <button type="submit" class="govuk-button" name="searchUser" value="searchUser">Search</button>
+                            <div class="govuk-grid-column-one-third">
+                                <button type="submit" class="govuk-button" name="searchUser" value="searchUser">Search</button>
+                            </div>
                         </div>
                     </div>
                 </div>
