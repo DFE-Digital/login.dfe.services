@@ -1,6 +1,6 @@
 const express = require("express");
 const logger = require("../../infrastructure/logger");
-const { asyncWrapper } = require("login.dfe.express-error-handling");
+const { asyncWrapper } = require("login.dfe.express-helpers/error-handling");
 
 const signOutUser = require("./signOut");
 const complete = require("./complete");

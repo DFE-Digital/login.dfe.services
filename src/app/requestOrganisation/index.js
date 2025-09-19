@@ -1,7 +1,7 @@
 const express = require("express");
 const { isLoggedIn, canRequestOrg } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
-const { asyncWrapper } = require("login.dfe.express-error-handling");
+const { asyncWrapper } = require("login.dfe.express-helpers/error-handling");
 
 const selectOrganisation = require("./selectOrganisation");
 const review = require("./review");

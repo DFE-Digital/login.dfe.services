@@ -1,7 +1,7 @@
 const express = require("express");
 const { isLoggedIn } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
-const { asyncWrapper } = require("login.dfe.express-error-handling");
+const { asyncWrapper } = require("login.dfe.express-helpers/error-handling");
 
 const getIndex = require("./home");
 const getServices = require("./getServices");

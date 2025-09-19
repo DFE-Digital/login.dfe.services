@@ -7,9 +7,9 @@
                     <h1 class="govuk-heading-xl govuk-!-margin-top-5 govuk-!-margin-bottom-5">My services</h1>
                 </div>
                 <div class="govuk-grid-column-two-thirds">
-                    <h2 class="govuk-heading-m">
+                   <p class="govuk-body-l govuk-!-margin-bottom-2">
                         Here you can add and request new services, or access services associated with your account.
-                    </h2>
+                   </p>
                 </div>
             </div>
         </div>
@@ -496,32 +496,3 @@
         </div>
     </div>
 </div>
-<script>
-    $('#close-missing-jobtitle').on('click', () => {
-        $.ajax(`/close-missing-jobtitle`).done(() => {
-            const item = $('#notification-wrapper-missing-jobtitle')
-            item.remove();
-        });
-    })
-    $('.close-button.pull-right.close_new_service').on('click', function() {
-        const itemId = $(this).attr('id');
-        $.ajax(`/close-service-added/${itemId}`).done(() => {
-            $(this).remove();
-        });
-    })
-    $('#close-password-change').on('click', () => {
-        const item = $('#notification-wrapper-password-change')
-        if(item.length) {
-            $.ajax(`/close-password-change`).done(() => {
-                item.remove();
-            });
-        }
-    })
-    $('.close-button.close-sub-service-added-banner').on('click', function() {
-    const itemId = $(this).attr('id');
-    if (itemId) {
-        $.ajax(`/close-sub-service-added/${itemId}`).done(() => {
-        $(this).remove();
-    });}
-});
-</script>

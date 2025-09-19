@@ -5,7 +5,7 @@ const {
   isApproverInSomeOrgs,
 } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
-const { asyncWrapper } = require("login.dfe.express-error-handling");
+const { asyncWrapper } = require("login.dfe.express-helpers/error-handling");
 
 const { get: getUsersList, post: postUserList } = require("./usersList");
 const {
