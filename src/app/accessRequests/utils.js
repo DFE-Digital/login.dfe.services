@@ -142,6 +142,59 @@ const getUserDetails = async (usersForApproval) => {
 };
 
 /**
+ * Retrieves and maps service and sub-service (role) data for a user service request.
+ *
+ * Adds `serviceName`, a sorted `subServices` array (role objects) based on `roleIds`,
+ * and `subServiceNames` (comma-separated role names from `subServices`).
+ * Returns a new object; does not mutate the input.
+ *
+ * @param {Object} userRequest
+ * @param {string|number} userRequest.serviceId - The service ID on the request.
+ * @param {string|number} userRequest.requestId - The request ID (used for caching lookup).
+ * @param {Array<string|number>} [userRequest.roleIds] - Role IDs to attach as subServices.
+ * @returns {Promise<Object>} A new request object with `serviceName` (if found), `subServices` (roles),
+ * and `subServiceNames` (if at least one role name is present).
+ */
+const getMappedRequestServiceWithSubServices = async (userRequest) => {
+  if (!userRequest || typeof userRequest !== "object") {
+    throw new TypeError("userRequest must be a non-null object");
+  }
+
+  const { service_id, id, role_ids = [] } = userRequest;
+
+  // Fetch concurrently
+  const [allServices, allRolesOfServiceUnsorted] = await Promise.all([
+    checkCacheForAllServices(id),
+    getServiceRolesRaw({ serviceId: service_id }),
+  ]);
+
+  // Resolve service name (== handles '1' vs 1 safely here)
+  const serviceName = Array.isArray(allServices?.services)
+    ? allServices.services.find((s) => s?.id == service_id)?.name
+    : undefined;
+
+  const subServiceNames = Array.isArray(allRolesOfServiceUnsorted)
+    ? allRolesOfServiceUnsorted
+        // keep only items with an id present in role_ids
+        .filter((role) => role_ids.includes(role.id))
+        // map to trimmed names safely
+        .map((r) => (typeof r?.name === "string" ? r.name.trim() : ""))
+        .filter(Boolean)
+        // case-insensitive, numeric-aware sort
+        .sort((a, b) =>
+          a.localeCompare(b, undefined, { sensitivity: "base", numeric: true }),
+        )
+        .join(", ")
+    : "";
+
+  return {
+    ...userRequest,
+    ...(serviceName ? { serviceName } : {}),
+    ...(subServiceNames ? { subServiceNames } : {}),
+  };
+};
+
+/**
  * Retrieves and maps data for a user service request
  *
  * @param {String} [serviceReqId] - Id of the user service request
@@ -311,4 +364,5 @@ module.exports = {
   isAllowedToApproveServiceReq,
   isAllowedToApproveOrganisationReq,
   getOrganisationPermissionLevel,
+  getMappedRequestServiceWithSubServices,
 };

@@ -19,6 +19,10 @@ const {
   getAllRequestTypesForApproverRaw,
 } = require("login.dfe.api-client/services");
 
+jest.mock("../../../../src/app/helpers/generateRequestSummaryHelper", () => ({
+  generateRequestSummary: jest.fn(),
+}));
+
 const Account = require("../../../../src/infrastructure/account");
 
 describe("when displaying the pending access requests for approver ", () => {
@@ -134,7 +138,6 @@ describe("when displaying the pending access requests for approver ", () => {
       },
     ]);
 
-    //const { get, post } = require('./../../../../src/app/accessRequests/getAllRequestsForApproval');
     const {
       get,
       post,
