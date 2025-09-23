@@ -21,11 +21,11 @@ const {
   addSessionRedirect,
 } = require("./infrastructure/utils");
 const helmet = require("helmet");
-const sanitization = require("login.dfe.sanitization");
+const sanitization = require("login.dfe.express-helpers/sanitization");
 const {
   getErrorHandler,
   ejsErrorPages,
-} = require("login.dfe.express-error-handling");
+} = require("login.dfe.express-helpers/error-handling");
 const { setupApi } = require("login.dfe.api-client/api/setup");
 
 const registerRoutes = require("./routes");
