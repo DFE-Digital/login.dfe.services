@@ -4,7 +4,7 @@ const {
   isServiceEmailNotificationAllowed,
 } = require("../../../src/infrastructure/applications");
 const {
-  getSubServiceRequestVieModel,
+  getSubServiceRequestViewModel,
   getAndMapServiceRequest,
   getRoleAndServiceNames,
   generateFlashMessages,
@@ -15,7 +15,11 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 
 const validate = async (req) => {
   const buildmodel = await getAndMapServiceRequest(req.params.rid);
-  const viewModel = await getSubServiceRequestVieModel(buildmodel, req.id, req);
+  const viewModel = await getSubServiceRequestViewModel(
+    buildmodel,
+    req.id,
+    req,
+  );
   viewModel.selectedResponse = req.body.selectedResponse;
   if (req.session.roleIds !== undefined) {
     if (req.session.roleIds !== viewModel.role_ids) {
@@ -50,7 +54,7 @@ const validate = async (req) => {
 };
 const get = async (req, res) => {
   const model = await getAndMapServiceRequest(req.params.rid);
-  const viewModel = await getSubServiceRequestVieModel(model, req.id, req);
+  const viewModel = await getSubServiceRequestViewModel(model, req.id, req);
   req.session.rid = req.params.rid;
   if (viewModel.actioned_by && (viewModel.status === -1 || 1)) {
     const user = await Account.getById(viewModel.actioned_by);

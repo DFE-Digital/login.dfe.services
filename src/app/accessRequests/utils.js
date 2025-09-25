@@ -16,7 +16,7 @@ const {
 const { services } = require("login.dfe.dao");
 const { getUserService } = require("login.dfe.api-client/users");
 
-const getSubServiceRequestVieModel = async (model, requestId, req) => {
+const getSubServiceRequestViewModel = async (model, requestId, req) => {
   let viewModel = {};
   viewModel.role_ids = [];
   viewModel.roles = [];
@@ -27,7 +27,7 @@ const getSubServiceRequestVieModel = async (model, requestId, req) => {
   viewModel.created_date = model.dataValues.createdAt;
   viewModel.org_id = model.organisation.id;
   viewModel.user_id = model.dataValues.user_id;
-  if (model.dataValues.role_ids.includes(",")) {
+  if (model.dataValues.role_ids?.includes(",")) {
     let tempArry = model.dataValues.role_ids.split(",");
     tempArry.forEach((item) => {
       viewModel.role_ids.push(item);
@@ -149,9 +149,9 @@ const getUserDetails = async (usersForApproval) => {
  * Returns a new object; does not mutate the input.
  *
  * @param {Object} userRequest
- * @param {string|number} userRequest.serviceId - The service ID on the request.
- * @param {string|number} userRequest.requestId - The request ID (used for caching lookup).
- * @param {Array<string|number>} [userRequest.roleIds] - Role IDs to attach as subServices.
+ * @param {string|number} userRequest.service_id - The service ID on the request.
+ * @param {string|number} userRequest.id - The request ID (used for caching lookup).
+ * @param {Array<string|number>} [userRequest.role_ids] - Role IDs to attach as subServices.
  * @returns {Promise<Object>} A new request object with `serviceName` (if found), `subServices` (roles),
  * and `subServiceNames` (if at least one role name is present).
  */
@@ -176,7 +176,7 @@ const getMappedRequestServiceWithSubServices = async (userRequest) => {
   const subServiceNames = Array.isArray(allRolesOfServiceUnsorted)
     ? allRolesOfServiceUnsorted
         // keep only items with an id present in role_ids
-        .filter((role) => role_ids.includes(role.id))
+        .filter((role) => role_ids?.includes(role.id))
         // map to trimmed names safely
         .map((r) => (typeof r?.name === "string" ? r.name.trim() : ""))
         .filter(Boolean)
@@ -358,7 +358,7 @@ module.exports = {
   getAndMapOrgRequest,
   getUserDetails,
   getRoleAndServiceNames,
-  getSubServiceRequestVieModel,
+  getSubServiceRequestViewModel,
   getAndMapServiceRequest,
   generateFlashMessages,
   isAllowedToApproveServiceReq,

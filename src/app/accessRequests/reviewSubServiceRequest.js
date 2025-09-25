@@ -2,7 +2,7 @@ const Account = require("./../../infrastructure/account");
 const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { updateServiceRequest } = require("../requestService/utils");
 const {
-  getSubServiceRequestVieModel,
+  getSubServiceRequestViewModel,
   getAndMapServiceRequest,
   generateFlashMessages,
   getRoleAndServiceNames,
@@ -20,7 +20,7 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 
 const validate = async (req) => {
   const buildmodel = await getAndMapServiceRequest(req.params.rid);
-  const viewModel = await getSubServiceRequestVieModel(buildmodel, req);
+  const viewModel = await getSubServiceRequestViewModel(buildmodel, req);
   viewModel.selectedResponse = req.body.selectedResponse;
 
   if (req.session.roleIds !== undefined) {
@@ -62,7 +62,7 @@ const validate = async (req) => {
 
 const get = async (req, res) => {
   const model = await getAndMapServiceRequest(req.params.rid);
-  const viewModel = await getSubServiceRequestVieModel(model, req.id, req);
+  const viewModel = await getSubServiceRequestViewModel(model, req.id, req);
   ((viewModel.title = "Review sub-service request"),
     (req.session.rid = req.params.rid));
   if (req.session.roleIds !== undefined) {
@@ -109,7 +109,7 @@ const post = async (req, res) => {
   const model = await validate(req);
   const request = await getAndMapServiceRequest(req.params.rid);
   if (request.dataValues.status === -1 || request.dataValues.status === 1) {
-    const alreadyActioned = await getSubServiceRequestVieModel(
+    const alreadyActioned = await getSubServiceRequestViewModel(
       request,
       correlationId,
       req,

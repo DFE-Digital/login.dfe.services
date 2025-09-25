@@ -4,7 +4,7 @@ const {
   mockAdapterConfig,
 } = require("../../../utils/jestMocks");
 const {
-  getSubServiceRequestVieModel,
+  getSubServiceRequestViewModel,
   getAndMapServiceRequest,
 } = require("../../../../src/app/accessRequests/utils");
 const {
@@ -179,8 +179,8 @@ describe("When reviewing a sub-service request for rejecting", () => {
     getAndMapServiceRequest.mockReset();
     getAndMapServiceRequest.mockReturnValue(model);
 
-    getSubServiceRequestVieModel.mockReset();
-    getSubServiceRequestVieModel.mockReturnValue(viewModel);
+    getSubServiceRequestViewModel.mockReset();
+    getSubServiceRequestViewModel.mockReturnValue(viewModel);
   });
 
   it("then it should redirect to reject sub service view", async () => {

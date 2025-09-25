@@ -4,7 +4,7 @@ const {
   mockAdapterConfig,
 } = require("../../../utils/jestMocks");
 const {
-  getSubServiceRequestVieModel,
+  getSubServiceRequestViewModel,
   getAndMapServiceRequest,
   getOrganisationPermissionLevel,
 } = require("../../../../src/app/accessRequests/utils");
@@ -221,8 +221,8 @@ describe("When reviewing a sub-service request for approving", () => {
     getAndMapServiceRequest.mockReset();
     getAndMapServiceRequest.mockReturnValue(model);
 
-    getSubServiceRequestVieModel.mockReset();
-    getSubServiceRequestVieModel.mockReturnValue(viewModel);
+    getSubServiceRequestViewModel.mockReset();
+    getSubServiceRequestViewModel.mockReturnValue(viewModel);
 
     sendSubServiceRequestApproved.mockReset();
     sendSubServiceRequestOutcomeToApprovers.mockReset();
