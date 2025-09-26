@@ -4,6 +4,7 @@ const {
 const { getUserDetails } = require("../users/utils");
 const { actions } = require("../constants/actions");
 
+const Account = require("../../infrastructure/account");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 
@@ -271,6 +272,21 @@ const post = async (req, res) => {
     viewModel.service.name,
     viewModel.service.roles.map((i) => i.name),
     mngUserOrgPermission,
+  );
+
+  const account = Account.fromContext(req.user);
+  const endUsersName =
+    req.session.user.firstName + " " + req.session.user.lastName;
+  await notificationClient.sendServiceRequestOutcomeToApprovers(
+    account.id,
+    req.session.user.email,
+    endUsersName,
+    viewModel.organisationDetails.organisation.id,
+    viewModel.organisationDetails.organisation.name,
+    viewModel.service.name,
+    viewModel.service.roles.map((i) => i.name),
+    true,
+    null,
   );
 
   logger.audit({

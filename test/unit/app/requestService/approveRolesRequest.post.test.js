@@ -79,6 +79,7 @@ const policyEngine = {
 };
 
 const sendSubServiceRequestApproved = jest.fn();
+const sendSubServiceRequestOutcomeToApprovers = jest.fn();
 
 describe("When approving a sub service request", () => {
   let req;
@@ -189,8 +190,10 @@ describe("When approving a sub service request", () => {
     postApproveRolesRequest =
       require("../../../../src/app/requestService/approveRolesRequest").post;
     sendSubServiceRequestApproved.mockReset();
+    sendSubServiceRequestOutcomeToApprovers.mockReset();
     NotificationClient.mockReset().mockImplementation(() => ({
       sendSubServiceRequestApproved,
+      sendSubServiceRequestOutcomeToApprovers,
     }));
   });
   it("then should redirect to `my services` page if there is no user in session", async () => {

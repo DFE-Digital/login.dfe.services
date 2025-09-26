@@ -3,6 +3,7 @@ const { getUserDetails } = require("../users/utils");
 const {
   isServiceEmailNotificationAllowed,
 } = require("../../../src/infrastructure/applications");
+const Account = require("../../infrastructure/account");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const PolicyEngine = require("login.dfe.policy-engine");
@@ -189,6 +190,21 @@ const post = async (req, res) => {
       organisation.name,
       service.name,
       rolesName,
+      rejectReason,
+    );
+
+    const account = Account.fromContext(req.user);
+    const endUsersName =
+      endUserDetails.firstName + " " + endUserDetails.lastName;
+    await notificationClient.sendSubServiceRequestOutcomeToApprovers(
+      account.id,
+      endUserDetails.email,
+      endUsersName,
+      organisation.id,
+      organisation.name,
+      service.name,
+      rolesName,
+      false,
       rejectReason,
     );
   }

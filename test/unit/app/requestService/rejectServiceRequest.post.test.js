@@ -32,6 +32,7 @@ const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 NotificationClient.mockImplementation(() => {
   return {
     sendServiceRequestRejected: jest.fn(),
+    sendServiceRequestOutcomeToApprovers: jest.fn(),
   };
 });
 

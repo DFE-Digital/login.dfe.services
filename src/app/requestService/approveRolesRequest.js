@@ -18,6 +18,7 @@ const {
   getOrganisationPermissionLevel,
 } = require("../../app/accessRequests/utils");
 
+const Account = require("../../infrastructure/account");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 
@@ -241,6 +242,21 @@ const post = async (req, res) => {
       service.name,
       rolesName,
       permissionLevel,
+    );
+
+    const account = Account.fromContext(req.user);
+    const endUsersName =
+      endUserDetails.firstName + " " + endUserDetails.lastName;
+    await notificationClient.sendSubServiceRequestOutcomeToApprovers(
+      account.id,
+      endUserDetails.email,
+      endUsersName,
+      organisation.id,
+      organisation.name,
+      service.name,
+      rolesName,
+      true,
+      null,
     );
   }
 
