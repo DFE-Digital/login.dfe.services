@@ -182,6 +182,10 @@ describe("When approving a service request", () => {
           id: "service1",
           name: "service name",
         },
+        {
+          id: "service2",
+          name: "service2 name",
+        },
       ],
     });
 
@@ -199,12 +203,6 @@ describe("When approving a service request", () => {
 
     sendServiceRequestApproved.mockReset();
     sendServiceRequestOutcomeToApprovers.mockReset();
-    // NotificationClient.mockReset().mockImplementation(() => {
-    //   return {
-    //     sendServiceRequestApproved,
-    //     sendServiceRequestOutcomeToApprovers,
-    //   };
-    // });
   });
 
   it("then should redirect to `my services` page if there is no user in session", async () => {
@@ -221,18 +219,31 @@ describe("When approving a service request", () => {
     expect(getUserDetails.mock.calls[0][0]).toBe(req);
   });
 
-  it("then it should get all services", async () => {
+  it("then it should list all roles of service", async () => {
     await postApproveServiceRequest(req, res);
 
     expect(checkCacheForAllServices.mock.calls).toHaveLength(1);
-  });
-
-  it("then it should list all roles of service", async () => {
-    await postApproveServiceRequest(req, res);
 
     expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
     expect(getServiceRolesRaw.mock.calls[0][0]).toMatchObject({
       serviceId: "service1",
+    });
+  });
+
+  it("then it should render `approveRolesRequest` view with error if there are validation messages in the viewModel", async () => {
+    req.session.user.serviceId = "service1";
+    req.params.sid = "service2";
+
+    await postApproveServiceRequest(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe(
+      `requestService/views/approveServiceRequest`,
+    );
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      validationMessages: {
+        messages: "Service not valid - please change service",
+      },
     });
   });
 
@@ -342,24 +353,6 @@ describe("When approving a service request", () => {
     expect(res.flash.mock.calls[2][1]).toBe(
       "The user who raised the request will receive an email to tell them their service access request was approved.",
     );
-  });
-
-  it("then it should render `approveServiceRequest` view with error if there are validation messages in the viewModel", async () => {
-    policyEngine.validate.mockReturnValue([
-      { message: "There has been an error" },
-    ]);
-
-    await postApproveServiceRequest(req, res);
-
-    expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe(
-      `requestService/views/approveServiceRequest`,
-    );
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      validationMessages: {
-        messages: ["There has been an error"],
-      },
-    });
   });
 
   it("then it should render `approveServiceRequest` view with error if there are validation messages", async () => {
