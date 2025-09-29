@@ -29,10 +29,13 @@ const policyEngine = {
 };
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 
+const sendServiceRequestOutcomeToApprovers = jest.fn();
+const sendServiceRequestRejected = jest.fn();
+
 NotificationClient.mockImplementation(() => {
   return {
-    sendServiceRequestRejected: jest.fn(),
-    sendServiceRequestOutcomeToApprovers: jest.fn(),
+    sendServiceRequestRejected,
+    sendServiceRequestOutcomeToApprovers,
   };
 });
 
@@ -135,6 +138,9 @@ describe("when posting a service rejection", () => {
     updateServiceRequest.mockReset();
     updateServiceRequest.mockReturnValue({ success: true });
 
+    sendServiceRequestRejected.mockReset();
+    sendServiceRequestOutcomeToApprovers.mockReset();
+
     policyEngine.validate.mockReset().mockReturnValue([]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
@@ -158,6 +164,24 @@ describe("when posting a service rejection", () => {
 
     await postRejectServiceRequest(req, res);
     expect(res.redirect).toHaveBeenCalledWith("/my-services");
+  });
+
+  it("then it should render `rejectServiceRequest` view with error if there are validation messages", async () => {
+    policyEngine.validate.mockReturnValue([
+      { message: "There has been an error" },
+    ]);
+
+    await postRejectServiceRequest(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe(
+      `requestService/views/rejectServiceRequest`,
+    );
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      validationMessages: {
+        roles: ["There has been an error"],
+      },
+    });
   });
 
   it("should render rejectServiceRequest when a request contains no reason in the body", async () => {
@@ -219,6 +243,50 @@ describe("when posting a service rejection", () => {
           reason: "Reason cannot be longer than 1000 characters",
         },
       }),
+    );
+  });
+
+  it("should send notification emails to the user and approvers on rejection success", async () => {
+    req.body.reason = "x".repeat(10);
+
+    await postRejectServiceRequest(req, res);
+
+    expect(sendServiceRequestRejected.mock.calls).toHaveLength(1);
+    expect(sendServiceRequestRejected.mock.calls[0][0]).toBe("mock-email");
+    expect(sendServiceRequestRejected.mock.calls[0][1]).toBe("mock-first-name");
+    expect(sendServiceRequestRejected.mock.calls[0][2]).toBe("mock-last-name");
+    expect(sendServiceRequestRejected.mock.calls[0][3]).toBe(
+      "organisationName",
+    );
+    expect(sendServiceRequestRejected.mock.calls[0][4]).toBe("service name");
+    expect(sendServiceRequestRejected.mock.calls[0][5]).toStrictEqual([]);
+    expect(sendServiceRequestRejected.mock.calls[0][6]).toBe("xxxxxxxxxx");
+
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls).toHaveLength(1);
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][0]).toBe(
+      "mock-sub",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][1]).toBe(
+      "mock-email",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][2]).toBe(
+      "mock-first-name mock-last-name",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][3]).toBe(
+      "organisationId",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][4]).toBe(
+      "organisationName",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][5]).toBe(
+      "service name",
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][6]).toStrictEqual(
+      [],
+    );
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][7]).toBe(false);
+    expect(sendServiceRequestOutcomeToApprovers.mock.calls[0][8]).toBe(
+      "xxxxxxxxxx",
     );
   });
 
