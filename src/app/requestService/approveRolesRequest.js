@@ -171,11 +171,6 @@ const post = async (req, res) => {
   const { service } = viewModel;
   const { organisation } = viewModel.organisationDetails;
   const rolesName = viewModel.service.roles.map((r) => r.name);
-
-  if (viewModel.validationMessages.messages) {
-    return res.render("requestService/views/approveRolesRequest", viewModel);
-  }
-
   const policyValidationResult = await policyEngine.validate(
     endUserId,
     orgId,

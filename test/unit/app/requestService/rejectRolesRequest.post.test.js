@@ -252,26 +252,6 @@ describe("When approving a sub service request", () => {
     expect(isServiceEmailNotificationAllowed.mock.calls).toHaveLength(1);
   });
 
-  it("then it should send an email notification if notifications are allowed", async () => {
-    isServiceEmailNotificationAllowed.mockReset().mockReturnValue(true);
-    await postRejectRolesRequest(req, res);
-
-    expect(sendSubServiceRequestRejected.mock.calls).toHaveLength(1);
-    expect(sendSubServiceRequestRejected.mock.calls[0][0]).toBe(
-      "john.doe@email.com",
-    );
-    expect(sendSubServiceRequestRejected.mock.calls[0][1]).toBe("John");
-    expect(sendSubServiceRequestRejected.mock.calls[0][2]).toBe("Doe");
-    expect(sendSubServiceRequestRejected.mock.calls[0][3]).toBe(
-      "organisationName",
-    );
-    expect(sendSubServiceRequestRejected.mock.calls[0][4]).toBe("service name");
-    expect(sendSubServiceRequestRejected.mock.calls[0][5]).toStrictEqual([
-      "role_name",
-    ]);
-    expect(sendSubServiceRequestRejected.mock.calls[0][6]).toBe("");
-  });
-
   it("then it should send an email notification if notifications are allowed and include rejection reason if present", async () => {
     isServiceEmailNotificationAllowed.mockReset().mockReturnValue(true);
     req.body.reason = "Request is not appropiate";
@@ -291,6 +271,35 @@ describe("When approving a sub service request", () => {
       "role_name",
     ]);
     expect(sendSubServiceRequestRejected.mock.calls[0][6]).toBe(
+      "Request is not appropiate",
+    );
+
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls).toHaveLength(1);
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][0]).toBe(
+      "approver1",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][1]).toBe(
+      "john.doe@email.com",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][2]).toBe(
+      "John Doe",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][3]).toBe(
+      "organisationId",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][4]).toBe(
+      "organisationName",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][5]).toBe(
+      "service name",
+    );
+    expect(
+      sendSubServiceRequestOutcomeToApprovers.mock.calls[0][6],
+    ).toStrictEqual(["role_name"]);
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][7]).toBe(
+      false,
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][8]).toBe(
       "Request is not appropiate",
     );
   });
