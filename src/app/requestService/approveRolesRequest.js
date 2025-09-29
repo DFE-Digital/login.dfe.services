@@ -133,16 +133,15 @@ const get = async (req, res) => {
       );
     }
 
-    if (!req.session.user) {
-      req.session.user = {};
-    }
-    req.session.user.uid = endUser.id;
-    req.session.user.firstName = endUser.firstName;
-    req.session.user.lastName = endUser.lastName;
-    req.session.user.email = endUser.email;
-    req.session.user.services = [{ serviceId, roles }];
-    req.session.user.serviceId = viewModel.service.serviceId;
-    req.session.user.roleIds = roles;
+    req.session.user = {
+      uid: endUser.id,
+      firstName: endUser.firstName,
+      lastName: endUser.lastName,
+      email: endUser.email,
+      services: [{ serviceId, roles }],
+      serviceId: viewModel.service.serviceId,
+      roleIds: roles,
+    };
     req.session.action = action;
     req.session.subServiceReqId = userSubServiceRequestID;
   }

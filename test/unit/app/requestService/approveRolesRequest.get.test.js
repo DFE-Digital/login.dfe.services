@@ -137,6 +137,14 @@ describe("When reviewing a sub-service request for approving", () => {
           id: "status_id",
         },
       },
+      {
+        code: "role_code2",
+        id: "role2",
+        name: "role_name2",
+        status: {
+          id: "status_id2",
+        },
+      },
     ]);
 
     checkCacheForAllServices.mockReset();
@@ -212,6 +220,24 @@ describe("When reviewing a sub-service request for approving", () => {
     expect(res.render.mock.calls[0][0]).toBe(
       "requestService/views/approveRolesRequest",
     );
+  });
+
+  it("then it should render `approveRolesRequest` view with error if there are validation messages in the viewModel", async () => {
+    policyEngine.validate.mockReturnValue([
+      { message: "There has been an error" },
+    ]);
+
+    await getApproveRolesRequest(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe(
+      `requestService/views/approveRolesRequest`,
+    );
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      validationMessages: {
+        messages: ["There has been an error"],
+      },
+    });
   });
 
   it("then it should include the csrf token", async () => {
