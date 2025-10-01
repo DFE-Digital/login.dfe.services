@@ -26,11 +26,7 @@ const logger = require("./../../../../src/infrastructure/logger");
 
 const { NotificationClient } = require("login.dfe.jobs-client");
 const sendAccessRequest = jest.fn();
-NotificationClient.mockImplementation(() => {
-  return {
-    sendAccessRequest,
-  };
-});
+const sendOrganisationRequestOutcomeToApprovers = jest.fn();
 
 Date.now = jest.fn(() => "2019-01-02");
 
@@ -63,9 +59,11 @@ describe("when rejecting an organisation request", () => {
     updateRequestById.mockReset();
 
     sendAccessRequest.mockReset();
+    sendOrganisationRequestOutcomeToApprovers.mockReset();
     NotificationClient.mockImplementation(() => {
       return {
         sendAccessRequest,
+        sendOrganisationRequestOutcomeToApprovers,
       };
     });
     getAndMapOrgRequest.mockReset().mockReturnValue({
@@ -189,7 +187,7 @@ describe("when rejecting an organisation request", () => {
     });
   });
 
-  it("then it should patch the request as rejected", async () => {
+  it("then it should patch the request as rejected and send relevant emails", async () => {
     await post(req, res);
 
     expect(updateRequestById.mock.calls).toHaveLength(1);
@@ -199,6 +197,38 @@ describe("when rejecting an organisation request", () => {
     expect(updateRequestById.mock.calls[0][3]).toBe("reason for rejection");
     expect(updateRequestById.mock.calls[0][4]).toBe("2019-01-02");
     expect(updateRequestById.mock.calls[0][5]).toBe("correlationId");
+
+    expect(sendAccessRequest.mock.calls).toHaveLength(1);
+    expect(sendAccessRequest.mock.calls[0][0]).toBe("john.doe@email.com");
+    expect(sendAccessRequest.mock.calls[0][1]).toBe("John Doe");
+    expect(sendAccessRequest.mock.calls[0][2]).toBe("Org 1");
+    expect(sendAccessRequest.mock.calls[0][3]).toBe(false);
+    expect(sendAccessRequest.mock.calls[0][4]).toBe("reason for rejection");
+
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls).toHaveLength(
+      1,
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][0]).toBe(
+      "user1",
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][1]).toBe(
+      "john.doe@email.com",
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][2]).toBe(
+      "John Doe",
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][3]).toBe(
+      undefined,
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][4]).toBe(
+      "Org 1",
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][5]).toBe(
+      false,
+    );
+    expect(sendOrganisationRequestOutcomeToApprovers.mock.calls[0][6]).toBe(
+      "reason for rejection",
+    );
   });
 
   it("then it should should audit rejected org request", async () => {

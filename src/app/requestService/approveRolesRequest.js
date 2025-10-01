@@ -1,7 +1,7 @@
 const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("../users/utils");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 const {
   checkCacheForAllServices,
 } = require("../../infrastructure/helpers/allServicesAppCache");
@@ -18,6 +18,7 @@ const {
   getOrganisationPermissionLevel,
 } = require("../../app/accessRequests/utils");
 
+const Account = require("../../infrastructure/account");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 
@@ -132,16 +133,15 @@ const get = async (req, res) => {
       );
     }
 
-    if (!req.session.user) {
-      req.session.user = {};
-    }
-    req.session.user.uid = endUser.id;
-    req.session.user.firstName = endUser.firstName;
-    req.session.user.lastName = endUser.lastName;
-    req.session.user.email = endUser.email;
-    req.session.user.services = [{ serviceId, roles }];
-    req.session.user.serviceId = viewModel.service.serviceId;
-    req.session.user.roleIds = roles;
+    req.session.user = {
+      uid: endUser.id,
+      firstName: endUser.firstName,
+      lastName: endUser.lastName,
+      email: endUser.email,
+      services: [{ serviceId, roles }],
+      serviceId: viewModel.service.serviceId,
+      roleIds: roles,
+    };
     req.session.action = action;
     req.session.subServiceReqId = userSubServiceRequestID;
   }
@@ -170,11 +170,6 @@ const post = async (req, res) => {
   const { service } = viewModel;
   const { organisation } = viewModel.organisationDetails;
   const rolesName = viewModel.service.roles.map((r) => r.name);
-
-  if (viewModel.validationMessages.messages) {
-    return res.render("requestService/views/approveRolesRequest", viewModel);
-  }
-
   const policyValidationResult = await policyEngine.validate(
     endUserId,
     orgId,
@@ -241,6 +236,21 @@ const post = async (req, res) => {
       service.name,
       rolesName,
       permissionLevel,
+    );
+
+    const account = Account.fromContext(req.user);
+    const endUsersName =
+      endUserDetails.firstName + " " + endUserDetails.lastName;
+    await notificationClient.sendSubServiceRequestOutcomeToApprovers(
+      account.id,
+      endUserDetails.email,
+      endUsersName,
+      organisation.id,
+      organisation.name,
+      service.name,
+      rolesName,
+      true,
+      null,
     );
   }
 

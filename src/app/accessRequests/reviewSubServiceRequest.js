@@ -2,7 +2,7 @@ const Account = require("./../../infrastructure/account");
 const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { updateServiceRequest } = require("../requestService/utils");
 const {
-  getSubServiceRequestVieModel,
+  getSubServiceRequestViewModel,
   getAndMapServiceRequest,
   generateFlashMessages,
   getRoleAndServiceNames,
@@ -13,14 +13,14 @@ const { createSubServiceAddedBanners } = require("../home/userBannersHandlers");
 const {
   isServiceEmailNotificationAllowed,
 } = require("../../../src/infrastructure/applications");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
 
 const validate = async (req) => {
   const buildmodel = await getAndMapServiceRequest(req.params.rid);
-  const viewModel = await getSubServiceRequestVieModel(buildmodel, req);
+  const viewModel = await getSubServiceRequestViewModel(buildmodel, req);
   viewModel.selectedResponse = req.body.selectedResponse;
 
   if (req.session.roleIds !== undefined) {
@@ -62,7 +62,7 @@ const validate = async (req) => {
 
 const get = async (req, res) => {
   const model = await getAndMapServiceRequest(req.params.rid);
-  const viewModel = await getSubServiceRequestVieModel(model, req.id, req);
+  const viewModel = await getSubServiceRequestViewModel(model, req.id, req);
   ((viewModel.title = "Review sub-service request"),
     (req.session.rid = req.params.rid));
   if (req.session.roleIds !== undefined) {
@@ -105,12 +105,13 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
+  const correlationId = req.id;
   const model = await validate(req);
   const request = await getAndMapServiceRequest(req.params.rid);
   if (request.dataValues.status === -1 || request.dataValues.status === 1) {
-    const alreadyActioned = await getSubServiceRequestVieModel(
+    const alreadyActioned = await getSubServiceRequestViewModel(
       request,
-      req.id,
+      correlationId,
       req,
     );
     if (alreadyActioned.actioned_by) {
@@ -194,6 +195,23 @@ const post = async (req, res) => {
           serviceName,
           rolesName,
           permissionLevel,
+        );
+
+        const account = Account.fromContext(req.user);
+        const endUsersName =
+          model.viewModel.endUsersGivenName +
+          " " +
+          model.viewModel.endUsersFamilyName;
+        await notificationClient.sendSubServiceRequestOutcomeToApprovers(
+          account.id,
+          model.viewModel.endUsersEmail,
+          endUsersName,
+          model.viewModel.org_id,
+          model.viewModel.org_name,
+          model.viewModel.Service_name,
+          model.viewModel.roles.map((i) => i.name),
+          true,
+          null,
         );
       }
 

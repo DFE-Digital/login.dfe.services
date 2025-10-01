@@ -79,6 +79,7 @@ const policyEngine = {
 };
 
 const sendSubServiceRequestApproved = jest.fn();
+const sendSubServiceRequestOutcomeToApprovers = jest.fn();
 
 describe("When approving a sub service request", () => {
   let req;
@@ -189,8 +190,10 @@ describe("When approving a sub service request", () => {
     postApproveRolesRequest =
       require("../../../../src/app/requestService/approveRolesRequest").post;
     sendSubServiceRequestApproved.mockReset();
+    sendSubServiceRequestOutcomeToApprovers.mockReset();
     NotificationClient.mockReset().mockImplementation(() => ({
       sendSubServiceRequestApproved,
+      sendSubServiceRequestOutcomeToApprovers,
     }));
   });
   it("then should redirect to `my services` page if there is no user in session", async () => {
@@ -320,6 +323,31 @@ describe("When approving a sub service request", () => {
       id: 0,
       name: "End user",
     });
+
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls).toHaveLength(1);
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][0]).toBe(
+      "approver1",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][1]).toBe(
+      "john.doe@email.com",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][2]).toBe(
+      "John Doe",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][3]).toBe(
+      "organisationId",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][4]).toBe(
+      "organisationName",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][5]).toBe(
+      "service name",
+    );
+    expect(
+      sendSubServiceRequestOutcomeToApprovers.mock.calls[0][6],
+    ).toStrictEqual(["role_name"]);
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][7]).toBe(true);
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][8]).toBe(null);
   });
 
   it("then it should not send an email notification if notifications are not allowed", async () => {
@@ -367,6 +395,24 @@ describe("When approving a sub service request", () => {
     expect(res.flash.mock.calls[2][1]).toBe(
       "John Doe will receive an email to tell them their sub-service access has changed.",
     );
+  });
+
+  it("then it should render `approveRolesRequest` view with error if there are validation messages in the viewModel", async () => {
+    policyEngine.validate.mockReturnValue([
+      { message: "There has been an error" },
+    ]);
+
+    await postApproveRolesRequest(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe(
+      `requestService/views/approveRolesRequest`,
+    );
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      validationMessages: {
+        messages: ["There has been an error"],
+      },
+    });
   });
 
   it("then it should render `approveRolesRequest` view with error if there are validation messages", async () => {

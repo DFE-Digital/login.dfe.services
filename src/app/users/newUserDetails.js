@@ -4,7 +4,7 @@ const {
   getOrganisationAndServiceForInvitation,
 } = require("./../../infrastructure/organisations");
 const { emailPolicy } = require("login.dfe.validation");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 
 const { getApproverOrgsFromReq } = require("./utils");
 

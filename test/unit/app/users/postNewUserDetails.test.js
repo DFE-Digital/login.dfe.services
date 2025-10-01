@@ -18,7 +18,7 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
   getInvitationByEmail: jest.fn(),
 }));
 
-const { actions } = require("../../../../src/app/constans/actions");
+const { actions } = require("../../../../src/app/constants/actions");
 
 const {
   getOrganisationAndServiceForUser,

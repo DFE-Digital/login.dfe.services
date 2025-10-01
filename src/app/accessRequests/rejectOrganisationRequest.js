@@ -1,12 +1,9 @@
 const { getAndMapOrgRequest } = require("./utils");
 const { updateRequestById } = require("./../../infrastructure/organisations");
+const Account = require("./../../infrastructure/account");
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
-
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
 
 const get = async (req, res) => {
   return res.render("accessRequests/views/rejectOrganisationRequest", {
@@ -40,6 +37,10 @@ const validate = async (req) => {
 };
 
 const post = async (req, res) => {
+  const notificationClient = new NotificationClient({
+    connectionString: config.notifications.connectionString,
+  });
+  const correlationId = req.id;
   const model = await validate(req);
 
   if (Object.keys(model.validationMessages).length > 0) {
@@ -55,13 +56,24 @@ const post = async (req, res) => {
     req.user.sub,
     model.reason,
     actionedDate,
-    req.id,
+    correlationId,
   );
 
   //send rejected email
   await notificationClient.sendAccessRequest(
     model.request.usersEmail,
     model.request.usersName,
+    model.request.org_name,
+    false,
+    model.reason,
+  );
+
+  const account = Account.fromContext(req.user);
+  await notificationClient.sendOrganisationRequestOutcomeToApprovers(
+    account.id,
+    model.request.usersEmail,
+    model.request.usersName,
+    model.request.organisation_id,
     model.request.org_name,
     false,
     model.reason,

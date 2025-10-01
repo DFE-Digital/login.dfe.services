@@ -27,7 +27,7 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   checkCacheForAllServices,
 } = require("./../../infrastructure/helpers/allServicesAppCache");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 
 const renderConfirmNewUserPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);

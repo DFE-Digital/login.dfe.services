@@ -4,7 +4,7 @@ const {
   mockAdapterConfig,
 } = require("../../../utils/jestMocks");
 const {
-  getSubServiceRequestVieModel,
+  getSubServiceRequestViewModel,
   getAndMapServiceRequest,
 } = require("../../../../src/app/accessRequests/utils");
 const Account = require("../../../../src/infrastructure/account");
@@ -13,7 +13,7 @@ jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
 jest.mock("../../../../src/infrastructure/logger", () =>
-  require("./../../../utils/jestMocks").mockLogger(),
+  require("../../../utils/jestMocks").mockLogger(),
 );
 jest.mock("./../../../../src/infrastructure/account", () => ({
   fromContext: jest.fn(),
@@ -23,7 +23,7 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
 jest.mock("../../../../src/app/accessRequests/utils", () => {
   return {
     getAndMapServiceRequest: jest.fn(),
-    getSubServiceRequestVieModel: jest.fn(),
+    getSubServiceRequestViewModel: jest.fn(),
   };
 });
 
@@ -117,8 +117,8 @@ describe("When reviewing a sub-service request for approving", () => {
     getAndMapServiceRequest.mockReset();
     getAndMapServiceRequest.mockReturnValue(viewModel);
 
-    getSubServiceRequestVieModel.mockReset();
-    getSubServiceRequestVieModel.mockReturnValue(viewModel);
+    getSubServiceRequestViewModel.mockReset();
+    getSubServiceRequestViewModel.mockReturnValue(viewModel);
 
     getSubServiceRequest =
       require("../../../../src/app/accessRequests/reviewSubServiceRequest").get;
@@ -137,7 +137,7 @@ describe("When reviewing a sub-service request for approving", () => {
     await getSubServiceRequest(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(getSubServiceRequestVieModel.mock.calls[0][0]).toBe(viewModel);
+    expect(getSubServiceRequestViewModel.mock.calls[0][0]).toBe(viewModel);
   });
 
   it("then it should include csrf token", async () => {

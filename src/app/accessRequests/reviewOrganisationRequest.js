@@ -3,20 +3,18 @@ const {
   updateRequestById,
   getOrganisationById,
 } = require("./../../infrastructure/organisations");
+const Account = require("./../../infrastructure/account");
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
 const {
   searchUserByIdRaw,
   updateUserDetailsInSearchIndex,
 } = require("login.dfe.api-client/users");
+
 const { waitForIndexToUpdate } = require("../users/utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getAndMapOrgRequest } = require("./utils");
 const { NotificationClient } = require("login.dfe.jobs-client");
-
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
 
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);
@@ -67,6 +65,10 @@ const validate = async (req) => {
 };
 
 const post = async (req, res) => {
+  const notificationClient = new NotificationClient({
+    connectionString: config.notifications.connectionString,
+  });
+  const correlationId = req.id;
   const model = await validate(req);
 
   if (Object.keys(model.validationMessages).length > 0) {
@@ -85,7 +87,7 @@ const post = async (req, res) => {
     model.request.org_id,
     0,
     null,
-    req.id,
+    correlationId,
   );
   await updateRequestById(
     model.request.id,
@@ -93,7 +95,7 @@ const post = async (req, res) => {
     req.user.sub,
     null,
     actionedDate,
-    req.id,
+    correlationId,
   );
 
   // patch search index with organisation added to user
@@ -101,7 +103,10 @@ const post = async (req, res) => {
     userId: model.request.user_id,
   });
 
-  const organisation = await getOrganisationById(model.request.org_id, req.id);
+  const organisation = await getOrganisationById(
+    model.request.org_id,
+    correlationId,
+  );
   if (!getAllUserDetails) {
     logger.error(
       `Failed to find user ${model.request.user_id} when confirming change of organisations`,
@@ -146,6 +151,17 @@ const post = async (req, res) => {
     await notificationClient.sendAccessRequest(
       model.request.usersEmail,
       model.request.usersName,
+      organisation.name,
+      true,
+      null,
+    );
+
+    const account = Account.fromContext(req.user);
+    await notificationClient.sendOrganisationRequestOutcomeToApprovers(
+      account.id,
+      model.request.usersEmail,
+      model.request.usersName,
+      model.request.organisation_id,
       organisation.name,
       true,
       null,

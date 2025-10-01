@@ -4,7 +4,7 @@ const {
   mockAdapterConfig,
 } = require("../../../utils/jestMocks");
 const {
-  getSubServiceRequestVieModel,
+  getSubServiceRequestViewModel,
   getAndMapServiceRequest,
   getOrganisationPermissionLevel,
 } = require("../../../../src/app/accessRequests/utils");
@@ -21,40 +21,24 @@ const {
   isServiceEmailNotificationAllowed,
 } = require("../../../../src/infrastructure/applications");
 const { NotificationClient } = require("login.dfe.jobs-client");
-const sendAccessRequest = jest.fn();
+const sendSubServiceRequestOutcomeToApprovers = jest.fn();
+const sendSubServiceRequestApproved = jest.fn();
 
 const Account = require("../../../../src/infrastructure/account");
 jest.mock("login.dfe.policy-engine");
 jest.mock("login.dfe.jobs-client");
+jest.mock("login.dfe.api-client/users");
 jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
 jest.mock("../../../../src/infrastructure/logger", () =>
   require("../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("./../../../../src/infrastructure/account", () => ({
-  fromContext: jest.fn(),
-  getById: jest.fn(),
-}));
-jest.mock("../../../../src/app/home/userBannersHandlers", () => {
-  return { createSubServiceAddedBanners: jest.fn() };
-});
-jest.mock("../../../../src/app/accessRequests/utils", () => {
-  return {
-    getAndMapServiceRequest: jest.fn(),
-    getSubServiceRequestVieModel: jest.fn(),
-    getOrganisationPermissionLevel: jest.fn(),
-  };
-});
-jest.mock("../../../../src/infrastructure/applications", () => {
-  return { isServiceEmailNotificationAllowed: jest.fn() };
-});
-
-jest.mock("../../../../src/app/requestService/utils", () => {
-  return {
-    updateServiceRequest: jest.fn(),
-  };
-});
+jest.mock("../../../../src/app/home/userBannersHandlers");
+jest.mock("../../../../src/app/accessRequests/utils");
+jest.mock("../../../../src/app/requestService/utils");
+jest.mock("../../../../src/infrastructure/account");
+jest.mock("../../../../src/infrastructure/applications");
 
 jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
@@ -68,41 +52,23 @@ jest.mock("login.dfe.dao", () => {
   };
 });
 
-jest.mock("login.dfe.api-client/users", () => {
-  return {
-    updateUserServiceRoles: jest.fn(),
-  };
-});
-
 const listRoles = [
   {
-    code: "ASP_School_Anon",
+    code: "ASP_School_Anon_1",
     id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
     name: "ASP School Anon 1",
     numericId: "124",
   },
   {
-    code: "ASP_School_Anon",
+    code: "ASP_School_Anon_2",
     id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
     name: "ASP School Anon 2",
     numericId: "124",
   },
   {
-    code: "ASP_School_Anon",
+    code: "ASP_School_Anon_3",
     id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
     name: "ASP School Anon 3",
-    numericId: "124",
-  },
-  {
-    code: "ASP_School_Anon",
-    id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon 4",
-    numericId: "124",
-  },
-  {
-    code: "ASP_School_Anon",
-    id: "01379D9F-A6DF-4810-A6C4-5468CBD41E42",
-    name: "ASP School Anon 5",
     numericId: "124",
   },
 ];
@@ -158,8 +124,7 @@ const model = {
 };
 jest.mock("../../../../src/app/users/utils");
 
-const sendSubServiceRequestApproved = jest.fn();
-
+// TODO: These tests need to be folded into the reviewSubServiceRequest.post test
 describe("When reviewing a sub-service request for approving", () => {
   let req;
   let res;
@@ -230,7 +195,9 @@ describe("When reviewing a sub-service request for approving", () => {
     });
 
     res = mockResponse();
-    sendAccessRequest.mockReset();
+    Account.fromContext.mockReset().mockReturnValue({
+      id: "user1",
+    });
 
     Account.getById.mockReset().mockReturnValue([
       {
@@ -254,12 +221,14 @@ describe("When reviewing a sub-service request for approving", () => {
     getAndMapServiceRequest.mockReset();
     getAndMapServiceRequest.mockReturnValue(model);
 
-    getSubServiceRequestVieModel.mockReset();
-    getSubServiceRequestVieModel.mockReturnValue(viewModel);
+    getSubServiceRequestViewModel.mockReset();
+    getSubServiceRequestViewModel.mockReturnValue(viewModel);
 
     sendSubServiceRequestApproved.mockReset();
+    sendSubServiceRequestOutcomeToApprovers.mockReset();
     NotificationClient.mockReset().mockImplementation(() => ({
       sendSubServiceRequestApproved,
+      sendSubServiceRequestOutcomeToApprovers,
     }));
   });
 
@@ -302,13 +271,40 @@ describe("When reviewing a sub-service request for approving", () => {
       "ASP School Anon 1",
       "ASP School Anon 2",
       "ASP School Anon 3",
-      "ASP School Anon 4",
-      "ASP School Anon 5",
     ]);
     expect(sendSubServiceRequestApproved.mock.calls[0][6]).toEqual({
       id: 0,
       name: "End user",
     });
+
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls).toHaveLength(1);
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][0]).toBe(
+      "user1",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][1]).toBe(
+      "b@b.gov.uk",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][2]).toBe(
+      "b b",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][3]).toBe(
+      "org1",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][4]).toBe(
+      "org1",
+    );
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][5]).toBe(
+      "service one",
+    );
+    expect(
+      sendSubServiceRequestOutcomeToApprovers.mock.calls[0][6],
+    ).toStrictEqual([
+      "ASP School Anon 1",
+      "ASP School Anon 2",
+      "ASP School Anon 3",
+    ]);
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][7]).toBe(true);
+    expect(sendSubServiceRequestOutcomeToApprovers.mock.calls[0][8]).toBe(null);
   });
 
   it("then it should not send an email notification if notifications are not allowed", async () => {
@@ -340,8 +336,6 @@ describe("When reviewing a sub-service request for approving", () => {
       "ASP School Anon 1",
       "ASP School Anon 2",
       "ASP School Anon 3",
-      "ASP School Anon 4",
-      "ASP School Anon 5",
     ]);
   });
 

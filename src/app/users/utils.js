@@ -1,7 +1,7 @@
 const { mapUserStatus } = require("./../../infrastructure/utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const { searchUserByIdRaw } = require("login.dfe.api-client/users");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 const moment = require("moment");
 const sortBy = require("lodash/sortBy");
 const {

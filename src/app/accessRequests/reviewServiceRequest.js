@@ -1,19 +1,17 @@
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
+const Account = require("./../../infrastructure/account");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { addServiceToUser } = require("login.dfe.api-client/users");
 const { updateServiceRequest } = require("../requestService/utils");
 const { getAndMapServiceRequest, generateFlashMessages } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { services: daoServices } = require("login.dfe.dao");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
 const { createUserBanners } = require("../home/userBannersHandlers");
 const { NotificationClient } = require("login.dfe.jobs-client");
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
 
 const getViewModel = async (req) => {
   const request = await getAndMapServiceRequest(req.params.rid);
@@ -150,6 +148,9 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
+  const notificationClient = new NotificationClient({
+    connectionString: config.notifications.connectionString,
+  });
   let model = await getViewModel(req);
   model = await validateModel(model, req.params, res);
   if (model) {
@@ -212,6 +213,20 @@ const post = async (req, res) => {
       organisation.name,
       service.name,
       selectedRoles.map((i) => i.name),
+    );
+
+    const account = Account.fromContext(req.user);
+    const endUsersName = endUsersGivenName + " " + endUsersFamilyName;
+    await notificationClient.sendServiceRequestOutcomeToApprovers(
+      account.id,
+      endUsersEmail,
+      endUsersName,
+      organisation.id,
+      organisation.name,
+      service.name,
+      selectedRoles.map((i) => i.name),
+      true,
+      null,
     );
 
     logger.audit({

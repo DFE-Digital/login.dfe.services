@@ -20,7 +20,7 @@ const {
   isUserEndUser,
   isLoginOver24,
 } = require("../users/utils");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const { getUserServicesRaw } = require("login.dfe.api-client/users");

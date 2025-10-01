@@ -4,15 +4,16 @@ const {
   mockAdapterConfig,
 } = require("../../../utils/jestMocks");
 const {
-  getSubServiceRequestVieModel,
+  getSubServiceRequestViewModel,
   getAndMapServiceRequest,
 } = require("../../../../src/app/accessRequests/utils");
 const {
   updateServiceRequest,
 } = require("../../../../src/app/requestService/utils");
 const {
-  get,
-} = require("../../../../src/app/accessRequests/rejectSubServiceRequest");
+  post,
+} = require("../../../../src/app/accessRequests/reviewSubServiceRequest");
+
 const sendAccessRequest = jest.fn();
 
 const Account = require("../../../../src/infrastructure/account");
@@ -23,27 +24,9 @@ jest.mock("../../../../src/infrastructure/config", () => {
 jest.mock("../../../../src/infrastructure/logger", () =>
   require("../../../utils/jestMocks").mockLogger(),
 );
-jest.mock("./../../../../src/infrastructure/account", () => ({
-  fromContext: jest.fn(),
-  getById: jest.fn(),
-}));
-
-jest.mock("../../../../src/app/accessRequests/utils", () => {
-  return {
-    getAndMapServiceRequest: jest.fn(),
-    getSubServiceRequestVieModel: jest.fn(),
-  };
-});
-
-jest.mock("../../../../src/app/requestService/utils", () => {
-  return {
-    updateServiceRequest: jest.fn(),
-  };
-});
-
-jest.mock("../../../../src/infrastructure/config", () => {
-  return mockAdapterConfig();
-});
+jest.mock("../../../../src/infrastructure/account");
+jest.mock("../../../../src/app/accessRequests/utils");
+jest.mock("../../../../src/app/requestService/utils");
 jest.mock("login.dfe.dao", () => {
   return {
     services: {
@@ -100,7 +83,8 @@ const model = {
 };
 jest.mock("../../../../src/app/users/utils");
 
-describe("When reviewing a sub-service request for rejection", () => {
+// TODO: These tests need to be folded into the reviewSubServiceRequest.post test
+describe("When reviewing a sub-service request for rejecting", () => {
   let req;
   let res;
 
@@ -195,15 +179,15 @@ describe("When reviewing a sub-service request for rejection", () => {
     getAndMapServiceRequest.mockReset();
     getAndMapServiceRequest.mockReturnValue(model);
 
-    getSubServiceRequestVieModel.mockReset();
-    getSubServiceRequestVieModel.mockReturnValue(viewModel);
+    getSubServiceRequestViewModel.mockReset();
+    getSubServiceRequestViewModel.mockReturnValue(viewModel);
   });
 
-  it("then it should render an empty view", async () => {
-    await get(req, res);
-    expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe(
-      "accessRequests/views/rejectSubServiceRequest",
+  it("then it should redirect to reject sub service view", async () => {
+    await post(req, res);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      `/access-requests/subService-requests/${req.params.rid}/rejected`,
     );
   });
 });

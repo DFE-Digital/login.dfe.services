@@ -1,14 +1,11 @@
 const { getAndMapServiceRequest, generateFlashMessages } = require("./utils");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
+const Account = require("./../../infrastructure/account");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { updateServiceRequest } = require("../requestService/utils");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { services: daoServices } = require("login.dfe.dao");
-
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
 
 const getViewModel = (req) => {
   const { rid, sid, rolesIds } = req.params;
@@ -46,6 +43,9 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
+  const notificationClient = new NotificationClient({
+    connectionString: config.notifications.connectionString,
+  });
   const { rid } = req.params;
   const model = await validate(req);
   const roleIds = model.request.dataValues.role_ids;
@@ -108,6 +108,20 @@ const post = async (req, res) => {
     organisation.name,
     service.name,
     selectedRoles.map((i) => i.name),
+    reason,
+  );
+
+  const account = Account.fromContext(req.user);
+  const endUsersName = endUsersGivenName + " " + endUsersFamilyName;
+  await notificationClient.sendServiceRequestOutcomeToApprovers(
+    account.id,
+    endUsersEmail,
+    endUsersName,
+    organisation.id,
+    organisation.name,
+    service.name,
+    selectedRoles.map((i) => i.name),
+    false,
     reason,
   );
 

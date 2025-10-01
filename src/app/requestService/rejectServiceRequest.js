@@ -1,6 +1,6 @@
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("../users/utils");
-
+const Account = require("../../infrastructure/account");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 
@@ -183,6 +183,21 @@ const post = async (req, res) => {
     model.organisationDetails.organisation.name,
     model.service.name,
     model.service.roles.map((i) => i.name),
+    rejectReason,
+  );
+
+  const account = Account.fromContext(req.user);
+  const endUsersName =
+    req.session.user.firstName + " " + req.session.user.lastName;
+  await notificationClient.sendServiceRequestOutcomeToApprovers(
+    account.id,
+    req.session.user.email,
+    endUsersName,
+    model.organisationDetails.organisation.id,
+    model.organisationDetails.organisation.name,
+    model.service.name,
+    model.service.roles.map((i) => i.name),
+    false,
     rejectReason,
   );
 

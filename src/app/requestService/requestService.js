@@ -10,7 +10,7 @@ const {
 const {
   recordRequestServiceBannerAck,
 } = require("../../infrastructure/helpers/common");
-const { actions } = require("../constans/actions");
+const { actions } = require("../constants/actions");
 const { checkForActiveRequests } = require("./utils");
 
 const policyEngine = new PolicyEngine(config);

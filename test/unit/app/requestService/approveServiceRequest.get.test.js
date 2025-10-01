@@ -8,6 +8,9 @@ const {
 } = require("../../../../src/infrastructure/helpers/allServicesAppCache");
 const { getUserDetails } = require("../../../../src/app/users/utils");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
+jest.mock("login.dfe.api-client/users", () => ({
+  getUserServicesRaw: jest.fn(),
+}));
 const {
   getUserServiceRequestStatus,
 } = require("../../../../src/app/requestService/utils");
@@ -18,13 +21,14 @@ jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
 jest.mock("../../../../src/infrastructure/logger", () =>
-  require("./../../../utils/jestMocks").mockLogger(),
+  require("../../../utils/jestMocks").mockLogger(),
 );
 jest.mock("login.dfe.api-client/services", () => {
   return {
     getServiceRolesRaw: jest.fn(),
   };
 });
+const { getUserServicesRaw } = require("login.dfe.api-client/users");
 
 jest.mock("../../../../src/app/requestService/utils", () => {
   return {
@@ -55,11 +59,24 @@ const policyEngine = {
   validate: jest.fn(),
 };
 
-describe("When reviewing a sub-service request for approving", () => {
+const userAccess = [
+  {
+    serviceId: "service1",
+    organisationId: "org1",
+    accessGrantedOn: "2024-08-14T11:07:02Z",
+  },
+  {
+    serviceId: "service4",
+    organisationId: "org2",
+    accessGrantedOn: "2024-06-14T11:07:02Z",
+  },
+];
+
+describe("When reviewing a service request for approving", () => {
   let req;
   let res;
 
-  let getApproveRolesRequest;
+  let getApproveServiceRequest;
 
   beforeEach(() => {
     req = mockRequest();
@@ -81,6 +98,7 @@ describe("When reviewing a sub-service request for approving", () => {
         },
       }));
 
+    req.query.reqId = "reqId";
     req.user = {
       sub: "approver1",
       email: "approver.one@unit.test",
@@ -111,6 +129,8 @@ describe("When reviewing a sub-service request for approving", () => {
     ];
     res = mockResponse();
 
+    getUserServicesRaw.mockReset().mockReturnValue(userAccess);
+
     getUserDetails.mockReset();
     getUserDetails.mockReturnValue({
       id: "user1",
@@ -137,14 +157,6 @@ describe("When reviewing a sub-service request for approving", () => {
           id: "status_id",
         },
       },
-      {
-        code: "role_code2",
-        id: "role2",
-        name: "role_name2",
-        status: {
-          id: "status_id2",
-        },
-      },
     ]);
 
     checkCacheForAllServices.mockReset();
@@ -160,25 +172,18 @@ describe("When reviewing a sub-service request for approving", () => {
     getUserServiceRequestStatus.mockReset();
     getUserServiceRequestStatus.mockReturnValue(0);
 
-    getApproveRolesRequest =
-      require("../../../../src/app/requestService/approveRolesRequest").get;
-  });
-
-  it("then it should get all the end-user details", async () => {
-    await getApproveRolesRequest(req, res);
-
-    expect(getUserDetails.mock.calls).toHaveLength(1);
-    expect(getUserDetails.mock.calls[0][0]).toBe(req);
+    getApproveServiceRequest =
+      require("../../../../src/app/requestService/approveServiceRequest").get;
   });
 
   it("then it should get all services", async () => {
-    await getApproveRolesRequest(req, res);
+    await getApproveServiceRequest(req, res);
 
     expect(checkCacheForAllServices.mock.calls).toHaveLength(1);
   });
 
   it("then it should list all roles of service", async () => {
-    await getApproveRolesRequest(req, res);
+    await getApproveServiceRequest(req, res);
 
     expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
     expect(getServiceRolesRaw.mock.calls[0][0]).toMatchObject({
@@ -187,17 +192,15 @@ describe("When reviewing a sub-service request for approving", () => {
   });
 
   it("then it should check if the request is not already actioned", async () => {
-    await getApproveRolesRequest(req, res);
+    await getApproveServiceRequest(req, res);
 
     expect(getUserServiceRequestStatus.mock.calls).toHaveLength(1);
-    expect(getUserServiceRequestStatus.mock.calls[0][0]).toBe(
-      "sub-service-req-ID",
-    );
+    expect(getUserServiceRequestStatus.mock.calls[0][0]).toBe("reqId");
   });
 
   it("then it should return the `requestAlreadyApproved` view if the request is not already approved", async () => {
     getUserServiceRequestStatus.mockReset().mockReturnValue(1);
-    await getApproveRolesRequest(req, res);
+    await getApproveServiceRequest(req, res);
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "requestService/views/requestAlreadyApproved",
@@ -206,63 +209,66 @@ describe("When reviewing a sub-service request for approving", () => {
 
   it("then it should return the `requestAlreadyRejected` view if the request is not already rejected", async () => {
     getUserServiceRequestStatus.mockReset().mockReturnValue(-1);
-    await getApproveRolesRequest(req, res);
+    await getApproveServiceRequest(req, res);
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "requestService/views/requestAlreadyRejected",
     );
   });
 
-  it("then it should return the `confirmEditRolesRequest` view if the request is not already actioned", async () => {
-    await getApproveRolesRequest(req, res);
-
-    expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][0]).toBe(
-      "requestService/views/approveRolesRequest",
-    );
-  });
-
-  it("then it should render `approveRolesRequest` view with error if there are validation messages in the viewModel", async () => {
-    policyEngine.validate.mockReturnValue([
-      { message: "There has been an error" },
-    ]);
-
-    await getApproveRolesRequest(req, res);
-
-    expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe(
-      `requestService/views/approveRolesRequest`,
-    );
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      validationMessages: {
-        messages: ["There has been an error"],
-      },
-    });
-  });
-
   it("then it should include the csrf token", async () => {
-    await getApproveRolesRequest(req, res);
+    await getApproveServiceRequest(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: "token",
     });
   });
+
   it("then it should include the end user first name,last name, email address", async () => {
-    await getApproveRolesRequest(req, res);
+    await getApproveServiceRequest(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      endUser: {
-        firstName: "test",
-        lastName: "name",
-        email: "email@email.com",
+      csrfToken: "token",
+      currentPage: "users",
+      title: "Review new service for test name",
+      organisationDetails: {
+        organisation: {
+          id: "organisationId",
+          name: "organisationName",
+        },
+        role: {
+          id: 10000,
+          name: "Approver",
+        },
       },
+      endUserName: "test name",
+      endUserEmail: "email@email.com",
+      validationMessages: {},
+      service: {
+        serviceId: "service1",
+        name: "service name",
+        roles: [
+          {
+            code: "role_code",
+            id: "role1",
+            name: "role_name",
+            status: {
+              id: "status_id",
+            },
+          },
+        ],
+      },
+      serviceUrl:
+        "/approvals/organisationId/users/endUser1/associate-services?action=request-service",
+      subServiceUrl:
+        "/approvals/organisationId/users/endUser1/associate-services/service1?action=request-service",
     });
   });
 
   it("then it should include the organisation name", async () => {
-    await getApproveRolesRequest(req, res);
+    await getApproveServiceRequest(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][1]).toMatchObject({
@@ -275,7 +281,7 @@ describe("When reviewing a sub-service request for approving", () => {
   });
 
   it("then it should include the service name", async () => {
-    await getApproveRolesRequest(req, res);
+    await getApproveServiceRequest(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][1]).toMatchObject({
@@ -286,7 +292,7 @@ describe("When reviewing a sub-service request for approving", () => {
   });
 
   it("then it should include the selected sub-service or role names", async () => {
-    await getApproveRolesRequest(req, res);
+    await getApproveServiceRequest(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][1]).toMatchObject({
@@ -296,19 +302,9 @@ describe("When reviewing a sub-service request for approving", () => {
     });
   });
 
-  it("then it should include the ammend sub-services link", async () => {
-    await getApproveRolesRequest(req, res);
-
-    expect(res.render.mock.calls.length).toBe(1);
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      subServiceAmendUrl:
-        "/approvals/organisationId/users/endUser1/associate-services/service1?action=request-sub-service",
-    });
-  });
-
   it("then should redirect to `my services` page if there is no user in session", async () => {
     req.session.user = undefined;
-    await getApproveRolesRequest(req, res);
+    await getApproveServiceRequest(req, res);
     expect(res.redirect.mock.calls).toHaveLength(1);
   });
 });
