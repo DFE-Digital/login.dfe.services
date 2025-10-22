@@ -103,8 +103,8 @@ const get = async (req, res) => {
   );
 
   if (policyValidationResult.length > 0) {
-    model.validationMessages.roles = policyValidationResult.map(
-      (x) => x.message,
+    model.validationMessages.roles = policyValidationResult.map((x) =>
+      sanitizeHtml(x.message),
     );
   }
 
@@ -141,8 +141,8 @@ const post = async (req, res) => {
   );
 
   if (policyValidationResult.length > 0) {
-    model.validationMessages.roles = policyValidationResult.map(
-      (x) => x.message,
+    model.validationMessages.roles = policyValidationResult.map((x) =>
+      sanitizeHtml(x.message),
     );
     return res.render("requestService/views/rejectServiceRequest", model);
   }

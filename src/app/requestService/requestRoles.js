@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const config = require("../../infrastructure/config");
 const {
   isMultipleRolesAllowed,
@@ -159,8 +160,8 @@ const post = async (req, res) => {
 
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
-    model.validationMessages.roles = policyValidationResult.map(
-      (x) => x.message,
+    model.validationMessages.roles = policyValidationResult.map((x) =>
+      sanitizeHtml(x.message),
     );
     return renderAssociateRolesPage(req, res, model);
   }
