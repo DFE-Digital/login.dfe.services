@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const config = require("./../../infrastructure/config");
 const {
   getSingleServiceForUser,
@@ -188,19 +189,37 @@ const post = async (req, res) => {
             if (displayroles.length > 0 && displayroles.length === 1) {
               res.flash(
                 "message",
-                `You have already requested access to  ${displayroles.map(
-                  (x) => {
-                    return x.toString();
+                sanitizeHtml(
+                  `You have already requested access to  ${displayroles.map(
+                    (x) => {
+                      return x.toString();
+                    },
+                  )}.<br>You must wait for an approver at ${
+                    model.organisationDetails.organisation.name
+                  } to respond to this request before you can send another request. <br><br> <a href='${place}/services/request-access' class='govuk-link'>Help with requesting a service</a> `,
+                  {
+                    allowedAttributes: {
+                      a: ["href", "class"],
+                    },
+                    allowedClasses: {
+                      a: ["govuk-link"],
+                    },
                   },
-                )}.<br>You must wait for an approver at ${
-                  model.organisationDetails.organisation.name
-                } to respond to this request before you can send another request. <br><br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+                ),
               );
             } else {
               res.flash(
                 "message",
-                `You have already requested access to all sub-services you've selected for ${model.service.name}.<br>
-                 You must wait for an approver at ${model.organisationDetails.organisation.name} to respond to these requests before you can send another. <br><br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+                sanitizeHtml(`You have already requested access to all sub-services you've selected for ${model.service.name}.<br>
+                 You must wait for an approver at ${model.organisationDetails.organisation.name} to respond to these requests before you can send another. <br><br> <a href='${place}/services/request-access' class='govuk-link'>Help with requesting a service</a> `),
+                {
+                  allowedAttributes: {
+                    a: ["href", "class"],
+                  },
+                  allowedClasses: {
+                    a: ["govuk-link"],
+                  },
+                },
               );
             }
             return res.redirect("/my-services");

@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("../users/utils");
 const {
@@ -228,7 +229,9 @@ const post = async (req, res) => {
   res.flash("heading", "Sub-service request rejected");
   res.flash(
     "message",
-    "The user who raised the request will receive an email to tell them their sub-service access request has been rejected.",
+    sanitizeHtml(
+      "The user who raised the request will receive an email to tell them their sub-service access request has been rejected.",
+    ),
   );
 
   res.redirect("/my-services");

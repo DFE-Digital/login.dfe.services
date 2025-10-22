@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("../users/utils");
@@ -272,7 +273,9 @@ const post = async (req, res) => {
   res.flash("heading", "Sub-service changes approved");
   res.flash(
     "message",
-    `${endUserDetails.firstName} ${endUserDetails.lastName} will receive an email to tell them their sub-service access has changed.`,
+    sanitizeHtml(
+      `${endUserDetails.firstName} ${endUserDetails.lastName} will receive an email to tell them their sub-service access has changed.`,
+    ),
   );
 
   res.redirect("/my-services");

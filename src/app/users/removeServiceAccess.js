@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const logger = require("./../../infrastructure/logger");
 const {
   getSingleServiceForUser,
@@ -170,7 +171,9 @@ const post = async (req, res) => {
   } else {
     res.flash(
       "message",
-      `This service (and its associated roles) has been removed from your account.`,
+      sanitizeHtml(
+        "This service (and its associated roles) has been removed from your account.",
+      ),
     );
     res.redirect(`/my-services`);
   }
