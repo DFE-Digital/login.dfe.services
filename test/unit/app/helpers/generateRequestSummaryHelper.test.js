@@ -36,6 +36,17 @@ describe("when generating a summary of an access request for presentation", () =
     );
   });
 
+  it("should generate summary for subservice request where the subservice name is missing", () => {
+    const request = {
+      request_type: { name: "Sub-service access" },
+      serviceName: "Test Service 456",
+      org_name: "Test Organisation 123",
+    };
+    expect(generateRequestSummary(request)).toBe(
+      "Subservice request for Test Service 456 for Test Organisation 123",
+    );
+  });
+
   it("should return error for missing fields in service request", () => {
     const request = {
       request_type: { name: "Service access" },
@@ -62,7 +73,7 @@ describe("when generating a summary of an access request for presentation", () =
       org_name: "Test Service 456",
     };
     expect(generateRequestSummary(request, 2)).toBe(
-      "Error in request 3: Missing subServiceNames, serviceName, or organisationName",
+      "Error in sub-service request 3: Missing serviceName or organisationName",
     );
   });
 
