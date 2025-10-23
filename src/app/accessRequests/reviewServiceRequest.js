@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const Account = require("./../../infrastructure/account");
@@ -87,7 +88,7 @@ const validateModel = async (model, reqParams, res) => {
     );
     res.flash("title", `${title}`);
     res.flash("heading", `${heading}`);
-    res.flash("message", `${message}`);
+    res.flash("message", sanitizeHtml(`${message}`));
     return res.redirect(`/access-requests/requests`);
   } else if (policyValidationResult?.length > 0) {
     model.validationMessages.policyValidation = policyValidationResult.map(
@@ -140,7 +141,7 @@ const get = async (req, res) => {
     );
     res.flash("title", `${title}`);
     res.flash("heading", `${heading}`);
-    res.flash("message", `${message}`);
+    res.flash("message", sanitizeHtml(`${message}`));
     return res.redirect(`/access-requests/requests`);
   }
 
@@ -194,7 +195,7 @@ const post = async (req, res) => {
 
         res.flash("title", `${title}`);
         res.flash("heading", `${heading}`);
-        res.flash("message", `${message}`);
+        res.flash("message", sanitizeHtml(`${message}`));
         return res.redirect(`/access-requests/requests`);
       }
     }
@@ -254,7 +255,9 @@ const post = async (req, res) => {
     res.flash("heading", `Service access request approved`);
     res.flash(
       "message",
-      `${endUsersGivenName} ${endUsersFamilyName} has been added to ${serviceName}.`,
+      sanitizeHtml(
+        `${endUsersGivenName} ${endUsersFamilyName} has been added to ${serviceName}.`,
+      ),
     );
 
     return res.redirect(`/access-requests/requests`);

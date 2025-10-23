@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const {
   putUserInOrganisation,
   updateRequestById,
@@ -28,7 +29,7 @@ const get = async (req, res) => {
     res.flash("heading", `Request already actioned`);
     res.flash(
       "message",
-      `Request already actioned by ${request.approverEmail}`,
+      sanitizeHtml(`Request already actioned by ${request.approverEmail}`),
     );
     return res.redirect(`/access-requests/requests`);
   }
@@ -192,7 +193,9 @@ const post = async (req, res) => {
   res.flash("heading", `Request approved: Organisation access`);
   res.flash(
     "message",
-    `${model.request.usersName} has been added to your organisation.`,
+    sanitizeHtml(
+      `${model.request.usersName} has been added to your organisation.`,
+    ),
   );
 
   return res.redirect(`/access-requests/requests`);
