@@ -38,7 +38,7 @@
         </div>
     </div>
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
             <h1 class="govuk-heading-xl text-break">
                 <span class="govuk-caption-xl"><%= locals.user.email %></span>
                 <%= locals.user.firstName%> <%= locals.user.lastName%>
@@ -51,6 +51,11 @@
                     </strong>
                 </dd>
             </dl>
+            <% if ( locals.user.status.id === 0 ) { %>
+                <a rel="noreferrer noopener" target="_blank" class="govuk-link govuk-link-bold" href="<%= helpUrl %>/contact-us">
+                    Contact us to reactivate
+                </a>
+            <% } %>
         </div>
 
     </div>
@@ -103,7 +108,6 @@
                         </li>
                     <% } %>
                 <% } %>
-                <li><a class="govuk-link" href=""></a></li>
                 <% if (locals.user.status.id === 1 || locals.user.status.id === -1) { %>
                 <li><a class="govuk-link-bold" href="/approvals/<%= organisation.id %>/users/<%= locals.user.id %>/edit-permission"><%=userOrg.role.id === 10000 ? 'Remove approver access' : 'Make approver'%></a></li>
                 <% } %>

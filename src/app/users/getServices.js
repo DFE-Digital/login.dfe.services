@@ -11,6 +11,7 @@ const {
   getOrganisationAndServiceForUser,
   getOrganisationAndServiceForInvitation,
 } = require("./../../infrastructure/organisations");
+const config = require("../../infrastructure/config");
 
 const action = async (req, res) => {
   const user = await getUserDetails(req);
@@ -70,6 +71,7 @@ const action = async (req, res) => {
     currentPage: "users",
     csrfToken: req.csrfToken(),
     visibleUserOrgs,
+    helpUrl: config.hostingEnvironment.helpUrl,
     user,
     title: `${user.firstName} ${user.lastName}`,
     isInvitation: req.params.uid.startsWith("inv-"),
