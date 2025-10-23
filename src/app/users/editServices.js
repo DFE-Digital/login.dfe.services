@@ -26,14 +26,17 @@ const renderEditServicePage = async (req, res, model) => {
 };
 
 const buildBackLink = (req) => {
-  const isEditServiceUrl = isEditService(req);
-  if (isEditServiceUrl) {
+  if (isEditService(req)) {
     return `/approvals/${req.params.orgId}/users/${req.params.uid}/associate-services?action=${actions.EDIT_SERVICE}`;
-  } else if (isUserManagement(req) && isReviewSubServiceRequest(req)) {
-    return `/access-requests/subService-requests/${req.session.rid}`;
-  } else {
-    return `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
   }
+
+  if (isUserManagement(req)) {
+    if (isReviewSubServiceRequest(req)) {
+      return `/access-requests/subService-requests/${req.session.rid}`;
+    }
+    return `/approvals/users/${req.params.uid}`;
+  }
+  return `/approvals/select-organisation-service?action=${actions.EDIT_SERVICE}`;
 };
 
 const buildCancelLink = (req) => {

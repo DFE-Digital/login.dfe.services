@@ -109,7 +109,7 @@ describe("when displaying the edit service view", () => {
     getEditService = require("./../../../../src/app/users/editServices").get;
   });
 
-  it("then it should get the selected user service", async () => {
+  it("should get the selected user service", async () => {
     await getEditService(req, res);
 
     expect(getSingleServiceForUser.mock.calls).toHaveLength(1);
@@ -119,13 +119,13 @@ describe("when displaying the edit service view", () => {
     expect(getSingleServiceForUser.mock.calls[0][3]).toBe("correlationId");
   });
 
-  it("then it should return the edit service view", async () => {
+  it("should return the edit service view", async () => {
     await getEditService(req, res);
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][0]).toBe("users/views/editServices");
   });
 
-  it("then it should include csrf token", async () => {
+  it("should include csrf token", async () => {
     await getEditService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
@@ -133,7 +133,7 @@ describe("when displaying the edit service view", () => {
     });
   });
 
-  it("then it should include the organisation details", async () => {
+  it("should include the organisation details", async () => {
     await getEditService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
@@ -141,7 +141,7 @@ describe("when displaying the edit service view", () => {
     });
   });
 
-  it("then it should include the service details", async () => {
+  it("should include the service details", async () => {
     await getEditService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
@@ -151,7 +151,7 @@ describe("when displaying the edit service view", () => {
     });
   });
 
-  it("then it should include the correct backLink for editing a service for an user", async () => {
+  it("should include the correct backLink for editing a service for an user", async () => {
     isEditService.mockReturnValue(true);
 
     await getEditService(req, res);
@@ -162,7 +162,7 @@ describe("when displaying the edit service view", () => {
     });
   });
 
-  it("then it should include the correct backLink for reviewing a sub-service request", async () => {
+  it("should include the correct backLink for reviewing a sub-service request", async () => {
     isUserManagement.mockReturnValue(true);
     isReviewSubServiceRequest.mockReturnValue(true);
 
@@ -173,7 +173,17 @@ describe("when displaying the edit service view", () => {
     });
   });
 
-  it("then it should include the default backLink for editing services", async () => {
+  it("should include the correct backLink a user management pack that is NOT a sub-service request", async () => {
+    isUserManagement.mockReturnValue(true);
+
+    await getEditService(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      backLink: "/approvals/users/user1",
+    });
+  });
+
+  it("should include the default backLink for editing services", async () => {
     await getEditService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
