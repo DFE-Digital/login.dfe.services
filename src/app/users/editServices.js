@@ -89,6 +89,12 @@ const getViewModel = async (req) => {
     );
   }
 
+  const serviceMessageFooter =
+    application?.relyingParty?.params?.serviceConfirmMessageFooter;
+  const sanitizedServiceConfirmMessageFooter = serviceMessageFooter
+    ? sanitizeHtml(serviceMessageFooter)
+    : undefined;
+
   return {
     backLink: buildBackLink(req),
     cancelLink: buildCancelLink(req),
@@ -119,6 +125,7 @@ const getViewModel = async (req) => {
     isReviewSubServiceReq,
     allowedToSelectMoreThanOneRole,
     isRoleSelectionConstraintPresent,
+    sanitizedServiceConfirmMessageFooter,
   };
 };
 

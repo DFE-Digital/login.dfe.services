@@ -191,6 +191,12 @@ const getViewModel = async (req) => {
     ? "Select roles"
     : `Select a sub-service for ${serviceDetails?.name}`;
 
+  const serviceMessageFooter =
+    serviceDetails?.relyingParty?.params?.serviceConfirmMessageFooter;
+  const sanitizedServiceConfirmMessageFooter = serviceMessageFooter
+    ? sanitizeHtml(serviceMessageFooter)
+    : undefined;
+
   return {
     csrfToken: req.csrfToken(),
     name: `${req.session.user.firstName} ${req.session.user.lastName}`,
@@ -209,6 +215,7 @@ const getViewModel = async (req) => {
     isRequestSubService,
     allowedToSelectMoreThanOneRole,
     isRoleSelectionConstraintPresent,
+    sanitizedServiceConfirmMessageFooter,
   };
 };
 

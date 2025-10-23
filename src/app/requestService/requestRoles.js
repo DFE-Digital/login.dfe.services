@@ -75,6 +75,12 @@ const getViewModel = async (req) => {
     );
   }
 
+  const serviceMessageFooter =
+    serviceDetails?.relyingParty?.params?.serviceConfirmMessageFooter;
+  const sanitizedServiceConfirmMessageFooter = serviceMessageFooter
+    ? sanitizeHtml(serviceMessageFooter)
+    : undefined;
+
   return {
     csrfToken: req.csrfToken(),
     name: req.session.user
@@ -93,6 +99,7 @@ const getViewModel = async (req) => {
     totalNumberOfServices,
     allowedToSelectMoreThanOneRole,
     isRoleSelectionConstraintPresent,
+    sanitizedServiceConfirmMessageFooter,
   };
 };
 
