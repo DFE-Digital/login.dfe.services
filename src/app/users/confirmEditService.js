@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const logger = require("./../../infrastructure/logger");
 const { getSingleServiceForUser, isUserManagement } = require("./utils");
 const { updateUserServiceRoles } = require("login.dfe.api-client/users");
@@ -157,7 +158,9 @@ const post = async (req, res) => {
   if (!isUserManagement(req)) {
     res.flash(
       "message",
-      `Select the service from the list below to access its functions and features.`,
+      sanitizeHtml(
+        "Select the service from the list below to access its functions and features.",
+      ),
     );
     res.redirect(`/my-services`);
   } else {

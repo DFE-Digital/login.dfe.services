@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const config = require("../../infrastructure/config");
 const {
   isMultipleRolesAllowed,
@@ -74,6 +75,12 @@ const getViewModel = async (req) => {
     );
   }
 
+  const serviceMessageFooter =
+    serviceDetails?.relyingParty?.params?.serviceConfirmMessageFooter;
+  const sanitizedServiceConfirmMessageFooter = serviceMessageFooter
+    ? sanitizeHtml(serviceMessageFooter)
+    : undefined;
+
   return {
     csrfToken: req.csrfToken(),
     name: req.session.user
@@ -92,6 +99,7 @@ const getViewModel = async (req) => {
     totalNumberOfServices,
     allowedToSelectMoreThanOneRole,
     isRoleSelectionConstraintPresent,
+    sanitizedServiceConfirmMessageFooter,
   };
 };
 
@@ -159,8 +167,8 @@ const post = async (req, res) => {
 
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
-    model.validationMessages.roles = policyValidationResult.map(
-      (x) => x.message,
+    model.validationMessages.roles = policyValidationResult.map((x) =>
+      sanitizeHtml(x.message),
     );
     return renderAssociateRolesPage(req, res, model);
   }

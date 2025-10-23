@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const { getAndMapOrgRequest } = require("./utils");
 const { updateRequestById } = require("./../../infrastructure/organisations");
 const Account = require("./../../infrastructure/account");
@@ -96,7 +97,7 @@ const post = async (req, res) => {
   res.flash("heading", `Request rejected: Organisation access`);
   res.flash(
     "message",
-    `${model.request.usersName} cannot access your organisation.`,
+    sanitizeHtml(`${model.request.usersName} cannot access your organisation.`),
   );
 
   return res.redirect(`/access-requests/requests`);

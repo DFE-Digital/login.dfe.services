@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const { getAndMapServiceRequest, generateFlashMessages } = require("./utils");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
@@ -96,7 +97,7 @@ const post = async (req, res) => {
       );
       res.flash("title", `${title}`);
       res.flash("heading", `${heading}`);
-      res.flash("message", `${message}`);
+      res.flash("message", sanitizeHtml(`${message}`));
       return res.redirect(`/access-requests/requests`);
     }
   }
@@ -145,7 +146,9 @@ const post = async (req, res) => {
   res.flash("heading", `Service access request rejected`);
   res.flash(
     "message",
-    `${endUsersGivenName} ${endUsersFamilyName} cannot access ${service.name}.`,
+    sanitizeHtml(
+      `${endUsersGivenName} ${endUsersFamilyName} cannot access ${service.name}.`,
+    ),
   );
 
   return res.redirect(`/access-requests/requests`);

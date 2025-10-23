@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const { getUserDetails } = require("../users/utils");
 const Account = require("../../infrastructure/account");
@@ -102,8 +103,8 @@ const get = async (req, res) => {
   );
 
   if (policyValidationResult.length > 0) {
-    model.validationMessages.roles = policyValidationResult.map(
-      (x) => x.message,
+    model.validationMessages.roles = policyValidationResult.map((x) =>
+      sanitizeHtml(x.message),
     );
   }
 
@@ -140,8 +141,8 @@ const post = async (req, res) => {
   );
 
   if (policyValidationResult.length > 0) {
-    model.validationMessages.roles = policyValidationResult.map(
-      (x) => x.message,
+    model.validationMessages.roles = policyValidationResult.map((x) =>
+      sanitizeHtml(x.message),
     );
     return res.render("requestService/views/rejectServiceRequest", model);
   }
@@ -215,7 +216,9 @@ const post = async (req, res) => {
   res.flash("heading", `Request rejected successfully`);
   res.flash(
     "message",
-    `An email will be sent to the requestee informing them of their request rejection.`,
+    sanitizeHtml(
+      "An email will be sent to the requestee informing them of their request rejection.",
+    ),
   );
 
   res.redirect(`/my-services`);

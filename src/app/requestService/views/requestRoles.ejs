@@ -7,7 +7,7 @@
                   <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                   <strong class="govuk-warning-text__text">
                       <span class="govuk-visually-hidden">Warning</span>
-                      <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader %>
+                      <%= locals.serviceDetails.relyingParty.params.serviceConfirmMessageHeader %>
                   </strong>
               </div>
           <% } %>
@@ -84,12 +84,12 @@
                   </fieldset>
               </div>
 
-              <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter) { %>
+              <% if (locals.sanitizedServiceConfirmMessageFooter) { %>
                   <div class="govuk-warning-text">
                       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                       <strong class="govuk-warning-text__text">
                           <span class="govuk-visually-hidden">Warning</span>
-                          <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter %>
+                          <%- locals.sanitizedServiceConfirmMessageFooter %>
                       </strong>
                   </div>
               <% } %>

@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const config = require("../../infrastructure/config");
 const { getAllServicesForUserInOrg } = require("../users/utils");
 const PolicyEngine = require("login.dfe.policy-engine");
@@ -181,11 +182,21 @@ const post = async (req, res) => {
       res.flash("heading", `Service already requested: ${serviceDetails.name}`);
       res.flash(
         "message",
-        `Your request has been sent to Approvers at ${orgdetails.organisation.name} on ${new Date(
-          isRequests,
-        ).toLocaleDateString(
-          "EN-GB",
-        )}. <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+        sanitizeHtml(
+          `Your request has been sent to Approvers at ${orgdetails.organisation.name} on ${new Date(
+            isRequests,
+          ).toLocaleDateString(
+            "EN-GB",
+          )}. <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access' class='govuk-link'>Help with requesting a service</a> `,
+          {
+            allowedAttributes: {
+              a: ["href", "class"],
+            },
+            allowedClasses: {
+              a: ["govuk-link"],
+            },
+          },
+        ),
       );
     } else {
       res.csrfToken = req.csrfToken();
@@ -196,7 +207,17 @@ const post = async (req, res) => {
       );
       res.flash(
         "message",
-        `Please <a href='${place}/contact-us'>Contact us</a> for help.`,
+        sanitizeHtml(
+          `Please <a href='${place}/contact-us' class='govuk-link'>Contact us</a> for help.`,
+          {
+            allowedAttributes: {
+              a: ["href", "class"],
+            },
+            allowedClasses: {
+              a: ["govuk-link"],
+            },
+          },
+        ),
       );
     }
     return res.redirect("/my-services");

@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
@@ -167,11 +168,21 @@ const post = async (req, res) => {
       );
       res.flash(
         "message",
-        `Your request has been sent to Approvers at ${organisationDetails.organisation.name} on ${new Date(
-          isRequests,
-        ).toLocaleDateString(
-          "EN-GB",
-        )}. <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access'>Help with requesting a service</a> `,
+        sanitizeHtml(
+          `Your request has been sent to Approvers at ${organisationDetails.organisation.name} on ${new Date(
+            isRequests,
+          ).toLocaleDateString(
+            "EN-GB",
+          )}. <br> You must wait for an Approver to action this request before you can send the request again. Please contact your Approver for more information. <br> <a href='${place}/services/request-access' class='govuk-link'>Help with requesting a service</a> `,
+          {
+            allowedAttributes: {
+              a: ["href", "class"],
+            },
+            allowedClasses: {
+              a: ["govuk-link"],
+            },
+          },
+        ),
       );
     } else {
       res.csrfToken = req.csrfToken();
@@ -182,7 +193,9 @@ const post = async (req, res) => {
       );
       res.flash(
         "message",
-        `Please <a href='${place}/contact-us'>Contact us</a> for help.`,
+        sanitizeHtml(
+          `Please <a href='${place}/contact-us'>Contact us</a> for help.`,
+        ),
       );
     }
     return res.redirect("/my-services");
@@ -228,7 +241,9 @@ const post = async (req, res) => {
   res.flash("heading", `Service requested: ${serviceDetails.name}`);
   res.flash(
     "message",
-    `Your request has been sent to all approvers at <b>${organisationDetails.organisation.name}</b>. Requests should be approved or rejected within 5 days of being raised.`,
+    sanitizeHtml(
+      `Your request has been sent to all approvers at <b>${organisationDetails.organisation.name}</b>. Requests should be approved or rejected within 5 days of being raised.`,
+    ),
   );
 
   res.redirect(`/my-services`);

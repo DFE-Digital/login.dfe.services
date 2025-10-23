@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const config = require("./../../infrastructure/config");
 const {
   isUserManagement,
@@ -91,6 +92,12 @@ const getViewModel = async (req) => {
     );
   }
 
+  const serviceMessageFooter =
+    application?.relyingParty?.params?.serviceConfirmMessageFooter;
+  const sanitizedServiceConfirmMessageFooter = serviceMessageFooter
+    ? sanitizeHtml(serviceMessageFooter)
+    : undefined;
+
   return {
     backLink: buildBackLink(req),
     cancelLink: buildCancelLink(req),
@@ -121,6 +128,7 @@ const getViewModel = async (req) => {
     isReviewSubServiceReq,
     allowedToSelectMoreThanOneRole,
     isRoleSelectionConstraintPresent,
+    sanitizedServiceConfirmMessageFooter,
   };
 };
 
@@ -168,8 +176,8 @@ const post = async (req, res) => {
     const model = await getViewModel(req);
     let roles = {};
     model.service.roles = selectedRoles.map((x) => (roles[x] = { id: x }));
-    model.validationMessages.roles = policyValidationResult.map(
-      (x) => x.message,
+    model.validationMessages.roles = policyValidationResult.map((x) =>
+      sanitizeHtml(x.message),
     );
     await renderEditServicePage(req, res, model);
   }
