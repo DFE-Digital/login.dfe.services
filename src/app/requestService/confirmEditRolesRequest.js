@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const logger = require("../../../src/infrastructure/logger");
 const { getSingleServiceForUser } = require("../../../src/app/users/utils");
 const { createServiceRequest } = require("./utils");
@@ -156,7 +157,9 @@ const post = async (req, res) => {
   res.flash("heading", "Sub-service changes requested");
   res.flash(
     "message",
-    `Your request to change sub-service access has been sent to all approvers at ${orgName}.<br>Your request will be approved or rejected within 5 days.`,
+    sanitizeHtml(
+      `Your request to change sub-service access has been sent to all approvers at ${orgName}.<br>Your request will be approved or rejected within 5 days.`,
+    ),
   );
 
   return res.redirect("/my-services");

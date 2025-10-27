@@ -177,7 +177,7 @@ describe("When reviewing a sub-service request for approving", () => {
     );
     expect(res.flash.mock.calls[2][0]).toBe("message");
     expect(res.flash.mock.calls[2][1]).toBe(
-      "user.one@unit.tests has already responded to the Sub-service request.<br>User One has received an email to tell them their request has been Approved. No further action is needed.",
+      "user.one@unit.tests has already responded to the Sub-service request.<br />User One has received an email to tell them their request has been Approved. No further action is needed.",
     );
   });
   it("then it should redirect to to request page and display a message", async () => {
@@ -194,7 +194,7 @@ describe("When reviewing a sub-service request for approving", () => {
     );
     expect(res.flash.mock.calls[2][0]).toBe("message");
     expect(res.flash.mock.calls[2][1]).toBe(
-      "user.one@unit.tests has already responded to the Sub-service request.<br>User One has received an email to tell them their request has been Approved. No further action is needed.",
+      "user.one@unit.tests has already responded to the Sub-service request.<br />User One has received an email to tell them their request has been Approved. No further action is needed.",
     );
   });
 });

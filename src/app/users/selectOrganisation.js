@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const {
   getApproverOrgsFromReq,
   getUserOrgsFromReq,
@@ -61,7 +62,9 @@ const handleRedirectAfterOrgSelected = (
       );
       res.flash(
         "message",
-        `Because you are not an approver at this organisation, you will need to request access to a service in order to use it. This request will be sent to approvers at <b>${selectedOrg[0].organisation.name}</b>.`,
+        sanitizeHtml(
+          `Because you are not an approver at this organisation, you will need to request access to a service in order to use it. This request will be sent to approvers at <b>${selectedOrg[0].organisation.name}</b>.`,
+        ),
       );
     }
     return res.sessionRedirect(

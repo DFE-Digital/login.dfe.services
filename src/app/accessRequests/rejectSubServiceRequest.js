@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const { updateServiceRequest } = require("../requestService/utils");
 const Account = require("./../../infrastructure/account");
 const {
@@ -69,7 +70,7 @@ const get = async (req, res) => {
     );
     res.flash("title", `${title}`);
     res.flash("heading", `${heading}`);
-    res.flash("message", `${message}`);
+    res.flash("message", sanitizeHtml(`${message}`));
     return res.redirect(`/access-requests/requests`);
   }
   if (req.session.roleIds !== undefined) {
@@ -125,7 +126,7 @@ const post = async (req, res) => {
     );
     res.flash("title", `${title}`);
     res.flash("heading", `${heading}`);
-    res.flash("message", `${message}`);
+    res.flash("message", sanitizeHtml(`${message}`));
     return res.redirect(`/access-requests/requests`);
   } else {
     //reqId, statusId, approverId, reason
@@ -190,7 +191,9 @@ const post = async (req, res) => {
       res.flash("heading", "Sub-service request rejected");
       res.flash(
         "message",
-        "The user who raised the request will receive an email to tell them their sub-service access request has been rejected.",
+        sanitizeHtml(
+          "The user who raised the request will receive an email to tell them their sub-service access request has been rejected.",
+        ),
       );
 
       return res.redirect(`/access-requests/requests`);

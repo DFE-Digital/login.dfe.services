@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const Account = require("./../../infrastructure/account");
 const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { updateServiceRequest } = require("../requestService/utils");
@@ -98,7 +99,7 @@ const get = async (req, res) => {
     );
     res.flash("title", `${title}`);
     res.flash("heading", `${heading}`);
-    res.flash("message", `${message}`);
+    res.flash("message", sanitizeHtml(`${message}`));
     return res.redirect(`/access-requests/requests`);
   }
   return res.render("accessRequests/views/reviewSubServiceRequest", viewModel);
@@ -128,7 +129,7 @@ const post = async (req, res) => {
       );
       res.flash("title", `${title}`);
       res.flash("heading", `${heading}`);
-      res.flash("message", `${message}`);
+      res.flash("message", sanitizeHtml(`${message}`));
       return res.redirect(`/access-requests/requests`);
     }
   }
@@ -241,7 +242,9 @@ const post = async (req, res) => {
       res.flash("heading", "Sub-service changes approved");
       res.flash(
         "message",
-        `${model.viewModel.endUsersGivenName} ${model.viewModel.endUsersFamilyName} will receive an email to tell them their sub-service access has changed.`,
+        sanitizeHtml(
+          `${model.viewModel.endUsersGivenName} ${model.viewModel.endUsersFamilyName} will receive an email to tell them their sub-service access has changed.`,
+        ),
       );
       return res.redirect(`/access-requests/requests`);
     }

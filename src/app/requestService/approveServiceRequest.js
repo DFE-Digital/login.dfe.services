@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const {
   getOrganisationAndServiceForUser,
 } = require("../../infrastructure/organisations");
@@ -307,7 +308,9 @@ const post = async (req, res) => {
   res.flash("heading", `Service request approved`);
   res.flash(
     "message",
-    `The user who raised the request will receive an email to tell them their service access request was approved.`,
+    sanitizeHtml(
+      "The user who raised the request will receive an email to tell them their service access request was approved.",
+    ),
   );
 
   res.redirect(`/my-services`);

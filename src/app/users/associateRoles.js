@@ -1,3 +1,4 @@
+const sanitizeHtml = require("sanitize-html");
 const config = require("./../../infrastructure/config");
 const {
   isSelfManagement,
@@ -190,6 +191,12 @@ const getViewModel = async (req) => {
     ? "Select roles"
     : `Select a sub-service for ${serviceDetails?.name}`;
 
+  const serviceMessageFooter =
+    serviceDetails?.relyingParty?.params?.serviceConfirmMessageFooter;
+  const sanitizedServiceConfirmMessageFooter = serviceMessageFooter
+    ? sanitizeHtml(serviceMessageFooter)
+    : undefined;
+
   return {
     csrfToken: req.csrfToken(),
     name: `${req.session.user.firstName} ${req.session.user.lastName}`,
@@ -208,6 +215,7 @@ const getViewModel = async (req) => {
     isRequestSubService,
     allowedToSelectMoreThanOneRole,
     isRoleSelectionConstraintPresent,
+    sanitizedServiceConfirmMessageFooter,
   };
 };
 
@@ -276,8 +284,8 @@ const post = async (req, res) => {
 
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
-    model.validationMessages.roles = policyValidationResult.map(
-      (x) => x.message,
+    model.validationMessages.roles = policyValidationResult.map((x) =>
+      sanitizeHtml(x.message),
     );
     return renderAssociateRolesPage(req, res, model);
   }
