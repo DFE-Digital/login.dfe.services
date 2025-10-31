@@ -44,7 +44,6 @@ const home = async (req, res) => {
     title: "DfE Sign-in",
     services,
     loggedOut: true,
-    profileUrl: config.hostingEnvironment.profileUrl,
     helpUrl: config.hostingEnvironment.helpUrl,
     helpAssistantUrl: config.hostingEnvironment.helpAssistantUrl,
   });
