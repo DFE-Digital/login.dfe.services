@@ -160,9 +160,7 @@ const get = async (req, res) => {
 
   const isReviewServiceReqAmend =
     req.query.action === actions.REVIEW_SERVICE_REQ_ROLE ||
-    actions.REVIEW_SERVICE_REQ_SERVICE
-      ? true
-      : false;
+    req.query.action === actions.REVIEW_SERVICE_REQ_SERVICE;
   const model = {
     csrfToken: req.csrfToken(),
     name,
