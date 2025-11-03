@@ -35,7 +35,15 @@ jest.mock("login.dfe.dao", () => {
               id: "Service One",
               isExternalService: true,
               isMigrated: true,
+              isHiddenService: false,
               name: "Service One",
+            },
+            {
+              id: "Hidden Service Two",
+              isExternalService: true,
+              isMigrated: true,
+              isHiddenService: true,
+              name: "Hidden Service Two",
             },
           ],
         };
@@ -93,6 +101,7 @@ describe("when displaying current organisation and service mapping", () => {
         id: "Service One",
         isExternalService: true,
         isMigrated: true,
+        isHiddenService: false,
         name: "Service One",
       },
     ]);

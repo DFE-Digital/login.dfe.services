@@ -14,10 +14,15 @@ const getAndMapExternalServices = async (correlationId) => {
       name: service.name,
       isMigrated: service.isMigrated,
       isExternalService: service.isExternalService,
+      isHiddenService: service.isHiddenService,
     })),
     "id",
   );
-  return sortBy(services, "name");
+
+  const nonHiddenServies = services.filter(
+    (service) => service.isHiddenService === false,
+  );
+  return sortBy(nonHiddenServies, "name");
 };
 
 const displayEsfa = (externalServices) => {
