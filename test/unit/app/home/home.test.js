@@ -27,33 +27,6 @@ jest.mock("../../../../src/infrastructure/helpers/allServicesAppCache", () => {
 });
 jest.mock("./../../../../src/infrastructure/logger", () => mockLogger());
 
-jest.mock("login.dfe.dao", () => {
-  return {
-    services: {
-      list: async () => {
-        return {
-          count: 10,
-          rows: [
-            {
-              id: "Service One",
-              isExternalService: true,
-              isMigrated: true,
-              isHiddenService: false,
-              name: "Service One",
-            },
-            {
-              id: "Hidden Service Two",
-              isExternalService: true,
-              isMigrated: true,
-              isHiddenService: true,
-              name: "Hidden Service Two",
-            },
-          ],
-        };
-      },
-    },
-  };
-});
 describe("when displaying current organisation and service mapping", () => {
   let req;
 
@@ -74,7 +47,7 @@ describe("when displaying current organisation and service mapping", () => {
     checkCacheForAllServices.mockReturnValue({
       services: [
         {
-          id: "Service One",
+          id: "service-1",
           name: "Service One",
           description: "service description",
           isExternalService: true,
@@ -84,19 +57,57 @@ describe("when displaying current organisation and service mapping", () => {
           relyingParty: {
             service_home: "http://service.one/login",
             redirect_uris: ["http://service.one/login/cb"],
+            params: {
+              hideApprover: false,
+            },
           },
         },
         {
-          id: "Hidden Service Two",
-          name: "Hidden Service Two",
+          id: "service-2",
+          name: "Id-only service two",
+          description: "service description",
+          isExternalService: true,
+          isMigrated: true,
+          isHiddenService: false,
+          isIdOnlyService: true,
+          relyingParty: {
+            service_home: "http://service.two/login",
+            redirect_uris: ["http://service.two/login/cb"],
+            params: {
+              hideApprover: true,
+            },
+          },
+        },
+        {
+          id: "service-3",
+          name: "Hidden service three",
+          description: "service description",
+          isExternalService: true,
+          isMigrated: true,
+          isHiddenService: false,
+          isIdOnlyService: false,
+          relyingParty: {
+            service_home: "http://service.three/login",
+            redirect_uris: ["http://service.three/login/cb"],
+            params: {
+              hideApprover: true,
+            },
+          },
+        },
+        {
+          id: "service-4",
+          name: "Hidden id-only service four",
           description: "service description",
           isExternalService: true,
           isMigrated: true,
           isHiddenService: true,
           isIdOnlyService: true,
           relyingParty: {
-            service_home: "http://service.one/login",
-            redirect_uris: ["http://service.one/login/cb"],
+            service_home: "http://service.four/login",
+            redirect_uris: ["http://service.four/login/cb"],
+            params: {
+              hideApprover: true,
+            },
           },
         },
       ],
@@ -117,12 +128,36 @@ describe("when displaying current organisation and service mapping", () => {
     expect(res.render.mock.calls[0][1].services).toBeDefined();
     expect(res.render.mock.calls[0][1].services).toEqual([
       {
-        id: "Service One",
+        id: "service-2",
+        name: "Id-only service two",
+        description: "service description",
+        isExternalService: true,
+        isMigrated: true,
+        isHiddenService: false,
+        isIdOnlyService: true,
+        relyingParty: {
+          service_home: "http://service.two/login",
+          redirect_uris: ["http://service.two/login/cb"],
+          params: {
+            hideApprover: true,
+          },
+        },
+      },
+      {
+        id: "service-1",
+        name: "Service One",
+        description: "service description",
         isExternalService: true,
         isMigrated: true,
         isHiddenService: false,
         isIdOnlyService: false,
-        name: "Service One",
+        relyingParty: {
+          service_home: "http://service.one/login",
+          redirect_uris: ["http://service.one/login/cb"],
+          params: {
+            hideApprover: false,
+          },
+        },
       },
     ]);
   });

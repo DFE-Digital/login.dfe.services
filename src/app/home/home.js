@@ -8,22 +8,11 @@ const {
 const getAndMapExternalServices = async (correlationId) => {
   const allServices = await checkCacheForAllServices(correlationId);
 
-  const services = uniqBy(
-    allServices.services.map((service) => ({
-      id: service.id,
-      name: service.name,
-      isMigrated: service.isMigrated,
-      isExternalService: service.isExternalService,
-      isHiddenService: service.isHiddenService,
-      isIdOnlyService: service.isIdOnlyService,
-    })),
-    "id",
-  );
-
-  // Filter out ONLY if it's an idOnlyService that is also hidden.  Everything else is fine
-  const nonHiddenServies = services.filter(
+  // Note, we're not checking `isHiddenService` for a non-id-only service.
+  const nonHiddenServies = allServices.services.filter(
     (service) =>
-      service.isIdOnlyService === false ||
+      (service.isIdOnlyService === false &&
+        service.relyingParty.params?.hideApprover === false) ||
       (service.isIdOnlyService === true && service.isHiddenService === false),
   );
   return sortBy(nonHiddenServies, "name");
