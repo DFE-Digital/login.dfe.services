@@ -6,10 +6,10 @@ const {
 } = require("./../../../utils/jestMocks");
 const Account = require("./../../../../src/infrastructure/account");
 const {
-  getAllServices,
-} = require("./../../../../src/infrastructure/applications");
+  checkCacheForAllServices,
+} = require("../../../../src/infrastructure/helpers/allServicesAppCache");
+
 const home = require("./../../../../src/app/home/home");
-//jest.mock('./../../../../src/infrastructure/config', () => require('./../../../utils/jestMocks').mockConfig());
 
 jest.mock("./../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
@@ -20,10 +20,13 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
   fromContext: jest.fn(),
   getUsersById: jest.fn(),
 }));
-jest.mock("./../../../../src/infrastructure/applications", () => ({
-  getAllServices: jest.fn(),
-}));
+jest.mock("../../../../src/infrastructure/helpers/allServicesAppCache", () => {
+  return {
+    checkCacheForAllServices: jest.fn(),
+  };
+});
 jest.mock("./../../../../src/infrastructure/logger", () => mockLogger());
+
 jest.mock("login.dfe.dao", () => {
   return {
     services: {
@@ -67,7 +70,8 @@ describe("when displaying current organisation and service mapping", () => {
       id: "user1",
     });
 
-    getAllServices.mockReset().mockReturnValue({
+    checkCacheForAllServices.mockReset();
+    checkCacheForAllServices.mockReturnValue({
       services: [
         {
           id: "Service One",
@@ -75,6 +79,21 @@ describe("when displaying current organisation and service mapping", () => {
           description: "service description",
           isExternalService: true,
           isMigrated: true,
+          isHiddenService: false,
+          isIdOnlyService: false,
+          relyingParty: {
+            service_home: "http://service.one/login",
+            redirect_uris: ["http://service.one/login/cb"],
+          },
+        },
+        {
+          id: "Hidden Service Two",
+          name: "Hidden Service Two",
+          description: "service description",
+          isExternalService: true,
+          isMigrated: true,
+          isHiddenService: true,
+          isIdOnlyService: true,
           relyingParty: {
             service_home: "http://service.one/login",
             redirect_uris: ["http://service.one/login/cb"],
@@ -102,6 +121,7 @@ describe("when displaying current organisation and service mapping", () => {
         isExternalService: true,
         isMigrated: true,
         isHiddenService: false,
+        isIdOnlyService: false,
         name: "Service One",
       },
     ]);

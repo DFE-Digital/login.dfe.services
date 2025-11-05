@@ -15,12 +15,16 @@ const getAndMapExternalServices = async (correlationId) => {
       isMigrated: service.isMigrated,
       isExternalService: service.isExternalService,
       isHiddenService: service.isHiddenService,
+      isIdOnlyService: service.isIdOnlyService,
     })),
     "id",
   );
 
+  // Filter out ONLY if it's an idOnlyService that is also hidden.  Everything else is fine
   const nonHiddenServies = services.filter(
-    (service) => service.isHiddenService === false,
+    (service) =>
+      service.isIdOnlyService === false ||
+      (service.isIdOnlyService === true && service.isHiddenService === false),
   );
   return sortBy(nonHiddenServies, "name");
 };

@@ -8,29 +8,17 @@ jest.mock("./../../../../src/infrastructure/logger", () =>
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("./../../../../src/app/users/utils");
 
+const {
+  checkCacheForAllServices,
+} = require("../../../../src/infrastructure/helpers/allServicesAppCache");
+jest.mock("../../../../src/infrastructure/helpers/allServicesAppCache", () => {
+  return {
+    checkCacheForAllServices: jest.fn(),
+  };
+});
+
 jest.mock("login.dfe.dao", () => {
   return {
-    services: {
-      list: async () => {
-        return {
-          count: 10,
-          rows: [
-            {
-              id: "service1",
-              isExternalService: true,
-              isMigrated: true,
-              name: "Service One",
-            },
-            {
-              id: "service2",
-              isExternalService: true,
-              isMigrated: true,
-              name: "Service two",
-            },
-          ],
-        };
-      },
-    },
     directories: {
       fetchUserBanners: async () => {
         return null;
@@ -106,6 +94,24 @@ describe("when displaying the request a service page", () => {
       },
     ];
     res = mockResponse();
+
+    checkCacheForAllServices.mockReset();
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service1",
+          isExternalService: true,
+          isMigrated: true,
+          name: "Service One",
+        },
+        {
+          id: "service2",
+          isExternalService: true,
+          isMigrated: true,
+          name: "Service two",
+        },
+      ],
+    });
 
     getAllServicesForUserInOrg.mockReset();
     getAllServicesForUserInOrg.mockReturnValue([
