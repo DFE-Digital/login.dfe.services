@@ -7,12 +7,6 @@ const config = require("../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { v4: uuid } = require("uuid");
 
-const renderConfirmEditRolesPage = (res, model) => {
-  return res.render("requestService/views/confirmEditRolesRequest", {
-    ...model,
-  });
-};
-
 const getSelectedRoles = async (req) => {
   let selectedRoleIds = req.session.service.roles;
   let allRolesOfServiceUnsorted = await getServiceRolesRaw({
@@ -74,7 +68,9 @@ const get = async (req, res) => {
     service,
   };
 
-  return renderConfirmEditRolesPage(res, model);
+  return res.render("requestService/views/confirmEditRolesRequest", {
+    ...model,
+  });
 };
 
 const post = async (req, res) => {

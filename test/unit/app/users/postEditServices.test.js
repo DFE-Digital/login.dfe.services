@@ -59,6 +59,7 @@ describe("when hitting the post function of edit service", () => {
         firstName: "test",
         lastName: "name",
       },
+      save: jest.fn(),
     };
     req.user = {
       sub: "user1",

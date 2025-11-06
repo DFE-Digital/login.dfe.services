@@ -14,10 +14,6 @@ const {
   checkCacheForAllServices,
 } = require("../../infrastructure/helpers/allServicesAppCache");
 
-const renderConfirmNewUserPage = (req, res, model) => {
-  return res.render("requestService/views/confirmServiceRequest", model);
-};
-
 const buildBackLink = (req, services) => {
   let backRedirect = `/request-service/${req.session.user.organisation}/users/${req.user.sub}/services/${services[0].id}`;
   return backRedirect;
@@ -82,7 +78,7 @@ const get = async (req, res) => {
     organisationDetails,
   };
 
-  return renderConfirmNewUserPage(req, res, model);
+  return res.render("requestService/views/confirmServiceRequest", model);
 };
 
 const post = async (req, res) => {

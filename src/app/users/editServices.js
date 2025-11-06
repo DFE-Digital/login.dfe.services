@@ -10,6 +10,7 @@ const {
   RoleSelectionConstraintCheck,
 } = require("./utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
+const logger = require("../../infrastructure/logger");
 const { actions } = require("../constants/actions");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
@@ -17,6 +18,18 @@ const policyEngine = new PolicyEngine(config);
 const renderEditServicePage = async (req, res, model) => {
   const userDetails = await getUserDetails(req);
   const isManage = isUserManagement(req);
+
+  // Save the session explicitly as both the get and post functions attempt to modify
+  // the session.
+  req.session.save((err) => {
+    if (err) {
+      // Any error saving to session should hopefully be temporary. Assuming this, we log the error
+      // and just display an error message saying to try again.
+      logger.error("An error occurred when saving to the session", err);
+      model.validationMessages.roles =
+        "Something went wrong saving session data, please try again";
+    }
+  });
 
   res.render(`users/views/editServices`, {
     ...model,
@@ -149,7 +162,7 @@ const get = async (req, res) => {
     model.service.roles = req.session.roles;
   }
   saveRoleInSession(req, model.service.roles);
-  await renderEditServicePage(req, res, model);
+  return await renderEditServicePage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -172,6 +185,8 @@ const post = async (req, res) => {
     req.id,
   );
 
+  saveRoleInSession(req, selectedRoles);
+
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
     let roles = {};
@@ -179,10 +194,8 @@ const post = async (req, res) => {
     model.validationMessages.roles = policyValidationResult.map((x) =>
       sanitizeHtml(x.message),
     );
-    await renderEditServicePage(req, res, model);
+    return await renderEditServicePage(req, res, model);
   }
-
-  saveRoleInSession(req, selectedRoles);
 
   let nexturl = `${req.params.sid}/confirm-edit-service`;
 

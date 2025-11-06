@@ -58,6 +58,7 @@ describe("when displaying the edit service view", () => {
         firstName: "test",
         lastName: "name",
       },
+      save: jest.fn(),
     };
     req.user = {
       sub: "user1",
