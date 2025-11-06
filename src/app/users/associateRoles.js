@@ -95,7 +95,7 @@ const buildNextLink = (req, selectedRoles) => {
       }/approve-roles-request`;
     } else if (
       (req.query.action === actions.REVIEW_SERVICE_REQ_ROLE ||
-        actions.REVIEW_SERVICE_REQ_SERVICE) &&
+        req.query.action === actions.REVIEW_SERVICE_REQ_SERVICE) &&
       req.session?.reviewServiceRequest?.serviceReqId &&
       req.session?.reviewServiceRequest?.serviceId
     ) {
