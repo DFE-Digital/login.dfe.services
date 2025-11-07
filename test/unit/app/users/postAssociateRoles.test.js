@@ -283,6 +283,24 @@ describe("when selecting the roles for a service", () => {
     expect(res.sessionRedirect).toHaveBeenCalledWith(expectedRedirectUrl);
   });
 
+  it('then it should not redirect to the "Review request" page when there is a service request in the session but the query action is not reviewing a service request role/service', async () => {
+    req.query.action = "testing";
+    req.session = {
+      ...req.session,
+      reviewServiceRequest: {
+        serviceReqId: "service-req-id",
+        serviceId: "service1",
+      },
+    };
+
+    await postAssociateRoles(req, res);
+
+    expect(res.sessionRedirect).toHaveBeenCalledTimes(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toEqual(
+      expect.not.stringContaining("/access-requests/service-requests/"),
+    );
+  });
+
   it('then it should redirect to "Review request" page when changing the sub-service in a sub-service request from email journey', async () => {
     req.session.user.uid = "user1";
     req.query.action = actions.REQUEST_SUB_SERVICE;

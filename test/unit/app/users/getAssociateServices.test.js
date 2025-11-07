@@ -166,6 +166,7 @@ jest.mock("login.dfe.dao", () => {
   };
 });
 const PolicyEngine = require("login.dfe.policy-engine");
+const { actions } = require("../../../../src/app/constants/actions");
 
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
@@ -423,6 +424,7 @@ describe("when displaying the associate service view", () => {
       isInvite: undefined,
     });
   });
+
   it("then it should exclude services that are not available based on policies", async () => {
     getAllServices.mockReturnValue({
       services: [
@@ -483,5 +485,53 @@ describe("when displaying the associate service view", () => {
       selectedServices: [],
       isInvite: undefined,
     });
+  });
+
+  it("then it should pass isReviewServiceReqAmend as true to the view if the request query action is REVIEW_SERVICE_REQ_ROLE", async () => {
+    req.query.action = actions.REVIEW_SERVICE_REQ_ROLE;
+
+    await getAssociateServices(req, res);
+
+    expect(res.render).toHaveBeenCalledTimes(1);
+    expect(res.render.mock.calls[0][1]).toHaveProperty(
+      "isReviewServiceReqAmend",
+      true,
+    );
+  });
+
+  it("then it should pass isReviewServiceReqAmend as true to the view if the request query action is REVIEW_SERVICE_REQ_SERVICE", async () => {
+    req.query.action = actions.REVIEW_SERVICE_REQ_SERVICE;
+
+    await getAssociateServices(req, res);
+
+    expect(res.render).toHaveBeenCalledTimes(1);
+    expect(res.render.mock.calls[0][1]).toHaveProperty(
+      "isReviewServiceReqAmend",
+      true,
+    );
+  });
+
+  it("then it should pass isReviewServiceReqAmend as false to the view if the request query action is not either REVIEW_SERVICE_REQ_ROLE or REVIEW_SERVICE_REQ_SERVICE", async () => {
+    req.query.action = "testing";
+
+    await getAssociateServices(req, res);
+
+    expect(res.render).toHaveBeenCalledTimes(1);
+    expect(res.render.mock.calls[0][1]).toHaveProperty(
+      "isReviewServiceReqAmend",
+      false,
+    );
+  });
+
+  it("then it should pass isReviewServiceReqAmend as false to the view if the request query action is not set", async () => {
+    req.query = {};
+
+    await getAssociateServices(req, res);
+
+    expect(res.render).toHaveBeenCalledTimes(1);
+    expect(res.render.mock.calls[0][1]).toHaveProperty(
+      "isReviewServiceReqAmend",
+      false,
+    );
   });
 });
