@@ -58,7 +58,7 @@ describe("when displaying current organisation and service mapping", () => {
             service_home: "http://service.one/login",
             redirect_uris: ["http://service.one/login/cb"],
             params: {
-              hideApprover: false,
+              hideApprover: "false",
             },
           },
         },
@@ -74,7 +74,7 @@ describe("when displaying current organisation and service mapping", () => {
             service_home: "http://service.two/login",
             redirect_uris: ["http://service.two/login/cb"],
             params: {
-              hideApprover: true,
+              hideApprover: "true",
             },
           },
         },
@@ -90,7 +90,7 @@ describe("when displaying current organisation and service mapping", () => {
             service_home: "http://service.three/login",
             redirect_uris: ["http://service.three/login/cb"],
             params: {
-              hideApprover: true,
+              hideApprover: "true",
             },
           },
         },
@@ -106,7 +106,7 @@ describe("when displaying current organisation and service mapping", () => {
             service_home: "http://service.four/login",
             redirect_uris: ["http://service.four/login/cb"],
             params: {
-              hideApprover: true,
+              hideApprover: "true",
             },
           },
         },
@@ -139,7 +139,7 @@ describe("when displaying current organisation and service mapping", () => {
           service_home: "http://service.two/login",
           redirect_uris: ["http://service.two/login/cb"],
           params: {
-            hideApprover: true,
+            hideApprover: "true",
           },
         },
       },
@@ -155,7 +155,7 @@ describe("when displaying current organisation and service mapping", () => {
           service_home: "http://service.one/login",
           redirect_uris: ["http://service.one/login/cb"],
           params: {
-            hideApprover: false,
+            hideApprover: "false",
           },
         },
       },

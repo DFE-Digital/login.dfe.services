@@ -12,7 +12,7 @@ const getAndMapExternalServices = async (correlationId) => {
   const nonHiddenServies = allServices.services.filter(
     (service) =>
       (service.isIdOnlyService === false &&
-        service.relyingParty.params?.hideApprover === false) ||
+        service.relyingParty.params?.hideApprover === "false") ||
       (service.isIdOnlyService === true && service.isHiddenService === false),
   );
   return sortBy(nonHiddenServies, "name");
