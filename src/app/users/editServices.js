@@ -172,6 +172,9 @@ const post = async (req, res) => {
     );
   }
 
+  // selectedRoles are an array if multiple values entered, a string if one value entered
+  // and undefined when nothing entered. Making sure that these values are always
+  // in an array saves us having to constantly check that later down the line.
   let selectedRoles = req.body.role ? req.body.role : [];
   if (!(selectedRoles instanceof Array)) {
     selectedRoles = [req.body.role];
