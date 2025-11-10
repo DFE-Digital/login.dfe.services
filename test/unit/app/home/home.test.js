@@ -44,73 +44,8 @@ describe("when displaying current organisation and service mapping", () => {
     });
 
     checkCacheForAllServices.mockReset();
-    checkCacheForAllServices.mockReturnValue({
-      services: [
-        {
-          id: "service-1",
-          name: "Service One",
-          description: "service description",
-          isExternalService: true,
-          isMigrated: true,
-          isHiddenService: false,
-          isIdOnlyService: false,
-          relyingParty: {
-            service_home: "http://service.one/login",
-            redirect_uris: ["http://service.one/login/cb"],
-            params: {
-              hideApprover: "false",
-            },
-          },
-        },
-        {
-          id: "service-2",
-          name: "Id-only service two",
-          description: "service description",
-          isExternalService: true,
-          isMigrated: true,
-          isHiddenService: false,
-          isIdOnlyService: true,
-          relyingParty: {
-            service_home: "http://service.two/login",
-            redirect_uris: ["http://service.two/login/cb"],
-            params: {
-              hideApprover: "true",
-            },
-          },
-        },
-        {
-          id: "service-3",
-          name: "Hidden service three",
-          description: "service description",
-          isExternalService: true,
-          isMigrated: true,
-          isHiddenService: false,
-          isIdOnlyService: false,
-          relyingParty: {
-            service_home: "http://service.three/login",
-            redirect_uris: ["http://service.three/login/cb"],
-            params: {
-              hideApprover: "true",
-            },
-          },
-        },
-        {
-          id: "service-4",
-          name: "Hidden id-only service four",
-          description: "service description",
-          isExternalService: true,
-          isMigrated: true,
-          isHiddenService: true,
-          isIdOnlyService: true,
-          relyingParty: {
-            service_home: "http://service.four/login",
-            redirect_uris: ["http://service.four/login/cb"],
-            params: {
-              hideApprover: "true",
-            },
-          },
-        },
-      ],
+    checkCacheForAllServices.mockResolvedValue({
+      services: [],
     });
   });
 
@@ -121,15 +56,27 @@ describe("when displaying current organisation and service mapping", () => {
     expect(res.render.mock.calls[0][0]).toBe("home/views/landingPage");
   });
 
-  it("then it should include services in model", async () => {
-    await home(req, res);
-
-    expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][1].services).toBeDefined();
-    expect(res.render.mock.calls[0][1].services).toEqual([
+  it("then it should include non-hidden services in the model", async () => {
+    const services = [
+      {
+        id: "service-1",
+        name: "1 - Visible role-based service one",
+        description: "service description",
+        isExternalService: true,
+        isMigrated: true,
+        isHiddenService: false,
+        isIdOnlyService: false,
+        relyingParty: {
+          service_home: "http://service.one/login",
+          redirect_uris: ["http://service.one/login/cb"],
+          params: {
+            hideApprover: "false",
+          },
+        },
+      },
       {
         id: "service-2",
-        name: "Id-only service two",
+        name: "2 - Visible ID-only service two",
         description: "service description",
         isExternalService: true,
         isMigrated: true,
@@ -144,23 +91,66 @@ describe("when displaying current organisation and service mapping", () => {
         },
       },
       {
-        id: "service-1",
-        name: "Service One",
+        id: "service-3",
+        name: "3 - Visible param-less role-based service three",
         description: "service description",
         isExternalService: true,
         isMigrated: true,
         isHiddenService: false,
         isIdOnlyService: false,
         relyingParty: {
-          service_home: "http://service.one/login",
-          redirect_uris: ["http://service.one/login/cb"],
+          service_home: "http://service.three/login",
+          redirect_uris: ["http://service.three/login/cb"],
+        },
+      },
+      {
+        id: "service-4",
+        name: "4 - Hidden role-based service four",
+        description: "service description",
+        isExternalService: true,
+        isMigrated: true,
+        isHiddenService: false,
+        isIdOnlyService: false,
+        relyingParty: {
+          service_home: "http://service.four/login",
+          redirect_uris: ["http://service.four/login/cb"],
           params: {
-            hideApprover: "false",
+            hideApprover: "true",
           },
         },
       },
+      {
+        id: "service-5",
+        name: "5 - Hidden ID-only service five",
+        description: "service description",
+        isExternalService: true,
+        isMigrated: true,
+        isHiddenService: true,
+        isIdOnlyService: true,
+        relyingParty: {
+          service_home: "http://service.five/login",
+          redirect_uris: ["http://service.five/login/cb"],
+          params: {
+            hideApprover: "true",
+          },
+        },
+      },
+    ];
+    checkCacheForAllServices.mockResolvedValue({
+      services,
+    });
+
+    await home(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][1].services).toBeDefined();
+    expect(res.render.mock.calls[0][1].services).toEqual([
+      services[0],
+      services[1],
+      services[2],
     ]);
   });
+
   it("then it should include title in model", async () => {
     await home(req, res);
 
