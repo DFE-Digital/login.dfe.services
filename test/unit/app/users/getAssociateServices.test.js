@@ -8,6 +8,14 @@ jest.mock("./../../../../src/infrastructure/applications", () => {
 });
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("login.dfe.policy-engine");
+const {
+  checkCacheForAllServices,
+} = require("../../../../src/infrastructure/helpers/allServicesAppCache");
+jest.mock("../../../../src/infrastructure/helpers/allServicesAppCache", () => {
+  return {
+    checkCacheForAllServices: jest.fn(),
+  };
+});
 
 const {
   mockRequest,
@@ -155,27 +163,6 @@ jest.mock("login.dfe.dao", () => {
         ];
       },
     },
-    services: {
-      list: async () => {
-        return {
-          count: 10,
-          rows: [
-            {
-              id: "service1",
-              isExternalService: true,
-              isMigrated: true,
-              name: "Service One",
-            },
-            {
-              id: "service2",
-              isExternalService: true,
-              isMigrated: true,
-              name: "Service two",
-            },
-          ],
-        };
-      },
-    },
   };
 });
 const PolicyEngine = require("login.dfe.policy-engine");
@@ -236,21 +223,24 @@ describe("when displaying the associate service view", () => {
     ];
     res = mockResponse();
 
-    getAllServices.mockReset();
-    getAllServices.mockReturnValue({
+    checkCacheForAllServices.mockReset();
+    checkCacheForAllServices.mockReturnValue({
       services: [
         {
           id: "service1",
-          dateActivated: "10/10/2018",
-          name: "service name",
-          status: "active",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isMigrated: true,
+          name: "Service One",
+        },
+        {
+          id: "service2",
+          isExternalService: true,
+          isMigrated: true,
+          name: "Service two",
         },
       ],
     });
+
     getAllServicesForUserInOrg.mockReset();
     getAllServicesForUserInOrg.mockReturnValue([
       {

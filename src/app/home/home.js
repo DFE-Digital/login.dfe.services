@@ -8,16 +8,15 @@ const {
 const getAndMapExternalServices = async (correlationId) => {
   const allServices = await checkCacheForAllServices(correlationId);
 
-  const services = uniqBy(
-    allServices.services.map((service) => ({
-      id: service.id,
-      name: service.name,
-      isMigrated: service.isMigrated,
-      isExternalService: service.isExternalService,
-    })),
-    "id",
+  // Note, we're not checking `isHiddenService` for a non-id-only service.
+  const nonHiddenServices = allServices.services.filter(
+    (service) =>
+      (!service.isIdOnlyService &&
+        (service.relyingParty.params?.hideApprover === undefined ||
+          service.relyingParty.params?.hideApprover === "false")) ||
+      (service.isIdOnlyService && !service.isHiddenService),
   );
-  return sortBy(services, "name");
+  return sortBy(nonHiddenServices, "name");
 };
 
 const displayEsfa = (externalServices) => {

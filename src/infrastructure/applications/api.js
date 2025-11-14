@@ -1,11 +1,5 @@
 const { services } = require("login.dfe.dao");
-
-const getPageOfService = async (pageNumber, pageSize) => {
-  const pageOfServices = await services.list(pageNumber, pageSize);
-  return !pageOfServices || pageOfServices.length === 0
-    ? undefined
-    : pageOfServices;
-};
+const { getPaginatedServices } = require("login.dfe.api-client/services");
 
 const getAllServices = async () => {
   const services = [];
@@ -13,10 +7,10 @@ const getAllServices = async () => {
   let pageNumber = 1;
   let numberOfPages = undefined;
   while (numberOfPages === undefined || pageNumber <= numberOfPages) {
-    const { count, rows } = await getPageOfService(pageNumber, 50);
-    services.push(...rows);
+    const result = await getPaginatedServices({ pageSize: 50, pageNumber });
+    services.push(...result.services);
 
-    numberOfPages = Math.ceil(count / 50);
+    numberOfPages = result.totalNumberOfPages;
     pageNumber += 1;
   }
 

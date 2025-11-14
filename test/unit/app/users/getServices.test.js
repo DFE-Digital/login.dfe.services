@@ -1,10 +1,4 @@
 jest.mock("./../../../../src/app/users/utils");
-jest.mock("./../../../../src/infrastructure/applications", () => {
-  return {
-    getAllServices: jest.fn(),
-  };
-});
-
 const {
   mockRequest,
   mockResponse,
@@ -15,29 +9,12 @@ jest.mock("./../../../../src/infrastructure/logger", () => mockLogger());
 jest.mock("./../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
-jest.mock("login.dfe.dao", () => {
+const {
+  checkCacheForAllServices,
+} = require("../../../../src/infrastructure/helpers/allServicesAppCache");
+jest.mock("../../../../src/infrastructure/helpers/allServicesAppCache", () => {
   return {
-    services: {
-      list: async () => {
-        return {
-          count: 10,
-          rows: [
-            {
-              id: "service1",
-              isExternalService: true,
-              isMigrated: true,
-              name: "Service One",
-            },
-            {
-              id: "service2",
-              isExternalService: true,
-              isMigrated: true,
-              name: "Service two",
-            },
-          ],
-        };
-      },
-    },
+    checkCacheForAllServices: jest.fn(),
   };
 });
 
@@ -67,9 +44,6 @@ const {
   getUserDetails,
   getApproverOrgsFromReq,
 } = require("./../../../../src/app/users/utils");
-const {
-  getAllServices,
-} = require("./../../../../src/infrastructure/applications");
 const getServices = require("./../../../../src/app/users/getServices");
 
 describe("when displaying the users services", () => {
@@ -117,18 +91,22 @@ describe("when displaying the users services", () => {
       id: "user1",
     });
 
-    getAllServices.mockReset();
-    getAllServices.mockReturnValue({
+    checkCacheForAllServices.mockReset();
+    checkCacheForAllServices.mockReturnValue({
       services: [
         {
           id: "service1",
-          dateActivated: "10/10/2018",
-          name: "service name",
-          status: "active",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isMigrated: true,
+          isHiddenService: false,
+          name: "Service One",
+        },
+        {
+          id: "service2",
+          isExternalService: true,
+          isMigrated: true,
+          isHiddenService: false,
+          name: "Service two",
         },
       ],
     });

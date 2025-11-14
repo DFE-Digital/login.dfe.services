@@ -8,6 +8,14 @@ jest.mock("./../../../../src/infrastructure/logger", () =>
 jest.mock("login.dfe.dao", () =>
   require("./../../../utils/jestMocks").mockDao(),
 );
+const {
+  checkCacheForAllServices,
+} = require("../../../../src/infrastructure/helpers/allServicesAppCache");
+jest.mock("../../../../src/infrastructure/helpers/allServicesAppCache", () => {
+  return {
+    checkCacheForAllServices: jest.fn(),
+  };
+});
 
 jest.mock("./../../../../src/infrastructure/account", () => ({
   fromContext: jest.fn(),
@@ -64,6 +72,24 @@ describe("when displaying the pending access requests for approver ", () => {
       },
     ];
     res = mockResponse();
+
+    checkCacheForAllServices.mockReset();
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service1",
+          isExternalService: true,
+          isMigrated: true,
+          name: "Service One",
+        },
+        {
+          id: "service2",
+          isExternalService: true,
+          isMigrated: true,
+          name: "Service two",
+        },
+      ],
+    });
 
     getAllRequestTypesForApproverRaw.mockReset();
     getAllRequestTypesForApproverRaw.mockReturnValue({

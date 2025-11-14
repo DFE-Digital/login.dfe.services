@@ -1,13 +1,16 @@
 jest.mock("./../../../../src/infrastructure/config", () =>
   require("./../../../utils/jestMocks").mockConfig(),
 );
-jest.mock("./../../../../src/infrastructure/applications", () => {
-  return {
-    getAllServices: jest.fn(),
-  };
-});
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("login.dfe.policy-engine");
+const {
+  checkCacheForAllServices,
+} = require("../../../../src/infrastructure/helpers/allServicesAppCache");
+jest.mock("../../../../src/infrastructure/helpers/allServicesAppCache", () => {
+  return {
+    checkCacheForAllServices: jest.fn(),
+  };
+});
 
 const {
   mockRequest,
@@ -15,9 +18,6 @@ const {
   mockLogger,
   mockAdapterConfig,
 } = require("./../../../utils/jestMocks");
-const {
-  getAllServices,
-} = require("./../../../../src/infrastructure/applications");
 const {
   getAllServicesForUserInOrg,
 } = require("./../../../../src/app/users/utils");
@@ -156,21 +156,6 @@ jest.mock("login.dfe.dao", () => {
         ];
       },
     },
-    services: {
-      list: async () => {
-        return {
-          count: 10,
-          rows: [
-            {
-              id: "service1",
-              isExternalService: true,
-              isMigrated: true,
-              name: "Service One",
-            },
-          ],
-        };
-      },
-    },
   };
 });
 const policyEngine = {
@@ -228,21 +213,18 @@ describe("when adding services to a user", () => {
     ];
     res = mockResponse();
 
-    getAllServices.mockReset();
-    getAllServices.mockReturnValue({
+    checkCacheForAllServices.mockReset();
+    checkCacheForAllServices.mockReturnValue({
       services: [
         {
           id: "service1",
-          dateActivated: "10/10/2018",
-          name: "service name",
-          status: "active",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isMigrated: true,
+          name: "Service One",
         },
       ],
     });
+
     getAllServicesForUserInOrg.mockReset();
     getAllServicesForUserInOrg.mockReturnValue([
       {
