@@ -12,14 +12,6 @@ const {
   isServiceEmailNotificationAllowed,
 } = require("./../../infrastructure/applications");
 
-const renderConfirmEditServicePage = (req, res, model) => {
-  const isManage = isUserManagement(req);
-  res.render(
-    `users/views/${isManage ? "confirmEditService" : "confirmEditServiceRedesigned"}`,
-    { ...model, currentPage: isManage ? "users" : "services" },
-  );
-};
-
 const buildBackLink = (req) => {
   let backRedirect = `/approvals/${req.params.orgId}/users/${req.params.uid}/services/${req.params.sid}`;
   if (isUserManagement(req)) {
@@ -87,7 +79,11 @@ const get = async (req, res) => {
     service: userService,
   };
 
-  renderConfirmEditServicePage(req, res, model);
+  const isManage = isUserManagement(req);
+  res.render(
+    `users/views/${isManage ? "confirmEditService" : "confirmEditServiceRedesigned"}`,
+    { ...model, currentPage: isManage ? "users" : "services" },
+  );
 };
 
 const post = async (req, res) => {

@@ -177,7 +177,7 @@ const get = async (req, res) => {
     isReviewServiceReqAmend,
   };
 
-  renderAssociateServicesPage(req, res, model);
+  return renderAssociateServicesPage(req, res, model);
 };
 
 const validate = async (req) => {

@@ -1,5 +1,6 @@
 const sanitizeHtml = require("sanitize-html");
 const config = require("./../../infrastructure/config");
+const { saveSession } = require("./../../infrastructure/sessionUtils");
 const {
   isUserManagement,
   getSingleServiceForUser,
@@ -10,6 +11,7 @@ const {
   RoleSelectionConstraintCheck,
 } = require("./utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
+const logger = require("../../infrastructure/logger");
 const { actions } = require("../constants/actions");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
@@ -17,6 +19,26 @@ const policyEngine = new PolicyEngine(config);
 const renderEditServicePage = async (req, res, model) => {
   const userDetails = await getUserDetails(req);
   const isManage = isUserManagement(req);
+
+  // Save the session explicitly as both the get and post functions attempt to modify
+  // the session.
+  try {
+    await saveSession(req.session);
+  } catch (e) {
+    logger.error("An error occurred when saving to the session", {
+      e,
+      user: req.user?.sub,
+      sid: req.params?.sid,
+    });
+    model.validationMessages = model.validationMessages || {};
+    model.validationMessages.roles =
+      "Something went wrong saving session data, please try again";
+    return res.render(`users/views/editServices`, {
+      ...model,
+      currentPage: isManage ? "users" : "services",
+      user: userDetails,
+    });
+  }
 
   res.render(`users/views/editServices`, {
     ...model,
@@ -149,7 +171,7 @@ const get = async (req, res) => {
     model.service.roles = req.session.roles;
   }
   saveRoleInSession(req, model.service.roles);
-  await renderEditServicePage(req, res, model);
+  return renderEditServicePage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -159,6 +181,9 @@ const post = async (req, res) => {
     );
   }
 
+  // selectedRoles are an array if multiple values entered, a string if one value entered
+  // and undefined when nothing entered. Making sure that these values are always
+  // in an array saves us having to constantly check that later down the line.
   let selectedRoles = req.body.role ? req.body.role : [];
   if (!(selectedRoles instanceof Array)) {
     selectedRoles = [req.body.role];
@@ -172,6 +197,8 @@ const post = async (req, res) => {
     req.id,
   );
 
+  saveRoleInSession(req, selectedRoles);
+
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
     let roles = {};
@@ -179,10 +206,8 @@ const post = async (req, res) => {
     model.validationMessages.roles = policyValidationResult.map((x) =>
       sanitizeHtml(x.message),
     );
-    await renderEditServicePage(req, res, model);
+    return await renderEditServicePage(req, res, model);
   }
-
-  saveRoleInSession(req, selectedRoles);
 
   let nexturl = `${req.params.sid}/confirm-edit-service`;
 
