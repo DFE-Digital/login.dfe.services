@@ -9,8 +9,16 @@ jest.mock("./../../../../src/app/users/utils");
 jest.mock("login.dfe.api-client/services", () => ({
   getServiceRaw: jest.fn(),
 }));
+
+jest.mock("./../../../../src/infrastructure/sessionUtils", () => ({
+  saveSession: jest.fn(),
+}));
+
 const logger = require("./../../../../src/infrastructure/logger");
 
+const {
+  saveSession,
+} = require("./../../../../src/infrastructure/sessionUtils");
 const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 const PolicyEngine = require("login.dfe.policy-engine");
 const {
@@ -48,6 +56,7 @@ describe("when displaying the edit service view", () => {
     isEditService.mockReset();
     isUserManagement.mockReset();
     isReviewSubServiceRequest.mockReset();
+    saveSession.mockReset().mockResolvedValue();
 
     req = mockRequest();
     req.params = {
@@ -197,8 +206,9 @@ describe("when displaying the edit service view", () => {
   });
 
   it("should display an error message if saving the session failed", async () => {
-    ((req.session.save = jest.fn((cb) => cb("Something went wrong"))),
-      await getEditService(req, res));
+    saveSession.mockRejectedValue(new Error("Something went wrong"));
+
+    await getEditService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       validationMessages: {

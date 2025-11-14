@@ -9,8 +9,14 @@ jest.mock("./../../../../src/app/users/utils");
 jest.mock("login.dfe.api-client/services", () => ({
   getServiceRaw: jest.fn(),
 }));
+jest.mock("./../../../../src/infrastructure/sessionUtils", () => ({
+  saveSession: jest.fn(),
+}));
 const logger = require("./../../../../src/infrastructure/logger");
 
+const {
+  saveSession,
+} = require("./../../../../src/infrastructure/sessionUtils");
 const { mockRequest, mockResponse } = require("../../../utils/jestMocks");
 const PolicyEngine = require("login.dfe.policy-engine");
 const {
@@ -50,6 +56,7 @@ describe("when hitting the post function of edit service", () => {
     isEditService.mockReset();
     isUserManagement.mockReset();
     isReviewSubServiceRequest.mockReset();
+    saveSession.mockReset().mockResolvedValue();
 
     req = mockRequest();
     req.params = {
@@ -143,8 +150,9 @@ describe("when hitting the post function of edit service", () => {
   });
 
   it("should display an error message if saving the session failed", async () => {
-    ((req.session.save = jest.fn((cb) => cb("Something went wrong"))),
-      await postEditService(req, res));
+    saveSession.mockRejectedValue(new Error("Something went wrong"));
+
+    await postEditService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       validationMessages: {
@@ -209,7 +217,7 @@ describe("when hitting the post function of edit service", () => {
     );
   });
 
-  it("should add manage_users to the url is 'isUserMangement' returns true", async () => {
+  it("should redirect to subService requests when RID and REVIEW_SUBSERVICE_REQUEST are set", async () => {
     req.session.rid = "role1";
     req.query.actions = actions.REVIEW_SUBSERVICE_REQUEST;
     isUserManagement.mockReset().mockReturnValue(true);

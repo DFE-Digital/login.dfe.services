@@ -1,6 +1,6 @@
 const sanitizeHtml = require("sanitize-html");
 const config = require("./../../infrastructure/config");
-const saveSession = require("./../../infrastructure");
+const { saveSession } = require("./../../infrastructure/sessionUtils");
 const {
   isUserManagement,
   getSingleServiceForUser,
@@ -171,7 +171,7 @@ const get = async (req, res) => {
     model.service.roles = req.session.roles;
   }
   saveRoleInSession(req, model.service.roles);
-  return await renderEditServicePage(req, res, model);
+  return renderEditServicePage(req, res, model);
 };
 
 const post = async (req, res) => {
