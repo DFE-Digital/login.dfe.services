@@ -1,5 +1,6 @@
 const sanitizeHtml = require("sanitize-html");
 const config = require("./../../infrastructure/config");
+const saveSession = require("./../../infrastructure");
 const {
   isUserManagement,
   getSingleServiceForUser,
@@ -21,15 +22,23 @@ const renderEditServicePage = async (req, res, model) => {
 
   // Save the session explicitly as both the get and post functions attempt to modify
   // the session.
-  req.session.save((err) => {
-    if (err) {
-      // Any error saving to session should hopefully be temporary. Assuming this, we log the error
-      // and just display an error message saying to try again.
-      logger.error("An error occurred when saving to the session", err);
-      model.validationMessages.roles =
-        "Something went wrong saving session data, please try again";
-    }
-  });
+  try {
+    await saveSession(req.session);
+  } catch (e) {
+    logger.error("An error occurred when saving to the session", {
+      e,
+      user: req.user?.sub,
+      sid: req.params?.sid,
+    });
+    model.validationMessages = model.validationMessages || {};
+    model.validationMessages.roles =
+      "Something went wrong saving session data, please try again";
+    return res.render(`users/views/editServices`, {
+      ...model,
+      currentPage: isManage ? "users" : "services",
+      user: userDetails,
+    });
+  }
 
   res.render(`users/views/editServices`, {
     ...model,
