@@ -27,7 +27,7 @@ const {
   ejsErrorPages,
 } = require("login.dfe.express-helpers/error-handling");
 const { setupApi } = require("login.dfe.api-client/api/setup");
-
+const packageConfig = require("../package.json");
 const registerRoutes = require("./routes");
 
 https.globalAgent.maxSockets = http.globalAgent.maxSockets =
@@ -233,10 +233,11 @@ const init = async () => {
 
   app.use(flash());
 
-  let assetsUrl = config.assets.url;
-  assetsUrl = assetsUrl.endsWith("/")
-    ? assetsUrl.substr(0, assetsUrl.length - 1)
-    : assetsUrl;
+  const assetsVersion = packageConfig?.assets?.version;
+  const baseAssetsUrl = config.assets.url.replace(/\/$/, "");
+  const assetsUrl = assetsVersion
+    ? `${baseAssetsUrl}/${assetsVersion}`
+    : baseAssetsUrl;
   Object.assign(app.locals, {
     urls: {
       help: config.hostingEnvironment.helpUrl,
@@ -256,9 +257,6 @@ const init = async () => {
     },
     gaTrackingId: config.hostingEnvironment.gaTrackingId,
     useApproverJourney: config.toggles.useApproverJourney,
-    assets: {
-      version: config.assets.version,
-    },
   });
 
   passport.use("oidc", await getPassportStrategy());
@@ -276,7 +274,6 @@ const init = async () => {
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer(
     {
       ...app.locals.urls,
-      assetsVersion: config.assets.version,
     },
     config.hostingEnvironment.env === "dev",
   );
