@@ -39,6 +39,8 @@ const home = async (req, res) => {
 
   services = displayEsfa(services);
 
+  console.log("services: ", services);
+
   return res.render("home/views/landingPage", {
     title: "DfE Sign-in",
     services,

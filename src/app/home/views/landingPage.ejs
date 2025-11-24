@@ -52,7 +52,7 @@
                         <%
                         for (let s = 0; s < services.length; s++) {
                             const service = services[s];
-                            if (service.isExternalService === true) {
+                            if (service.isExternalService === true && service.isHiddenService === false) {
                         %>
                             <li><%=service.name%></li>
                         <%
