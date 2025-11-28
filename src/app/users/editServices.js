@@ -184,7 +184,7 @@ const post = async (req, res) => {
     model.validationMessages.roles = policyValidationResult.map((x) =>
       sanitizeHtml(x.message),
     );
-    return await renderEditServicePage(req, res, model);
+    return renderEditServicePage(req, res, model);
   }
 
   let nexturl = `${req.params.sid}/confirm-edit-service`;

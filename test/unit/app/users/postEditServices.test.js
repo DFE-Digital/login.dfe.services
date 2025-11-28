@@ -1,9 +1,6 @@
 jest.mock("./../../../../src/infrastructure/config", () =>
   require("../../../utils/jestMocks").mockConfig(),
 );
-jest.mock("./../../../../src/infrastructure/logger", () =>
-  require("./../../../utils/jestMocks").mockLogger(),
-);
 jest.mock("login.dfe.policy-engine");
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("login.dfe.api-client/services", () => ({
@@ -63,7 +60,6 @@ describe("when hitting the post function of edit service", () => {
         firstName: "test",
         lastName: "name",
       },
-      save: jest.fn(),
     };
     req.body.role = "role1";
     req.user = {
