@@ -10,15 +10,6 @@ jest.mock("login.dfe.api-client/services", () => ({
   getServiceRaw: jest.fn(),
 }));
 
-jest.mock("./../../../../src/infrastructure/sessionUtils", () => ({
-  saveSession: jest.fn(),
-}));
-
-const logger = require("./../../../../src/infrastructure/logger");
-
-const {
-  saveSession,
-} = require("./../../../../src/infrastructure/sessionUtils");
 const { mockRequest, mockResponse } = require("./../../../utils/jestMocks");
 const PolicyEngine = require("login.dfe.policy-engine");
 const {
@@ -56,7 +47,6 @@ describe("when displaying the edit service view", () => {
     isEditService.mockReset();
     isUserManagement.mockReset();
     isReviewSubServiceRequest.mockReset();
-    saveSession.mockReset().mockResolvedValue();
 
     req = mockRequest();
     req.params = {
@@ -203,21 +193,5 @@ describe("when displaying the edit service view", () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       backLink: "/approvals/select-organisation-service?action=edit-service",
     });
-  });
-
-  it("should display an error message if saving the session failed", async () => {
-    saveSession.mockRejectedValue(new Error("Something went wrong"));
-
-    await getEditService(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      validationMessages: {
-        roles: "Something went wrong saving session data, please try again",
-      },
-    });
-    expect(logger.error.mock.calls).toHaveLength(1);
-    expect(logger.error.mock.calls[0][0]).toBe(
-      "An error occurred when saving to the session",
-    );
   });
 });

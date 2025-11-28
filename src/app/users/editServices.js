@@ -1,6 +1,5 @@
 const sanitizeHtml = require("sanitize-html");
 const config = require("./../../infrastructure/config");
-const { saveSession } = require("./../../infrastructure/sessionUtils");
 const {
   isUserManagement,
   getSingleServiceForUser,
@@ -11,7 +10,6 @@ const {
   RoleSelectionConstraintCheck,
 } = require("./utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
-const logger = require("../../infrastructure/logger");
 const { actions } = require("../constants/actions");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
@@ -19,26 +17,6 @@ const policyEngine = new PolicyEngine(config);
 const renderEditServicePage = async (req, res, model) => {
   const userDetails = await getUserDetails(req);
   const isManage = isUserManagement(req);
-
-  // Save the session explicitly as both the get and post functions attempt to modify
-  // the session.
-  try {
-    await saveSession(req.session);
-  } catch (e) {
-    logger.error("An error occurred when saving to the session", {
-      e,
-      user: req.user?.sub,
-      sid: req.params?.sid,
-    });
-    model.validationMessages = model.validationMessages || {};
-    model.validationMessages.roles =
-      "Something went wrong saving session data, please try again";
-    return res.render(`users/views/editServices`, {
-      ...model,
-      currentPage: isManage ? "users" : "services",
-      user: userDetails,
-    });
-  }
 
   res.render(`users/views/editServices`, {
     ...model,
