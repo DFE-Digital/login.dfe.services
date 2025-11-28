@@ -9,7 +9,6 @@ jest.mock("./../../../../src/app/users/utils");
 jest.mock("login.dfe.api-client/services", () => ({
   getServiceRaw: jest.fn(),
 }));
-const logger = require("./../../../../src/infrastructure/logger");
 
 const { mockRequest, mockResponse } = require("../../../utils/jestMocks");
 const PolicyEngine = require("login.dfe.policy-engine");
