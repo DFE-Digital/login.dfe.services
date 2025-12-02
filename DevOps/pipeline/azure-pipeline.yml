@@ -136,7 +136,6 @@ stages:
             ${{ else }}:
               dependsOn: 
               - Deployment_pp_westeurope
-              condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
           ${{ elseif eq(location,'westeurope') }}:
             ${{ if eq(parameters.existTag, ' ') }}:
               dependsOn:
