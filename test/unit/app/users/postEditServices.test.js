@@ -17,6 +17,7 @@ const {
   isReviewSubServiceRequest,
 } = require("../../../../src/app/users/utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
+const { actions } = require("../../../../src/app/constants/actions");
 const application = {
   name: "Service One",
   relyingParty: {
@@ -60,6 +61,7 @@ describe("when hitting the post function of edit service", () => {
         lastName: "name",
       },
     };
+    req.body.role = "role1";
     req.user = {
       sub: "user1",
       email: "user.one@unit.test",
@@ -132,5 +134,73 @@ describe("when hitting the post function of edit service", () => {
         roles: ["There has been an error"],
       },
     });
+    expect(res.redirect).toHaveBeenCalledTimes(0);
+  });
+
+  it("should give an empty array to policy engine if no roles are selected", async () => {
+    req.body.role = undefined;
+
+    await postEditService(req, res);
+
+    expect(policyEngine.validate.mock.calls[0][3]).toStrictEqual([]);
+  });
+
+  it("should give an array of one role to policy engine if one role selected", async () => {
+    req.body.role = "role1";
+
+    await postEditService(req, res);
+
+    expect(policyEngine.validate.mock.calls[0][3]).toStrictEqual(["role1"]);
+  });
+
+  it("should give an array of multiple roles to policy engine if multiple roles selected", async () => {
+    req.body.role = ["role1", "role2"];
+
+    await postEditService(req, res);
+
+    expect(policyEngine.validate.mock.calls[0][3]).toStrictEqual([
+      "role1",
+      "role2",
+    ]);
+  });
+
+  it("should redirect if there are no errors returned from policy engine", async () => {
+    policyEngine.validate.mockReturnValue([]);
+
+    await postEditService(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(0);
+    expect(res.sessionRedirect).toHaveBeenCalledTimes(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
+      "service1/confirm-edit-service",
+    );
+  });
+
+  it("should add manage_users to the url is 'isUserMangement' returns true", async () => {
+    isUserManagement.mockReset().mockReturnValue(true);
+    policyEngine.validate.mockReturnValue([]);
+
+    await postEditService(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(0);
+    expect(res.sessionRedirect).toHaveBeenCalledTimes(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
+      "service1/confirm-edit-service?manage_users=true",
+    );
+  });
+
+  it("should redirect to subService requests when RID and REVIEW_SUBSERVICE_REQUEST are set", async () => {
+    req.session.rid = "role1";
+    req.query.actions = actions.REVIEW_SUBSERVICE_REQUEST;
+    isUserManagement.mockReset().mockReturnValue(true);
+    policyEngine.validate.mockReturnValue([]);
+
+    await postEditService(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(0);
+    expect(res.sessionRedirect).toHaveBeenCalledTimes(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
+      "/access-requests/subService-requests/role1",
+    );
   });
 });

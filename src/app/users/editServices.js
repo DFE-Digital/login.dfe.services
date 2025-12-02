@@ -149,7 +149,7 @@ const get = async (req, res) => {
     model.service.roles = req.session.roles;
   }
   saveRoleInSession(req, model.service.roles);
-  await renderEditServicePage(req, res, model);
+  return renderEditServicePage(req, res, model);
 };
 
 const post = async (req, res) => {
@@ -159,6 +159,9 @@ const post = async (req, res) => {
     );
   }
 
+  // selectedRoles are an array if multiple values entered, a string if one value entered
+  // and undefined when nothing entered. Making sure that these values are always
+  // in an array saves us having to constantly check that later down the line.
   let selectedRoles = req.body.role ? req.body.role : [];
   if (!(selectedRoles instanceof Array)) {
     selectedRoles = [req.body.role];
@@ -172,6 +175,8 @@ const post = async (req, res) => {
     req.id,
   );
 
+  saveRoleInSession(req, selectedRoles);
+
   if (policyValidationResult.length > 0) {
     const model = await getViewModel(req);
     let roles = {};
@@ -179,10 +184,8 @@ const post = async (req, res) => {
     model.validationMessages.roles = policyValidationResult.map((x) =>
       sanitizeHtml(x.message),
     );
-    await renderEditServicePage(req, res, model);
+    return renderEditServicePage(req, res, model);
   }
-
-  saveRoleInSession(req, selectedRoles);
 
   let nexturl = `${req.params.sid}/confirm-edit-service`;
 
