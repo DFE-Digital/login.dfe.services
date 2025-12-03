@@ -132,7 +132,6 @@ stages:
             ${{ if eq(location,'northeurope') }}:
               dependsOn:
                 - Deployment_${{env}}_westeurope
-              condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
             ${{ else }}:
               dependsOn: 
               - Deployment_pp_westeurope
@@ -145,7 +144,6 @@ stages:
             ${{ if eq(length(parameters.location), 2) }}:
               dependsOn:
                 - Deployment_${{env}}_westeurope
-              condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
             ${{ elseif eq(parameters.existTag, ' ') }}:
               dependsOn:
                 - scanBuildApp
