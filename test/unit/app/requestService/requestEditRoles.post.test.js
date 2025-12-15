@@ -82,9 +82,12 @@ describe("when displaying the request edit service view", () => {
     policyEngine.validate.mockReset().mockReturnValue([]);
     policyEngine.getPolicyApplicationResultsForUser
       .mockReset()
-      .mockReturnValue({
-        rolesAvailableToUser: [],
-      });
+      .mockReturnValue([
+        {
+          id: "service1",
+          rolesAvailableToUser: [],
+        },
+      ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getSingleServiceForUser.mockReset();

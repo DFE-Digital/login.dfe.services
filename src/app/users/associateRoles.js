@@ -152,11 +152,11 @@ const getViewModel = async (req) => {
   const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
     userAccessToSpecifiedOrganisation ? req.params.uid : undefined,
     req.params.orgId,
-    req.params.sid,
+    [req.params.sid],
     req.id,
   );
 
-  const serviceRoles = policyResult.rolesAvailableToUser.sort((a, b) =>
+  const serviceRoles = policyResult[0].rolesAvailableToUser.sort((a, b) =>
     a.name.localeCompare(b.name),
   );
   const numberOfRolesAvailable = serviceRoles.length;

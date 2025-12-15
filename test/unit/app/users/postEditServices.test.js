@@ -96,9 +96,12 @@ describe("when hitting the post function of edit service", () => {
 
     policyEngine.getPolicyApplicationResultsForUser
       .mockReset()
-      .mockReturnValue({
-        rolesAvailableToUser: [],
-      });
+      .mockReturnValue([
+        {
+          id: "service1",
+          rolesAvailableToUser: [],
+        },
+      ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getSingleServiceForUser.mockReset();
