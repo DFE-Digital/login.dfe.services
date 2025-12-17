@@ -102,9 +102,12 @@ describe("when displaying the associate roles view", () => {
 
     policyEngine.getPolicyApplicationResultsForUser
       .mockReset()
-      .mockReturnValue({
-        rolesAvailableToUser: [],
-      });
+      .mockReturnValue([
+        {
+          id: "service1",
+          rolesAvailableToUser: [],
+        },
+      ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getAssociateRoles =
@@ -174,25 +177,11 @@ describe("when displaying the associate roles view", () => {
     ).toHaveBeenCalledTimes(1);
     expect(
       policyEngine.getPolicyApplicationResultsForUser,
-    ).toHaveBeenCalledWith("user1", "org1", "service1", "correlationId");
+    ).toHaveBeenCalledWith("user1", "org1", ["service1"], "correlationId");
   });
 
   it(`then it should not get Policy Application result for user if they don't have access to the specified organisation`, async () => {
-    const userOrganisations = [
-      {
-        organisation: {
-          id: "org2",
-        },
-      },
-      {
-        organisation: {
-          id: "org3",
-        },
-      },
-    ];
-    getOrganisationAndServiceForUserV2
-      .mockReset()
-      .mockReturnValue(userOrganisations);
+    getOrganisationAndServiceForUserV2.mockReset().mockReturnValue([]);
 
     await getAssociateRoles(req, res);
 
@@ -201,7 +190,7 @@ describe("when displaying the associate roles view", () => {
     ).toHaveBeenCalledTimes(1);
     expect(
       policyEngine.getPolicyApplicationResultsForUser,
-    ).toHaveBeenCalledWith(undefined, "org1", "service1", "correlationId");
+    ).toHaveBeenCalledWith(undefined, "org1", ["service1"], "correlationId");
   });
 
   it("then it should redirect to the users page if there is no user in the session", async () => {

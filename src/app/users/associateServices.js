@@ -103,7 +103,6 @@ const getAllAvailableServices = async (req) => {
     }
   }
 
-  const servicesNotAvailableThroughPolicies = [];
   const userOrganisations =
     req.params.uid && !req.params.uid.startsWith("inv-")
       ? await getOrganisationAndServiceForUserV2(req.params.uid)
@@ -114,20 +113,19 @@ const getAllAvailableServices = async (req) => {
           x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase(),
       )
     : undefined;
+  const policyResults = await policyEngine.getPolicyApplicationResultsForUser(
+    userAccessToSpecifiedOrganisation ? req.params.uid : undefined,
+    req.params.orgId,
+    externalServices.map((x) => x.id),
+    req.id,
+  );
 
-  for (let i = 0; i < externalServices.length; i++) {
-    const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
-      userAccessToSpecifiedOrganisation ? req.params.uid : undefined,
-      req.params.orgId,
-      externalServices[i].id,
-      req.id,
-    );
-    if (!policyResult.serviceAvailableToUser) {
-      servicesNotAvailableThroughPolicies.push(externalServices[i].id);
-    }
-  }
-  return externalServices.filter(
-    (x) => !servicesNotAvailableThroughPolicies.find((y) => x.id === y),
+  return externalServices.filter((service) =>
+    policyResults.find(
+      (result) =>
+        service.id.toLowerCase() === result.id.toLowerCase() &&
+        result.serviceAvailableToUser === true,
+    ),
   );
 };
 

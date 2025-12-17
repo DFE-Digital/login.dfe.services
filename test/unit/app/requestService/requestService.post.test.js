@@ -193,11 +193,14 @@ describe("when posting service and the request has already been requested", () =
 
     policyEngine.getPolicyApplicationResultsForUser
       .mockReset()
-      .mockReturnValue({
-        policiesAppliedForUser: [],
-        rolesAvailableToUser: [],
-        serviceAvailableToUser: true,
-      });
+      .mockReturnValue([
+        {
+          id: "service1",
+          policiesAppliedForUser: [],
+          rolesAvailableToUser: [],
+          serviceAvailableToUser: true,
+        },
+      ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     post = require("./../../../../src/app/requestService/requestService").post;

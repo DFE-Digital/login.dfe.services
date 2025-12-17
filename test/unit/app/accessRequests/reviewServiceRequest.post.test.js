@@ -197,9 +197,12 @@ describe("when reviewing a service request", () => {
     policyEngine.validate.mockReset().mockReturnValue([]);
     policyEngine.getPolicyApplicationResultsForUser
       .mockReset()
-      .mockReturnValue({
-        rolesAvailableToUser: ["role1-id-1"],
-      });
+      .mockReturnValue([
+        {
+          id: "service-id",
+          rolesAvailableToUser: ["role1-id-1"],
+        },
+      ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     NotificationClient.mockImplementation(() => {

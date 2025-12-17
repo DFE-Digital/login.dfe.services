@@ -90,9 +90,12 @@ describe("when reviewing a service request", () => {
     policyEngine.validate.mockReset().mockReturnValue([]);
     policyEngine.getPolicyApplicationResultsForUser
       .mockReset()
-      .mockReturnValue({
-        rolesAvailableToUser: ["role-id-1"],
-      });
+      .mockReturnValue([
+        {
+          id: "service-id",
+          rolesAvailableToUser: ["role-id-1"],
+        },
+      ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getServiceRolesRaw.mockReset().mockReturnValue([

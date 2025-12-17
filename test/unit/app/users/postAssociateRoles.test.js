@@ -92,9 +92,12 @@ describe("when selecting the roles for a service", () => {
     policyEngine.validate.mockReset().mockReturnValue([]);
     policyEngine.getPolicyApplicationResultsForUser
       .mockReset()
-      .mockReturnValue({
-        rolesAvailableToUser: ["role1"],
-      });
+      .mockReturnValue([
+        {
+          id: "service1",
+          rolesAvailableToUser: ["role1"],
+        },
+      ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     postAssociateRoles =
