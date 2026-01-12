@@ -1,6 +1,6 @@
 <div class="govuk-width-container">
   <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-grid-column-full">
         <div class="govuk-!-margin-bottom-9">
             <!-- Banner messages after completing an action (add service, edit service...) -->
             <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
@@ -13,9 +13,6 @@
                             <%= locals.flash.title %>
                         </h2>
                     </div>
-                    <!-- <div class="govuk-grid-column-one-third">
-                        <span class="close-button pull-right" id="close">x</span>
-                    </div> -->
                 </div>
                 <div class="govuk-notification-banner__content" id="notification-content">
                     <h3 class="govuk-notification-banner__heading">
@@ -28,6 +25,9 @@
             </div>
             <% } %>
         </div>
+        <h1 class="govuk-heading-l govuk-!-margin-top-3 <%= (locals.services.length > 0) ? '' : 'govuk-visually-hidden' %>">
+            Select a service
+        </h1>
           <% if (locals.services.length > 0) { %>
               <form method="post" class="prevent-form-double-submission">
                   <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
@@ -44,12 +44,11 @@
                           <legend class="govuk-visually-hidden">'Select all required services'</legend>
 
                           <table class="govuk-table">
-                              <caption class="govuk-table__caption govuk-table__caption--m">Select a service</caption>
                               <thead class="govuk-table__head">
                                   <tr class="govuk-table__row">
-                                  <th scope="col" class="govuk-table__header">Select</th>
-                                  <th scope="col" class="govuk-table__header">Service</th>
-                                  <th scope="col" class="govuk-table__header">Description</th>
+                                    <th scope="col" class="govuk-table__header width-10">Select</th>
+                                    <th scope="col" class="govuk-table__header width-40">Service</th>
+                                    <th scope="col" class="govuk-table__header width-50">Description</th>
                                   </tr>
                               </thead>
                               <tbody class="govuk-table__body">
@@ -71,12 +70,30 @@
                                                   <label class="govuk-label govuk-radios__label" for="<%=service.id%>"></label>
                                               </div>
                                           </td>
-                                          <th scope="row" class="govuk-table__header govuk-table__cell">
+                                        <td class="govuk-table__cell govuk-!-font-size-16 govuk-!-font-weight-bold">
                                               <label class="cursor-pointer" for="<%=service.id%>"><%=service.name%></label>
-                                          </th>
-                                          <td class="govuk-table__cell govuk-!-font-size-16">
-                                              <label class="cursor-pointer" for="<%=service.id%>"><%=service.description%></label>
-                                          </td>
+                                        </td>
+                                        <td class="govuk-table__cell govuk-!-font-size-16">
+                                            <div class="dfe-custom-details-component">
+                                                <details class="govuk-details govuk-!-font-size-16">
+                                                    <summary class="govuk-details__summary">
+                                                        <span class="govuk-details__summary-text" data-open="Hide service description" data-close="Show service description">
+                                                        </span>
+                                                    </summary> 
+                                                    <div class="govuk-details__text govuk-!-font-size-16">
+                                                        <% if (service.description && service.description.length > 0) { %>
+                                                            <label class="cursor-pointer" for="<%= service.id %>">
+                                                                <%= service.description %>
+                                                            </label>
+                                                        <% } else { %>
+                                                            <label class="cursor-pointer" for="<%= service.id %>">
+                                                                No description provided
+                                                            </label>
+                                                        <% } %>
+                                                    </div>
+                                                </details>
+                                            </div>
+                                        </td>
                                       </tr>
                                   <% } %>
                               </tbody>
@@ -94,15 +111,19 @@
               <p class="govuk-body"> All services available for <%= locals.name%> have been selected, there are no further services available.</p>
           <% } %>
       </div>
-      <div class="govuk-grid-column-one-third pull-right">
-        <aside class="govuk-!-margin-top-0">
-            <h2 class="govuk-heading-m">Related actions</h2>
-            <nav aria-label="Related actions">
-                <ul class="govuk-list">
-                    <li><a class="govuk-link-bold" href="<%=locals.urls.help%>/services/request-access">Help with requesting services</a></li>
-                </ul>
-            </nav>
-        </aside>
     </div>
-  </div>
+    <div class="govuk-grid-row">
+       <div class="govuk-grid-column-full">
+            <div class="govuk-!-margin-top-4">
+                <h2 class="govuk-heading-m">Get help</h2>
+                <nav aria-label="Get help">
+                    <ul class="govuk-list">
+                        <li>
+                            Find out more about <a class="govuk-link-bold" href="<%=locals.urls.help%>/services/request-access">requesting services</a>.
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+      </div>
+    </div>
 </div>
