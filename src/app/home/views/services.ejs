@@ -467,25 +467,24 @@
                                 <% } %>
                             </td>
                             <td class="govuk-table__cell">
-                                <div class="dfe-custom-details-component">
-                                    <details class="govuk-details govuk-!-font-size-16">
-                                        <summary class="govuk-details__summary">
-                                            <span class="govuk-details__summary-text" data-open="Hide organisations" data-close="Show organisations">
-                                            </span>
-                                        </summary>    
-                                        <div class="govuk-details__text" aria-live="polite" role="region" >
-                                            <ul>
-                                                <% if (service.organisations.length === 0) { %>
-                                                    <li>Organisations are managed by the service.</li>
-                                                <% } else { %>
-                                                    <% service.organisations.map((organisation) => { %>
-                                                        <li><%= organisation.name %></li>
-                                                    <% }) %>
-                                                <% } %>
-                                            </ul>
-                                        </div>
-                                    </details>
-                                </div>
+                                <details class="govuk-details govuk-!-font-size-16">
+                                    <summary class="govuk-details__summary">
+                                        <span class="govuk-details__summary-text">
+                                                Associated organisations
+                                        </span>
+                                    </summary>    
+                                    <div class="govuk-details__text">
+                                        <ul>
+                                            <% if (service.organisations.length === 0) { %>
+                                                <li>Organisations are managed by the service.</li>
+                                            <% } else { %>
+                                                <% service.organisations.map((organisation) => { %>
+                                                    <li><%= organisation.name %></li>
+                                                <% }) %>
+                                            <% } %>
+                                        </ul>
+                                    </div>
+                                </details>
                             </td>
                         </tr>
                     <% } %>

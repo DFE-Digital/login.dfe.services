@@ -44,14 +44,14 @@
                           <legend class="govuk-visually-hidden">'Select all required services'</legend>
 
                           <table class="govuk-table">
-                              <thead class="govuk-table__head">
-                                  <tr class="govuk-table__row">
-                                    <th scope="col" class="govuk-table__header width-10">Select</th>
-                                    <th scope="col" class="govuk-table__header width-40">Service</th>
-                                    <th scope="col" class="govuk-table__header width-50">Description</th>
-                                  </tr>
-                              </thead>
-                              <tbody class="govuk-table__body">
+                                <thead class="govuk-table__head">
+                                    <tr class="govuk-table__row">
+                                        <th scope="col" class="govuk-table__header width-10">Select</th>
+                                        <th scope="col" class="govuk-table__header width-50">Service</th>
+                                        <th scope="col" class="govuk-table__header width-40">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="govuk-table__body">
 
                                   <% for (let i = 0; i < locals.services.length; i++) { %>
                                       <% const service = locals.services[i]; %>
@@ -74,25 +74,24 @@
                                               <label class="cursor-pointer" for="<%=service.id%>"><%=service.name%></label>
                                         </td>
                                         <td class="govuk-table__cell govuk-!-font-size-16">
-                                            <div class="dfe-custom-details-component">
-                                                <details class="govuk-details govuk-!-font-size-16">
-                                                    <summary class="govuk-details__summary">
-                                                        <span class="govuk-details__summary-text" data-open="Hide service description" data-close="Show service description">
-                                                        </span>
-                                                    </summary> 
-                                                    <div class="govuk-details__text govuk-!-font-size-16">
-                                                        <% if (service.description && service.description.length > 0) { %>
-                                                            <label class="cursor-pointer" for="<%= service.id %>">
-                                                                <%= service.description %>
-                                                            </label>
-                                                        <% } else { %>
-                                                            <label class="cursor-pointer" for="<%= service.id %>">
-                                                                No description provided
-                                                            </label>
-                                                        <% } %>
-                                                    </div>
-                                                </details>
-                                            </div>
+                                            <details class="govuk-details govuk-!-font-size-16">
+                                                <summary class="govuk-details__summary">
+                                                    <span class="govuk-details__summary-text">
+                                                            Service description
+                                                    </span>
+                                                </summary>    
+                                                <div class="govuk-details__text">
+                                                    <% if (service.description && service.description.length > 0) { %>
+                                                        <label class="cursor-pointer" for="<%= service.id %>">
+                                                            <%= service.description %>
+                                                        </label>
+                                                    <% } else { %>
+                                                        <label class="cursor-pointer" for="<%= service.id %>">
+                                                            No description provided
+                                                        </label>
+                                                    <% } %>
+                                                </div>
+                                            </details>
                                         </td>
                                       </tr>
                                   <% } %>
