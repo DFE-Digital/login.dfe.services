@@ -91,7 +91,7 @@ redisClient.on("connect", function () {
 });
 
 const init = async () => {
-  let expiryInMinutes = 30;
+  let expiryInMinutes = 20;
   const sessionExpiry = parseInt(
     config.hostingEnvironment.sessionCookieExpiryInMinutes,
   );

@@ -45,7 +45,7 @@ const config = {
     supportUrl: "https://" + process.env.STANDALONE_SUPPORT_HOST_NAME,
     surveyUrl: process.env.PLATFORM_GLOBAL_USER_FEEDBACK_URL,
     applicationInsights: process.env.APPLICATIONINSIGHTS_CONNECTION_STRING,
-    sessionCookieExpiryInMinutes: 480,
+    sessionCookieExpiryInMinutes: 20,
     agentKeepAlive: {
       maxSockets: 30,
       maxFreeSockets: 10,
