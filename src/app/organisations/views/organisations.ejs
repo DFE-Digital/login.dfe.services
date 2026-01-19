@@ -155,23 +155,22 @@
                                     <% if (organisation.approvers && organisation.approvers.length === 0) { %>
                                         No approvers
                                     <% } else if (organisation.approvers) { %>
-                                        <div class="dfe-custom-details-component">
-                                            <details class="govuk-details govuk-!-font-size-16">
-                                                <summary class="govuk-details__summary">
-                                                    <span class="govuk-details__summary-text" data-open="Hide approvers" data-close="Show approvers">
-                                                    </span>
-                                                </summary>
-                                                <div class="govuk-details__text">
-                                                    <ul>
-                                                        <% for (let a = 0; a < organisation.approvers.length; a++) { %>
-                                                            <li>
-                                                                <%= organisation.approvers[a].email %>
-                                                            </li>
-                                                        <% } %>
-                                                    </ul>
-                                                </div>
-                                            </details>
-                                        </div>
+                                        <details class="govuk-details govuk-!-font-size-16">
+                                            <summary class="govuk-details__summary">
+                                                <span class="govuk-details__summary-text">
+                                                    Assigned approvers
+                                                </span>
+                                            </summary>
+                                            <div class="govuk-details__text">
+                                                <ul>
+                                                    <% for (let a = 0; a < organisation.approvers.length; a++) { %>
+                                                        <li>
+                                                            <%= organisation.approvers[a].email %>
+                                                        </li>
+                                                    <% } %>
+                                                </ul>
+                                            </div>
+                                        </details>
                                     <% } %>
                                 </td>
                             </tr>
