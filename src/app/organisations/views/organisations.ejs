@@ -15,9 +15,9 @@
 
     <div class="govuk-grid-row govuk-!-margin-bottom-9">
 
-        <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
+        <div class="govuk-grid-column-full-width govuk-!-padding-0">
 
-            <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
+            <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-2">
                 <% if (locals.flash.title && locals.flash.heading && locals.flash.message) { %>
                     <div id="notification-wrapper" class="govuk-notification-banner govuk-notification-banner<%= locals.flash.title[0].toLowerCase().includes("success") ? "--success" : "" %>"
                         role="alert" aria-labelledby="govuk-notification-banner-title"
@@ -45,7 +45,7 @@
                 <!-- If user is an approver, and there are requests pending, show this banner -->
                 <% if (locals.totalNumberOfAccessRequests && locals.totalNumberOfAccessRequests > 0) { %>
                     <div id="notification-wrapper-approver-request"
-                        class="govuk-notification-banner"
+                        class="govuk-notification-banner govuk-!-margin-bottom-4"
                         role="region"
                         aria-labelledby="govuk-notification-banner-title"
                         data-module="govuk-notification-banner">
@@ -60,11 +60,9 @@
                             </div>
                         </div>
                         <div class="govuk-notification-banner__content" id="notification-content">
-                            <h3 class="govuk-notification-banner__heading">
-                                You have requests awaiting review
-                            </h3>
-                            <p>
-                                <a class="govuk-link-bold" href="/access-requests">Go to requests</a>
+                            <p class="govuk-notification-banner__heading">
+                                You have requests awaiting review.
+                                <a class="govuk-link-bold" href="/access-requests">Go to requests</a>.
                             </p>
                         </div>
                     </div>
@@ -73,8 +71,8 @@
         </div>
 
         <% if (!disableReqOrgLink) { %>
-            <div class="govuk-grid-column-one-third">
-                <aside class="govuk-!-margin-top-9">
+            <div class="govuk-grid-column-full-width">
+                <aside class="app-related-actions govuk-!-margin-top-0">
                     <h2 class="govuk-heading-m">Related actions</h2>
                     <nav aria-label="Related actions">
                         <ul class="govuk-list">
@@ -89,13 +87,14 @@
     </div>
 
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full-width">
+        <div class="govuk-grid-column-full-width govuk-!-margin-top-8">
             <% if (organisations.length <= 0) { %>
                 <div class="empty-state">
                     <p class="govuk-body">You are not linked to any organisations in DfE Sign-in. You can <a class="govuk-link-bold" href="/request-organisation/search">request an organisation</a> to be linked to your account.</p>
                 </div>
             <% } else { %>
                 <table class="govuk-table">
+                    <caption class="govuk-table__caption govuk-table__caption--m govuk-!-margin-bottom-6">User listing</caption>
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
                             <th scope="col" class="govuk-table__header width-40">
