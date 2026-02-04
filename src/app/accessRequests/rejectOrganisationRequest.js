@@ -85,7 +85,7 @@ const post = async (req, res) => {
     type: "approver",
     subType: "organisation-request-rejected",
     userId: req.user.sub,
-    organisationId: model.request.org_id,
+    organisationid: model.request.org_id,
     editedUser: model.request.user_id,
     reason: model.reason,
     currentPage: "requests",

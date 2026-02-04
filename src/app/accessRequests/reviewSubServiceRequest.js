@@ -221,7 +221,7 @@ const post = async (req, res) => {
         subType: "sub-service-request-approved",
         userId: req.user.sub,
         userEmail: req.user.email,
-        organisationId: model.viewModel.org_id,
+        organisationid: model.viewModel.org_id,
         meta: {
           editedFields: [
             {

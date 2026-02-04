@@ -177,7 +177,7 @@ const post = async (req, res) => {
         userId: req.user.sub,
         userEmail: req.user.email,
         application: config.loggerSettings.applicationName,
-        organisationId: model.viewModel.org_id,
+        organisationid: model.viewModel.org_id,
         env: config.hostingEnvironment.env,
         message: `${req.user.email} (approverId: ${req.user.sub}) rejected sub-service request for (serviceId: ${
           model.viewModel.service_id

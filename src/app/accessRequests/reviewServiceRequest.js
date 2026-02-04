@@ -236,8 +236,7 @@ const post = async (req, res) => {
       userId: approver.sub,
       userEmail: approver.email,
       application: config.loggerSettings.applicationName,
-      organisationId: organisation.id,
-      client: service.clientId,
+      organisationid: organisation.id,
       env: config.hostingEnvironment.env,
       message: `${approver.email} (approverId: ${
         approver.sub
@@ -246,6 +245,9 @@ const post = async (req, res) => {
       )}) and organisation (orgId: ${
         organisation.id
       }) for end user (endUserId: ${endUserId}) - requestId (reqId: ${rid})`,
+      meta: {
+        client: service.clientId,
+      },
     });
     const serviceName = service.name;
     const newServiceDetails = JSON.stringify({

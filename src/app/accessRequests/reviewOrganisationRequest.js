@@ -174,6 +174,7 @@ const post = async (req, res) => {
     type: "approver",
     subType: "organisation-request-approved",
     userId: req.user.sub,
+    organisationid: model.request.org_id,
     meta: {
       editedFields: [
         {
