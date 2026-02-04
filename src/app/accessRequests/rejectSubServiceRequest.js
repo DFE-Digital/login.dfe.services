@@ -177,15 +177,15 @@ const post = async (req, res) => {
         userId: req.user.sub,
         userEmail: req.user.email,
         application: config.loggerSettings.applicationName,
+        meta: {
+          requestId: req.params.rid,
+          serviceId: model.viewModel.service_id,
+          endUserId: model.viewModel.user_id,
+          reason: model.reason ? `The reject reason is ${model.reason}` : "",
+        },
         organisationid: model.viewModel.org_id,
         env: config.hostingEnvironment.env,
-        message: `${req.user.email} (approverId: ${req.user.sub}) rejected sub-service request for (serviceId: ${
-          model.viewModel.service_id
-        }) and sub-services (roleIds: ${JSON.stringify(model.viewModel.role_ids)}) for organisation (orgId: ${
-          model.viewModel.org_id
-        }) for end user (endUserId: ${model.viewModel.user_id}). ${
-          model.reason ? `The reject reason is ${model.reason}` : ""
-        } - requestId (reqId: ${req.params.rid})`,
+        message: `${req.user.email} rejected sub-service request for ${model.viewModel.Service_name} and sub-services (roleIds: ${JSON.stringify(model.viewModel.role_ids)}) for ${model.viewModel.endUsersEmail}`,
       });
 
       res.flash("title", "Success");

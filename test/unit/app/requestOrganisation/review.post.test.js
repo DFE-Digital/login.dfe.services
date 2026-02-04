@@ -264,7 +264,7 @@ describe("when reviewing an organisation request", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "email@email.com (id: user1) requested organisation (id: org1)",
+      "email@email.com requested organisation access",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "organisation",

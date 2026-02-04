@@ -187,7 +187,7 @@ const post = async (req, res) => {
     },
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`,
+    message: `${req.user.email} approved organisation request for ${model.request.usersEmail}`,
   });
 
   res.flash("title", `Success`);

@@ -134,15 +134,13 @@ const post = async (req, res) => {
     application: config.loggerSettings.applicationName,
     organisationid: organisation.id,
     env: config.hostingEnvironment.env,
-    message: `${approver.email} (approverId: ${
-      approver.sub
-    }) rejected service (serviceId: ${serviceId}), roles (roleIds: ${
-      roleIds ? roleIds : "No roles selected"
-    }) and organisation (orgId: ${organisation.id}) for end user (endUserId: ${endUserId}). ${
-      reason ? `The reject reason is ${reason}` : ""
-    } - requestId (reqId: ${rid})`,
+    message: `${approver.email} rejected service request for ${endUsersEmail}`,
     meta: {
       client: service.clientId,
+      requestId: rid,
+      roles: roleIds ? roleIds : "No roles selected",
+      endUserId,
+      reason: reason ? `The reject reason is ${reason}` : "",
     },
   });
 

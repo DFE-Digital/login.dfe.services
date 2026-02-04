@@ -91,7 +91,7 @@ const post = async (req, res) => {
     currentPage: "requests",
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`,
+    message: `${req.user.email} rejected organisation request for ${model.request.usersEmail}`,
   });
 
   res.flash("title", `Success`);
