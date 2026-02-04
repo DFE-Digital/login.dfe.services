@@ -366,7 +366,7 @@ describe("when reviewing a service request", () => {
       'jane.doe@education (approverId: approver-user-id) approved service (serviceId: service-id) and roles (roleIds: ["role-id-1"]) and organisation (orgId: organisation-id) for end user (endUserId: end-user-id) - requestId (reqId: request-id)',
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
-      subType: "access-request-approved",
+      subType: "service-request-approved",
       type: "services",
       userEmail: "jane.doe@education",
       userId: "approver-user-id",

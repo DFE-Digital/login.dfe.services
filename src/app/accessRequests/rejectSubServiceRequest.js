@@ -173,10 +173,11 @@ const post = async (req, res) => {
 
       logger.audit({
         type: "sub-service",
-        subType: "sub-service request Rejected",
+        subType: "sub-service-request-rejected",
         userId: req.user.sub,
         userEmail: req.user.email,
         application: config.loggerSettings.applicationName,
+        organisationId: model.viewModel.org_id,
         env: config.hostingEnvironment.env,
         message: `${req.user.email} (approverId: ${req.user.sub}) rejected sub-service request for (serviceId: ${
           model.viewModel.service_id

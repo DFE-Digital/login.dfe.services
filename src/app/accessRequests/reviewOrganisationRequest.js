@@ -172,7 +172,7 @@ const post = async (req, res) => {
   //audit organisation approved
   logger.audit({
     type: "approver",
-    subType: "approved-org",
+    subType: "organisation-request-approved",
     userId: req.user.sub,
     meta: {
       editedFields: [

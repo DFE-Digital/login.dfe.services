@@ -312,7 +312,7 @@ describe("when reviewing an organisation request", () => {
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",
-      subType: "approved-org",
+      subType: "organisation-request-approved",
       userId: "user1",
       meta: {
         editedUser: "userId",

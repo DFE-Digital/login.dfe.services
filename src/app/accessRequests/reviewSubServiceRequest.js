@@ -218,9 +218,10 @@ const post = async (req, res) => {
 
       logger.audit({
         type: "sub-service",
-        subType: "sub-service request Approved",
+        subType: "sub-service-request-approved",
         userId: req.user.sub,
         userEmail: req.user.email,
+        organisationId: model.viewModel.org_id,
         meta: {
           editedFields: [
             {

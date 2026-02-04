@@ -83,8 +83,9 @@ const post = async (req, res) => {
   //audit organisation rejected
   logger.audit({
     type: "approver",
-    subType: "rejected-org",
+    subType: "organisation-request-rejected",
     userId: req.user.sub,
+    organisationId: model.request.org_id,
     editedUser: model.request.user_id,
     reason: model.reason,
     currentPage: "requests",

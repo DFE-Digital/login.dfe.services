@@ -240,7 +240,7 @@ describe("when rejecting an organisation request", () => {
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",
-      subType: "rejected-org",
+      subType: "organisation-request-rejected",
       userId: "user1",
       editedUser: "userId",
       reason: "reason for rejection",

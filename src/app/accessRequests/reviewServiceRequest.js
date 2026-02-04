@@ -232,10 +232,12 @@ const post = async (req, res) => {
 
     logger.audit({
       type: "services",
-      subType: "access-request-approved",
+      subType: "service-request-approved",
       userId: approver.sub,
       userEmail: approver.email,
       application: config.loggerSettings.applicationName,
+      organisationId: organisation.id,
+      client: service.clientId,
       env: config.hostingEnvironment.env,
       message: `${approver.email} (approverId: ${
         approver.sub
