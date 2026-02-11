@@ -334,13 +334,14 @@ describe("When approving a service request", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      'approver.one@unit.test (approverId: approver1) approved service (serviceId: service1) and roles (roleIds: ["role1"]) and organisation (orgId: organisationId) for end user (endUserId: endUser1) - requestId (reqId: reqId)',
+      'approver.one@unit.test (approverId: approver1) approved service (serviceId: service1) and roles (roleIds: ["role1"]) for end user (endUserId: endUser1) - requestId (reqId: reqId)',
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "services",
       subType: "access-request",
       userId: "approver1",
       userEmail: "approver.one@unit.test",
+      organisationid: "organisationId",
     });
   });
 

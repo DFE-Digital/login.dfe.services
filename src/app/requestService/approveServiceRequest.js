@@ -296,12 +296,11 @@ const post = async (req, res) => {
     userId: req.user.uid,
     userEmail: req.user.email,
     application: config.loggerSettings.applicationName,
+    organisationid: req.params.orgId,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (approverId: ${req.user.sub}) approved service (serviceId: ${
       req.params.sid
-    }) and roles (roleIds: ${JSON.stringify(roles)}) and organisation (orgId: ${
-      req.params.orgId
-    }) for end user (endUserId: ${req.params.uid}) - requestId (reqId: ${userServiceRequestId})`,
+    }) and roles (roleIds: ${JSON.stringify(roles)}) for end user (endUserId: ${req.params.uid}) - requestId (reqId: ${userServiceRequestId})`,
   });
 
   res.flash("title", `Success`);
