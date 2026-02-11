@@ -182,6 +182,7 @@ const post = async (req, res) => {
         meta: {
           requestId: req.params.rid,
           serviceId: model.viewModel.service_id,
+          client: model.viewModel.clientId,
           endUserId: model.viewModel.user_id,
           roles: model.viewModel.role_ids
             ? JSON.stringify(model.viewModel.role_ids)
@@ -190,7 +191,7 @@ const post = async (req, res) => {
         },
         organisationid: model.viewModel.org_id,
         env: config.hostingEnvironment.env,
-        message: `${req.user.email} rejected sub-service request for ${model.viewModel.Service_name} for ${model.viewModel.endUsersEmail}`,
+        message: `${req.user.email} rejected sub-service request for ${model.viewModel.endUsersEmail}`,
       });
 
       res.flash("title", "Success");

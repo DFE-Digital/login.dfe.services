@@ -227,6 +227,7 @@ const post = async (req, res) => {
         meta: {
           requestId: req.params.rid,
           serviceId: model.viewModel.service_id,
+          client: model.viewModel.clientId,
           endUserId: model.viewModel.user_id,
           editedFields: [
             {
@@ -238,7 +239,7 @@ const post = async (req, res) => {
         },
         application: config.loggerSettings.applicationName,
         env: config.hostingEnvironment.env,
-        message: `${req.user.email} approved sub-service request for ${model.viewModel.Service_name} for ${model.viewModel.endUsersEmail}`,
+        message: `${req.user.email} approved sub-service request for ${model.viewModel.endUsersEmail}`,
       });
       res.flash("title", `Success`);
       res.flash("heading", "Sub-service changes approved");

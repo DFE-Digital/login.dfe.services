@@ -62,6 +62,8 @@ const getRoleAndServiceNames = async (subModel, requestId, req) => {
   );
   subModel.roles = [];
   if (serviceDetails.name) subModel.Service_name = serviceDetails.name;
+  if (serviceDetails.relyingParty.clientId)
+    subModel.clientId = serviceDetails.relyingParty.clientId;
   if (req !== undefined) {
     req.session.roles = [];
   }
