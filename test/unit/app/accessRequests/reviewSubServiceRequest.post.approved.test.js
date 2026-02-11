@@ -25,6 +25,7 @@ const sendSubServiceRequestOutcomeToApprovers = jest.fn();
 const sendSubServiceRequestApproved = jest.fn();
 
 const Account = require("../../../../src/infrastructure/account");
+const logger = require("./../../../../src/infrastructure/logger");
 jest.mock("login.dfe.policy-engine");
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/users");
@@ -312,6 +313,21 @@ describe("When reviewing a sub-service request for approving", () => {
     await post(req, res);
 
     expect(sendSubServiceRequestApproved.mock.calls).toHaveLength(0);
+  });
+
+  it("then it should send the audit logs for sub service request rejected", async () => {
+    await post(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0].message).toBe(
+      "email@email.com approved sub-service request for service one for b@b.gov.uk",
+    );
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
+      subType: "sub-service-request-approved",
+      type: "sub-service",
+      userEmail: "email@email.com",
+      userId: "user1",
+    });
   });
 
   it("then it should render Success when its approved correctly", async () => {

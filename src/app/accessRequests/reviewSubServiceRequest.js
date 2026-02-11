@@ -216,6 +216,8 @@ const post = async (req, res) => {
         );
       }
 
+      // Including service name in the message because the model doesn't include the
+      // clientId of the service.  This could be a future improvement.
       logger.audit({
         type: "sub-service",
         subType: "sub-service-request-approved",
@@ -236,8 +238,7 @@ const post = async (req, res) => {
         },
         application: config.loggerSettings.applicationName,
         env: config.hostingEnvironment.env,
-        message: `${req.user.email} approved sub-service request for ${model.viewModel.Service_name}
-        and sub-services (roleIds: ${JSON.stringify(model.viewModel.role_ids)}) for ${model.viewModel.endUsersEmail}`,
+        message: `${req.user.email} approved sub-service request for ${model.viewModel.Service_name} for ${model.viewModel.endUsersEmail}`,
       });
       res.flash("title", `Success`);
       res.flash("heading", "Sub-service changes approved");

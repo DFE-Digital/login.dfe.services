@@ -171,6 +171,8 @@ const post = async (req, res) => {
         );
       }
 
+      // Including service name in the message because the model doesn't include the
+      // clientId of the service.  This could be a future improvement.
       logger.audit({
         type: "sub-service",
         subType: "sub-service-request-rejected",
@@ -181,11 +183,14 @@ const post = async (req, res) => {
           requestId: req.params.rid,
           serviceId: model.viewModel.service_id,
           endUserId: model.viewModel.user_id,
+          roles: model.viewModel.role_ids
+            ? JSON.stringify(model.viewModel.role_ids)
+            : "No roles selected",
           reason: model.reason ? `The reject reason is ${model.reason}` : "",
         },
         organisationid: model.viewModel.org_id,
         env: config.hostingEnvironment.env,
-        message: `${req.user.email} rejected sub-service request for ${model.viewModel.Service_name} and sub-services (roleIds: ${JSON.stringify(model.viewModel.role_ids)}) for ${model.viewModel.endUsersEmail}`,
+        message: `${req.user.email} rejected sub-service request for ${model.viewModel.Service_name} for ${model.viewModel.endUsersEmail}`,
       });
 
       res.flash("title", "Success");

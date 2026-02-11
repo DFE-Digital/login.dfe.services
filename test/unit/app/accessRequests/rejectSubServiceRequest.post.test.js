@@ -2,6 +2,7 @@ const {
   mockRequest,
   mockResponse,
   mockAdapterConfig,
+  mockLogger,
 } = require("../../../utils/jestMocks");
 const {
   getSubServiceRequestViewModel,
@@ -15,14 +16,15 @@ const {
 } = require("../../../../src/app/accessRequests/rejectSubServiceRequest");
 
 const Account = require("../../../../src/infrastructure/account");
+const logger = require("./../../../../src/infrastructure/logger");
+
 jest.mock("../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
 jest.mock("login.dfe.jobs-client");
 const sendAccessRequest = jest.fn();
-jest.mock("../../../../src/infrastructure/logger", () =>
-  require("../../../utils/jestMocks").mockLogger(),
-);
+jest.mock("../../../../src/infrastructure/logger", () => mockLogger());
+
 jest.mock("./../../../../src/infrastructure/account", () => ({
   fromContext: jest.fn(),
   getById: jest.fn(),
@@ -99,7 +101,7 @@ const viewModel = {
   validationMessages: {},
   currentPage: "requests",
   Role_name: "role  one",
-  service_name: "service one",
+  Service_name: "service one",
   roles: listRoles,
 };
 
@@ -231,6 +233,21 @@ describe("When actioning a sub-service request for rejection", () => {
 
     getSubServiceRequestViewModel.mockReset();
     getSubServiceRequestViewModel.mockReturnValue(viewModel);
+  });
+
+  it("then it should send the audit logs for sub service request rejected", async () => {
+    await post(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0].message).toBe(
+      "email@email.com rejected sub-service request for service one for b@b.gov.uk",
+    );
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
+      subType: "sub-service-request-rejected",
+      type: "sub-service",
+      userEmail: "email@email.com",
+      userId: "user1",
+    });
   });
 
   it("then it should redirect to summary request view", async () => {
