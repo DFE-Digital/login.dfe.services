@@ -173,18 +173,23 @@ const post = async (req, res) => {
 
       logger.audit({
         type: "sub-service",
-        subType: "sub-service request Rejected",
+        subType: "sub-service-request-rejected",
         userId: req.user.sub,
         userEmail: req.user.email,
         application: config.loggerSettings.applicationName,
+        meta: {
+          requestId: req.params.rid,
+          serviceId: model.viewModel.service_id,
+          client: model.viewModel.clientId,
+          endUserId: model.viewModel.user_id,
+          roles: model.viewModel.role_ids
+            ? JSON.stringify(model.viewModel.role_ids)
+            : "No roles selected",
+          reason: model.reason ? `The reject reason is ${model.reason}` : "",
+        },
+        organisationid: model.viewModel.org_id,
         env: config.hostingEnvironment.env,
-        message: `${req.user.email} (approverId: ${req.user.sub}) rejected sub-service request for (serviceId: ${
-          model.viewModel.service_id
-        }) and sub-services (roleIds: ${JSON.stringify(model.viewModel.role_ids)}) for organisation (orgId: ${
-          model.viewModel.org_id
-        }) for end user (endUserId: ${model.viewModel.user_id}). ${
-          model.reason ? `The reject reason is ${model.reason}` : ""
-        } - requestId (reqId: ${req.params.rid})`,
+        message: `${req.user.email} rejected sub-service request for ${model.viewModel.endUsersEmail}`,
       });
 
       res.flash("title", "Success");

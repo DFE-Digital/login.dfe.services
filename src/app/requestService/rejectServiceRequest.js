@@ -208,8 +208,9 @@ const post = async (req, res) => {
     userId: req.user.uid,
     userEmail: req.user.email,
     application: config.loggerSettings.applicationName,
+    organisationid: req.params.orgId,
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} (approverId: ${req.user.sub}) rejected service (serviceId: ${req.params.sid}), roles (roleIds: ${JSON.stringify(roles)}) and organisation (orgId: ${req.params.orgId}) for end user (endUserId: ${req.params.uid}). ${rejectReason ? `The reject reason is ${rejectReason}` : ""} - requestId (reqId: ${userServiceRequestId})`,
+    message: `${req.user.email} (approverId: ${req.user.sub}) rejected service (serviceId: ${req.params.sid}), roles (roleIds: ${JSON.stringify(roles)}) for end user (endUserId: ${req.params.uid}). ${rejectReason ? `The reject reason is ${rejectReason}` : ""} - requestId (reqId: ${userServiceRequestId})`,
   });
 
   res.flash("title", `Success`);

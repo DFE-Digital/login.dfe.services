@@ -257,16 +257,17 @@ const post = async (req, res) => {
 
   logger.audit({
     type: "sub-service",
-    subType: "sub-service request Approved",
+    subType: "sub-service-roles-request-approved",
     userId: approverDetails.sub,
     userEmail: approverDetails.email,
     application: config.loggerSettings.applicationName,
+    organisationid: orgId,
     env: config.hostingEnvironment.env,
     message: `${approverDetails.email} (approverId: ${
       approverDetails.sub
     }) approved sub-service request for (serviceId: ${serviceId}) and sub-services (roleIds: ${JSON.stringify(
       roles,
-    )}) and organisation (orgId: ${orgId}) for end user (endUserId: ${endUserId}) - requestId (reqId: ${userSubServiceRequestID})`,
+    )}) for end user (endUserId: ${endUserId}) - requestId (reqId: ${userSubServiceRequestID})`,
   });
 
   res.flash("title", "Success");

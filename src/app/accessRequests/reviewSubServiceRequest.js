@@ -218,10 +218,15 @@ const post = async (req, res) => {
 
       logger.audit({
         type: "sub-service",
-        subType: "sub-service request Approved",
+        subType: "sub-service-request-approved",
         userId: req.user.sub,
         userEmail: req.user.email,
+        organisationid: model.viewModel.org_id,
         meta: {
+          requestId: req.params.rid,
+          serviceId: model.viewModel.service_id,
+          client: model.viewModel.clientId,
+          endUserId: model.viewModel.user_id,
           editedFields: [
             {
               name: "Approved_Subservice",
@@ -232,11 +237,7 @@ const post = async (req, res) => {
         },
         application: config.loggerSettings.applicationName,
         env: config.hostingEnvironment.env,
-        message: `${req.user.email} (approverId: ${req.user.sub}) approved sub-service request for (serviceId: ${
-          model.viewModel.service_id
-        }) and sub-services (roleIds: ${JSON.stringify(model.viewModel.role_ids)}) and organisation (orgId: ${
-          model.viewModel.org_id
-        }) for end user (endUserId: ${model.viewModel.user_id}) - requestId (reqId: ${req.params.rid})`,
+        message: `${req.user.email} approved sub-service request for ${model.viewModel.endUsersEmail}`,
       });
       res.flash("title", `Success`);
       res.flash("heading", "Sub-service changes approved");

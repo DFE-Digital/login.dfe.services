@@ -313,11 +313,12 @@ describe("when posting a service rejection", () => {
       application: undefined,
       env: "test-run",
       message:
-        "mock-email (approverId: mock-sub) rejected service (serviceId: service1), roles (roleIds: []) and organisation (orgId: organisationId) for end user (endUserId: undefined). The reject reason is xxxxxxxxxx - requestId (reqId: undefined)",
+        "mock-email (approverId: mock-sub) rejected service (serviceId: service1), roles (roleIds: []) for end user (endUserId: undefined). The reject reason is xxxxxxxxxx - requestId (reqId: undefined)",
       subType: "access-request-rejected",
       type: "services",
       userEmail: "mock-email",
       userId: "mock-uid",
+      organisationid: "organisationId",
     });
   });
 });
