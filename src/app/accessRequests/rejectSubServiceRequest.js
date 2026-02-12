@@ -171,8 +171,6 @@ const post = async (req, res) => {
         );
       }
 
-      // Including service name in the message because the model doesn't include the
-      // clientId of the service.  This could be a future improvement.
       logger.audit({
         type: "sub-service",
         subType: "sub-service-request-rejected",
