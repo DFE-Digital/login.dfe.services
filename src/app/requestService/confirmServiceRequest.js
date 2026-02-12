@@ -225,12 +225,14 @@ const post = async (req, res) => {
     userId: req.session.user.uid,
     userEmail: senderEmail,
     application: config.loggerSettings.applicationName,
+    organisationid: organisationDetails.organisation.id,
+    meta: {
+      requestId: serviceRequestId,
+      roles: JSON.stringify(rolesIds),
+      client: serviceDetails.relyingParty.clientId,
+    },
     env: config.hostingEnvironment.env,
-    message: `${senderEmail} (userId: ${req.session.user.uid}) requested service (serviceId: ${
-      serviceDetails.id
-    }) and roles (roleIds: ${JSON.stringify(rolesIds)}) for organisation (orgId: ${
-      organisationDetails.organisation.id
-    }) - requestId (reqId: ${serviceRequestId})`,
+    message: `${senderEmail} requested service access`,
   });
 
   res.flash("title", `Success`);

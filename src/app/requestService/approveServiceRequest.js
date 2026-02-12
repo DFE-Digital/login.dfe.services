@@ -91,6 +91,7 @@ const getViewModel = async (req, existingModel) => {
   const service = {
     serviceId,
     name: serviceDetails.name,
+    clientId: serviceDetails.relyingParty.clientId,
     roles: roleDetails,
   };
 
@@ -292,16 +293,19 @@ const post = async (req, res) => {
 
   logger.audit({
     type: "services",
-    subType: "access-request",
+    subType: "access-request-approved",
     userId: req.user.uid,
     userEmail: req.user.email,
     application: config.loggerSettings.applicationName,
+    organisationid: req.params.orgId,
+    meta: {
+      client: viewModel.service.clientId,
+      roles: JSON.stringify(roles),
+      requestId: userServiceRequestId,
+      approverId: req.user.sub,
+    },
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} (approverId: ${req.user.sub}) approved service (serviceId: ${
-      req.params.sid
-    }) and roles (roleIds: ${JSON.stringify(roles)}) and organisation (orgId: ${
-      req.params.orgId
-    }) for end user (endUserId: ${req.params.uid}) - requestId (reqId: ${userServiceRequestId})`,
+    message: `${req.user.email} approved service access request for end user (endUserId: ${req.params.uid})`,
   });
 
   res.flash("title", `Success`);
