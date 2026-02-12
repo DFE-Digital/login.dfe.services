@@ -137,7 +137,7 @@ const post = async (req, res) => {
 
   logger.audit({
     type: "sub-service",
-    subType: "sub-service request",
+    subType: "sub-service-request",
     userId: uid,
     userEmail: req.user.email,
     application: config.loggerSettings.applicationName,
