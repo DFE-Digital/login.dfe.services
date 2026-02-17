@@ -160,6 +160,7 @@ const closeServiceAddedBanner = async (req, res) => {
     await directories.deleteUserBanner(req.params.bannerId);
     res.sendStatus(200).end();
   } catch (error) {
+    // Future fix: Use req.params.bannerId instead of '5' for the id.
     throw new Error(
       `Error removing 'Service added' banner with id 5 - ${error}.`,
     );
