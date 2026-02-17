@@ -351,7 +351,7 @@ describe("userBannersHandlers", () => {
         .mockReturnValue([{ id, userId, bannerData }]);
     });
 
-    it("should create the user banner with the data", async () => {
+    it("should return banner data if banners are found", async () => {
       const result = await fetchNewServiceBanners(userId);
 
       expect(result).toStrictEqual([
@@ -363,6 +363,17 @@ describe("userBannersHandlers", () => {
       mockFetchMultipleUserBanners
         .mockReset()
         .mockReturnValue([{ id, userId }]);
+      const result = await fetchNewServiceBanners(userId);
+
+      expect(result).toStrictEqual([
+        { id: "banner1", serviceName: null, userId: "user1" },
+      ]);
+    });
+
+    it("should include null service name if there is bannerData but no service name present", async () => {
+      mockFetchMultipleUserBanners
+        .mockReset()
+        .mockReturnValue([{ id, userId, bannerData: JSON.stringify({}) }]);
       const result = await fetchNewServiceBanners(userId);
 
       expect(result).toStrictEqual([
@@ -395,7 +406,7 @@ describe("userBannersHandlers", () => {
         .mockReturnValue([{ id, userId, bannerData }]);
     });
 
-    it("should create the user banner with the data", async () => {
+    it("should return banner data if banners are found", async () => {
       const result = await fetchSubServiceAddedBanners(userId);
 
       expect(result).toStrictEqual([
@@ -412,6 +423,22 @@ describe("userBannersHandlers", () => {
       mockFetchMultipleUserBanners
         .mockReset()
         .mockReturnValue([{ id, userId }]);
+      const result = await fetchSubServiceAddedBanners(userId);
+
+      expect(result).toStrictEqual([
+        {
+          id: "banner1",
+          serviceName: null,
+          subServiceName: null,
+          userId: "user1",
+        },
+      ]);
+    });
+
+    it("should include null service and sub-service names if there is bannerData but names are not present", async () => {
+      mockFetchMultipleUserBanners
+        .mockReset()
+        .mockReturnValue([{ id, userId, bannerData: JSON.stringify({}) }]);
       const result = await fetchSubServiceAddedBanners(userId);
 
       expect(result).toStrictEqual([
