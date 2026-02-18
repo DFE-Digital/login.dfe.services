@@ -223,8 +223,8 @@ const isOrgEndUser = (userOrganisations, orgId) => {
 };
 
 const isLoginOver24 = (last_login, prev_login) => {
-  let a = moment(last_login, "HH:mm");
-  let b = moment(prev_login, "HH:mm");
+  let a = moment(last_login);
+  let b = moment(prev_login);
   let checkfor24 = a.diff(b, "hours");
   if (checkfor24 > numberOfHours) {
     return true;

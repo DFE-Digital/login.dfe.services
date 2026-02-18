@@ -53,8 +53,6 @@ const getAndMapServices = async (account) => {
         application = await getServiceRaw({ by: { serviceId: service.id } });
         appCache.save(service.id, application);
         logger.info(`${service.id} adding to app cache`);
-      } else {
-        logger.info(`${service.id} available in the cache`);
       }
 
       if (
@@ -120,16 +118,19 @@ const getTasksListStatusAndApprovers = async (account, correlationId) => {
     multiOrgDetails: { orgs: 0, approvers: 0 },
   };
   let approvers = [];
-  const organisations = await getOrganisationAndServiceForUser(account.id);
-  const allApprovers = await getApproversDetails(organisations, correlationId);
+  const userOrganisations = await getOrganisationAndServiceForUser(account.id);
+  const allApprovers = await getApproversDetails(
+    userOrganisations,
+    correlationId,
+  );
 
   // Check for organisations and services for the user account
-  if (organisations && organisations.length > 0) {
+  if (userOrganisations && userOrganisations.length > 0) {
     taskListStatus.hasOrgAssigned = true;
-    if (organisations) {
-      taskListStatus.multiOrgDetails.orgs = organisations.length;
+    if (userOrganisations) {
+      taskListStatus.multiOrgDetails.orgs = userOrganisations.length;
     }
-    organisations.forEach((organisation) => {
+    userOrganisations.forEach((organisation) => {
       if (organisation.services && organisation.services.length > 0) {
         taskListStatus.hasServiceAssigned = true;
       }
@@ -264,6 +265,10 @@ const getServices = async (req, res) => {
     }
   }
 
+  const checkfor24 = isLoginOver24(
+    user.claims.last_login,
+    user.claims.prev_login,
+  );
   isRequestServiceAllowed = !!requestServicesRedirect;
   const { jobTitle } = await Account.getById(req.user.id);
   //2: "job title" notification banner
@@ -276,10 +281,6 @@ const getServices = async (req, res) => {
     showJobTitleBanner
   ) {
     //check last logged in if its within 24 hrs show banner
-    const checkfor24 = isLoginOver24(
-      user.claims.last_login,
-      user.claims.prev_login,
-    );
     if (checkfor24) {
       //close by adding database
       await jobTitleBannerHandler(req, res, true);
@@ -296,10 +297,7 @@ const getServices = async (req, res) => {
   let subServiceAddedBanners = req.user.id
     ? await fetchSubServiceAddedBanners(req.user.id)
     : null;
-  const checkfor24 = isLoginOver24(
-    user.claims.last_login,
-    user.claims.prev_login,
-  );
+
   if (subServiceAddedBanners) {
     if (checkfor24) {
       subServiceAddedBanners.forEach((serviceItem) => {
