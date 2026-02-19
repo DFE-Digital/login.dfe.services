@@ -13,6 +13,7 @@ const {
   getInvitationServicesRaw,
 } = require("login.dfe.api-client/invitations");
 const numberOfHours = 24;
+
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
   const user = await searchUserByIdRaw({ userId: uid });
@@ -263,7 +264,7 @@ const isMultipleRolesAllowed = (serviceDetails, numberOfRolesAvailable) => {
   }
 };
 
-const RoleSelectionConstraintCheck = (
+const roleSelectionConstraintCheck = (
   serviceRoles,
   roleSelectionConstraint,
 ) => {
@@ -315,5 +316,5 @@ module.exports = {
   isReviewSubServiceRequest,
   isMultipleRolesAllowed,
   isLoginOver24,
-  RoleSelectionConstraintCheck,
+  roleSelectionConstraintCheck,
 };

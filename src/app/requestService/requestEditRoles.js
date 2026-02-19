@@ -3,7 +3,7 @@ const config = require("./../../infrastructure/config");
 const {
   getSingleServiceForUser,
   isMultipleRolesAllowed,
-  RoleSelectionConstraintCheck,
+  roleSelectionConstraintCheck,
 } = require("../users/utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const { actions } = require("../constants/actions");
@@ -49,7 +49,7 @@ const getViewModel = async (req) => {
 
   let isRoleSelectionConstraintPresent = false;
   if (roleSelectionConstraint) {
-    isRoleSelectionConstraintPresent = RoleSelectionConstraintCheck(
+    isRoleSelectionConstraintPresent = roleSelectionConstraintCheck(
       serviceRoles,
       roleSelectionConstraint,
     );

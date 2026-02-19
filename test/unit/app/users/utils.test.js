@@ -3,14 +3,29 @@ jest.mock("login.dfe.dao", () =>
 );
 
 const { mockRequest } = require("../../../utils/jestMocks");
+jest.mock("login.dfe.api-client/users");
+jest.mock("login.dfe.api-client/services");
 
 const {
+  searchUserByIdRaw,
+  getUserServicesRaw,
+  getUserServiceRaw,
+} = require("login.dfe.api-client/users");
+
+const { getServiceRaw } = require("login.dfe.api-client/services");
+
+const {
+  getAllServicesForUserInOrg,
   getOrgNaturalIdentifiers,
+  getSingleServiceForUser,
+  getUserDetails,
   isEditService,
   isLoginOver24,
+  isMultipleRolesAllowed,
   isOrgEndUser,
   isRequestServiceInSession,
   isUserApprover,
+  roleSelectionConstraintCheck: roleSelectionConstraintCheck,
 } = require("../../../../src/app/users/utils");
 const { actions } = require("../../../../src/app/constants/actions");
 
@@ -83,6 +98,150 @@ describe("users/utils functions", () => {
     expect(result).toBe(true);
   });
 
+  describe("getAllServicesForUserInOrg function", () => {
+    const userId = "user-1";
+    const organisationId = "org-1";
+
+    const service = {
+      id: "service-1",
+      name: "Service One",
+      relyingParty: {
+        service_home: "http://service.one/login",
+        redirect_uris: ["http://service.one/login/cb"],
+      },
+    };
+
+    beforeEach(() => {
+      getUserServicesRaw.mockReset();
+      getUserServicesRaw.mockReturnValue([
+        {
+          serviceId: "service-1",
+          organisationId: "org-1",
+          accessGrantedOn: "2024-08-14T11:07:02Z",
+        },
+      ]);
+
+      getServiceRaw.mockReset();
+      getServiceRaw.mockReturnValue(service);
+    });
+
+    it("should return an empty array if no services present", async () => {
+      getUserServicesRaw.mockReturnValue(undefined);
+
+      const result = await getAllServicesForUserInOrg(userId, organisationId);
+      expect(result).toStrictEqual([]);
+    });
+
+    it("should user services if given a user id", async () => {
+      const result = await getAllServicesForUserInOrg(userId, organisationId);
+      expect(result).toStrictEqual([
+        {
+          dateActivated: "2024-08-14T11:07:02Z",
+          id: "service-1",
+          name: "Service One",
+          status: {
+            changedOn: null,
+            description: "Unknown",
+            id: null,
+            tagColor: "grey",
+          },
+        },
+      ]);
+    });
+  });
+
+  describe("getSingleServiceForUser function", () => {
+    const userId = "user-1";
+    const organisationId = "org-1";
+    const serviceId = "service-1";
+
+    const service = {
+      id: "service-1",
+      name: "Service One",
+      relyingParty: {
+        service_home: "http://service.one/login",
+        redirect_uris: ["http://service.one/login/cb"],
+      },
+    };
+
+    beforeEach(() => {
+      getUserServiceRaw.mockReset();
+      getUserServiceRaw.mockReturnValue({
+        serviceId: "service-1",
+        organisationId: "org-1",
+        accessGrantedOn: "2024-08-14T11:07:02Z",
+      });
+
+      getServiceRaw.mockReset();
+      getServiceRaw.mockReturnValue(service);
+    });
+
+    it("should user services if given a user id", async () => {
+      const result = await getSingleServiceForUser(
+        userId,
+        organisationId,
+        serviceId,
+      );
+      expect(result).toStrictEqual({
+        id: "service-1",
+        name: "Service One",
+        roles: undefined,
+      });
+    });
+  });
+
+  describe("getUserDetails function", () => {
+    it("should return user with org data if org matches", async () => {
+      searchUserByIdRaw.mockReset();
+      searchUserByIdRaw.mockReturnValue({
+        firstName: "Test",
+        lastName: "User",
+        email: "Test.User@example.com",
+        lastLogin: "",
+        statusId: 1,
+        organisations: [
+          {
+            id: "org-1",
+            name: "organisationId",
+            categoryId: "004",
+            statusId: 1,
+            roleId: 0,
+          },
+        ],
+        services: [],
+      });
+      const req = mockRequest({
+        params: {
+          uid: "user-1",
+          orgId: "org-1",
+        },
+      });
+
+      const result = await getUserDetails(req);
+      expect(result).toStrictEqual({
+        id: "user-1",
+        firstName: "Test",
+        lastName: "User",
+        email: "Test.User@example.com",
+        status: {
+          changedOn: null,
+          description: "Active",
+          id: 1,
+          tagColor: "green",
+        },
+        organisation: {
+          id: "org-1",
+          name: "organisationId",
+          categoryId: "004",
+          statusId: 1,
+          roleId: 0,
+        },
+        lastLogin: "",
+        deactivated: false,
+      });
+    });
+  });
+
   describe("getOrgNaturalIdentifiers function", () => {
     it("should return identifiers if present (capitalised field names)", () => {
       const org = {
@@ -150,6 +309,89 @@ describe("users/utils functions", () => {
 
       const formattedDate = isLoginOver24(last_login, previous_login);
       expect(formattedDate).toBe(false);
+    });
+  });
+
+  describe("isMultipleRolesAllowed function", () => {
+    it("should return false if numberOfRolesAvailable is 1 or 0", () => {
+      const serviceDetails = {};
+      let result;
+
+      result = isMultipleRolesAllowed(serviceDetails, 1);
+      expect(result).toBe(false);
+
+      result = isMultipleRolesAllowed(serviceDetails, 0);
+      expect(result).toBe(false);
+    });
+
+    // result, maximumRolesAllowed, minimumRolesAllowed
+    const testCases = [
+      [true, 2, 3],
+      [false, 0, 1],
+      [false, 1, undefined],
+      [false, 1, 0],
+      [true, undefined, undefined],
+      [true, undefined, 2],
+    ];
+
+    it.each(testCases)(
+      "should return %s if maximumRolesAllowed is %s and minimumRolesRequired is %s",
+      (expected, maximumRolesAllowed, minimumRolesRequired) => {
+        const serviceDetails = {
+          relyingParty: {
+            params: {
+              minimumRolesRequired,
+              maximumRolesAllowed,
+            },
+          },
+        };
+
+        const result = isMultipleRolesAllowed(serviceDetails, 2);
+        expect(result).toBe(expected);
+      },
+    );
+  });
+
+  describe("roleSelectionConstraintCheck function", () => {
+    it("should return true if 2 roles match", () => {
+      const serviceRoles = [
+        { id: "role-1" },
+        { id: "role-2" },
+        { id: "role-3" },
+      ];
+      const roleSelectionConstraint = "role-1,role-3";
+
+      const result = roleSelectionConstraintCheck(
+        serviceRoles,
+        roleSelectionConstraint,
+      );
+      expect(result).toBe(true);
+    });
+
+    it("should return false if 1 role matches", () => {
+      const serviceRoles = [
+        { id: "role-1" },
+        { id: "role-2" },
+        { id: "role-3" },
+      ];
+      const roleSelectionConstraint = "role-1";
+
+      const result = roleSelectionConstraintCheck(
+        serviceRoles,
+        roleSelectionConstraint,
+      );
+      expect(result).toBe(false);
+    });
+
+    it("should return false if an exception happens while running function", () => {
+      const serviceRoles = [];
+      const roleSelectionConstraint = {}; // Not being a string should trigger exception
+
+      const result = roleSelectionConstraintCheck(
+        serviceRoles,
+        roleSelectionConstraint,
+      );
+      expect(result).toBe(false);
     });
   });
 });

@@ -18,7 +18,7 @@ jest.mock("../../../../src/app/users/utils", () => {
   const originalUtils = jest.requireActual("../../../../src/app/users/utils");
   return {
     ...originalUtils,
-    RoleSelectionConstraintCheck: jest.fn(),
+    roleSelectionConstraintCheck: jest.fn(),
   };
 });
 
@@ -34,7 +34,7 @@ const {
 } = require("./../../../../src/infrastructure/organisations");
 const { actions } = require("../../../../src/app/constants/actions");
 const {
-  RoleSelectionConstraintCheck,
+  roleSelectionConstraintCheck,
 } = require("../../../../src/app/users/utils");
 const logger = require("./../../../../src/infrastructure/logger");
 
@@ -353,7 +353,7 @@ describe("when displaying the associate roles view", () => {
     });
   });
 
-  it("then it should call RoleSelectionConstraintCheck if there are any role selection constraints", async () => {
+  it("then it should call roleSelectionConstraintCheck if there are any role selection constraints", async () => {
     getServiceRaw.mockReset().mockReturnValue({
       relyingParty: {
         params: {
@@ -370,7 +370,7 @@ describe("when displaying the associate roles view", () => {
     });
 
     await getAssociateRoles(req, res);
-    expect(RoleSelectionConstraintCheck).toHaveBeenCalled();
+    expect(roleSelectionConstraintCheck).toHaveBeenCalled();
   });
 
   it("then it should redirect the user to /approvals/users and log a warning message if user services do not exist in the session", async () => {

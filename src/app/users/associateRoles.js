@@ -7,7 +7,7 @@ const {
   isReviewServiceReqAmendRole,
   isReviewServiceReqAmendService,
   isMultipleRolesAllowed,
-  RoleSelectionConstraintCheck,
+  roleSelectionConstraintCheck,
 } = require("./utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
@@ -166,7 +166,7 @@ const getViewModel = async (req) => {
 
   let isRoleSelectionConstraintPresent = false;
   if (roleSelectionConstraint) {
-    isRoleSelectionConstraintPresent = RoleSelectionConstraintCheck(
+    isRoleSelectionConstraintPresent = roleSelectionConstraintCheck(
       serviceRoles,
       roleSelectionConstraint,
     );
