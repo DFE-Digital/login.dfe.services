@@ -3,6 +3,14 @@ const {
   mockResponse,
   mockAdapterConfig,
 } = require("./../../../utils/jestMocks");
+
+const mockGetSingleServiceForUser = jest.fn();
+
+jest.mock("./../../../../src/app/users/utils", () => ({
+  ...jest.requireActual("./../../../../src/app/users/utils"),
+  getSingleServiceForUser: mockGetSingleServiceForUser,
+}));
+
 const {
   getSingleServiceForUser,
 } = require("./../../../../src/app/users/utils");
@@ -111,6 +119,20 @@ describe("when displaying the remove service access view", () => {
       require("./../../../../src/app/users/removeServiceAccess").get;
   });
 
+  it("should redirect if there is no user in the session", async () => {
+    req = mockRequest({
+      params: {
+        uid: "user1",
+        orgId: "org1",
+        sid: "service1",
+      },
+    });
+    await getRemoveService(req, res);
+
+    expect(res.redirect.mock.calls.length).toBe(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/approvals/users/user1");
+  });
+
   it("then it should get the selected user service", async () => {
     await getRemoveService(req, res);
 
@@ -130,27 +152,57 @@ describe("when displaying the remove service access view", () => {
     );
   });
 
-  it("then it should include csrf token", async () => {
+  it("then it should include expected data", async () => {
     await getRemoveService(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: "token",
-    });
-  });
-
-  it("then it should include the organisation details", async () => {
-    await getRemoveService(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
       organisationDetails: req.organisationDetails,
+      service: getSingleServiceForUser(),
+      cancelLink: "/my-services",
     });
+    expect(res.render.mock.calls[0][1].backLink).toBe(
+      "/approvals/select-organisation-service?action=remove-service",
+    );
   });
 
-  it("then it should include the service details", async () => {
+  it("should have a '/approvals/org1/users/user1/associate-services' backlink if action is remove-service", async () => {
+    req.query = {
+      action: "remove-service",
+    };
     await getRemoveService(req, res);
 
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      service: getSingleServiceForUser(),
-    });
+    expect(res.render.mock.calls[0][1].backLink).toBe(
+      "/approvals/org1/users/user1/associate-services?action=remove-service",
+    );
+  });
+
+  const testCases = ["organisation-invite", "view-organisation-requests"];
+
+  it.each(testCases)(
+    "should have a '/approvals/users/user1' backLink and cancelLinkif action is %s",
+    async (action) => {
+      req.query = {
+        action,
+      };
+      await getRemoveService(req, res);
+
+      expect(res.render.mock.calls[0][1].backLink).toBe(
+        "/approvals/users/user1",
+      );
+      expect(res.render.mock.calls[0][1].cancelLink).toBe(
+        "/approvals/users/user1",
+      );
+    },
+  );
+
+  it("should have a '/approvals/users/user1' backlink if not remove service or is a user management action", async () => {
+    // Note: actions instead of action
+    req.query = {
+      actions: "review-subservice-request",
+    };
+    await getRemoveService(req, res);
+
+    expect(res.render.mock.calls[0][1].backLink).toBe("/approvals/users/user1");
   });
 });
