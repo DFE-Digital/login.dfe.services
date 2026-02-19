@@ -382,10 +382,10 @@ describe("when reviewing a service request", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "jane.doe@education (approverId: approver-user-id) rejected service (serviceId: service-id), roles (roleIds: role-id-1) and organisation (orgId: organisation-id) for end user (endUserId: end-user-id). The reject reason is Rejection reason - requestId (reqId: request-id)",
+      "jane.doe@education rejected service request for john.doe@education.co.uk",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
-      subType: "access-request-rejected",
+      subType: "service-request-rejected",
       type: "services",
       userEmail: "jane.doe@education",
       userId: "approver-user-id",

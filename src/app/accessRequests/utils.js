@@ -48,6 +48,7 @@ const getSubServiceRequestViewModel = async (model, requestId, req) => {
   viewModel.currentPage = "requests";
   viewModel.backLink = "/access-requests/requests";
   viewModel.cancelLink = "/access-requests/requests";
+  // viewModel is updated as a side effect of getRoleAndServiceNames
   viewModel = await getRoleAndServiceNames(viewModel, requestId, req);
   return viewModel;
 };
@@ -62,6 +63,8 @@ const getRoleAndServiceNames = async (subModel, requestId, req) => {
   );
   subModel.roles = [];
   if (serviceDetails.name) subModel.Service_name = serviceDetails.name;
+  if (serviceDetails.relyingParty.clientId)
+    subModel.clientId = serviceDetails.relyingParty.clientId;
   if (req !== undefined) {
     req.session.roles = [];
   }
