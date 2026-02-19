@@ -148,6 +148,9 @@ const mockResponse = () => {
     redirect: jest.fn(),
     render: jest.fn(),
     send: jest.fn(),
+    sendStatus: jest.fn().mockReturnValue({
+      end: jest.fn(),
+    }),
     sessionRedirect: jest.fn(),
     status: jest.fn(),
     sendStatus: jest.fn(),

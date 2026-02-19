@@ -25,6 +25,7 @@ const sendSubServiceRequestOutcomeToApprovers = jest.fn();
 const sendSubServiceRequestApproved = jest.fn();
 
 const Account = require("../../../../src/infrastructure/account");
+const logger = require("./../../../../src/infrastructure/logger");
 jest.mock("login.dfe.policy-engine");
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/users");
@@ -93,6 +94,7 @@ const viewModel = {
   currentPage: "requests",
   Role_name: "role  one",
   Service_name: "service one",
+  clientId: "serviceOne",
   roles: listRoles,
 };
 
@@ -144,54 +146,8 @@ describe("When reviewing a sub-service request for approving", () => {
       body: {
         selectedResponse: "approve",
       },
-      model: {
-        _changed: 0,
-        _options: null,
-        _previousDataValues: null,
-        approverEmail: "",
-        approverName: "",
-        dataValues: {
-          id: "request1",
-          actioned_by: null,
-          actioned_at: null,
-          actioned_reason: "Pending",
-          createdAt: new Date(),
-          organisation_id: "org1",
-          reason: "",
-          role_ids: "role1",
-          service_id: "service1",
-          status: 0,
-          updatedAt: new Date(),
-          user_id: "endUser1",
-        },
-        endUsersEmail: "b@b.gov.uk",
-        endUsersFamilyName: "b",
-        endUsersGvenName: "b",
-        isNewRecord: false,
-        organisation: { id: "org1", name: "accademic organisatioon" },
-      },
-      viewModel: {
-        endUsersEmail: "b@b.gov.uk",
-        endUsersFamilyName: "b",
-        endUsersGivenName: "b",
-        org_name: "org1",
-        org_id: "org1",
-        user_id: "endUser1",
-        role_ids: "role1",
-        service_id: "service1",
-        status: 0,
-        actioned_reason: "Pending",
-        actioned_by: null,
-        reason: "Pending",
-        csrfToken: null,
-        selectedResponse: null,
-        validationMessages: {
-          selectedResponse: "Approve or Reject must be selected",
-        },
-        currentPage: "requests",
-        Role_name: "role  one",
-        service_name: "service one",
-      },
+      model,
+      viewModel,
     });
 
     res = mockResponse();
@@ -312,6 +268,24 @@ describe("When reviewing a sub-service request for approving", () => {
     await post(req, res);
 
     expect(sendSubServiceRequestApproved.mock.calls).toHaveLength(0);
+  });
+
+  it("then it should send the audit logs for sub service request rejected", async () => {
+    await post(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0].message).toBe(
+      "email@email.com approved sub-service request for b@b.gov.uk",
+    );
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
+      subType: "sub-service-request-approved",
+      type: "sub-service",
+      userEmail: "email@email.com",
+      userId: "user1",
+      meta: {
+        client: "serviceOne",
+      },
+    });
   });
 
   it("then it should render Success when its approved correctly", async () => {

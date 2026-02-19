@@ -112,7 +112,7 @@ const post = async (req, res) => {
     organisationid: req.body.organisationId,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} (id: ${req.user.sub}) requested organisation (id: ${req.body.organisationId})`,
+    message: `${req.user.email} requested organisation access`,
   });
   if (
     (

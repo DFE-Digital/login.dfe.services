@@ -232,18 +232,18 @@ const post = async (req, res) => {
 
     logger.audit({
       type: "services",
-      subType: "access-request-approved",
+      subType: "service-request-approved",
       userId: approver.sub,
       userEmail: approver.email,
       application: config.loggerSettings.applicationName,
+      organisationid: organisation.id,
       env: config.hostingEnvironment.env,
-      message: `${approver.email} (approverId: ${
-        approver.sub
-      }) approved service (serviceId: ${sid}) and roles (roleIds: ${JSON.stringify(
-        requestedRolesIds,
-      )}) and organisation (orgId: ${
-        organisation.id
-      }) for end user (endUserId: ${endUserId}) - requestId (reqId: ${rid})`,
+      message: `${approver.email} approved service request for ${endUsersEmail}`,
+      meta: {
+        client: service.clientId,
+        requestId: rid,
+        roles: JSON.stringify(requestedRolesIds),
+      },
     });
     const serviceName = service.name;
     const newServiceDetails = JSON.stringify({
