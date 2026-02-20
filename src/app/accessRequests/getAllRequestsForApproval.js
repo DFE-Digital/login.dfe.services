@@ -14,10 +14,7 @@ const getAllRequestsForApproval = async (req) => {
   const pageSize = 5;
   const paramsSource =
     req.method.toUpperCase() === "POST" ? req.body : req.query;
-  let pageNumber = parseInt(paramsSource.page, 10) || 1;
-  if (isNaN(pageNumber)) {
-    pageNumber = 1;
-  }
+  const pageNumber = parseInt(paramsSource.page, 10) || 1;
 
   const allRequestsForApprover = await getAllRequestTypesForApproverRaw({
     userId: req.user.sub,

@@ -62,27 +62,21 @@ describe("when displaying the existing user view", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/confirmExistingUser");
   });
 
-  it("then it should include csrf token", async () => {
+  it("then it should include the correct data", async () => {
     await getConfirmExistingUser(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: "token",
-    });
-  });
-
-  it("then it should include the organisation details", async () => {
-    await getConfirmExistingUser(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
+      user: req.session.user,
       organisationDetails: req.organisationDetails,
     });
   });
 
-  it("then it should include the user details", async () => {
+  it("should redirect if there is no user in the session", async () => {
+    req.session.user = undefined;
     await getConfirmExistingUser(req, res);
 
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      user: req.session.user,
-    });
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/approvals/users");
   });
 });

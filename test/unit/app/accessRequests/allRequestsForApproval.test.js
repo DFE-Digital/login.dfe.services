@@ -192,20 +192,36 @@ describe("when displaying the pending access requests for approver ", () => {
     );
   });
 
-  it("then it should include the correct page title", async () => {
+  it("then it should include the correct data", async () => {
     await getAllRequestsForApproval(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       title: "Requests",
+      currentPage: "requests",
+      csrfToken: "token",
+      page: 1,
+      numberOfPages: 1,
     });
   });
 
-  it("then it should include the correct navigation", async () => {
+  it("should set the page to 1 if the page is not an integer", async () => {
+    req.query = {
+      page: "lemon",
+    };
+
     await getAllRequestsForApproval(req, res);
 
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      currentPage: "requests",
-    });
+    expect(res.render.mock.calls[0][1].page).toBe(1);
+  });
+
+  it("should set the roles and roleIds in the session to undefined if they exist in the session", async () => {
+    req.session.roles = [{ id: "role-1" }];
+    req.session.roleIds = "role-1,role-2";
+
+    await getAllRequestsForApproval(req, res);
+
+    expect(req.session.roles).toBe(undefined);
+    expect(req.session.roleIds).toBe(undefined);
   });
 
   it("then it should include the mapped request with users details", async () => {
@@ -266,22 +282,6 @@ describe("when displaying the pending access requests for approver ", () => {
         },
       ],
     });
-  });
-
-  it("then it should include the csrfToken", async () => {
-    await getAllRequestsForApproval(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({ csrfToken: "token" });
-  });
-
-  it("then it should include the page number of requests", async () => {
-    await getAllRequestsForApproval(req, res);
-    expect(res.render.mock.calls[0][1]).toMatchObject({ page: 1 });
-  });
-
-  it("then it should include total number of pages of requests", async () => {
-    await getAllRequestsForApproval(req, res);
-    expect(res.render.mock.calls[0][1]).toMatchObject({ numberOfPages: 1 });
   });
 
   it("then it should redirect to the correct page number when navigating trough the paginated requests", async () => {
