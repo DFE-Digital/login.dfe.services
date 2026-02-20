@@ -153,7 +153,6 @@ const mockResponse = () => {
     }),
     sessionRedirect: jest.fn(),
     status: jest.fn(),
-    sendStatus: jest.fn(),
     mockResetAll: function () {
       this.contentType.mockReset().mockReturnValue(this);
       this.flash.mockReset().mockReturnValue(this);
