@@ -90,6 +90,33 @@ redisClient.on("connect", function () {
   console.log("Connected to redis successfully");
 });
 
+// Dedicated connection to the OIDC Redis DB (DB 0, `dsi:` namespace) used
+// solely to read the per-user deactivation kill switch written by the OIDC
+// service when an admin deactivates a user.
+const oidcKillSwitchConnString = process.env.LOCAL_REDIS_CONN || process.env.REDIS_CONN;
+const oidcKillSwitchClient = createClient({
+  url: oidcKillSwitchConnString,
+  socket: {
+    tls: oidcKillSwitchConnString?.includes("6380"),
+  },
+});
+oidcKillSwitchClient
+  .connect()
+  .catch((err) =>
+    logger.warn(`Kill switch Redis connect failed: ${err.message}`),
+  );
+oidcKillSwitchClient.on("error", (err) =>
+  logger.warn(`Kill switch Redis error: ${err.message}`),
+);
+
+const hasJwtExpired = (exp) => {
+  if (!exp) {
+    return true;
+  }
+  const expires = new Date(Date.UTC(1970, 0, 1) + exp * 1000).getTime();
+  return expires < Date.now();
+};
+
 const init = async () => {
   let expiryInMinutes = 20;
   const sessionExpiry = parseInt(
@@ -264,8 +291,35 @@ const init = async () => {
   passport.serializeUser((user, done) => {
     done(null, user);
   });
-  passport.deserializeUser((user, done) => {
-    done(null, user);
+  // Async deserializeUser: checks the OIDC kill switch before restoring the
+  // session.  Fails open so a Redis hiccup does not lock out active users.
+  passport.deserializeUser(async (user, done) => {
+    try {
+      if (hasJwtExpired(user.exp)) {
+        return done(null, null);
+      }
+
+      const killSwitchKey = `dsi:KillSwitch:${user.sub.toLowerCase()}`;
+      const isDeactivated = await oidcKillSwitchClient.get(killSwitchKey);
+      if (isDeactivated) {
+        logger.info(
+          `Rejecting session for deactivated user ${user.sub} (kill switch active)`,
+        );
+        return done(null, null);
+      }
+
+      return done(null, user);
+    } catch (err) {
+      // Fail open: a Redis error must not lock out active users.
+      logger.warn(
+        `Kill switch check failed for user ${user.sub}, proceeding with session`,
+        { error: err.message },
+      );
+      if (hasJwtExpired(user.exp)) {
+        return done(null, null);
+      }
+      return done(null, user);
+    }
   });
   app.use(passport.initialize());
   app.use(passport.session());
