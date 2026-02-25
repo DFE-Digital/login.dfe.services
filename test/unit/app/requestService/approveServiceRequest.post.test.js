@@ -184,10 +184,16 @@ describe("When approving a service request", () => {
         {
           id: "service1",
           name: "service name",
+          relyingParty: {
+            clientId: "serviceClient1",
+          },
         },
         {
           id: "service2",
           name: "service2 name",
+          relyingParty: {
+            clientId: "serviceClient1",
+          },
         },
       ],
     });
@@ -334,14 +340,16 @@ describe("When approving a service request", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      'approver.one@unit.test (approverId: approver1) approved service (serviceId: service1) and roles (roleIds: ["role1"]) for end user (endUserId: endUser1) - requestId (reqId: reqId)',
+      "approver.one@unit.test approved service access request for end user (endUserId: endUser1)",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "services",
-      subType: "access-request",
+      subType: "access-request-approved",
       userId: "approver1",
       userEmail: "approver.one@unit.test",
-      organisationid: "organisationId",
+      meta: {
+        client: "serviceClient1",
+      },
     });
   });
 
