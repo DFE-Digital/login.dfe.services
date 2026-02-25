@@ -27,6 +27,25 @@ jest.mock("../../../../src/infrastructure/helpers/allServicesAppCache", () => {
 });
 jest.mock("./../../../../src/infrastructure/logger", () => mockLogger());
 
+const createService = (id, name, hideApprover = "false") => {
+  return {
+    id,
+    name,
+    description: "service description",
+    isExternalService: true,
+    isMigrated: true,
+    isHiddenService: false,
+    isIdOnlyService: false,
+    relyingParty: {
+      service_home: "http://service.one/login",
+      redirect_uris: ["http://service.one/login/cb"],
+      params: {
+        hideApprover,
+      },
+    },
+  };
+};
+
 describe("when displaying current organisation and service mapping", () => {
   let req;
 
@@ -58,22 +77,7 @@ describe("when displaying current organisation and service mapping", () => {
 
   it("then it should include non-hidden services in the model", async () => {
     const services = [
-      {
-        id: "service-1",
-        name: "1 - Visible role-based service one",
-        description: "service description",
-        isExternalService: true,
-        isMigrated: true,
-        isHiddenService: false,
-        isIdOnlyService: false,
-        relyingParty: {
-          service_home: "http://service.one/login",
-          redirect_uris: ["http://service.one/login/cb"],
-          params: {
-            hideApprover: "false",
-          },
-        },
-      },
+      createService("service-1", "1 - Visible role-based service one"),
       {
         id: "service-2",
         name: "2 - Visible ID-only service two",
@@ -103,22 +107,7 @@ describe("when displaying current organisation and service mapping", () => {
           redirect_uris: ["http://service.three/login/cb"],
         },
       },
-      {
-        id: "service-4",
-        name: "4 - Hidden role-based service four",
-        description: "service description",
-        isExternalService: true,
-        isMigrated: true,
-        isHiddenService: false,
-        isIdOnlyService: false,
-        relyingParty: {
-          service_home: "http://service.four/login",
-          redirect_uris: ["http://service.four/login/cb"],
-          params: {
-            hideApprover: "true",
-          },
-        },
-      },
+      createService("service-4", "4 - Hidden role-based service four", "true"),
       {
         id: "service-5",
         name: "5 - Hidden ID-only service five",
@@ -173,6 +162,32 @@ describe("when displaying current organisation and service mapping", () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][1].helpAssistantUrl).toBe(
       "https://localhost:3001/chatBot",
+    );
+  });
+
+  it("should map 'Digital Forms service' to 'ESFA Digital Forms Service'", async () => {
+    const services = [createService("service-1", "Digital Forms service")];
+    checkCacheForAllServices.mockResolvedValue({
+      services,
+    });
+    await home(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][1].services[0].name).toBe(
+      "ESFA Digital Forms Service",
+    );
+  });
+
+  it("should map 'OPAFastForm' to 'ESFA Digital Forms Service'", async () => {
+    const services = [createService("service-1", "OPAFastForm")];
+    checkCacheForAllServices.mockResolvedValue({
+      services,
+    });
+    await home(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][1].services[0].name).toBe(
+      "ESFA Digital Forms Service",
     );
   });
 });

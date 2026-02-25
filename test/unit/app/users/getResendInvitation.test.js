@@ -51,6 +51,21 @@ describe("when displaying the resend invitation view", () => {
       require("./../../../../src/app/users/resendInvitation").get;
   });
 
+  it("should redirect if no user in the session", async () => {
+    req = mockRequest({
+      params: {
+        uid: "user1",
+        orgId: "org1",
+        sid: "service1",
+      },
+      session: {},
+    });
+    await getResendInvitation(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/approvals/org1/users/user1");
+  });
+
   it("then it should return the confirm resend invitation view", async () => {
     await getResendInvitation(req, res);
 

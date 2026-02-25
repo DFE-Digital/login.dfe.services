@@ -15,12 +15,7 @@ jest.mock("./../../../../src/infrastructure/account", () => ({
   updateInvite: jest.fn(),
 }));
 
-jest.mock("login.dfe.api-client/users", () => {
-  return {
-    updateUserDetailsInSearchIndex: jest.fn(),
-  };
-});
-
+jest.mock("login.dfe.api-client/users");
 jest.mock("./../../../../src/app/users/utils");
 
 const Account = require("./../../../../src/infrastructure/account");

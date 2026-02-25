@@ -73,4 +73,12 @@ describe("when posting the existing user view", () => {
       `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`,
     );
   });
+
+  it("should redirect if there is no user in the session", async () => {
+    req.session.user = undefined;
+    await postConfirmExistingUser(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/approvals/users");
+  });
 });

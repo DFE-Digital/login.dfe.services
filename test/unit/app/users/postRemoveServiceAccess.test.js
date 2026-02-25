@@ -176,6 +176,20 @@ describe("when removing service access", () => {
       require("./../../../../src/app/users/removeServiceAccess").post;
   });
 
+  it("should redirect if there is no user in the session", async () => {
+    req = mockRequest({
+      params: {
+        uid: "user1",
+        orgId: "org1",
+        sid: "service1",
+      },
+    });
+    await postRemoveServiceAccess(req, res);
+
+    expect(res.redirect.mock.calls.length).toBe(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/approvals/users/user1");
+  });
+
   it("then it should delete service for invitation if request for invitation", async () => {
     req.params.uid = "inv-invite1";
 

@@ -161,6 +161,7 @@ const mockResponse = () => {
       this.send.mockReset().mockReturnValue(this);
       this.sessionRedirect.mockReset().mockReturnValue(this);
       this.status.mockReset().mockReturnValue(this);
+      this.sendStatus.mockReset().mockReturnValue(this);
     },
   };
 };

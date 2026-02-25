@@ -268,30 +268,31 @@ describe("when displaying the associate service view", () => {
       require("./../../../../src/app/users/associateServices").get;
   });
 
-  it("then it should return the associate services view", async () => {
+  it("should return the associate services view", async () => {
     await getAssociateServices(req, res);
 
     expect(res.render.mock.calls.length).toBe(1);
     expect(res.render.mock.calls[0][0]).toBe("users/views/associateServices");
   });
 
-  it("then it should include csrf token", async () => {
+  it("should include the correct data", async () => {
     await getAssociateServices(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: "token",
-    });
-  });
-
-  it("then it should include the organisation details", async () => {
-    await getAssociateServices(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
       organisationDetails: req.organisationDetails,
     });
   });
 
-  it("then it should check if external service with no params", async () => {
+  it("should redirect if there is no user in the session", async () => {
+    req.session.user = undefined;
+    await getAssociateServices(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/approvals/users");
+  });
+
+  it("should check if external service with no params", async () => {
     getAllServices.mockReset();
     getAllServices.mockReturnValue({
       services: [
@@ -327,7 +328,7 @@ describe("when displaying the associate service view", () => {
     });
   });
 
-  it("then it should display service if external service with params but no hideApprover", async () => {
+  it("should display service if external service with params but no hideApprover", async () => {
     getAllServices.mockReset();
     getAllServices.mockReturnValue({
       services: [
@@ -365,7 +366,7 @@ describe("when displaying the associate service view", () => {
     });
   });
 
-  it("then it should display service if external service with params but hideApprover false", async () => {
+  it("should display service if external service with params but hideApprover false", async () => {
     getAllServices.mockReset();
     getAllServices.mockReturnValue({
       services: [
@@ -489,7 +490,7 @@ describe("when displaying the associate service view", () => {
     });
   });
 
-  it("then it should pass isReviewServiceReqAmend as true to the view if the request query action is REVIEW_SERVICE_REQ_ROLE", async () => {
+  it("should pass isReviewServiceReqAmend as true to the view if the request query action is REVIEW_SERVICE_REQ_ROLE", async () => {
     req.query.action = actions.REVIEW_SERVICE_REQ_ROLE;
 
     await getAssociateServices(req, res);
@@ -501,7 +502,7 @@ describe("when displaying the associate service view", () => {
     );
   });
 
-  it("then it should pass isReviewServiceReqAmend as true to the view if the request query action is REVIEW_SERVICE_REQ_SERVICE", async () => {
+  it("should pass isReviewServiceReqAmend as true to the view if the request query action is REVIEW_SERVICE_REQ_SERVICE", async () => {
     req.query.action = actions.REVIEW_SERVICE_REQ_SERVICE;
 
     await getAssociateServices(req, res);
@@ -513,7 +514,7 @@ describe("when displaying the associate service view", () => {
     );
   });
 
-  it("then it should pass isReviewServiceReqAmend as false to the view if the request query action is not either REVIEW_SERVICE_REQ_ROLE or REVIEW_SERVICE_REQ_SERVICE", async () => {
+  it("should pass isReviewServiceReqAmend as false to the view if the request query action is not either REVIEW_SERVICE_REQ_ROLE or REVIEW_SERVICE_REQ_SERVICE", async () => {
     req.query.action = "testing";
 
     await getAssociateServices(req, res);
@@ -525,7 +526,7 @@ describe("when displaying the associate service view", () => {
     );
   });
 
-  it("then it should pass isReviewServiceReqAmend as false to the view if the request query action is not set", async () => {
+  it("should pass isReviewServiceReqAmend as false to the view if the request query action is not set", async () => {
     req.query = {};
 
     await getAssociateServices(req, res);

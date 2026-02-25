@@ -2,7 +2,7 @@ const sanitizeHtml = require("sanitize-html");
 const config = require("../../infrastructure/config");
 const {
   isMultipleRolesAllowed,
-  RoleSelectionConstraintCheck,
+  roleSelectionConstraintCheck,
 } = require("../users/utils");
 const {
   getOrganisationAndServiceForUserV2,
@@ -69,7 +69,7 @@ const getViewModel = async (req) => {
 
   let isRoleSelectionConstraintPresent = false;
   if (roleSelectionConstraint) {
-    isRoleSelectionConstraintPresent = RoleSelectionConstraintCheck(
+    isRoleSelectionConstraintPresent = roleSelectionConstraintCheck(
       serviceRoles,
       roleSelectionConstraint,
     );

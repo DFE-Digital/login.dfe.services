@@ -66,29 +66,22 @@ const {
   fetchNewServiceBanners,
 } = require("../../../../src/app/home/userBannersHandlers");
 
+const createUserAccess = (serviceId, organisationId) => {
+  return {
+    serviceId,
+    organisationId,
+    accessGrantedOn: "2024-08-14T11:07:02Z",
+  };
+};
+
 const res = mockResponse();
 const userAccess = [
-  {
-    serviceId: "service1",
-    organisationId: "org1",
-    accessGrantedOn: "2024-08-14T11:07:02Z",
-  },
-  {
-    serviceId: "service4",
-    organisationId: "org2",
-    accessGrantedOn: "2024-06-14T11:07:02Z",
-  },
-  {
-    serviceId: "service3",
-    organisationId: "org3",
-    accessGrantedOn: "2024-06-14T11:07:02Z",
-  },
-  {
-    serviceId: "service4",
-    organisationId: "org4",
-    accessGrantedOn: "2024-06-14T11:07:02Z",
-  },
+  createUserAccess("service1", "org1"),
+  createUserAccess("service4", "org2"),
+  createUserAccess("service3", "org3"),
+  createUserAccess("service4", "org4"),
 ];
+
 const application = {
   id: "service1",
   name: "Service One",
@@ -167,15 +160,11 @@ describe("when displaying the users services", () => {
     });
   });
 
-  it("then it should render the logged in services view", async () => {
+  it("then it should render the logged in services view and have user account in model", async () => {
     await getServices(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe("home/views/services");
-  });
-
-  it("then it should include current user account in model", async () => {
-    await getServices(req, res);
 
     expect(res.render.mock.calls[0][1].user).toBeDefined();
     expect(res.render.mock.calls[0][1].user).toEqual({
@@ -214,7 +203,6 @@ describe("when displaying the users services", () => {
   it("then it should include mapped services for user when multiple organisations are present", async () => {
     await getServices(req, res);
 
-    expect(res.render.mock.calls[0][1].services).toBeDefined();
     expect(res.render.mock.calls[0][1].services[1].organisations).toHaveLength(
       2,
     );
@@ -232,7 +220,6 @@ describe("when displaying the users services", () => {
   it("then it should include mapped services for user when organisation status id is 0", async () => {
     await getServices(req, res);
 
-    expect(res.render.mock.calls[0][1].services).toBeDefined();
     expect(res.render.mock.calls[0][1].services[2].organisations).toHaveLength(
       0,
     );
@@ -242,7 +229,6 @@ describe("when displaying the users services", () => {
   it("then it should include mapped services for user when multiple services and multiple organisations are present", async () => {
     await getServices(req, res);
 
-    expect(res.render.mock.calls[0][1].services).toBeDefined();
     expect(res.render.mock.calls[0][1].services).toHaveLength(3);
     expect(res.render.mock.calls[0][1].services[0].organisations).toHaveLength(
       1,
@@ -259,7 +245,6 @@ describe("when displaying the users services", () => {
   it("then it Services should be filtered by service id", async () => {
     await getServices(req, res);
 
-    expect(res.render.mock.calls[0][1].services).toBeDefined();
     expect(res.render.mock.calls[0][1].services).toHaveLength(3);
     expect(
       res.render.mock.calls[0][1].services.filter((s) => s.id === "service4"),

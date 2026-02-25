@@ -1,7 +1,13 @@
 jest.mock("./../../../../src/infrastructure/config", () =>
   require("./../../../utils/jestMocks").mockConfig(),
 );
-jest.mock("./../../../../src/app/users/utils");
+jest.mock("../../../../src/app/users/utils", () => {
+  const originalUtils = jest.requireActual("../../../../src/app/users/utils");
+  return {
+    ...originalUtils,
+    getAllServicesForUserInOrg: jest.fn(),
+  };
+});
 jest.mock("login.dfe.policy-engine");
 const {
   checkCacheForAllServices,
@@ -311,7 +317,24 @@ describe("when adding services to a user", () => {
     });
   });
 
-  it("then it should redirect to associate roles", async () => {
+  it("should render an error if service is missing an is self management", async () => {
+    req.body.service = undefined;
+    req.session.user.uid = "user1";
+
+    await postAssociateServices(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe(
+      "users/views/associateServicesRedesigned",
+    );
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      validationMessages: {
+        services: "Please select a service",
+      },
+    });
+  });
+
+  it("then it should redirect to associate roles if the service is an array of strings", async () => {
     req.body.service = ["service1"];
     await postAssociateServices(req, res);
 
@@ -319,5 +342,23 @@ describe("when adding services to a user", () => {
     expect(res.sessionRedirect.mock.calls[0][0]).toBe(
       `associate-services/${req.session.user.services[0].serviceId}`,
     );
+  });
+
+  it("then it should redirect to associate roles if the service is a string", async () => {
+    req.body.service = "service1";
+    await postAssociateServices(req, res);
+
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
+      `associate-services/${req.session.user.services[0].serviceId}`,
+    );
+  });
+
+  it("should redirect if there is no user in the session", async () => {
+    req.session.user = undefined;
+    await postAssociateServices(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/approvals/users");
   });
 });
