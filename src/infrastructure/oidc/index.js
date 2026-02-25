@@ -36,6 +36,7 @@ const getPassportStrategy = async () => {
           userInfo.id = userInfo.sub;
           userInfo.name = userInfo.sub;
           userInfo.id_token = tokenset.id_token;
+          userInfo.exp = tokenset.claims().exp;
 
           done(null, userInfo);
         })
