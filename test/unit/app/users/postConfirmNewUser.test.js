@@ -8,6 +8,11 @@ jest.mock("./../../../../src/infrastructure/logger", () => mockLogger());
 jest.mock("./../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
+jest.mock("./../../../../src/infrastructure/applications", () => {
+  return {
+    isServiceEmailNotificationAllowed: jest.fn(),
+  };
+});
 jest.mock("login.dfe.dao", () => {
   return {
     services: {
@@ -100,6 +105,9 @@ const {
 const {
   checkCacheForAllServices,
 } = require("./../../../../src/infrastructure/helpers/allServicesAppCache");
+const {
+  isServiceEmailNotificationAllowed,
+} = require("./../../../../src/infrastructure/applications");
 const Account = require("./../../../../src/infrastructure/account");
 const logger = require("./../../../../src/infrastructure/logger");
 
@@ -292,6 +300,8 @@ describe("when inviting a new user", () => {
         },
       },
     ]);
+    isServiceEmailNotificationAllowed.mockReset();
+    isServiceEmailNotificationAllowed.mockResolvedValue(true);
     postConfirmNewUser =
       require("./../../../../src/app/users/confirmNewUser").post;
     sendUserAddedToOrganisationStub.mockReset();
@@ -321,6 +331,49 @@ describe("when inviting a new user", () => {
     expect(Account.createInvite.mock.calls[0][0]).toBe("test");
     expect(Account.createInvite.mock.calls[0][1]).toBe("name");
     expect(Account.createInvite.mock.calls[0][2]).toBe("test@test.com");
+  });
+
+  it("then it should warn and redirect if invite UID matches current user sub", async () => {
+    req.session.user.isInvite = true;
+    req.session.user.uid = "USER1";
+    req.user.sub = "user1";
+
+    await postConfirmNewUser(req, res);
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Blocked confirmNewUser due to invite session conflict; approver matched invited user and was redirected to /approvals/users",
+    );
+    expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
+    expect(getOrganisationById).not.toHaveBeenCalled();
+    expect(Account.createInvite).not.toHaveBeenCalled();
+    expect(putInvitationInOrganisation).not.toHaveBeenCalled();
+    expect(putUserInOrganisation).not.toHaveBeenCalled();
+    expect(addServiceToInvitation).not.toHaveBeenCalled();
+    expect(addServiceToUser).not.toHaveBeenCalled();
+    expect(updateUserDetailsInSearchIndex).not.toHaveBeenCalled();
+    expect(updateUserInSearchIndex).not.toHaveBeenCalled();
+  });
+
+  it("then it should warn and redirect if invite email matches current user email", async () => {
+    req.session.user.isInvite = true;
+    req.session.user.uid = undefined;
+    req.session.user.email = "USER.ONE@UNIT.TEST";
+    req.user.email = "user.one@unit.test";
+
+    await postConfirmNewUser(req, res);
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Blocked confirmNewUser due to invite session conflict; approver matched invited user and was redirected to /approvals/users",
+    );
+    expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
+    expect(getOrganisationById).not.toHaveBeenCalled();
+    expect(Account.createInvite).not.toHaveBeenCalled();
+    expect(putInvitationInOrganisation).not.toHaveBeenCalled();
+    expect(putUserInOrganisation).not.toHaveBeenCalled();
+    expect(addServiceToInvitation).not.toHaveBeenCalled();
+    expect(addServiceToUser).not.toHaveBeenCalled();
+    expect(updateUserDetailsInSearchIndex).not.toHaveBeenCalled();
+    expect(updateUserInSearchIndex).not.toHaveBeenCalled();
   });
 
   it("then it should add invitation to organisation", async () => {
@@ -529,6 +582,7 @@ describe("when inviting a new user", () => {
     req.params.uid = "user1";
     req.session.user.uid = "user1";
     req.session.user.isInvite = true;
+    req.user.sub = "approver1";
 
     await postConfirmNewUser(req, res);
 
@@ -552,6 +606,7 @@ describe("when inviting a new user", () => {
     req.params.uid = "user1";
     req.session.user.uid = "user1";
     req.session.user.isInvite = true;
+    req.user.sub = "approver1";
 
     await postConfirmNewUser(req, res);
 

@@ -29,6 +29,13 @@ const {
 } = require("./../../infrastructure/helpers/allServicesAppCache");
 const { actions } = require("../constants/actions");
 
+const normalizeForComparison = (value) => {
+  if (typeof value !== "string") {
+    return "";
+  }
+  return value.trim().toLowerCase();
+};
+
 const renderConfirmNewUserPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
   res.render(
@@ -128,6 +135,28 @@ const post = async (req, res) => {
   }
   if (!req.userOrganisations) {
     logger.warn("No req.userOrganisations on post of confirmNewUser");
+    return res.redirect("/approvals/users");
+  }
+
+  // Prevent multi-tab session conflicts from allowing approvers to update themselves.
+  const isInviteJourney = req.session?.user?.isInvite === true;
+  const invitedUid = normalizeForComparison(req.session?.user?.uid);
+  const currentUserSub = normalizeForComparison(req.user?.sub);
+  const invitedEmail = normalizeForComparison(req.session?.user?.email);
+  const currentUserEmail = normalizeForComparison(req.user?.email);
+  const hasUidConflict =
+    invitedUid.length > 0 &&
+    currentUserSub.length > 0 &&
+    invitedUid === currentUserSub;
+  const hasEmailConflict =
+    invitedEmail.length > 0 &&
+    currentUserEmail.length > 0 &&
+    invitedEmail === currentUserEmail;
+
+  if (isInviteJourney && (hasUidConflict || hasEmailConflict)) {
+    logger.warn(
+      "Blocked confirmNewUser due to invite session conflict; approver matched invited user and was redirected to /approvals/users",
+    );
     return res.redirect("/approvals/users");
   }
 
