@@ -340,9 +340,7 @@ describe("when inviting a new user", () => {
 
     await postConfirmNewUser(req, res);
 
-    expect(logger.warn).toHaveBeenCalledWith(
-      "Blocked confirmNewUser due to invite session conflict; approver matched invited user and was redirected to /approvals/users",
-    );
+    expect(logger.warn).toHaveBeenCalledWith("DEVELOPER TO UPDATE");
     expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
     expect(getOrganisationById).not.toHaveBeenCalled();
     expect(Account.createInvite).not.toHaveBeenCalled();
@@ -362,9 +360,7 @@ describe("when inviting a new user", () => {
 
     await postConfirmNewUser(req, res);
 
-    expect(logger.warn).toHaveBeenCalledWith(
-      "Blocked confirmNewUser due to invite session conflict; approver matched invited user and was redirected to /approvals/users",
-    );
+    expect(logger.warn).toHaveBeenCalledWith("DEVELOPER TO UPDATE");
     expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
     expect(getOrganisationById).not.toHaveBeenCalled();
     expect(Account.createInvite).not.toHaveBeenCalled();

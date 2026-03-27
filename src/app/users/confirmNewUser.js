@@ -154,9 +154,7 @@ const post = async (req, res) => {
     invitedEmail === currentUserEmail;
 
   if (isInviteJourney && (hasUidConflict || hasEmailConflict)) {
-    logger.warn(
-      "Blocked confirmNewUser due to invite session conflict; approver matched invited user and was redirected to /approvals/users",
-    );
+    logger.warn("DEVELOPER TO UPDATE");
     return res.redirect("/approvals/users");
   }
 
