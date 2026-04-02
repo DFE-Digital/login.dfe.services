@@ -47,6 +47,7 @@ const search = async (req) => {
       pageNumber: page,
       filterBy: {
         organisationIds: filteredOrgIds,
+        excludeId: req.user.sub,
       },
       searchFields: ["firstName", "lastName"],
       sortBy,
@@ -57,21 +58,11 @@ const search = async (req) => {
       pageNumber: page,
       filterBy: {
         organisationIds: filteredOrgIds,
+        excludeId: req.user.sub,
       },
       sortBy,
       sortDirection: sortAsc ? "asc" : "desc",
     });
-  }
-
-  if (usersForOrganisation.users.length) {
-    const users = usersForOrganisation.users.filter(
-      (item) => item.id !== req.user.sub,
-    );
-    if (users.length == 0) {
-      usersForOrganisation.numberOfPages = 0;
-      usersForOrganisation.totalNumberOfResults = 0;
-    }
-    usersForOrganisation.users = users;
   }
 
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
