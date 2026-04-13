@@ -102,6 +102,7 @@ const search = async (req) => {
 
   return {
     page,
+    pageStartPosition: (page - 1) * 25 + 1,
     sortBy,
     sortOrder: sortAsc ? "asc" : "desc",
     usersForOrganisation,
@@ -181,6 +182,7 @@ const get = async (req, res) => {
     selectedOrganisations: result.selectedOrganisations,
     usersForOrganisation: result.usersForOrganisation,
     page: result.page,
+    pageStartPosition: result.pageStartPosition,
     sort: result.sort,
     sortBy: result.sortBy,
     sortOrder: result.sortOrder,
@@ -251,6 +253,7 @@ const post = async (req, res) => {
     selectedOrganisations: result.selectedOrganisations,
     usersForOrganisation: result.usersForOrganisation,
     page: result.page,
+    pageStartPosition: result.pageStartPosition,
     sort: result.sort,
     sortBy: result.sortBy,
     sortOrder: result.sortOrder,
