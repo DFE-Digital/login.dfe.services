@@ -3,7 +3,9 @@ const pages = locals.numberOfPages;
 const page = locals.page;
 const numberOfResultsOnPagePage = locals.numberOfResultsOnPage;
 const totalNumberOfResults = locals.totalNumberOfResults
-let lowerEndRecords = page === pages ? totalNumberOfResults - numberOfResultsOnPagePage + 1 : numberOfResultsOnPagePage * (page - 1) + 1
+let lowerEndRecords = locals.pageStartPosition !== undefined
+    ? locals.pageStartPosition
+    : (page === pages ? totalNumberOfResults - numberOfResultsOnPagePage + 1 : numberOfResultsOnPagePage * (page - 1) + 1)
 const upperEndRecords = lowerEndRecords + numberOfResultsOnPagePage - 1
 
 if (locals.totalNumberOfResults === 0) {
