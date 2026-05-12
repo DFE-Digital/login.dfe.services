@@ -131,6 +131,23 @@ const post = async (req, res) => {
     return res.redirect("/approvals/users");
   }
 
+  // NSA-9674: Guard against session conflict when approver has multiple tabs open.
+  // If isInvite is set but the session uid/email matches the current user,
+  // a conflict has occurred — redirect safely instead of modifying the approver's access.
+  if (
+    req.session.user.isInvite &&
+    (req.session.user.uid?.toLowerCase() === req.user.sub.toLowerCase() ||
+      req.session.user.email?.toLowerCase() === req.user.email.toLowerCase())
+  ) {
+    logger.warn(
+      `Session conflict detected during user invitation — approver ${req.user.sub} ` +
+        `attempted to process an invitation where the session user ID or email matches ` +
+        `their own account. This indicates a multi-tab session conflict. ` +
+        `Redirecting to /approvals/users to prevent access modification.`,
+    );
+    return res.redirect("/approvals/users");
+  }
+
   let uid = req.params.uid;
   const organisationId = req.params.orgId;
   const organisation = await getOrganisationById(organisationId, req.id);

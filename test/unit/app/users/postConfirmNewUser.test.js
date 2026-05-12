@@ -527,7 +527,7 @@ describe("when inviting a new user", () => {
 
   it("then it should send an email notification to user when added to organisation", async () => {
     req.params.uid = "user1";
-    req.session.user.uid = "user1";
+    req.session.user.uid = "invited-user-uid";
     req.session.user.isInvite = true;
 
     await postConfirmNewUser(req, res);
@@ -550,7 +550,7 @@ describe("when inviting a new user", () => {
 
   it("then it should send an email notification to user when service added", async () => {
     req.params.uid = "user1";
-    req.session.user.uid = "user1";
+    req.session.user.uid = "invited-user-uid";
     req.session.user.isInvite = true;
 
     await postConfirmNewUser(req, res);
@@ -578,5 +578,68 @@ describe("when inviting a new user", () => {
     expect(sendServiceRequestApprovedStub.mock.calls[0][6]).toEqual(
       expectedPermission,
     );
+  });
+
+  describe("when session conflict is detected via uid match", () => {
+    it("then it should redirect to approvals users and log a warning", async () => {
+      req.session.user.isInvite = true;
+      req.session.user.uid = "user1";
+
+      await postConfirmNewUser(req, res);
+
+      expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining("Session conflict detected"),
+      );
+      expect(putInvitationInOrganisation).not.toHaveBeenCalled();
+      expect(putUserInOrganisation).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when session conflict is detected via email match", () => {
+    it("then it should redirect to approvals users and log a warning", async () => {
+      req.session.user.isInvite = true;
+      req.session.user.uid = "different-uid";
+      req.session.user.email = "user.one@unit.test";
+
+      await postConfirmNewUser(req, res);
+
+      expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining("Session conflict detected"),
+      );
+      expect(putInvitationInOrganisation).not.toHaveBeenCalled();
+      expect(putUserInOrganisation).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when isInvite is true but no session conflict exists", () => {
+    it("then it should not trigger the session conflict guard and continue the normal flow", async () => {
+      req.params.uid = "inv-invite1";
+      req.session.user.isInvite = true;
+      req.session.user.uid = "new-user-uid";
+      req.session.user.email = "newuser@example.com";
+
+      await postConfirmNewUser(req, res);
+
+      expect(logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining("Session conflict detected"),
+      );
+      expect(putInvitationInOrganisation).toHaveBeenCalled();
+    });
+  });
+
+  describe("when isInvite is falsy", () => {
+    it("then it should not trigger the session conflict guard and continue the normal flow", async () => {
+      req.session.user.isInvite = false;
+      req.session.user.uid = "user1";
+
+      await postConfirmNewUser(req, res);
+
+      expect(logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining("Session conflict detected"),
+      );
+      expect(addServiceToUser).toHaveBeenCalled();
+    });
   });
 });
