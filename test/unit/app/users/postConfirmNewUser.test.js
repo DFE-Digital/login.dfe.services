@@ -598,20 +598,16 @@ describe("when inviting a new user", () => {
     });
   });
 
-  describe("when session conflict is detected via email match", () => {
+  describe("when req.user is missing", () => {
     it("then it should redirect to approvals users and log a warning", async () => {
-      req.session.user.isInvite = true;
-      req.session.user.uid = "different-uid";
-      req.session.user.email = "user.one@unit.test";
+      req.user = undefined;
 
       await postConfirmNewUser(req, res);
 
       expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
       expect(logger.warn).toHaveBeenCalledWith(
-        expect.stringContaining("Session conflict detected"),
+        "No req.user on post of confirmNewUser",
       );
-      expect(putInvitationInOrganisation).not.toHaveBeenCalled();
-      expect(putUserInOrganisation).not.toHaveBeenCalled();
     });
   });
 
@@ -620,7 +616,6 @@ describe("when inviting a new user", () => {
       req.params.uid = "inv-invite1";
       req.session.user.isInvite = true;
       req.session.user.uid = "new-user-uid";
-      req.session.user.email = "newuser@example.com";
 
       await postConfirmNewUser(req, res);
 
