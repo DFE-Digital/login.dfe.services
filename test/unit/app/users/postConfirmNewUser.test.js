@@ -527,7 +527,8 @@ describe("when inviting a new user", () => {
 
   it("then it should send an email notification to user when added to organisation", async () => {
     req.params.uid = "user1";
-    req.session.user.uid = "invited-user-uid";
+    req.user.sub = "approver-sub-id";
+    req.session.user.uid = "user1";
     req.session.user.isInvite = true;
 
     await postConfirmNewUser(req, res);
@@ -550,7 +551,8 @@ describe("when inviting a new user", () => {
 
   it("then it should send an email notification to user when service added", async () => {
     req.params.uid = "user1";
-    req.session.user.uid = "invited-user-uid";
+    req.user.sub = "approver-sub-id";
+    req.session.user.uid = "user1";
     req.session.user.isInvite = true;
 
     await postConfirmNewUser(req, res);
