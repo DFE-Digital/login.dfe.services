@@ -136,8 +136,10 @@ const post = async (req, res) => {
   // a conflict has occurred — redirect safely instead of modifying the approver's access.
   if (
     req.session.user.isInvite &&
-    (req.session.user.uid?.toLowerCase() === req.user.sub.toLowerCase() ||
-      req.session.user.email?.toLowerCase() === req.user.email.toLowerCase())
+    ((req.user.sub &&
+      req.session.user.uid?.toLowerCase() === req.user.sub.toLowerCase()) ||
+      (req.user.email &&
+        req.session.user.email?.toLowerCase() === req.user.email.toLowerCase()))
   ) {
     logger.warn(
       `Session conflict detected during user invitation — approver ${req.user.sub} ` +
