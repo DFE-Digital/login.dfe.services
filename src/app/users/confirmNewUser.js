@@ -130,6 +130,27 @@ const post = async (req, res) => {
     logger.warn("No req.userOrganisations on post of confirmNewUser");
     return res.redirect("/approvals/users");
   }
+  if (!req.user) {
+    logger.warn("No req.user on post of confirmNewUser");
+    return res.redirect("/approvals/users");
+  }
+
+  // NSA-9674: Guard against session conflict when approver has multiple tabs open.
+  // If isInvite is set but the session uid matches the current user's sub,
+  // a conflict has occurred — redirect safely instead of modifying the approver's access.
+  if (
+    req.session.user.isInvite &&
+    req.user.sub &&
+    req.session.user.uid?.toLowerCase() === req.user.sub.toLowerCase()
+  ) {
+    logger.warn(
+      `Session conflict detected during user invitation — approver ${req.user.sub} ` +
+        `attempted to process an invitation where the session user UID matches ` +
+        `their own account. This indicates a multi-tab session conflict. ` +
+        `Redirecting to /approvals/users to prevent access modification.`,
+    );
+    return res.redirect("/approvals/users");
+  }
 
   let uid = req.params.uid;
   const organisationId = req.params.orgId;
