@@ -22,9 +22,7 @@ const getAndMapExternalServices = async (correlationId) => {
   const allServices = await checkCacheForAllServices(correlationId);
 
   const nonHiddenServices = allServices.services.filter(
-    (service) =>
-      !isServiceFullyHidden(service) &&
-      (!service.isIdOnlyService || !service.isHiddenService),
+    (service) => !isServiceFullyHidden(service),
   );
   return sortBy(nonHiddenServices, "name");
 };

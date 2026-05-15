@@ -160,13 +160,14 @@ describe("when displaying current organisation and service mapping", () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][1].services).toBeDefined();
     // service-4 is visible: a single truthy param alone does not fully hide a service.
-    // service-5 is hidden: id-only with isHiddenService=true.
+    // service-5 is visible: isHiddenService=true alone does not hide — only all three params truthy does.
     // service-6 and service-7 are hidden: all three params are truthy (string and integer).
     expect(res.render.mock.calls[0][1].services).toEqual([
       services[0],
       services[1],
       services[2],
       services[3],
+      services[4],
     ]);
   });
 
