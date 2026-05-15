@@ -5,16 +5,26 @@ const {
   checkCacheForAllServices,
 } = require("../../infrastructure/helpers/allServicesAppCache");
 
+const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
+
+// A service is fully hidden only when ALL three params are truthy.
+// A single param being truthy alone does not constitute a hidden service.
+const isServiceFullyHidden = (service) => {
+  const params = service.relyingParty?.params;
+  return (
+    isTruthy(params?.hideApprover) &&
+    isTruthy(params?.hideSupport) &&
+    isTruthy(params?.helpHidden)
+  );
+};
+
 const getAndMapExternalServices = async (correlationId) => {
   const allServices = await checkCacheForAllServices(correlationId);
 
-  // Note, we're not checking `isHiddenService` for a non-id-only service.
   const nonHiddenServices = allServices.services.filter(
     (service) =>
-      (!service.isIdOnlyService &&
-        (service.relyingParty.params?.hideApprover === undefined ||
-          service.relyingParty.params?.hideApprover === "false")) ||
-      (service.isIdOnlyService && !service.isHiddenService),
+      !isServiceFullyHidden(service) &&
+      (!service.isIdOnlyService || !service.isHiddenService),
   );
   return sortBy(nonHiddenServices, "name");
 };

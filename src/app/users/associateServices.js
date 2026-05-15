@@ -76,15 +76,18 @@ const getAllAvailableServices = async (req) => {
   const isEditServiceUrl = isEditService(req);
   const isRemoveUserServiceUrl = isRemoveService(req);
 
+  const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
+  const isFullyHidden = (x) => {
+    const p = x.relyingParty?.params;
+    return (
+      isTruthy(p?.hideApprover) &&
+      isTruthy(p?.hideSupport) &&
+      isTruthy(p?.helpHidden)
+    );
+  };
   const allServices = await checkCacheForAllServices(req.id);
   let externalServices = allServices.services.filter(
-    (x) =>
-      x.isExternalService === true &&
-      !(
-        x.relyingParty &&
-        x.relyingParty.params &&
-        x.relyingParty.params.hideApprover === "true"
-      ),
+    (x) => x.isExternalService === true && !isFullyHidden(x),
   );
   if (req.params.uid) {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(

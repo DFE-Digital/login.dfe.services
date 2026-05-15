@@ -46,6 +46,25 @@ const createService = (id, name, hideApprover = "false") => {
   };
 };
 
+const createFullyHiddenService = (id, name, paramValue = "true") => ({
+  id,
+  name,
+  description: "service description",
+  isExternalService: true,
+  isMigrated: true,
+  isHiddenService: false,
+  isIdOnlyService: false,
+  relyingParty: {
+    service_home: `http://${id}/login`,
+    redirect_uris: [`http://${id}/login/cb`],
+    params: {
+      hideApprover: paramValue,
+      hideSupport: paramValue,
+      helpHidden: paramValue,
+    },
+  },
+});
+
 describe("when displaying current organisation and service mapping", () => {
   let req;
 
@@ -107,7 +126,8 @@ describe("when displaying current organisation and service mapping", () => {
           redirect_uris: ["http://service.three/login/cb"],
         },
       },
-      createService("service-4", "4 - Hidden role-based service four", "true"),
+      // Single-param services are NOT fully hidden — only all three together = hidden.
+      createService("service-4", "4 - Single hideApprover param only", "true"),
       {
         id: "service-5",
         name: "5 - Hidden ID-only service five",
@@ -124,6 +144,12 @@ describe("when displaying current organisation and service mapping", () => {
           },
         },
       },
+      createFullyHiddenService("service-6", "6 - Fully hidden string params"),
+      createFullyHiddenService(
+        "service-7",
+        "7 - Fully hidden integer params",
+        1,
+      ),
     ];
     checkCacheForAllServices.mockResolvedValue({
       services,
@@ -133,11 +159,62 @@ describe("when displaying current organisation and service mapping", () => {
 
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][1].services).toBeDefined();
+    // service-4 is visible: a single truthy param alone does not fully hide a service.
+    // service-5 is hidden: id-only with isHiddenService=true.
+    // service-6 and service-7 are hidden: all three params are truthy (string and integer).
     expect(res.render.mock.calls[0][1].services).toEqual([
       services[0],
       services[1],
       services[2],
+      services[3],
     ]);
+  });
+
+  it("should keep a service visible when only one param is truthy (boolean false after unhide)", async () => {
+    const services = [
+      {
+        id: "service-unhidden",
+        name: "Unhidden Service",
+        description: "service description",
+        isExternalService: true,
+        isMigrated: true,
+        isHiddenService: false,
+        isIdOnlyService: false,
+        relyingParty: {
+          params: {
+            hideApprover: false,
+            hideSupport: false,
+            helpHidden: false,
+          },
+        },
+      },
+    ];
+    checkCacheForAllServices.mockResolvedValue({ services });
+
+    await home(req, res);
+
+    expect(res.render.mock.calls[0][1].services).toHaveLength(1);
+    expect(res.render.mock.calls[0][1].services[0].id).toBe("service-unhidden");
+  });
+
+  it("should hide a service when all three params are integer 1", async () => {
+    checkCacheForAllServices.mockResolvedValue({
+      services: [createFullyHiddenService("svc-int", "Integer Hidden", 1)],
+    });
+
+    await home(req, res);
+
+    expect(res.render.mock.calls[0][1].services).toHaveLength(0);
+  });
+
+  it("should hide a service when all three params are boolean true", async () => {
+    checkCacheForAllServices.mockResolvedValue({
+      services: [createFullyHiddenService("svc-bool", "Boolean Hidden", true)],
+    });
+
+    await home(req, res);
+
+    expect(res.render.mock.calls[0][1].services).toHaveLength(0);
   });
 
   it("then it should include title in model", async () => {
