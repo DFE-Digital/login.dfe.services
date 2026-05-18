@@ -7,9 +7,10 @@ const {
 
 const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
 
-// A service is fully hidden only when ALL three params are truthy.
-// A single param being truthy alone does not constitute a hidden service.
+// Id-only services are hidden when isHiddenService is truthy.
+// Role-based services are hidden only when ALL three params are truthy together.
 const isServiceFullyHidden = (service) => {
+  if (service.isIdOnlyService && isTruthy(service.isHiddenService)) return true;
   const params = service.relyingParty?.params;
   return (
     isTruthy(params?.hideApprover) &&
