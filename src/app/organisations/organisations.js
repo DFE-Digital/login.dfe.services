@@ -33,7 +33,8 @@ const getAndMapOrganisationsAndServices = async (account, correlationId) => {
             x.claims.sub.toLowerCase() === approverId.user_id.toLowerCase(),
         );
       })
-      .filter((x) => x);
+      .filter((x) => x)
+      .filter((x) => x.claims.status === 1);
 
     return {
       id: organisation.organisation.id,
