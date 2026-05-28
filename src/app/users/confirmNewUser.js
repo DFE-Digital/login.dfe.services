@@ -204,7 +204,6 @@ const post = async (req, res) => {
       await putUserInOrganisation(
         uid,
         organisationId,
-        0,
         req.session.user.permission,
         req.id,
       );
