@@ -55,7 +55,7 @@ const post = async (req, res) => {
   } else {
     const mngUserOrganisations = await getOrganisationAndServiceForUser(uid);
 
-    await putUserInOrganisation(uid, organisationId, 1, roleId, req.id);
+    await putUserInOrganisation(uid, organisationId, roleId, req.id);
     if (isEmailAllowed) {
       const mngUserOrganisationDetails = mngUserOrganisations.find(
         (x) => x.organisation.id === organisationId,
