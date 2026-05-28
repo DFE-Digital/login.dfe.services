@@ -230,9 +230,8 @@ describe("when reviewing an organisation request", () => {
     expect(putUserInOrganisation.mock.calls).toHaveLength(1);
     expect(putUserInOrganisation.mock.calls[0][0]).toBe("userId");
     expect(putUserInOrganisation.mock.calls[0][1]).toBe("org1");
-    expect(putUserInOrganisation.mock.calls[0][2]).toBe(0);
-    expect(putUserInOrganisation.mock.calls[0][3]).toBe(null);
-    expect(putUserInOrganisation.mock.calls[0][4]).toBe("correlationId");
+    expect(putUserInOrganisation.mock.calls[0][2]).toBe(null);
+    expect(putUserInOrganisation.mock.calls[0][3]).toBe("correlationId");
 
     expect(updateRequestById.mock.calls).toHaveLength(1);
     expect(updateRequestById.mock.calls[0][0]).toBe("requestId");
