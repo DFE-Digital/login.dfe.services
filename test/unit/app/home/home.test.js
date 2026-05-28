@@ -126,7 +126,8 @@ describe("when displaying current organisation and service mapping", () => {
           redirect_uris: ["http://service.three/login/cb"],
         },
       },
-      // Single-param services are NOT fully hidden — only all three together = hidden.
+      // service-4 is hidden: hideApprover alone is sufficient to hide a role-based service
+      // (backward-compatible with pre-NSA-9688 behaviour).
       createService("service-4", "4 - Single hideApprover param only", "true"),
       {
         id: "service-5",
@@ -159,14 +160,13 @@ describe("when displaying current organisation and service mapping", () => {
 
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][1].services).toBeDefined();
-    // service-4 is visible: a single truthy param alone does not fully hide a role-based service.
+    // service-4 is hidden: hideApprover=true alone hides a role-based service.
     // service-5 is hidden: id-only service with isHiddenService=true is always hidden.
     // service-6 and service-7 are hidden: all three params are truthy (string and integer).
     expect(res.render.mock.calls[0][1].services).toEqual([
       services[0],
       services[1],
       services[2],
-      services[3],
     ]);
   });
 
