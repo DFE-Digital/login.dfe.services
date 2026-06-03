@@ -150,6 +150,9 @@ const post = async (req, res) => {
     }
   }
 
+  const hasLegacyIdentifiers =
+    Object.keys(numericIdentifierAndtextIdentifier).length > 0;
+
   logger.audit({
     type: "approver",
     subType: "user-org-deleted",
@@ -165,18 +168,12 @@ const post = async (req, res) => {
         },
       ],
       editedUser: uid,
-      ...(Object.keys(numericIdentifierAndtextIdentifier).length !== 0 && {
+      ...(hasLegacyIdentifiers && {
         ...numericIdentifierAndtextIdentifier,
       }),
     },
-    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${orgName} (id: ${organisationId}) for user ${
-      req.session.user.email
-    } (id: ${uid}) numeric Identifier and textIdentifier(${
-      Object.keys(numericIdentifierAndtextIdentifier).length === 0
-        ? "null"
-        : JSON.stringify(numericIdentifierAndtextIdentifier)
-    })`,
-    ...(Object.keys(numericIdentifierAndtextIdentifier).length !== 0 && {
+    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${orgName} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})${hasLegacyIdentifiers ? ` numeric Identifier and textIdentifier(${JSON.stringify(numericIdentifierAndtextIdentifier)})` : ""}`,
+    ...(hasLegacyIdentifiers && {
       ...numericIdentifierAndtextIdentifier,
     }),
     application: config.loggerSettings.applicationName,

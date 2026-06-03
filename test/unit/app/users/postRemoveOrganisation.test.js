@@ -164,7 +164,7 @@ describe("when removing organisation access", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "user.one@unit.test (id: user1) removed organisation organisationName (id: org1) for user test@test.com (id: user1) numeric Identifier and textIdentifier(null)",
+      "user.one@unit.test (id: user1) removed organisation organisationName (id: org1) for user test@test.com (id: user1)",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",
@@ -181,6 +181,34 @@ describe("when removing organisation access", () => {
           },
         ],
       },
+    });
+  });
+
+  describe("when removing an invited user from an organisation", () => {
+    beforeEach(() => {
+      req.params.uid = "inv-invite1";
+      req.userOrganisations = [
+        {
+          organisation: { id: "org1", name: "organisationName" },
+          role: { id: 0, name: "End user" },
+        },
+      ];
+      searchUserByIdRaw.mockResolvedValue({
+        organisations: [{ id: "org1" }],
+      });
+    });
+
+    it("should not include null identifier text in the audit message", async () => {
+      postRemoveOrganisationAccess =
+        require("./../../../../src/app/users/removeOrganisationAccess").post;
+      await postRemoveOrganisationAccess(req, res);
+
+      expect(logger.audit).toHaveBeenCalled();
+      const auditCall = logger.audit.mock.calls[0][0];
+      expect(auditCall.message).not.toContain("null");
+      expect(auditCall.message).not.toContain("numericIdentifier");
+      expect(auditCall.message).toContain("removed organisation");
+      expect(auditCall.message).toContain("(id: inv-invite1)");
     });
   });
 
