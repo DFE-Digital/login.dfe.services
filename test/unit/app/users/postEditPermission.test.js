@@ -194,16 +194,25 @@ describe("when editing organisation permission level", () => {
       subType: "user-org-permission-edited",
       userId: "user1",
       userEmail: "user.one@unit.test",
-      meta: {
-        editedUser: "user1",
-        editedFields: [
-          {
-            name: "edited_permission",
-            newValue: "Approver",
-          },
-        ],
-      },
+      editedUser: "user1",
+      editedFields: [
+        {
+          name: "edited_permission",
+          newValue: "Approver",
+        },
+      ],
     });
+  });
+
+  it("should write editedUser at the top level of the audit event (not inside meta)", async () => {
+    postEditPermission =
+      require("./../../../../src/app/users/editPermission").post;
+    await postEditPermission(req, res);
+
+    expect(logger.audit).toHaveBeenCalled();
+    const auditCall = logger.audit.mock.calls[0][0];
+    expect(auditCall.editedUser).toBe("user1");
+    expect(auditCall.meta).toBeUndefined();
   });
 
   it("then it should redirect to user details", async () => {
