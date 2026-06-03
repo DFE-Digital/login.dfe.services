@@ -176,13 +176,12 @@ const post = async (req, res) => {
       type: "approver",
       subType: "invite-created",
       userId: req.user.sub,
+      userEmail: req.user.email,
+      editedUser: `inv-${invitationId}`,
+      organisationId,
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `Invitation code is created. Id ${invitationId}`,
-      meta: {
-        email: req.user.email,
-        client: config.loggerSettings.applicationName,
-      },
+      message: `${req.user.email} invited ${req.session.user.email} to ${organisation.name} (id: ${organisationId}) (id: inv-${invitationId})`,
     });
   }
 

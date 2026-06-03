@@ -639,4 +639,35 @@ describe("when inviting a new user", () => {
       expect(addServiceToUser).toHaveBeenCalled();
     });
   });
+
+  describe("invite-created audit", () => {
+    beforeEach(() => {
+      req.params.uid = null;
+      req.session.user.isInvite = true;
+      logger.audit.mockReset();
+    });
+
+    it("writes invite-created audit with the standard message format", async () => {
+      await postConfirmNewUser(req, res);
+
+      const call = logger.audit.mock.calls.find(
+        (c) => c[0]?.subType === "invite-created",
+      );
+      expect(call).toBeDefined();
+      expect(call[0].message).toBe(
+        "user.one@unit.test invited test@test.com to organisation two (id: org1) (id: inv-invite1)",
+      );
+    });
+
+    it("sets editedUser at top level of invite-created audit", async () => {
+      await postConfirmNewUser(req, res);
+
+      const call = logger.audit.mock.calls.find(
+        (c) => c[0]?.subType === "invite-created",
+      );
+      expect(call).toBeDefined();
+      expect(call[0].editedUser).toBe("inv-invite1");
+      expect(call[0].meta).toBeUndefined();
+    });
+  });
 });
