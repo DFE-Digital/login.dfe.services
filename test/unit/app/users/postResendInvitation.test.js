@@ -272,9 +272,21 @@ describe("when resending an invitation", () => {
       subType: "resent-invitation",
       userId: "user1",
       userEmail: "user.one@unit.test",
-      invitedUser: "userid",
+      editedUser: "userid",
       invitedUserEmail: "johndoe@someschool.com",
     });
+  });
+
+  it("should write editedUser (not invitedUser) in the audit event", async () => {
+    Account.resendInvitation.mockResolvedValue(true);
+    req.body.email = req.session.user.email; // no email change, triggers resendInvitation path
+
+    await postResendInvitation(req, res);
+
+    expect(logger.audit).toHaveBeenCalled();
+    const auditCall = logger.audit.mock.calls[0][0];
+    expect(auditCall.editedUser).toBe("userid");
+    expect(auditCall.invitedUser).toBeUndefined();
   });
 
   it("then it should redirect to user details", async () => {
