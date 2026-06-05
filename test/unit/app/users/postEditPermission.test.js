@@ -194,16 +194,25 @@ describe("when editing organisation permission level", () => {
       subType: "user-org-permission-edited",
       userId: "user1",
       userEmail: "user.one@unit.test",
-      meta: {
-        editedUser: "user1",
-        editedFields: [
-          {
-            name: "edited_permission",
-            newValue: "Approver",
-          },
-        ],
-      },
+      editedUser: "user1",
+      editedFields: [
+        {
+          name: "edited_permission",
+          newValue: "Approver",
+        },
+      ],
     });
+  });
+
+  it("should write editedUser at the top level of the audit event (not inside meta)", async () => {
+    const postEditPermission =
+      require("./../../../../src/app/users/editPermission").post;
+    await postEditPermission(req, res);
+
+    expect(logger.audit).toHaveBeenCalled();
+    const auditCall = logger.audit.mock.calls[0][0];
+    expect(auditCall.editedUser).toBe("user1");
+    expect(auditCall.meta).toBeUndefined();
   });
 
   it("then it should redirect to user details", async () => {
@@ -289,5 +298,21 @@ describe("when editing organisation permission level", () => {
     expect(sendUserPermissionChangedStub.mock.calls[0][4]).toEqual(
       expectedPermission[1],
     );
+  });
+
+  it("should write the audit event once", async () => {
+    const postEditPermission =
+      require("./../../../../src/app/users/editPermission").post;
+    await postEditPermission(req, res);
+    expect(logger.audit).toHaveBeenCalledTimes(1);
+  });
+
+  it("should include organisationName and editedUserEmail in the audit event", async () => {
+    const postEditPermission =
+      require("./../../../../src/app/users/editPermission").post;
+    await postEditPermission(req, res);
+    const auditCall = logger.audit.mock.calls[0][0];
+    expect(auditCall.organisationName).toBeDefined();
+    expect(auditCall.editedUserEmail).toBeDefined();
   });
 });

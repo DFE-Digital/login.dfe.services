@@ -272,9 +272,10 @@ describe("when resending an invitation", () => {
       subType: "resent-invitation",
       userId: "user1",
       userEmail: "user.one@unit.test",
-      invitedUser: "userid",
+      editedUser: "userid",
       invitedUserEmail: "johndoe@someschool.com",
     });
+    expect(logger.audit.mock.calls[0][0].invitedUser).toBeUndefined();
   });
 
   it("then it should redirect to user details", async () => {

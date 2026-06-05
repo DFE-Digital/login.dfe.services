@@ -93,17 +93,18 @@ const post = async (req, res) => {
     );
   }
 
-  logger.audit({
+  const auditPayload = {
     type: "approver",
     subType: "resent-invitation",
     userId: req.user.sub,
     userEmail: req.user.email,
     invitedUserEmail: req.session.user.email,
-    invitedUser: req.session.user.uid,
+    editedUser: req.session.user.uid,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.email} (id: ${req.session.user.uid})`,
-  });
+  };
+  logger.audit(auditPayload);
   res.flash("title", `Success`);
   res.flash("heading", `Invitation email sent`);
   res.flash("message", `Invitation email sent to: ${req.session.user.email}`);

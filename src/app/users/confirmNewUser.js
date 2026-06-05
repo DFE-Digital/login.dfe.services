@@ -172,6 +172,7 @@ const post = async (req, res) => {
   let uid = req.params.uid;
   const organisationId = req.params.orgId;
   const organisation = await getOrganisationById(organisationId, req.id);
+  const org = organisation.name;
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
 
   if (!uid) {
@@ -189,24 +190,21 @@ const post = async (req, res) => {
     );
     uid = `inv-${invitationId}`;
 
-    logger.audit({
+    const auditPayload = {
       type: "approver",
       subType: "invite-created",
       userId: req.user.sub,
+      editedUser: `inv-${invitationId}`,
+      userEmail: req.user.email,
+      invitedUserEmail: req.session.user.email,
+      organisationName: org,
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `Invitation code is created. Id ${invitationId}`,
-      meta: {
-        email: req.user.email,
-        client: config.loggerSettings.applicationName,
-      },
-    });
+      message: `${req.user.email} invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: inv-${invitationId})`,
+    };
+    logger.audit(auditPayload);
   }
 
-  const organisationDetails = req.userOrganisations.find(
-    (x) => x.organisation.id === organisationId,
-  );
-  const org = organisationDetails.organisation.name;
   // existing invitation or new invite
   const invitationId = uid.startsWith("inv-") ? uid.substr(4) : undefined;
 

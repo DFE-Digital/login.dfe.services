@@ -169,13 +169,11 @@ const post = async (req, res) => {
         ...numericIdentifierAndtextIdentifier,
       }),
     },
-    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${orgName} (id: ${organisationId}) for user ${
-      req.session.user.email
-    } (id: ${uid}) numeric Identifier and textIdentifier(${
-      Object.keys(numericIdentifierAndtextIdentifier).length === 0
-        ? "null"
-        : JSON.stringify(numericIdentifierAndtextIdentifier)
-    })`,
+    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${orgName} (id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})${
+      Object.keys(numericIdentifierAndtextIdentifier).length > 0
+        ? ` numericIdentifier: ${numericIdentifierAndtextIdentifier.numericIdentifier}, textIdentifier: ${numericIdentifierAndtextIdentifier.textIdentifier}`
+        : ""
+    }`,
     ...(Object.keys(numericIdentifierAndtextIdentifier).length !== 0 && {
       ...numericIdentifierAndtextIdentifier,
     }),

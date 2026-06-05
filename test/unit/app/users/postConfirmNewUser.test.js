@@ -120,7 +120,7 @@ describe("when inviting a new user", () => {
   let res;
 
   let postConfirmNewUser;
-  const expectedOrgName = "organisationName";
+  const expectedOrgName = "organisation two";
   const expectedEmailAddress = "test@test.com";
   const expectedFirstName = "test";
   const expectedLastName = "name";
@@ -416,7 +416,7 @@ describe("when inviting a new user", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "user.one@unit.test (id: user1) invited test@test.com to organisationName (id: org1) (id: inv-invite1)",
+      "user.one@unit.test (id: user1) invited test@test.com to organisation two (id: org1) (id: inv-invite1)",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",
@@ -579,6 +579,63 @@ describe("when inviting a new user", () => {
     expect(sendServiceRequestApprovedStub.mock.calls[0][6]).toEqual(
       expectedPermission,
     );
+  });
+
+  it("then it should write invite-created audit with standard message format", async () => {
+    req.params.uid = null;
+    req.session.user.isInvite = true;
+
+    await postConfirmNewUser(req, res);
+
+    const call = logger.audit.mock.calls.find(
+      (c) => c[0]?.subType === "invite-created",
+    );
+    expect(call).toBeDefined();
+    expect(call[0].message).toBe(
+      "user.one@unit.test invited test@test.com to organisation two (id: org1) (id: inv-invite1)",
+    );
+  });
+
+  it("then it should write invite-created audit with editedUser at top level and no meta", async () => {
+    req.params.uid = null;
+    req.session.user.isInvite = true;
+
+    await postConfirmNewUser(req, res);
+
+    const call = logger.audit.mock.calls.find(
+      (c) => c[0]?.subType === "invite-created",
+    );
+    expect(call).toBeDefined();
+    expect(call[0].editedUser).toBe("inv-invite1");
+    expect(call[0].meta).toBeUndefined();
+  });
+
+  it("fires invite-created audit once", async () => {
+    req.params.uid = null;
+    req.session.user.isInvite = true;
+
+    const { post } = require("./../../../../src/app/users/confirmNewUser");
+    await post(req, res);
+
+    const calls = logger.audit.mock.calls.filter(
+      (c) => c[0]?.subType === "invite-created",
+    );
+    expect(calls).toHaveLength(1);
+  });
+
+  it("invite-created audit includes userEmail, invitedUserEmail, organisationName", async () => {
+    req.params.uid = null;
+    req.session.user.isInvite = true;
+
+    const { post } = require("./../../../../src/app/users/confirmNewUser");
+    await post(req, res);
+
+    const call = logger.audit.mock.calls.find(
+      (c) => c[0]?.subType === "invite-created",
+    );
+    expect(call[0].userEmail).toBe("user.one@unit.test");
+    expect(call[0].invitedUserEmail).toBe("test@test.com");
+    expect(call[0].organisationName).toBe("organisation two");
   });
 
   describe("when session conflict is detected via uid match", () => {
