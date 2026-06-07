@@ -1,4 +1,5 @@
 const config = require("./../../infrastructure/config");
+const logger = require("./../../infrastructure/logger");
 const {
   getAllServicesForUserInOrg,
   isSelfManagement,
@@ -19,6 +20,18 @@ const {
 const { actions } = require("../constants/actions");
 
 const policyEngine = new PolicyEngine(config);
+
+const restoreInviteSession = (req) => {
+  if (!req.session.user?.isInvite && req.session.savedInvite?.isInvite) {
+    const isInviteRoute =
+      !req.params.uid ||
+      req.params.uid.toLowerCase() !== req.user?.sub?.toLowerCase();
+    if (isInviteRoute) {
+      req.session.user = req.session.savedInvite;
+      delete req.session.savedInvite;
+    }
+  }
+};
 
 const renderAssociateServicesPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
@@ -80,11 +93,8 @@ const getAllAvailableServices = async (req) => {
   let externalServices = allServices.services.filter(
     (x) =>
       x.isExternalService === true &&
-      !(
-        x.relyingParty &&
-        x.relyingParty.params &&
-        x.relyingParty.params.hideApprover === "true"
-      ),
+      x.relyingParty &&
+      !(x.relyingParty.params && x.relyingParty.params.hideApprover === "true"),
   );
   if (req.params.uid) {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(
@@ -123,6 +133,7 @@ const getAllAvailableServices = async (req) => {
   return externalServices.filter((service) =>
     policyResults.find(
       (result) =>
+        result &&
         service.id.toLowerCase() === result.id.toLowerCase() &&
         result.serviceAvailableToUser === true,
     ),
@@ -133,6 +144,42 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/approvals/users");
   }
+  restoreInviteSession(req);
+
+  if (
+    req.user?.sub &&
+    req.session.user.uid?.toLowerCase() === req.user.sub.toLowerCase() &&
+    req.params.uid?.toLowerCase() !== req.user.sub.toLowerCase()
+  ) {
+    logger.warn(
+      `Session conflict detected on GET associate-services — approver ${req.user.sub} ` +
+        `has session uid matching their own account but route uid (${req.params.uid ?? "none"}) differs. ` +
+        `Redirecting to /approvals/users to prevent crash.`,
+    );
+    res.flash(
+      "info",
+      "Your session was interrupted by activity in another tab. Please start the invite again.",
+    );
+    return res.redirect("/approvals/users");
+  }
+
+  if (
+    req.params.uid &&
+    req.session.user.uid &&
+    req.session.user.uid.toLowerCase() !== req.params.uid.toLowerCase()
+  ) {
+    logger.warn(
+      `Session uid mismatch on GET associate-services — session uid (${req.session.user.uid}) ` +
+        `does not match route uid (${req.params.uid}). ` +
+        `Likely a multi-tab session conflict. Redirecting to /approvals/users.`,
+    );
+    res.flash(
+      "info",
+      "Your session was interrupted by activity in another tab. Please start the invite again.",
+    );
+    return res.redirect("/approvals/users");
+  }
+
   const isRemoveUserServiceUrl = isRemoveService(req);
 
   const organisationDetails = req.userOrganisations.find(
@@ -241,6 +288,25 @@ const validate = async (req) => {
 
 const post = async (req, res) => {
   if (!req.session.user) {
+    return res.redirect("/approvals/users");
+  }
+  restoreInviteSession(req);
+
+  if (
+    req.user?.sub &&
+    req.session.user.uid?.toLowerCase() === req.user.sub.toLowerCase() &&
+    req.params.uid?.toLowerCase() !== req.user.sub.toLowerCase()
+  ) {
+    logger.warn(
+      `Session conflict detected in associateServices — approver ${req.user.sub} ` +
+        `has session uid matching their own account but route uid (${req.params.uid ?? "none"}) differs. ` +
+        `This indicates a multi-tab session conflict. ` +
+        `Redirecting to /approvals/users to prevent unintended access modification.`,
+    );
+    res.flash(
+      "info",
+      "Your session was interrupted by activity in another tab. Please start the invite again.",
+    );
     return res.redirect("/approvals/users");
   }
 
