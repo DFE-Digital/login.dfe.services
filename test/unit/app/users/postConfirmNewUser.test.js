@@ -425,7 +425,8 @@ describe("when inviting a new user", () => {
       userEmail: req.user.email,
       invitedUserEmail: req.session.user.email,
       invitedUser: req.params.uid,
-      organisationid: req.params.orgId,
+      organisationId: req.params.orgId,
+      organisationName: expect.any(String),
     });
   });
 
