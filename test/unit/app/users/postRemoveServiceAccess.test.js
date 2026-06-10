@@ -240,6 +240,19 @@ describe("when removing service access", () => {
     });
   });
 
+  it("should include serviceId in audit payload", async () => {
+    await postRemoveServiceAccess(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
+      type: "approver",
+      subType: "user-service-deleted",
+      meta: {
+        serviceId: "service1",
+      },
+    });
+  });
+
   describe("when we are under manage-users", () => {
     it("then it should redirect to user details", async () => {
       await postRemoveServiceAccess(req, res);

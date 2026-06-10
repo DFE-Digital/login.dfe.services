@@ -215,6 +215,17 @@ describe("when editing organisation permission level", () => {
     expect(auditCall.meta).toBeUndefined();
   });
 
+  it("should include organisationId in audit payload", async () => {
+    await postEditPermission(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
+      type: "approver",
+      subType: "user-org-permission-edited",
+      organisationId: "org1",
+    });
+  });
+
   it("then it should redirect to user details", async () => {
     await postEditPermission(req, res);
 

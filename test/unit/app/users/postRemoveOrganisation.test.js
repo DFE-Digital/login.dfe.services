@@ -184,6 +184,17 @@ describe("when removing organisation access", () => {
     });
   });
 
+  it("should include organisationId at the top level of the audit payload", async () => {
+    await postRemoveOrganisationAccess(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
+      type: "approver",
+      subType: "user-org-deleted",
+      organisationId: "org1",
+    });
+  });
+
   it("then it should redirect to users list", async () => {
     await postRemoveOrganisationAccess(req, res);
 

@@ -181,6 +181,19 @@ describe("when editing a service for a user", () => {
     });
   });
 
+  it("should include serviceId in audit payload", async () => {
+    await postConfirmEditService(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
+      type: "approver",
+      subType: "user-service-updated",
+      meta: {
+        serviceId: "service1",
+      },
+    });
+  });
+
   it("then it should send an email notification to user when service added", async () => {
     await postConfirmEditService(req, res);
 

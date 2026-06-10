@@ -135,6 +135,7 @@ const post = async (req, res) => {
     userEmail: req.user.email,
     organisationId,
     meta: {
+      serviceId,
       editedFields: [
         {
           name: "update_service",

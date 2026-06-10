@@ -145,6 +145,7 @@ const post = async (req, res) => {
     userEmail: req.user.email,
     organisationId,
     meta: {
+      serviceId,
       editedFields: [
         {
           name: "remove_service",
