@@ -204,15 +204,15 @@ describe("when editing organisation permission level", () => {
     });
   });
 
-  it("should write editedUser at the top level of the audit event (not inside meta)", async () => {
+  it("should write editedUser inside meta of the audit event", async () => {
     const postEditPermission =
       require("./../../../../src/app/users/editPermission").post;
     await postEditPermission(req, res);
 
     expect(logger.audit).toHaveBeenCalled();
     const auditCall = logger.audit.mock.calls[0][0];
-    expect(auditCall.editedUser).toBe("user1");
-    expect(auditCall.meta).toBeUndefined();
+    expect(auditCall.meta).toBeDefined();
+    expect(auditCall.meta.editedUser).toBe("user1");
   });
 
   it("should include organisationId in audit payload", async () => {

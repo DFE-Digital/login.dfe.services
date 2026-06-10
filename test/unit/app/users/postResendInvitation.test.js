@@ -279,6 +279,15 @@ describe("when resending an invitation", () => {
     expect(logger.audit.mock.calls[0][0].invitedUser).toBeUndefined();
   });
 
+  it("should write editedUser inside meta of the audit event", async () => {
+    await postResendInvitation(req, res);
+
+    expect(logger.audit).toHaveBeenCalled();
+    const auditCall = logger.audit.mock.calls[0][0];
+    expect(auditCall.meta).toBeDefined();
+    expect(auditCall.meta.editedUser).toBe("userid");
+  });
+
   it("then it should redirect to user details", async () => {
     await postResendInvitation(req, res);
 

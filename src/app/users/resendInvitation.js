@@ -104,6 +104,7 @@ const post = async (req, res) => {
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.email} (id: ${req.session.user.uid})`,
+    meta: { editedUser: req.session.user.uid },
   };
   logger.audit(auditPayload);
   res.flash("title", `Success`);

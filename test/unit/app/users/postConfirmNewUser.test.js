@@ -425,11 +425,11 @@ describe("when inviting a new user", () => {
       userEmail: req.user.email,
       invitedUserEmail: req.session.user.email,
       invitedUser: req.params.uid,
-      editedUser: req.params.uid,
       organisationid: req.params.orgId,
       organisationName: expect.any(String),
       meta: {
         serviceId: "service1",
+        editedUser: req.params.uid,
       },
     });
   });
@@ -602,7 +602,7 @@ describe("when inviting a new user", () => {
     );
   });
 
-  it("then it should write invite-created audit with editedUser at top level and no meta", async () => {
+  it("then it should write invite-created audit with editedUser in meta", async () => {
     req.params.uid = null;
     req.session.user.isInvite = true;
 
@@ -612,8 +612,8 @@ describe("when inviting a new user", () => {
       (c) => c[0]?.subType === "invite-created",
     );
     expect(call).toBeDefined();
-    expect(call[0].editedUser).toBe("inv-invite1");
-    expect(call[0].meta).toBeUndefined();
+    expect(call[0].meta).toBeDefined();
+    expect(call[0].meta.editedUser).toBe("inv-invite1");
   });
 
   it("fires invite-created audit once", async () => {
