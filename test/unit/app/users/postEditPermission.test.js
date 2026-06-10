@@ -204,7 +204,7 @@ describe("when editing organisation permission level", () => {
     });
   });
 
-  it("should write editedUser inside meta of the audit event", async () => {
+  it("should NOT write editedUser inside meta for active users", async () => {
     const postEditPermission =
       require("./../../../../src/app/users/editPermission").post;
     await postEditPermission(req, res);
@@ -212,7 +212,19 @@ describe("when editing organisation permission level", () => {
     expect(logger.audit).toHaveBeenCalled();
     const auditCall = logger.audit.mock.calls[0][0];
     expect(auditCall.meta).toBeDefined();
-    expect(auditCall.meta.editedUser).toBe("user1");
+    expect(auditCall.meta.editedUser).toBeUndefined();
+  });
+
+  it("should write editedUser inside meta of the audit event for invited users", async () => {
+    req.params.uid = "inv-invite1";
+    const postEditPermission =
+      require("./../../../../src/app/users/editPermission").post;
+    await postEditPermission(req, res);
+
+    expect(logger.audit).toHaveBeenCalled();
+    const auditCall = logger.audit.mock.calls[0][0];
+    expect(auditCall.meta).toBeDefined();
+    expect(auditCall.meta.editedUser).toBe("inv-invite1");
   });
 
   it("should include organisationId in audit payload", async () => {

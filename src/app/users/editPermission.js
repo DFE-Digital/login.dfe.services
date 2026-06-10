@@ -119,7 +119,7 @@ const post = async (req, res) => {
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} edited permission level for ${user.email} at ${organisationDetails.organisation.name} to ${roleName.toLowerCase()}`,
-    meta: { editedUser: uid },
+    meta: { ...(uid.startsWith("inv-") ? { editedUser: uid } : {}) },
   };
   logger.audit(auditPayload);
   res.flash("title", `Success`);
