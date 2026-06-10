@@ -155,7 +155,7 @@ const post = async (req, res) => {
     subType: "user-org-deleted",
     userId: req.user.sub,
     userEmail: req.user.email,
-    organisationId,
+    organisationid: organisationId,
     editedUser: uid,
     meta: {
       editedFields: [

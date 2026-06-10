@@ -114,7 +114,7 @@ const post = async (req, res) => {
         newValue: roleName,
       },
     ],
-    organisationId,
+    organisationid: organisationId,
     organisationName,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
