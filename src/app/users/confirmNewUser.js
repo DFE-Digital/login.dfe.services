@@ -375,6 +375,7 @@ const post = async (req, res) => {
       userEmail: req.user.email,
       invitedUserEmail: req.session.user.email,
       invitedUser: uid,
+      editedUser: uid,
       organisationid: organisationId,
       organisationName: org,
       application: config.loggerSettings.applicationName,
