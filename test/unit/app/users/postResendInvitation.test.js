@@ -265,7 +265,7 @@ describe("when resending an invitation", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "user.one@unit.test (id: user1) resent invitation email to johndoe@someschool.com (id: userid)",
+      "user.one@unit.test resent invitation email to johndoe@someschool.com",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",

@@ -200,7 +200,7 @@ const post = async (req, res) => {
       organisationName: org,
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `${req.user.email} invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: inv-${invitationId})`,
+      message: `${req.user.email} invited ${req.session.user.email} to ${org}`,
       meta: { editedUser: `inv-${invitationId}` },
     };
     logger.audit(auditPayload);
@@ -380,7 +380,7 @@ const post = async (req, res) => {
       organisationName: org,
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: ${uid})`,
+      message: `${req.user.email} invited ${req.session.user.email} to ${org}`,
       meta: {
         serviceId: req.session.user.services?.[0]?.serviceId,
         editedUser: uid,

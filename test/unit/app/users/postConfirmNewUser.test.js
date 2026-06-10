@@ -416,7 +416,7 @@ describe("when inviting a new user", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "user.one@unit.test (id: user1) invited test@test.com to organisation two (id: org1) (id: inv-invite1)",
+      "user.one@unit.test invited test@test.com to organisation two",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",
@@ -598,7 +598,7 @@ describe("when inviting a new user", () => {
     );
     expect(call).toBeDefined();
     expect(call[0].message).toBe(
-      "user.one@unit.test invited test@test.com to organisation two (id: org1) (id: inv-invite1)",
+      "user.one@unit.test invited test@test.com to organisation two",
     );
   });
 
