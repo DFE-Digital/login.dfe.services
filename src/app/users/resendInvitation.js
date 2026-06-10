@@ -100,6 +100,7 @@ const post = async (req, res) => {
     userEmail: req.user.email,
     invitedUserEmail: req.session.user.email,
     editedUser: req.session.user.uid,
+    organisationid: req.params.orgId,
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
     message: `${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.email} (id: ${req.session.user.uid})`,

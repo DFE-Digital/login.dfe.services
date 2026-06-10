@@ -380,6 +380,9 @@ const post = async (req, res) => {
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
       message: `${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: ${uid})`,
+      meta: {
+        serviceId: req.session.user.services?.[0]?.serviceId,
+      },
     });
 
     res.flash("title", `Success`);
@@ -428,6 +431,7 @@ const post = async (req, res) => {
       env: config.hostingEnvironment.env,
       message: `${req.user.email} added ${req.session.user.services.length} service(s) for user ${req.session.user.email}`,
       meta: {
+        serviceId: req.session.user.services?.[0]?.serviceId,
         editedFields: [
           {
             name: "add_services",

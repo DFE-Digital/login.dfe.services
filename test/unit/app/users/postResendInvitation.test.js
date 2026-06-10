@@ -274,6 +274,7 @@ describe("when resending an invitation", () => {
       userEmail: "user.one@unit.test",
       editedUser: "userid",
       invitedUserEmail: "johndoe@someschool.com",
+      organisationid: "org1",
     });
     expect(logger.audit.mock.calls[0][0].invitedUser).toBeUndefined();
   });
