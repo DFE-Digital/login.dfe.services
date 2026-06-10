@@ -191,7 +191,7 @@ describe("when removing organisation access", () => {
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",
       subType: "user-org-deleted",
-      organisationId: "org1",
+      organisationid: "org1",
     });
   });
 

@@ -168,7 +168,7 @@ describe("when editing a service for a user", () => {
       subType: "user-service-updated",
       userId: "user1",
       userEmail: "user.one@unit.test",
-      organisationId: "org1",
+      organisationid: "org1",
       meta: {
         editedUser: "user1",
         editedFields: [

@@ -425,7 +425,7 @@ describe("when inviting a new user", () => {
       userEmail: req.user.email,
       invitedUserEmail: req.session.user.email,
       invitedUser: req.params.uid,
-      organisationId: req.params.orgId,
+      organisationid: req.params.orgId,
       organisationName: expect.any(String),
     });
   });
@@ -485,7 +485,7 @@ describe("when inviting a new user", () => {
       subType: "user-services-added",
       userId: req.user.sub,
       userEmail: req.user.email,
-      organisationId: "org1",
+      organisationid: "org1",
       meta: {
         editedUser: req.params.uid,
         editedFields: [

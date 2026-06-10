@@ -226,7 +226,7 @@ describe("when removing service access", () => {
       subType: "user-service-deleted",
       userId: "user1",
       userEmail: "user.one@unit.test",
-      organisationId: "org1",
+      organisationid: "org1",
       meta: {
         editedUser: "user1",
         editedFields: [

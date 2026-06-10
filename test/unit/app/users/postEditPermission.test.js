@@ -222,7 +222,7 @@ describe("when editing organisation permission level", () => {
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",
       subType: "user-org-permission-edited",
-      organisationId: "org1",
+      organisationid: "org1",
     });
   });
 
