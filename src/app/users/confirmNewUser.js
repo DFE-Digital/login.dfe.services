@@ -197,11 +197,15 @@ const post = async (req, res) => {
       editedUser: `inv-${invitationId}`,
       userEmail: req.user.email,
       invitedUserEmail: req.session.user.email,
+      organisationid: organisationId,
       organisationName: org,
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
       message: `${req.user.email} invited ${req.session.user.email} to ${org}`,
-      meta: { editedUser: `inv-${invitationId}` },
+      meta: {
+        serviceId: req.session.user.services?.[0]?.serviceId,
+        editedUser: `inv-${invitationId}`,
+      },
     };
     logger.audit(auditPayload);
   }

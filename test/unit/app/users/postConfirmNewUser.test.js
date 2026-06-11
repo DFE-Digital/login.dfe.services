@@ -644,6 +644,20 @@ describe("when inviting a new user", () => {
     expect(call[0].organisationName).toBe("organisation two");
   });
 
+  it("invite-created audit includes organisationid and meta.serviceId so Support Console can populate org and service columns", async () => {
+    req.params.uid = null;
+    req.session.user.isInvite = true;
+
+    const { post } = require("./../../../../src/app/users/confirmNewUser");
+    await post(req, res);
+
+    const call = logger.audit.mock.calls.find(
+      (c) => c[0]?.subType === "invite-created",
+    );
+    expect(call[0].organisationid).toBe("org1");
+    expect(call[0].meta.serviceId).toBe("service1");
+  });
+
   describe("when session conflict is detected via uid match", () => {
     it("then it should redirect to approvals users and log a warning", async () => {
       req.session.user.isInvite = true;
