@@ -155,4 +155,64 @@ describe("when displaying the request a service page", () => {
       csrfToken: "token",
     });
   });
+
+  it("should exclude an ID-only service with isHiddenService=true", async () => {
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service1",
+          isExternalService: true,
+          isMigrated: true,
+          name: "Visible Service",
+          isIdOnlyService: false,
+          relyingParty: { params: {} },
+        },
+        {
+          id: "service3",
+          isExternalService: true,
+          isMigrated: true,
+          name: "Hidden ID-only Service",
+          isIdOnlyService: true,
+          isHiddenService: true,
+          relyingParty: { params: {} },
+        },
+      ],
+    });
+    getAllServicesForUserInOrg.mockReturnValue([]);
+    policyEngine.getPolicyApplicationResultsForUser.mockReturnValue([
+      { id: "service1", serviceAvailableToUser: true },
+      { id: "service3", serviceAvailableToUser: true },
+    ]);
+
+    await get(req, res);
+
+    const serviceIds = res.render.mock.calls[0][1].services.map((s) => s.id);
+    expect(serviceIds).toContain("service1");
+    expect(serviceIds).not.toContain("service3");
+  });
+
+  it("should include an ID-only service with isHiddenService=false", async () => {
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service3",
+          isExternalService: true,
+          isMigrated: true,
+          name: "Visible ID-only Service",
+          isIdOnlyService: true,
+          isHiddenService: false,
+          relyingParty: { params: {} },
+        },
+      ],
+    });
+    getAllServicesForUserInOrg.mockReturnValue([]);
+    policyEngine.getPolicyApplicationResultsForUser.mockReturnValue([
+      { id: "service3", serviceAvailableToUser: true },
+    ]);
+
+    await get(req, res);
+
+    const serviceIds = res.render.mock.calls[0][1].services.map((s) => s.id);
+    expect(serviceIds).toContain("service3");
+  });
 });

@@ -157,4 +157,48 @@ describe("when displaying the users services", () => {
       csrfToken: "token",
     });
   });
+
+  it("should exclude an ID-only service with isHiddenService=true from displayed services", async () => {
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service1",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: true,
+          name: "Hidden ID-only Service",
+        },
+      ],
+    });
+
+    await getServices(req, res);
+
+    const userOrgs = res.render.mock.calls[0][1].visibleUserOrgs;
+    const displayedServiceIds = userOrgs
+      .flatMap((o) => o.displayedServices)
+      .map((s) => s.id);
+    expect(displayedServiceIds).not.toContain("service1");
+  });
+
+  it("should include an ID-only service with isHiddenService=false in displayed services", async () => {
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service1",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: false,
+          name: "Visible ID-only Service",
+        },
+      ],
+    });
+
+    await getServices(req, res);
+
+    const userOrgs = res.render.mock.calls[0][1].visibleUserOrgs;
+    const displayedServiceIds = userOrgs
+      .flatMap((o) => o.displayedServices)
+      .map((s) => s.id);
+    expect(displayedServiceIds).toContain("service1");
+  });
 });
