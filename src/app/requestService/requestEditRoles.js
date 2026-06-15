@@ -31,8 +31,8 @@ const getViewModel = async (req) => {
     [req.params.sid],
     req.id,
   );
-  const serviceRoles = policyResult[0].rolesAvailableToUser.sort((a, b) =>
-    a.name.localeCompare(b.name),
+  const serviceRoles = (policyResult[0]?.rolesAvailableToUser ?? []).sort(
+    (a, b) => a.name.localeCompare(b.name),
   );
   const numberOfRolesAvailable = serviceRoles.length;
   const application = await getServiceRaw({

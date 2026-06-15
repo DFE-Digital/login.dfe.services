@@ -457,4 +457,43 @@ describe("when displaying the users services", () => {
       expect(res.render.mock.calls[0][1].services[0].description).toBe("");
     });
   });
+
+  describe("when an invite journey is in progress during a /my-services visit", () => {
+    const inviteState = {
+      isInvite: true,
+      email: "invitee@test.com",
+      firstName: "New",
+      lastName: "User",
+      permission: 0,
+      services: [{ serviceId: "service1", roles: [] }],
+    };
+
+    it("then it should save invite state to session.savedInvite before overwriting session.user", async () => {
+      req.session.user = { ...inviteState };
+
+      await getServices(req, res);
+
+      expect(req.session.savedInvite).toBeDefined();
+      expect(req.session.savedInvite.isInvite).toBe(true);
+      expect(req.session.savedInvite.email).toBe("invitee@test.com");
+      expect(req.session.savedInvite.firstName).toBe("New");
+    });
+
+    it("then it should overwrite session.user with the approver context regardless of the active invite", async () => {
+      req.session.user = { ...inviteState };
+
+      await getServices(req, res);
+
+      expect(req.session.user.isInvite).toBeUndefined();
+      expect(req.session.user.services).toEqual([]);
+    });
+
+    it("then it should not set session.savedInvite when there is no active invite in the session", async () => {
+      req.session.user = { uid: "someuser", services: [] };
+
+      await getServices(req, res);
+
+      expect(req.session.savedInvite).toBeUndefined();
+    });
+  });
 });

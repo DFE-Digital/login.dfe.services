@@ -1,3 +1,15 @@
+const restoreInviteSession = (req) => {
+  if (!req.session.user?.isInvite && req.session.savedInvite?.isInvite) {
+    const isInviteRoute =
+      !req.params.uid ||
+      req.params.uid.toLowerCase() !== req.user?.sub?.toLowerCase();
+    if (isInviteRoute) {
+      req.session.user = req.session.savedInvite;
+      delete req.session.savedInvite;
+    }
+  }
+};
+
 const buildBackLink = (req) => {
   let backRedirect;
   if (req.session.user.isInvite) {
@@ -29,6 +41,7 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/approvals/users");
   }
+  restoreInviteSession(req);
   const { organisation } = req.userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );
@@ -71,6 +84,7 @@ const post = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/approvals/users");
   }
+  restoreInviteSession(req);
   const model = await validate(req);
 
   if (Object.keys(model.validationMessages).length > 0) {

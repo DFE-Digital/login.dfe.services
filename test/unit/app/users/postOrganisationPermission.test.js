@@ -114,4 +114,53 @@ describe("when select the organisation permission level", () => {
     expect(res.sessionRedirect.mock.calls).toHaveLength(1);
     expect(res.sessionRedirect.mock.calls[0][0]).toBe(`confirm-new-user`);
   });
+
+  describe("when a savedInvite exists in the session from a concurrent /my-services visit", () => {
+    const savedInviteState = {
+      isInvite: true,
+      email: "invitee@test.com",
+      firstName: "New",
+      lastName: "User",
+      permission: 0,
+      services: [],
+    };
+
+    it("then it should restore the invite session when params.uid is undefined (new-user invite)", async () => {
+      req.session.user = { uid: "approver1", services: [], orgCount: 0 };
+      req.session.savedInvite = { ...savedInviteState };
+      req.params.uid = undefined;
+      req.body.selectedLevel = 0;
+
+      await postOrganisationPermission(req, res);
+
+      expect(req.session.savedInvite).toBeUndefined();
+      expect(req.session.user.isInvite).toBe(true);
+      expect(req.session.user.email).toBe("invitee@test.com");
+    });
+
+    it("then it should restore the invite session when params.uid is a different user (existing-user invite)", async () => {
+      req.session.user = { uid: "approver1", services: [], orgCount: 0 };
+      req.session.savedInvite = { ...savedInviteState };
+      req.params.uid = "some-other-user";
+      req.body.selectedLevel = 0;
+
+      await postOrganisationPermission(req, res);
+
+      expect(req.session.savedInvite).toBeUndefined();
+      expect(req.session.user.isInvite).toBe(true);
+    });
+
+    it("then it should not restore the invite session when params.uid matches the approver (self-service route)", async () => {
+      req.session.user = { uid: "approver1", services: [], orgCount: 0 };
+      req.session.savedInvite = { ...savedInviteState };
+      req.params.uid = "approver1";
+      req.user = { sub: "approver1" };
+      req.body.selectedLevel = 0;
+
+      await postOrganisationPermission(req, res);
+
+      expect(req.session.savedInvite).toBeDefined();
+      expect(req.session.user.isInvite).toBeUndefined();
+    });
+  });
 });

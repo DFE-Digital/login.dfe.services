@@ -18,6 +18,18 @@ const policyEngine = new PolicyEngine(config);
 const { actions } = require("../constants/actions");
 const logger = require("../../infrastructure/logger");
 
+const restoreInviteSession = (req) => {
+  if (!req.session.user?.isInvite && req.session.savedInvite?.isInvite) {
+    const isInviteRoute =
+      !req.params.uid ||
+      req.params.uid.toLowerCase() !== req.user?.sub?.toLowerCase();
+    if (isInviteRoute) {
+      req.session.user = req.session.savedInvite;
+      delete req.session.savedInvite;
+    }
+  }
+};
+
 const renderAssociateRolesPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
   res.render(
@@ -156,8 +168,8 @@ const getViewModel = async (req) => {
     req.id,
   );
 
-  const serviceRoles = policyResult[0].rolesAvailableToUser.sort((a, b) =>
-    a.name.localeCompare(b.name),
+  const serviceRoles = (policyResult[0]?.rolesAvailableToUser ?? []).sort(
+    (a, b) => a.name.localeCompare(b.name),
   );
   const numberOfRolesAvailable = serviceRoles.length;
 
@@ -223,6 +235,7 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/approvals/users");
   }
+  restoreInviteSession(req);
 
   if (
     !Array.isArray(req.session.user.services) ||
@@ -242,6 +255,7 @@ const post = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/approvals/users");
   }
+  restoreInviteSession(req);
 
   if (
     !Array.isArray(req.session.user.services) ||
@@ -249,6 +263,24 @@ const post = async (req, res) => {
   ) {
     logger.warn(
       `POST ${req.originalUrl} missing user session services, redirecting to approvals/users`,
+    );
+    return res.redirect("/approvals/users");
+  }
+
+  if (
+    req.user?.sub &&
+    req.session.user.uid?.toLowerCase() === req.user.sub.toLowerCase() &&
+    req.params.uid?.toLowerCase() !== req.user.sub.toLowerCase()
+  ) {
+    logger.warn(
+      `Session conflict detected in associateRoles — approver ${req.user.sub} ` +
+        `has session uid matching their own account but route uid (${req.params.uid ?? "none"}) differs. ` +
+        `This indicates a multi-tab session conflict. ` +
+        `Redirecting to /approvals/users to prevent unintended access modification.`,
+    );
+    res.flash(
+      "info",
+      "Your session was interrupted by activity in another tab. Please start the invite again.",
     );
     return res.redirect("/approvals/users");
   }
