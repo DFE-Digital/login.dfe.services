@@ -598,6 +598,23 @@ describe("when inviting a new user", () => {
     });
   });
 
+  describe("when session conflict is detected via email match", () => {
+    it("then it should redirect to approvals users and log a warning when session email matches approver email", async () => {
+      req.session.user.isInvite = true;
+      req.session.user.uid = undefined;
+      req.session.user.email = req.user.email;
+
+      await postConfirmNewUser(req, res);
+
+      expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining("Session conflict detected"),
+      );
+      expect(putInvitationInOrganisation).not.toHaveBeenCalled();
+      expect(putUserInOrganisation).not.toHaveBeenCalled();
+    });
+  });
+
   describe("when req.user is missing", () => {
     it("then it should redirect to approvals users and log a warning", async () => {
       req.user = undefined;

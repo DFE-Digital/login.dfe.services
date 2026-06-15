@@ -30,6 +30,7 @@ const {
   getAllServicesForUserInOrg,
 } = require("./../../../../src/app/users/utils");
 jest.mock("./../../../../src/infrastructure/logger", () => mockLogger());
+const logger = require("./../../../../src/infrastructure/logger");
 jest.mock("./../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
@@ -231,12 +232,14 @@ describe("when displaying the associate service view", () => {
           isExternalService: true,
           isMigrated: true,
           name: "Service One",
+          relyingParty: {},
         },
         {
           id: "service2",
           isExternalService: true,
           isMigrated: true,
           name: "Service two",
+          relyingParty: {},
         },
       ],
     });
@@ -596,5 +599,128 @@ describe("when displaying the associate service view", () => {
 
     const serviceIds = res.render.mock.calls[0][1].services.map((s) => s.id);
     expect(serviceIds).toContain("service3");
+  });
+
+  describe("when session conflict is detected via uid match in GET associateServices", () => {
+    it("then it should redirect to /approvals/users and log a warning when session uid matches approver but route uid differs", async () => {
+      req.session.user.uid = "user1";
+      req.params.uid = "other-user";
+
+      await getAssociateServices(req, res);
+
+      expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
+      expect(res.flash).toHaveBeenCalledWith(
+        "info",
+        "Your session was interrupted by activity in another tab. Please start the invite again.",
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session conflict detected on GET associate-services",
+        ),
+      );
+    });
+
+    it("then it should redirect to /approvals/users and log a warning when session uid matches approver and route has no uid (new-user invite route)", async () => {
+      req.session.user.uid = "user1";
+      req.params.uid = undefined;
+
+      await getAssociateServices(req, res);
+
+      expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
+      expect(res.flash).toHaveBeenCalledWith(
+        "info",
+        "Your session was interrupted by activity in another tab. Please start the invite again.",
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session conflict detected on GET associate-services",
+        ),
+      );
+    });
+
+    it("then it should not trigger the guard when session uid matches approver and route uid also matches (legitimate self-service flow)", async () => {
+      req.session.user.uid = "user1";
+      req.params.uid = "user1";
+
+      await getAssociateServices(req, res);
+
+      expect(logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session conflict detected on GET associate-services",
+        ),
+      );
+    });
+
+    it("then it should not trigger the guard when session uid does not match the approver", async () => {
+      req.session.user.uid = "different-user";
+      req.params.uid = "user1";
+
+      await getAssociateServices(req, res);
+
+      expect(logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session conflict detected on GET associate-services",
+        ),
+      );
+    });
+  });
+
+  describe("when session uid mismatches route uid in GET associateServices", () => {
+    it("then it should redirect to /approvals/users and log a warning when session uid differs from route uid (Tab 2 viewed a different user)", async () => {
+      req.session.user.uid = "invitee-from-tab2";
+      req.params.uid = "original-invitee";
+
+      await getAssociateServices(req, res);
+
+      expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
+      expect(res.flash).toHaveBeenCalledWith(
+        "info",
+        "Your session was interrupted by activity in another tab. Please start the invite again.",
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session uid mismatch on GET associate-services",
+        ),
+      );
+    });
+
+    it("then it should not trigger the mismatch guard when session uid matches route uid", async () => {
+      req.session.user.uid = "original-invitee";
+      req.params.uid = "original-invitee";
+
+      await getAssociateServices(req, res);
+
+      expect(logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session uid mismatch on GET associate-services",
+        ),
+      );
+    });
+
+    it("then it should not trigger the mismatch guard when route has no uid (new-user invite route)", async () => {
+      req.session.user.uid = "some-uid";
+      req.params.uid = undefined;
+
+      await getAssociateServices(req, res);
+
+      expect(logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session uid mismatch on GET associate-services",
+        ),
+      );
+    });
+
+    it("then it should not trigger the mismatch guard when session has no uid", async () => {
+      req.session.user.uid = undefined;
+      req.params.uid = "original-invitee";
+
+      await getAssociateServices(req, res);
+
+      expect(logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session uid mismatch on GET associate-services",
+        ),
+      );
+    });
   });
 });

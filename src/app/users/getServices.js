@@ -56,14 +56,16 @@ const action = async (req, res) => {
     });
   });
 
-  if (!req.session.user) {
-    req.session.user = {};
+  if (req.session.user?.isInvite) {
+    req.session.savedInvite = { ...req.session.user };
   }
-  req.session.user.uid = user.id;
-  req.session.user.firstName = user.firstName;
-  req.session.user.lastName = user.lastName;
-  req.session.user.email = user.email;
-  req.session.user.services = [];
+  req.session.user = {
+    uid: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    services: [],
+  };
 
   return res.render("users/views/services", {
     backLink: "./",

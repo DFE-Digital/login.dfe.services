@@ -29,6 +29,18 @@ const {
 } = require("./../../infrastructure/helpers/allServicesAppCache");
 const { actions } = require("../constants/actions");
 
+const restoreInviteSession = (req) => {
+  if (!req.session.user?.isInvite && req.session.savedInvite?.isInvite) {
+    const isInviteRoute =
+      !req.params.uid ||
+      req.params.uid.toLowerCase() !== req.user?.sub?.toLowerCase();
+    if (isInviteRoute) {
+      req.session.user = req.session.savedInvite;
+      delete req.session.savedInvite;
+    }
+  }
+};
+
 const renderConfirmNewUserPage = (req, res, model) => {
   const isSelfManage = isSelfManagement(req);
   res.render(
@@ -54,6 +66,7 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/approvals/users");
   }
+  restoreInviteSession(req);
 
   const organisationDetails = req.userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
@@ -126,6 +139,7 @@ const post = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/approvals/users");
   }
+  restoreInviteSession(req);
   if (!req.userOrganisations) {
     logger.warn("No req.userOrganisations on post of confirmNewUser");
     return res.redirect("/approvals/users");
@@ -135,17 +149,20 @@ const post = async (req, res) => {
     return res.redirect("/approvals/users");
   }
 
-  // NSA-9674: Guard against session conflict when approver has multiple tabs open.
-  // If isInvite is set but the session uid matches the current user's sub,
+  // NSA-9674 / NSA-9817: Guard against session conflict when approver has multiple tabs open.
+  // If isInvite is set but the session uid OR email matches the current approver's own account,
   // a conflict has occurred — redirect safely instead of modifying the approver's access.
   if (
     req.session.user.isInvite &&
     req.user.sub &&
-    req.session.user.uid?.toLowerCase() === req.user.sub.toLowerCase()
+    (req.session.user.uid?.toLowerCase() === req.user.sub.toLowerCase() ||
+      (req.session.user.email &&
+        req.user.email &&
+        req.session.user.email.toLowerCase() === req.user.email.toLowerCase()))
   ) {
     logger.warn(
       `Session conflict detected during user invitation — approver ${req.user.sub} ` +
-        `attempted to process an invitation where the session user UID matches ` +
+        `attempted to process an invitation where the session user UID or email matches ` +
         `their own account. This indicates a multi-tab session conflict. ` +
         `Redirecting to /approvals/users to prevent access modification.`,
     );

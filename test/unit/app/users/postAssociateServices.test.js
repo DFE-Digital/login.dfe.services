@@ -32,6 +32,7 @@ jest.mock("./../../../../src/infrastructure/logger", () => mockLogger());
 jest.mock("./../../../../src/infrastructure/config", () => {
   return mockAdapterConfig();
 });
+const logger = require("./../../../../src/infrastructure/logger");
 jest.mock("login.dfe.dao", () => {
   return {
     organisation: {
@@ -227,6 +228,7 @@ describe("when adding services to a user", () => {
           isExternalService: true,
           isMigrated: true,
           name: "Service One",
+          relyingParty: {},
         },
       ],
     });
@@ -284,6 +286,7 @@ describe("when adding services to a user", () => {
           isExternalService: true,
           isMigrated: true,
           name: "Service One",
+          relyingParty: {},
         },
       ],
       selectedServices: [],
@@ -360,5 +363,119 @@ describe("when adding services to a user", () => {
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/approvals/users");
+  });
+
+  describe("when a savedInvite exists in the session from a concurrent /my-services visit", () => {
+    const savedInviteState = {
+      isInvite: true,
+      email: "invitee@test.com",
+      firstName: "New",
+      lastName: "User",
+      permission: 0,
+      services: [{ serviceId: "service1", roles: [] }],
+    };
+
+    it("then it should restore the invite session and redirect to associate-services when params.uid is undefined (new-user invite)", async () => {
+      req.session.user = { uid: "user1", services: [], orgCount: 0 };
+      req.session.savedInvite = { ...savedInviteState };
+      req.params.uid = undefined;
+      req.body.service = ["service1"];
+
+      await postAssociateServices(req, res);
+
+      expect(req.session.savedInvite).toBeUndefined();
+      expect(req.session.user.isInvite).toBe(true);
+      expect(req.session.user.email).toBe("invitee@test.com");
+    });
+
+    it("then it should restore the invite session when params.uid is a different user (existing-user invite)", async () => {
+      req.session.user = { uid: "user1", services: [], orgCount: 0 };
+      req.session.savedInvite = { ...savedInviteState };
+      req.params.uid = "some-other-user";
+      req.body.service = ["service1"];
+
+      await postAssociateServices(req, res);
+
+      expect(req.session.savedInvite).toBeUndefined();
+      expect(req.session.user.isInvite).toBe(true);
+    });
+
+    it("then it should not restore the invite session when params.uid matches the approver (self-service route)", async () => {
+      req.session.user = { uid: "user1", services: [], orgCount: 0 };
+      req.session.savedInvite = { ...savedInviteState };
+      req.params.uid = "user1";
+      req.body.service = ["service1"];
+
+      await postAssociateServices(req, res);
+
+      expect(req.session.savedInvite).toBeDefined();
+      expect(req.session.user.isInvite).toBeUndefined();
+    });
+  });
+
+  describe("when session conflict is detected via uid match in associateServices", () => {
+    it("then it should redirect to /approvals/users and log a warning when session uid matches approver but route uid differs", async () => {
+      req.session.user.uid = "user1";
+      req.params.uid = "other-user";
+
+      await postAssociateServices(req, res);
+
+      expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
+      expect(res.flash).toHaveBeenCalledWith(
+        "info",
+        "Your session was interrupted by activity in another tab. Please start the invite again.",
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session conflict detected in associateServices",
+        ),
+      );
+    });
+
+    it("then it should redirect to /approvals/users and log a warning when session uid matches approver and route has no uid (new-user invite route)", async () => {
+      req.session.user.uid = "user1";
+      req.params.uid = undefined;
+
+      await postAssociateServices(req, res);
+
+      expect(res.redirect).toHaveBeenCalledWith("/approvals/users");
+      expect(res.flash).toHaveBeenCalledWith(
+        "info",
+        "Your session was interrupted by activity in another tab. Please start the invite again.",
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session conflict detected in associateServices",
+        ),
+      );
+    });
+
+    it("then it should not trigger the guard when session uid matches approver and route uid also matches (legitimate self-service flow)", async () => {
+      req.session.user.uid = "user1";
+      req.params.uid = "user1";
+      req.body.service = ["service1"];
+
+      await postAssociateServices(req, res);
+
+      expect(logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session conflict detected in associateServices",
+        ),
+      );
+    });
+
+    it("then it should not trigger the guard when session uid does not match the approver", async () => {
+      req.session.user.uid = "different-user";
+      req.params.uid = "user1";
+      req.body.service = ["service1"];
+
+      await postAssociateServices(req, res);
+
+      expect(logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Session conflict detected in associateServices",
+        ),
+      );
+    });
   });
 });

@@ -1,7 +1,20 @@
+const restoreInviteSession = (req) => {
+  if (!req.session.user?.isInvite && req.session.savedInvite?.isInvite) {
+    const isInviteRoute =
+      !req.params.uid ||
+      req.params.uid.toLowerCase() !== req.user?.sub?.toLowerCase();
+    if (isInviteRoute) {
+      req.session.user = req.session.savedInvite;
+      delete req.session.savedInvite;
+    }
+  }
+};
+
 const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/approvals/users");
   }
+  restoreInviteSession(req);
   const organisationDetails = req.userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );
@@ -19,11 +32,12 @@ const post = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/approvals/users");
   }
+  restoreInviteSession(req);
   return req.query.review
-    ? res.redirect(
+    ? res.sessionRedirect(
         `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`,
       )
-    : res.redirect(
+    : res.sessionRedirect(
         `/approvals/${req.params.orgId}/users/${req.session.user.uid}/organisation-permissions`,
       );
 };
