@@ -34,7 +34,7 @@ const action = async (req, res) => {
   const allServices = await checkCacheForAllServices();
   const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
   const isFullyHidden = (x) => {
-    if (x.isIdOnlyService && isTruthy(x.isHiddenService)) return true;
+    if (x.isIdOnlyService) return isTruthy(x.isHiddenService);
     return isTruthy(x.relyingParty?.params?.hideApprover);
   };
   const externalServices = allServices.services.filter(

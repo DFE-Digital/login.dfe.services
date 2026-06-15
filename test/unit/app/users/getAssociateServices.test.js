@@ -573,7 +573,7 @@ describe("when displaying the associate service view", () => {
     expect(serviceIds).not.toContain("service3");
   });
 
-  it("should include an ID-only service with isHiddenService=false", async () => {
+  it("should include an ID-only service with isHiddenService=false even when hideApprover is true", async () => {
     checkCacheForAllServices.mockReturnValue({
       services: [
         {
@@ -583,7 +583,7 @@ describe("when displaying the associate service view", () => {
           name: "Visible ID-only Service",
           isIdOnlyService: true,
           isHiddenService: false,
-          relyingParty: { params: {} },
+          relyingParty: { params: { hideApprover: "true" } },
         },
       ],
     });

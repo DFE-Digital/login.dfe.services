@@ -33,7 +33,7 @@ const buildBackLink = (req) => {
 
 const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
 const isFullyHidden = (x) => {
-  if (x.isIdOnlyService && isTruthy(x.isHiddenService)) return true;
+  if (x.isIdOnlyService) return isTruthy(x.isHiddenService);
   return isTruthy(x.relyingParty?.params?.hideApprover);
 };
 

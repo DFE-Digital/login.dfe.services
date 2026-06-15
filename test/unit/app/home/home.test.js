@@ -170,7 +170,7 @@ describe("when displaying current organisation and service mapping", () => {
     ]);
   });
 
-  it("should keep a service visible when only one param is truthy (boolean false after unhide)", async () => {
+  it("should keep a service visible when all three params are false (after unhide)", async () => {
     const services = [
       {
         id: "service-unhidden",
