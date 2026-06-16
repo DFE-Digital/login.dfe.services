@@ -131,17 +131,19 @@ describe("when displaying current organisation and service mapping", () => {
       createService("service-4", "4 - Single hideApprover param only", "true"),
       {
         id: "service-5",
-        name: "5 - Hidden ID-only service five",
+        name: "5 - Fully hidden ID-only service five",
         description: "service description",
         isExternalService: true,
         isMigrated: true,
-        isHiddenService: true,
+        isHiddenService: 1,
         isIdOnlyService: true,
         relyingParty: {
           service_home: "http://service.five/login",
           redirect_uris: ["http://service.five/login/cb"],
           params: {
             hideApprover: "true",
+            hideSupport: "true",
+            helpHidden: "true",
           },
         },
       },
@@ -161,7 +163,7 @@ describe("when displaying current organisation and service mapping", () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][1].services).toBeDefined();
     // service-4 is hidden: hideApprover=true alone hides a role-based service.
-    // service-5 is hidden: id-only service with isHiddenService=true is always hidden.
+    // service-5 is hidden: id-only service with all four conditions truthy.
     // service-6 and service-7 are hidden: all three params are truthy (string and integer).
     expect(res.render.mock.calls[0][1].services).toEqual([
       services[0],
@@ -215,6 +217,28 @@ describe("when displaying current organisation and service mapping", () => {
     await home(req, res);
 
     expect(res.render.mock.calls[0][1].services).toHaveLength(0);
+  });
+
+  it("should include an ID-only service where isHiddenService=true but not all params are truthy", async () => {
+    checkCacheForAllServices.mockResolvedValue({
+      services: [
+        {
+          id: "svc-partial-id-only",
+          name: "Partially Hidden ID-only",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: true,
+          relyingParty: { params: { hideApprover: "true" } },
+        },
+      ],
+    });
+
+    await home(req, res);
+
+    expect(res.render.mock.calls[0][1].services).toHaveLength(1);
+    expect(res.render.mock.calls[0][1].services[0].id).toBe(
+      "svc-partial-id-only",
+    );
   });
 
   it("then it should include title in model", async () => {

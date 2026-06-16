@@ -10,11 +10,18 @@ const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
 const getAndMapExternalServices = async (correlationId) => {
   const allServices = await checkCacheForAllServices(correlationId);
 
+  const isFullyHidden = (service) => {
+    const params = service.relyingParty?.params;
+    const allParamsTruthy =
+      isTruthy(params?.hideApprover) &&
+      isTruthy(params?.hideSupport) &&
+      isTruthy(params?.helpHidden);
+    if (service.isIdOnlyService)
+      return allParamsTruthy && isTruthy(service.isHiddenService);
+    return isTruthy(params?.hideApprover);
+  };
   const nonHiddenServices = allServices.services.filter(
-    (service) =>
-      (!service.isIdOnlyService &&
-        !isTruthy(service.relyingParty?.params?.hideApprover)) ||
-      (service.isIdOnlyService && !isTruthy(service.isHiddenService)),
+    (service) => !isFullyHidden(service),
   );
   return sortBy(nonHiddenServices, "name");
 };

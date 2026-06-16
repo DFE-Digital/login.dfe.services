@@ -158,15 +158,22 @@ describe("when displaying the users services", () => {
     });
   });
 
-  it("should exclude an ID-only service with isHiddenService=true from displayed services", async () => {
+  it("should exclude an ID-only service only when all four hide conditions are truthy", async () => {
     checkCacheForAllServices.mockReturnValue({
       services: [
         {
           id: "service1",
           isExternalService: true,
           isIdOnlyService: true,
-          isHiddenService: true,
-          name: "Hidden ID-only Service",
+          isHiddenService: 1,
+          name: "Fully Hidden ID-only Service",
+          relyingParty: {
+            params: {
+              hideApprover: "true",
+              hideSupport: "true",
+              helpHidden: "true",
+            },
+          },
         },
       ],
     });
@@ -178,6 +185,29 @@ describe("when displaying the users services", () => {
       .flatMap((o) => o.displayedServices)
       .map((s) => s.id);
     expect(displayedServiceIds).not.toContain("service1");
+  });
+
+  it("should include an ID-only service with isHiddenService=true when not all params are truthy", async () => {
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service1",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: true,
+          name: "Partially Hidden ID-only Service",
+          relyingParty: { params: { hideApprover: "true" } },
+        },
+      ],
+    });
+
+    await getServices(req, res);
+
+    const userOrgs = res.render.mock.calls[0][1].visibleUserOrgs;
+    const displayedServiceIds = userOrgs
+      .flatMap((o) => o.displayedServices)
+      .map((s) => s.id);
+    expect(displayedServiceIds).toContain("service1");
   });
 
   it("should include an ID-only service with isHiddenService=false even when hideApprover is true", async () => {

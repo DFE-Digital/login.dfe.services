@@ -91,7 +91,15 @@ const getAllAvailableServices = async (req) => {
 
   const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
   const isFullyHidden = (x) => {
-    if (x.isIdOnlyService) return isTruthy(x.isHiddenService);
+    if (x.isIdOnlyService) {
+      const params = x.relyingParty?.params;
+      return (
+        isTruthy(x.isHiddenService) &&
+        isTruthy(params?.hideApprover) &&
+        isTruthy(params?.hideSupport) &&
+        isTruthy(params?.helpHidden)
+      );
+    }
     return isTruthy(x.relyingParty?.params?.hideApprover);
   };
   const allServices = await checkCacheForAllServices(req.id);
