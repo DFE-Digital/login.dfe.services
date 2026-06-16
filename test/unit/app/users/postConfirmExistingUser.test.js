@@ -58,8 +58,8 @@ describe("when posting the existing user view", () => {
   it("then it should redirect to organisation permissions", async () => {
     await postConfirmExistingUser(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
       `/approvals/${req.params.orgId}/users/${req.session.user.uid}/organisation-permissions`,
     );
   });
@@ -68,8 +68,8 @@ describe("when posting the existing user view", () => {
     req.query.review = "true";
     await postConfirmExistingUser(req, res);
 
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe(
+    expect(res.sessionRedirect.mock.calls).toHaveLength(1);
+    expect(res.sessionRedirect.mock.calls[0][0]).toBe(
       `/approvals/${req.params.orgId}/users/${req.session.user.uid}/confirm-details`,
     );
   });
@@ -80,5 +80,51 @@ describe("when posting the existing user view", () => {
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/approvals/users");
+  });
+
+  describe("when a savedInvite exists in the session from a concurrent /my-services visit", () => {
+    const savedInviteState = {
+      isInvite: true,
+      email: "invitee@test.com",
+      firstName: "New",
+      lastName: "User",
+      uid: "invite-uid",
+      permission: 0,
+      services: [],
+    };
+
+    it("then it should restore the invite session when params.uid is undefined (new-user invite)", async () => {
+      req.session.user = { uid: "userid", services: [] };
+      req.session.savedInvite = { ...savedInviteState };
+      req.params.uid = undefined;
+
+      await postConfirmExistingUser(req, res);
+
+      expect(req.session.savedInvite).toBeUndefined();
+      expect(req.session.user.isInvite).toBe(true);
+      expect(req.session.user.email).toBe("invitee@test.com");
+    });
+
+    it("then it should restore the invite session when params.uid is a different user (existing-user invite)", async () => {
+      req.session.user = { uid: "userid", services: [] };
+      req.session.savedInvite = { ...savedInviteState };
+      req.params.uid = "some-other-user";
+
+      await postConfirmExistingUser(req, res);
+
+      expect(req.session.savedInvite).toBeUndefined();
+      expect(req.session.user.isInvite).toBe(true);
+    });
+
+    it("then it should not restore the invite session when params.uid matches the approver (self-service route)", async () => {
+      req.session.user = { uid: "userid", services: [] };
+      req.session.savedInvite = { ...savedInviteState };
+      req.params.uid = "user1";
+
+      await postConfirmExistingUser(req, res);
+
+      expect(req.session.savedInvite).toBeDefined();
+      expect(req.session.user.isInvite).toBeUndefined();
+    });
   });
 });

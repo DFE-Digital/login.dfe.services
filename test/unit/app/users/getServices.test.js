@@ -157,4 +157,43 @@ describe("when displaying the users services", () => {
       csrfToken: "token",
     });
   });
+
+  describe("when an invite journey is in progress during a user profile page visit", () => {
+    const inviteState = {
+      isInvite: true,
+      uid: "inv-abc123",
+      firstName: "Alice",
+      lastName: "Smith",
+      email: "alice@example.com",
+      services: [{ serviceId: "service1", roles: [] }],
+    };
+
+    it("then it should save invite state to session.savedInvite before overwriting session.user", async () => {
+      req.session.user = { ...inviteState };
+
+      await getServices(req, res);
+
+      expect(req.session.savedInvite).toBeDefined();
+      expect(req.session.savedInvite.isInvite).toBe(true);
+      expect(req.session.savedInvite.email).toBe("alice@example.com");
+      expect(req.session.savedInvite.uid).toBe("inv-abc123");
+    });
+
+    it("then it should remove isInvite from session.user after overwriting with profile user data", async () => {
+      req.session.user = { ...inviteState };
+
+      await getServices(req, res);
+
+      expect(req.session.user.isInvite).toBeUndefined();
+      expect(req.session.user.services).toEqual([]);
+    });
+
+    it("then it should not set session.savedInvite when there is no active invite in the session", async () => {
+      req.session.user = { uid: "someuser", services: [] };
+
+      await getServices(req, res);
+
+      expect(req.session.savedInvite).toBeUndefined();
+    });
+  });
 });

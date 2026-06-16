@@ -224,6 +224,9 @@ const getServices = async (req, res) => {
   let isRequestServiceAllowed;
 
   const approverOrgs = getApproverOrgsFromReq(req);
+  if (req.session.user?.isInvite) {
+    req.session.savedInvite = { ...req.session.user };
+  }
   req.session.user = {
     uid: req.user.sub,
     firstName: req.user.given_name,
