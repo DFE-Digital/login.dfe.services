@@ -293,7 +293,7 @@ const post = async (req, res) => {
 
   logger.audit({
     type: "services",
-    subType: "access-request-approved",
+    subType: "service-request-approved",
     userId: req.user.uid,
     userEmail: req.user.email,
     application: config.loggerSettings.applicationName,
@@ -305,7 +305,7 @@ const post = async (req, res) => {
       approverId: req.user.sub,
     },
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} approved service access request for end user (endUserId: ${req.params.uid})`,
+    message: `${req.user.email} approved service request for ${req.session.user.email}`,
   });
 
   res.flash("title", `Success`);

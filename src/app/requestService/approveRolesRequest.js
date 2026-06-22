@@ -262,12 +262,9 @@ const post = async (req, res) => {
     userEmail: approverDetails.email,
     application: config.loggerSettings.applicationName,
     organisationid: orgId,
+    serviceId,
     env: config.hostingEnvironment.env,
-    message: `${approverDetails.email} (approverId: ${
-      approverDetails.sub
-    }) approved sub-service request for (serviceId: ${serviceId}) and sub-services (roleIds: ${JSON.stringify(
-      roles,
-    )}) for end user (endUserId: ${endUserId}) - requestId (reqId: ${userSubServiceRequestID})`,
+    message: `${approverDetails.email} approved sub-service request for ${endUserDetails.email}`,
   });
 
   res.flash("title", "Success");

@@ -340,11 +340,11 @@ describe("When approving a service request", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "approver.one@unit.test approved service access request for end user (endUserId: endUser1)",
+      "approver.one@unit.test approved service request for john.doe@email.com",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "services",
-      subType: "access-request-approved",
+      subType: "service-request-approved",
       userId: "approver1",
       userEmail: "approver.one@unit.test",
       meta: {

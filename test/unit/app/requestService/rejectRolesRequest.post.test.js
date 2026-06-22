@@ -312,13 +312,19 @@ describe("When approving a sub service request", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      'approver.one@unit.test (approverId: approver1) rejected sub-service request for (serviceId: service1) and sub-services (roleIds: ["role1"]) for organisation (orgId: organisationId) for end user (endUserId: endUser1).  - requestId (reqId: sub-service-req-ID)',
+      "approver.one@unit.test rejected sub-service request for john.doe@email.com.",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "sub-service",
-      subType: "sub-service request Rejected",
+      subType: "sub-service-request-rejected",
       userId: "approver1",
       userEmail: "approver.one@unit.test",
+      organisationid: "organisationId",
+      serviceId: "service1",
+      meta: {
+        reason: "",
+        requestId: "sub-service-req-ID",
+      },
     });
   });
 

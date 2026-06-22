@@ -45,6 +45,7 @@ const getViewModel = async (req) => {
   const service = {
     serviceId,
     name: serviceDetails.name,
+    clientId: serviceDetails.relyingParty.clientId,
     roles: roleDetails,
   };
 
@@ -204,13 +205,20 @@ const post = async (req, res) => {
 
   logger.audit({
     type: "services",
-    subType: "access-request-rejected",
+    subType: "service-request-rejected",
     userId: req.user.uid,
     userEmail: req.user.email,
     application: config.loggerSettings.applicationName,
     organisationid: req.params.orgId,
+    meta: {
+      client: model.service.clientId,
+      requestId: userServiceRequestId,
+      roles: JSON.stringify(roles),
+      endUserId: req.params.uid,
+      reason: rejectReason ? `The reject reason is ${rejectReason}` : "",
+    },
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} (approverId: ${req.user.sub}) rejected service (serviceId: ${req.params.sid}), roles (roleIds: ${JSON.stringify(roles)}) for end user (endUserId: ${req.params.uid}). ${rejectReason ? `The reject reason is ${rejectReason}` : ""} - requestId (reqId: ${userServiceRequestId})`,
+    message: `${req.user.email} rejected service request for ${req.session.user.email}.`,
   });
 
   res.flash("title", `Success`);
