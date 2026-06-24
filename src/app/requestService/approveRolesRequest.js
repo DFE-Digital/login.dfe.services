@@ -67,7 +67,6 @@ const getViewModel = async (req, existingModel) => {
   const service = {
     serviceId,
     name: serviceDetails.name,
-    clientId: serviceDetails.relyingParty.clientId,
     roles: roleDetails.sort((a, b) => a.name.localeCompare(b.name)),
   };
 
@@ -263,10 +262,9 @@ const post = async (req, res) => {
     userEmail: approverDetails.email,
     application: config.loggerSettings.applicationName,
     organisationid: orgId,
-    serviceId,
     env: config.hostingEnvironment.env,
     meta: {
-      client: service.clientId,
+      serviceId,
       editedUser: endUserId,
     },
     message: `${approverDetails.email} approved sub-service request for ${endUserDetails.email}`,

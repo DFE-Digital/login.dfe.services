@@ -148,9 +148,6 @@ describe("When reviewing a sub-service request for rejecting", () => {
         {
           id: "service1",
           name: "service name",
-          relyingParty: {
-            clientId: "serviceClient1",
-          },
         },
       ],
     });
