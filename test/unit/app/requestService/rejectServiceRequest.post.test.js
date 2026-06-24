@@ -94,6 +94,7 @@ describe("when posting a service rejection", () => {
         sid: "service1",
         orgId: "organisationId",
         rids: [0],
+        uid: "endUser1",
       },
       query: {},
       userOrganisations: [
@@ -325,7 +326,8 @@ describe("when posting a service rejection", () => {
         client: "serviceClient1",
         requestId: undefined,
         roles: "[]",
-        endUserId: undefined,
+        endUserId: "endUser1",
+        editedUser: "endUser1",
         reason: "The reject reason is xxxxxxxxxx",
       },
     });

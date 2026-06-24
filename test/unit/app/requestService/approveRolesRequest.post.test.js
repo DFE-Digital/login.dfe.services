@@ -374,6 +374,9 @@ describe("When approving a sub service request", () => {
       userEmail: "approver.one@unit.test",
       organisationid: "organisationId",
       serviceId: "service1",
+      meta: {
+        editedUser: "endUser1",
+      },
     });
   });
 

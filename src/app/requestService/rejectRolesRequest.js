@@ -221,6 +221,7 @@ const post = async (req, res) => {
     meta: {
       reason: rejectReason ? `The reject reason is ${rejectReason}` : "",
       requestId: userSubServiceRequestID,
+      editedUser: endUserId,
     },
     message: `${approverDetails.email} rejected sub-service request for ${endUserDetails.email}.`,
   });

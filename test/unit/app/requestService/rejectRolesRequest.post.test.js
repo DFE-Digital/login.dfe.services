@@ -324,6 +324,7 @@ describe("When approving a sub service request", () => {
       meta: {
         reason: "",
         requestId: "sub-service-req-ID",
+        editedUser: "endUser1",
       },
     });
   });

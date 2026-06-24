@@ -349,6 +349,7 @@ describe("When approving a service request", () => {
       userEmail: "approver.one@unit.test",
       meta: {
         client: "serviceClient1",
+        editedUser: "endUser1",
       },
     });
   });

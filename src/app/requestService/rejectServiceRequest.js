@@ -215,6 +215,7 @@ const post = async (req, res) => {
       requestId: userServiceRequestId,
       roles: JSON.stringify(roles),
       endUserId: req.params.uid,
+      editedUser: req.params.uid,
       reason: rejectReason ? `The reject reason is ${rejectReason}` : "",
     },
     env: config.hostingEnvironment.env,

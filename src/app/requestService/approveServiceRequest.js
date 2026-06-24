@@ -303,6 +303,7 @@ const post = async (req, res) => {
       roles: JSON.stringify(roles),
       requestId: userServiceRequestId,
       approverId: req.user.sub,
+      editedUser: req.params.uid,
     },
     env: config.hostingEnvironment.env,
     message: `${req.user.email} approved service request for ${req.session.user.email}`,

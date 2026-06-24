@@ -264,6 +264,9 @@ const post = async (req, res) => {
     organisationid: orgId,
     serviceId,
     env: config.hostingEnvironment.env,
+    meta: {
+      editedUser: endUserId,
+    },
     message: `${approverDetails.email} approved sub-service request for ${endUserDetails.email}`,
   });
 
