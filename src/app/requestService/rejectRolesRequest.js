@@ -43,6 +43,7 @@ const getViewModel = async (req) => {
   const service = {
     serviceId,
     name: serviceDetails.name,
+    clientId: serviceDetails.relyingParty.clientId,
     roles: roleDetails,
   };
 
@@ -222,6 +223,7 @@ const post = async (req, res) => {
       reason: rejectReason ? `The reject reason is ${rejectReason}` : "",
       requestId: userSubServiceRequestID,
       editedUser: endUserId,
+      client: service.clientId,
     },
     message: `${approverDetails.email} rejected sub-service request for ${endUserDetails.email}.`,
   });

@@ -106,7 +106,7 @@ describe("When approving a service request", () => {
       }));
 
     req.user = {
-      uid: "approver1",
+      uid: "approver1-stale-uid",
       sub: "approver1",
       email: "approver.one@unit.test",
       organisations: [

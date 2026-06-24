@@ -294,7 +294,7 @@ const post = async (req, res) => {
   logger.audit({
     type: "services",
     subType: "service-request-approved",
-    userId: req.user.uid,
+    userId: req.user.sub,
     userEmail: req.user.email,
     application: config.loggerSettings.applicationName,
     organisationid: req.params.orgId,

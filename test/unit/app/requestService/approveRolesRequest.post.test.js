@@ -172,6 +172,9 @@ describe("When approving a sub service request", () => {
         {
           id: "service1",
           name: "service name",
+          relyingParty: {
+            clientId: "serviceClient1",
+          },
         },
       ],
     });
@@ -375,6 +378,7 @@ describe("When approving a sub service request", () => {
       organisationid: "organisationId",
       serviceId: "service1",
       meta: {
+        client: "serviceClient1",
         editedUser: "endUser1",
       },
     });

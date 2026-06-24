@@ -320,7 +320,7 @@ describe("when posting a service rejection", () => {
       subType: "service-request-rejected",
       type: "services",
       userEmail: "mock-email",
-      userId: "mock-uid",
+      userId: "mock-sub",
       organisationid: "organisationId",
       meta: {
         client: "serviceClient1",
