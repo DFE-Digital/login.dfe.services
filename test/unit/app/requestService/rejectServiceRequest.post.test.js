@@ -124,9 +124,6 @@ describe("when posting a service rejection", () => {
         {
           id: "service1",
           name: "service name",
-          relyingParty: {
-            clientId: "serviceClient1",
-          },
         },
       ],
     });
@@ -323,7 +320,7 @@ describe("when posting a service rejection", () => {
       userId: "mock-sub",
       organisationid: "organisationId",
       meta: {
-        client: "serviceClient1",
+        serviceId: "service1",
         requestId: undefined,
         roles: "[]",
         endUserId: "endUser1",
