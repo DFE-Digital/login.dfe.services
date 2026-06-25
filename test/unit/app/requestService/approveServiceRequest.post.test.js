@@ -184,16 +184,10 @@ describe("When approving a service request", () => {
         {
           id: "service1",
           name: "service name",
-          relyingParty: {
-            clientId: "serviceClient1",
-          },
         },
         {
           id: "service2",
           name: "service2 name",
-          relyingParty: {
-            clientId: "serviceClient1",
-          },
         },
       ],
     });
@@ -348,7 +342,7 @@ describe("When approving a service request", () => {
       userId: "approver1",
       userEmail: "approver.one@unit.test",
       meta: {
-        client: "serviceClient1",
+        serviceId: "service1",
         editedUser: "endUser1",
       },
     });

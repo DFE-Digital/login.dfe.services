@@ -91,7 +91,6 @@ const getViewModel = async (req, existingModel) => {
   const service = {
     serviceId,
     name: serviceDetails.name,
-    clientId: serviceDetails.relyingParty.clientId,
     roles: roleDetails,
   };
 
@@ -299,7 +298,7 @@ const post = async (req, res) => {
     application: config.loggerSettings.applicationName,
     organisationid: req.params.orgId,
     meta: {
-      client: viewModel.service.clientId,
+      serviceId: viewModel.service.serviceId,
       roles: JSON.stringify(roles),
       requestId: userServiceRequestId,
       approverId: req.user.sub,
