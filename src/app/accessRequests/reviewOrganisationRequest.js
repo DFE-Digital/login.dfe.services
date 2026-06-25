@@ -86,7 +86,6 @@ const post = async (req, res) => {
   await putUserInOrganisation(
     model.request.user_id,
     model.request.org_id,
-    0,
     null,
     correlationId,
   );

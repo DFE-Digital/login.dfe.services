@@ -4,12 +4,11 @@ const getOrganisationAndServiceForUser = async (userId) => {
   return await organisation.getOrganisationsForUserIncludingServices(userId);
 };
 
-const putUserInOrganisation = async (userId, orgId, status, role, reason) => {
+const putUserInOrganisation = async (userId, orgId, role, reason) => {
   const userOrg = {
     user_id: userId,
     organisation_id: orgId,
     role_id: role,
-    status,
     reason,
   };
   return organisation.putUserOrganisation(userOrg);

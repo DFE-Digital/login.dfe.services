@@ -43,7 +43,6 @@ jest.mock("login.dfe.dao", () => {
                 user_id: "11D62132-6570-4E63-9DCB-137CC35E7543",
                 organisation_id: "1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69",
                 role_id: 10000,
-                status: 0,
                 reason: null,
                 numeric_identifier: null,
                 text_identifier: null,
@@ -54,7 +53,6 @@ jest.mock("login.dfe.dao", () => {
                 user_id: "E15CCDE2-FFDC-4593-8475-3759C0F86FFD",
                 organisation_id: "1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69",
                 role_id: 10000,
-                status: 0,
                 reason: null,
                 numeric_identifier: "147",
                 text_identifier: "h73ndef",
@@ -65,7 +63,6 @@ jest.mock("login.dfe.dao", () => {
                 user_id: "C844FCBD-ECCF-485D-B6E1-72A1E7D924E1",
                 organisation_id: "1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69",
                 role_id: 10000,
-                status: 1,
                 reason: "05b14b8c-0716-4eeb-b913-894196f13d78",
                 numeric_identifier: "131",
                 text_identifier: "hkhedd4",
@@ -76,7 +73,6 @@ jest.mock("login.dfe.dao", () => {
                 user_id: "20A11600-DEDD-4929-AE21-858868C85D26",
                 organisation_id: "1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69",
                 role_id: 10000,
-                status: 1,
                 reason: null,
                 numeric_identifier: "29",
                 text_identifier: "r6ffe4f",
@@ -87,7 +83,6 @@ jest.mock("login.dfe.dao", () => {
                 user_id: "2F0E3A37-1BD8-450A-9001-860079E2778F",
                 organisation_id: "1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69",
                 role_id: 10000,
-                status: 1,
                 reason: "db2afee7-2ea2-4a09-822a-89b2ea893ac6",
                 numeric_identifier: "136",
                 text_identifier: "hkkf4ff",
@@ -98,7 +93,6 @@ jest.mock("login.dfe.dao", () => {
                 user_id: "4BFE4D49-7DE8-489C-9321-BDDA0D2C4D1C",
                 organisation_id: "1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69",
                 role_id: 10000,
-                status: 0,
                 reason: "2a44817f-eb15-4fdb-a363-876427f7b4a8",
                 numeric_identifier: "262",
                 text_identifier: "r2r4fe4",
@@ -109,7 +103,6 @@ jest.mock("login.dfe.dao", () => {
                 user_id: "C7AE5F34-33EE-4148-A160-E09F029AC5BB",
                 organisation_id: "1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69",
                 role_id: 10000,
-                status: 0,
                 reason: null,
                 numeric_identifier: "148",
                 text_identifier: "h774nde",
@@ -120,7 +113,6 @@ jest.mock("login.dfe.dao", () => {
                 user_id: "26F2F3C3-B367-4027-995B-F5EFAF21985A",
                 organisation_id: "1148F925-D0FB-4A3D-A0C8-D0EC96F1AE69",
                 role_id: 10000,
-                status: 1,
                 reason: "",
                 numeric_identifier: null,
                 text_identifier: null,
@@ -162,7 +154,6 @@ describe("when putting a user in organisations for approval", () => {
     await apiCall.putUserInOrganisation(
       "user1",
       "org1",
-      "status1",
       "role1",
       "rejection-reason",
       "correlationId",
@@ -170,9 +161,6 @@ describe("when putting a user in organisations for approval", () => {
     expect(dao.organisation.putUserOrganisation.mock.calls).toHaveLength(1);
     expect(dao.organisation.putUserOrganisation.mock.calls[0][0].reason).toBe(
       "rejection-reason",
-    );
-    expect(dao.organisation.putUserOrganisation.mock.calls[0][0].status).toBe(
-      "status1",
     );
     expect(dao.organisation.putUserOrganisation.mock.calls[0][0].role_id).toBe(
       "role1",
