@@ -156,7 +156,7 @@ describe("when displaying the request a service page", () => {
     });
   });
 
-  it("should exclude an ID-only service with isHiddenService=true", async () => {
+  it("should NOT exclude an ID-only service with isHiddenService=true when other params are not set", async () => {
     checkCacheForAllServices.mockReturnValue({
       services: [
         {
@@ -171,7 +171,7 @@ describe("when displaying the request a service page", () => {
           id: "service3",
           isExternalService: true,
           isMigrated: true,
-          name: "Hidden ID-only Service",
+          name: "Partially Hidden ID-only Service",
           isIdOnlyService: true,
           isHiddenService: true,
           relyingParty: { params: {} },
@@ -188,7 +188,38 @@ describe("when displaying the request a service page", () => {
 
     const serviceIds = res.render.mock.calls[0][1].services.map((s) => s.id);
     expect(serviceIds).toContain("service1");
-    expect(serviceIds).not.toContain("service3");
+    expect(serviceIds).toContain("service3");
+  });
+
+  it("should exclude an ID-only service when isHiddenService and all three params are truthy", async () => {
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service4",
+          isExternalService: true,
+          isMigrated: true,
+          name: "Fully Hidden ID-only Service",
+          isIdOnlyService: true,
+          isHiddenService: true,
+          relyingParty: {
+            params: {
+              hideApprover: "true",
+              hideSupport: "true",
+              helpHidden: "true",
+            },
+          },
+        },
+      ],
+    });
+    getAllServicesForUserInOrg.mockReturnValue([]);
+    policyEngine.getPolicyApplicationResultsForUser.mockReturnValue([
+      { id: "service4", serviceAvailableToUser: true },
+    ]);
+
+    await get(req, res);
+
+    const serviceIds = res.render.mock.calls[0][1].services.map((s) => s.id);
+    expect(serviceIds).not.toContain("service4");
   });
 
   it("should include an ID-only service with isHiddenService=false even when hideApprover is true", async () => {
