@@ -313,7 +313,7 @@ describe("when posting a service rejection", () => {
     expect(logger.audit).toHaveBeenCalledWith({
       application: undefined,
       env: "test-run",
-      message: "mock-email rejected service request for mock-email.",
+      message: "mock-email rejected service request for mock-email",
       subType: "service-request-rejected",
       type: "services",
       userEmail: "mock-email",

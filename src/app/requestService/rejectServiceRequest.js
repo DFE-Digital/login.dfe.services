@@ -218,7 +218,7 @@ const post = async (req, res) => {
       reason: rejectReason ? `The reject reason is ${rejectReason}` : "",
     },
     env: config.hostingEnvironment.env,
-    message: `${req.user.email} rejected service request for ${req.session.user.email}.`,
+    message: `${req.user.email} rejected service request for ${req.session.user.email}`,
   });
 
   res.flash("title", `Success`);
