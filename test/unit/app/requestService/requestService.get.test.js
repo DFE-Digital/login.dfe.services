@@ -7,6 +7,9 @@ jest.mock("./../../../../src/infrastructure/logger", () =>
 );
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("./../../../../src/app/users/utils");
+jest.mock("login.dfe.api-client/organisations", () => ({
+  getOrganisationRaw: jest.fn(),
+}));
 
 const {
   checkCacheForAllServices,
@@ -135,6 +138,13 @@ describe("when displaying the request a service page", () => {
         },
       ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
+
+    const {
+      getOrganisationRaw,
+    } = require("login.dfe.api-client/organisations");
+    getOrganisationRaw
+      .mockReset()
+      .mockResolvedValue({ category: { id: "001" } });
 
     get = require("./../../../../src/app/requestService/requestService").get;
   });
