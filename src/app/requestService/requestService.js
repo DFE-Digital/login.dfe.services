@@ -69,13 +69,21 @@ const getAllAvailableServices = async (req) => {
     req.id,
   );
 
-  return externalServices.filter((service) =>
+  const available = externalServices.filter((service) =>
     policyResults.find(
       (result) =>
         service.id.toLowerCase() === result.id.toLowerCase() &&
         result.serviceAvailableToUser === true,
     ),
   );
+
+  const selectedOrg = req.userOrganisations?.find(
+    (x) => x.organisation.id.toLowerCase() === req.params.orgId.toLowerCase(),
+  );
+  if (selectedOrg?.organisation?.category?.id === "054") {
+    return available.filter((svc) => svc.relyingParty?.clientId === "ukRlp");
+  }
+  return available;
 };
 
 const get = async (req, res) => {
