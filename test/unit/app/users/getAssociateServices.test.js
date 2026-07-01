@@ -8,6 +8,9 @@ jest.mock("./../../../../src/infrastructure/applications", () => {
 });
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("login.dfe.policy-engine");
+jest.mock("login.dfe.api-client/organisations", () => ({
+  getOrganisationRaw: jest.fn(),
+}));
 const {
   checkCacheForAllServices,
 } = require("../../../../src/infrastructure/helpers/allServicesAppCache");
@@ -266,6 +269,13 @@ describe("when displaying the associate service view", () => {
         },
       ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
+
+    const {
+      getOrganisationRaw,
+    } = require("login.dfe.api-client/organisations");
+    getOrganisationRaw
+      .mockReset()
+      .mockResolvedValue({ category: { id: "001" } });
 
     getAssociateServices =
       require("./../../../../src/app/users/associateServices").get;

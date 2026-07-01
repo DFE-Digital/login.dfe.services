@@ -9,6 +9,9 @@ jest.mock("../../../../src/app/users/utils", () => {
   };
 });
 jest.mock("login.dfe.policy-engine");
+jest.mock("login.dfe.api-client/organisations", () => ({
+  getOrganisationRaw: jest.fn(),
+}));
 const {
   checkCacheForAllServices,
 } = require("../../../../src/infrastructure/helpers/allServicesAppCache");
@@ -255,6 +258,13 @@ describe("when adding services to a user", () => {
         },
       ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
+
+    const {
+      getOrganisationRaw,
+    } = require("login.dfe.api-client/organisations");
+    getOrganisationRaw
+      .mockReset()
+      .mockResolvedValue({ category: { id: "001" } });
 
     postAssociateServices =
       require("./../../../../src/app/users/associateServices").post;
