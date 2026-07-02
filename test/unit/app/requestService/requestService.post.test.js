@@ -7,6 +7,9 @@ jest.mock("./../../../../src/infrastructure/logger", () =>
 );
 jest.mock("./../../../../src/app/users/utils");
 jest.mock("./../../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/organisations", () => ({
+  getOrganisationRaw: jest.fn(),
+}));
 const {
   checkCacheForAllServices,
 } = require("../../../../src/infrastructure/helpers/allServicesAppCache");
@@ -202,6 +205,13 @@ describe("when posting service and the request has already been requested", () =
         },
       ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
+
+    const {
+      getOrganisationRaw,
+    } = require("login.dfe.api-client/organisations");
+    getOrganisationRaw
+      .mockReset()
+      .mockResolvedValue({ category: { id: "001" } });
 
     post = require("./../../../../src/app/requestService/requestService").post;
   });

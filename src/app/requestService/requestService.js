@@ -5,6 +5,7 @@ const PolicyEngine = require("login.dfe.policy-engine");
 const {
   getOrganisationAndServiceForUserV2,
 } = require("../../infrastructure/organisations");
+const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 const {
   checkCacheForAllServices,
 } = require("../../infrastructure/helpers/allServicesAppCache");
@@ -69,13 +70,21 @@ const getAllAvailableServices = async (req) => {
     req.id,
   );
 
-  return externalServices.filter((service) =>
+  const available = externalServices.filter((service) =>
     policyResults.find(
       (result) =>
         service.id.toLowerCase() === result.id.toLowerCase() &&
         result.serviceAvailableToUser === true,
     ),
   );
+
+  const orgDetails = await getOrganisationRaw({
+    by: { organisationId: req.params.orgId },
+  });
+  if (orgDetails?.category?.id === "054") {
+    return available.filter((svc) => svc.relyingParty?.clientId === "ukRlp");
+  }
+  return available;
 };
 
 const get = async (req, res) => {
