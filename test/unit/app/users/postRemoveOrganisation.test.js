@@ -164,7 +164,7 @@ describe("when removing organisation access", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "user.one@unit.test (id: user1) removed organisation organisationName (id: org1) for user test@test.com (id: user1) numeric Identifier and textIdentifier(null)",
+      "user.one@unit.test removed test@test.com from organisationName",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",
@@ -181,6 +181,17 @@ describe("when removing organisation access", () => {
           },
         ],
       },
+    });
+  });
+
+  it("should include organisationId at the top level of the audit payload", async () => {
+    await postRemoveOrganisationAccess(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
+      type: "approver",
+      subType: "user-org-deleted",
+      organisationid: "org1",
     });
   });
 

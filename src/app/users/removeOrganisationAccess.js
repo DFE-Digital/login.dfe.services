@@ -155,6 +155,7 @@ const post = async (req, res) => {
     subType: "user-org-deleted",
     userId: req.user.sub,
     userEmail: req.user.email,
+    organisationid: organisationId,
     editedUser: uid,
     meta: {
       editedFields: [
@@ -169,13 +170,7 @@ const post = async (req, res) => {
         ...numericIdentifierAndtextIdentifier,
       }),
     },
-    message: `${req.user.email} (id: ${req.user.sub}) removed organisation ${orgName} (id: ${organisationId}) for user ${
-      req.session.user.email
-    } (id: ${uid}) numeric Identifier and textIdentifier(${
-      Object.keys(numericIdentifierAndtextIdentifier).length === 0
-        ? "null"
-        : JSON.stringify(numericIdentifierAndtextIdentifier)
-    })`,
+    message: `${req.user.email} removed ${req.session.user.email} from ${orgName}`,
     ...(Object.keys(numericIdentifierAndtextIdentifier).length !== 0 && {
       ...numericIdentifierAndtextIdentifier,
     }),

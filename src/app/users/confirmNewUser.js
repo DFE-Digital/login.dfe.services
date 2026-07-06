@@ -172,6 +172,7 @@ const post = async (req, res) => {
   let uid = req.params.uid;
   const organisationId = req.params.orgId;
   const organisation = await getOrganisationById(organisationId, req.id);
+  const org = organisation.name;
   const isEmailAllowed = await isServiceEmailNotificationAllowed();
 
   if (!uid) {
@@ -189,24 +190,26 @@ const post = async (req, res) => {
     );
     uid = `inv-${invitationId}`;
 
-    logger.audit({
+    const auditPayload = {
       type: "approver",
       subType: "invite-created",
       userId: req.user.sub,
+      editedUser: `inv-${invitationId}`,
+      userEmail: req.user.email,
+      invitedUserEmail: req.session.user.email,
+      organisationid: organisationId,
+      organisationName: org,
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `Invitation code is created. Id ${invitationId}`,
+      message: `${req.user.email} invited ${req.session.user.email} to ${org}`,
       meta: {
-        email: req.user.email,
-        client: config.loggerSettings.applicationName,
+        serviceId: req.session.user.services?.[0]?.serviceId,
+        editedUser: `inv-${invitationId}`,
       },
-    });
+    };
+    logger.audit(auditPayload);
   }
 
-  const organisationDetails = req.userOrganisations.find(
-    (x) => x.organisation.id === organisationId,
-  );
-  const org = organisationDetails.organisation.name;
   // existing invitation or new invite
   const invitationId = uid.startsWith("inv-") ? uid.substr(4) : undefined;
 
@@ -378,9 +381,14 @@ const post = async (req, res) => {
       invitedUserEmail: req.session.user.email,
       invitedUser: uid,
       organisationid: organisationId,
+      organisationName: org,
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
-      message: `${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email} to ${org} (id: ${organisationId}) (id: ${uid})`,
+      message: `${req.user.email} invited ${req.session.user.email} to ${org}`,
+      meta: {
+        serviceId: req.session.user.services?.[0]?.serviceId,
+        editedUser: uid,
+      },
     });
 
     res.flash("title", `Success`);
@@ -424,11 +432,12 @@ const post = async (req, res) => {
       subType: "user-services-added",
       userId: req.user.sub,
       userEmail: req.user.email,
-      organisationId,
+      organisationid: organisationId,
       application: config.loggerSettings.applicationName,
       env: config.hostingEnvironment.env,
       message: `${req.user.email} added ${req.session.user.services.length} service(s) for user ${req.session.user.email}`,
       meta: {
+        serviceId: req.session.user.services?.[0]?.serviceId,
         editedFields: [
           {
             name: "add_services",

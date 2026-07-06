@@ -226,7 +226,7 @@ describe("when removing service access", () => {
       subType: "user-service-deleted",
       userId: "user1",
       userEmail: "user.one@unit.test",
-      organisationId: "org1",
+      organisationid: "org1",
       meta: {
         editedUser: "user1",
         editedFields: [
@@ -236,6 +236,19 @@ describe("when removing service access", () => {
             newValue: undefined,
           },
         ],
+      },
+    });
+  });
+
+  it("should include serviceId in audit payload", async () => {
+    await postRemoveServiceAccess(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
+      type: "approver",
+      subType: "user-service-deleted",
+      meta: {
+        serviceId: "service1",
       },
     });
   });

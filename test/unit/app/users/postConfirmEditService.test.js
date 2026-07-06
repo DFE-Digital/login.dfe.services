@@ -168,7 +168,7 @@ describe("when editing a service for a user", () => {
       subType: "user-service-updated",
       userId: "user1",
       userEmail: "user.one@unit.test",
-      organisationId: "org1",
+      organisationid: "org1",
       meta: {
         editedUser: "user1",
         editedFields: [
@@ -177,6 +177,19 @@ describe("when editing a service for a user", () => {
             newValue: ["role1", "role2"],
           },
         ],
+      },
+    });
+  });
+
+  it("should include serviceId in audit payload", async () => {
+    await postConfirmEditService(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
+      type: "approver",
+      subType: "user-service-updated",
+      meta: {
+        serviceId: "service1",
       },
     });
   });

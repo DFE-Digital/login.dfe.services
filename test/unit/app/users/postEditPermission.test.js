@@ -187,22 +187,54 @@ describe("when editing organisation permission level", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "user.one@unit.test (id: user1) edited permission level to approver for org organisationName (id: org1) for user email@email.com (id: user1)",
+      "user.one@unit.test edited permission level for email@email.com at organisationName to approver",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "approver",
       subType: "user-org-permission-edited",
       userId: "user1",
       userEmail: "user.one@unit.test",
-      meta: {
-        editedUser: "user1",
-        editedFields: [
-          {
-            name: "edited_permission",
-            newValue: "Approver",
-          },
-        ],
-      },
+      editedUser: "user1",
+      editedFields: [
+        {
+          name: "edited_permission",
+          newValue: "Approver",
+        },
+      ],
+    });
+  });
+
+  it("should NOT write editedUser inside meta for active users", async () => {
+    const postEditPermission =
+      require("./../../../../src/app/users/editPermission").post;
+    await postEditPermission(req, res);
+
+    expect(logger.audit).toHaveBeenCalled();
+    const auditCall = logger.audit.mock.calls[0][0];
+    expect(auditCall.meta).toBeDefined();
+    expect(auditCall.meta.editedUser).toBeUndefined();
+  });
+
+  it("should write editedUser inside meta of the audit event for invited users", async () => {
+    req.params.uid = "inv-invite1";
+    const postEditPermission =
+      require("./../../../../src/app/users/editPermission").post;
+    await postEditPermission(req, res);
+
+    expect(logger.audit).toHaveBeenCalled();
+    const auditCall = logger.audit.mock.calls[0][0];
+    expect(auditCall.meta).toBeDefined();
+    expect(auditCall.meta.editedUser).toBe("inv-invite1");
+  });
+
+  it("should include organisationId in audit payload", async () => {
+    await postEditPermission(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0]).toMatchObject({
+      type: "approver",
+      subType: "user-org-permission-edited",
+      organisationid: "org1",
     });
   });
 
@@ -289,5 +321,21 @@ describe("when editing organisation permission level", () => {
     expect(sendUserPermissionChangedStub.mock.calls[0][4]).toEqual(
       expectedPermission[1],
     );
+  });
+
+  it("should write the audit event once", async () => {
+    const postEditPermission =
+      require("./../../../../src/app/users/editPermission").post;
+    await postEditPermission(req, res);
+    expect(logger.audit).toHaveBeenCalledTimes(1);
+  });
+
+  it("should include organisationName and editedUserEmail in the audit event", async () => {
+    const postEditPermission =
+      require("./../../../../src/app/users/editPermission").post;
+    await postEditPermission(req, res);
+    const auditCall = logger.audit.mock.calls[0][0];
+    expect(auditCall.organisationName).toBeDefined();
+    expect(auditCall.editedUserEmail).toBeDefined();
   });
 });
