@@ -27,21 +27,17 @@ jest.mock("../../../../src/infrastructure/helpers/allServicesAppCache", () => {
 });
 jest.mock("./../../../../src/infrastructure/logger", () => mockLogger());
 
-const createService = (id, name, hideApprover = "false") => {
+const createService = (id, name, isHiddenForApprover = false) => {
   return {
     id,
     name,
     description: "service description",
     isExternalService: true,
     isMigrated: true,
-    isHiddenService: false,
-    isIdOnlyService: false,
+    isHiddenForApprover,
     relyingParty: {
       service_home: "http://service.one/login",
       redirect_uris: ["http://service.one/login/cb"],
-      params: {
-        hideApprover,
-      },
     },
   };
 };
@@ -77,53 +73,9 @@ describe("when displaying current organisation and service mapping", () => {
 
   it("then it should include non-hidden services in the model", async () => {
     const services = [
-      createService("service-1", "1 - Visible role-based service one"),
-      {
-        id: "service-2",
-        name: "2 - Visible ID-only service two",
-        description: "service description",
-        isExternalService: true,
-        isMigrated: true,
-        isHiddenService: false,
-        isIdOnlyService: true,
-        relyingParty: {
-          service_home: "http://service.two/login",
-          redirect_uris: ["http://service.two/login/cb"],
-          params: {
-            hideApprover: "true",
-          },
-        },
-      },
-      {
-        id: "service-3",
-        name: "3 - Visible param-less role-based service three",
-        description: "service description",
-        isExternalService: true,
-        isMigrated: true,
-        isHiddenService: false,
-        isIdOnlyService: false,
-        relyingParty: {
-          service_home: "http://service.three/login",
-          redirect_uris: ["http://service.three/login/cb"],
-        },
-      },
-      createService("service-4", "4 - Hidden role-based service four", "true"),
-      {
-        id: "service-5",
-        name: "5 - Hidden ID-only service five",
-        description: "service description",
-        isExternalService: true,
-        isMigrated: true,
-        isHiddenService: true,
-        isIdOnlyService: true,
-        relyingParty: {
-          service_home: "http://service.five/login",
-          redirect_uris: ["http://service.five/login/cb"],
-          params: {
-            hideApprover: "true",
-          },
-        },
-      },
+      createService("service-1", "1 - Visible service one", false),
+      createService("service-2", "2 - Visible service two", false),
+      createService("service-3", "3 - Hidden service three", true),
     ];
     checkCacheForAllServices.mockResolvedValue({
       services,
@@ -136,8 +88,31 @@ describe("when displaying current organisation and service mapping", () => {
     expect(res.render.mock.calls[0][1].services).toEqual([
       services[0],
       services[1],
-      services[2],
     ]);
+  });
+
+  it("should exclude a service with isHiddenForApprover: true", async () => {
+    const services = [
+      createService("service-visible", "Visible Service", false),
+      createService("service-hidden", "Hidden Service", true),
+    ];
+    checkCacheForAllServices.mockResolvedValue({ services });
+
+    await home(req, res);
+
+    const rendered = res.render.mock.calls[0][1].services;
+    expect(rendered.map((s) => s.id)).not.toContain("service-hidden");
+    expect(rendered.map((s) => s.id)).toContain("service-visible");
+  });
+
+  it("should include a service with isHiddenForApprover: false", async () => {
+    const services = [createService("service-shown", "Shown Service", false)];
+    checkCacheForAllServices.mockResolvedValue({ services });
+
+    await home(req, res);
+
+    const rendered = res.render.mock.calls[0][1].services;
+    expect(rendered.map((s) => s.id)).toContain("service-shown");
   });
 
   it("then it should include title in model", async () => {

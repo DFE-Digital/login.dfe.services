@@ -8,6 +8,12 @@ jest.mock("./../../../../src/infrastructure/config", () =>
   require("../../../utils/jestMocks").mockConfig(),
 );
 
+jest.mock("../../../../src/infrastructure/helpers/allServicesAppCache", () => ({
+  checkCacheForAllServices: jest.fn().mockResolvedValue({
+    services: [{ id: "serviceId", isHiddenForApprover: false }],
+  }),
+}));
+
 jest.mock("../../../../src/app/users/utils", () => {
   return {
     isOrgEndUser: jest.fn(),

@@ -33,10 +33,7 @@ const action = async (req, res) => {
   // prepare details for all services to start matching and building details for the view
   const allServices = await checkCacheForAllServices();
   const externalServices = allServices.services.filter(
-    (x) =>
-      x.isExternalService === true &&
-      x.relyingParty &&
-      !(x.relyingParty.params && x.relyingParty.params.hideApprover === "true"),
+    (x) => x.isExternalService === true && !x.isHiddenForApprover,
   );
 
   visibleUserOrgs.forEach((userOrg) => {

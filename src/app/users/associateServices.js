@@ -92,10 +92,7 @@ const getAllAvailableServices = async (req) => {
 
   const allServices = await checkCacheForAllServices(req.id);
   let externalServices = allServices.services.filter(
-    (x) =>
-      x.isExternalService === true &&
-      x.relyingParty &&
-      !(x.relyingParty.params && x.relyingParty.params.hideApprover === "true"),
+    (x) => x.isExternalService === true && !x.isHiddenForApprover,
   );
   if (req.params.uid) {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(

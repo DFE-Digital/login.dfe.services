@@ -1,5 +1,8 @@
 const { services, organisation } = require("login.dfe.dao");
 const {
+  checkCacheForAllServices,
+} = require("../../infrastructure/helpers/allServicesAppCache");
+const {
   getOrgNaturalIdentifiers,
   isRemoveService,
   isOrgEndUser,
@@ -53,17 +56,24 @@ const listVisibleServiceOrganisations = async (req) => {
     const isRemoveRequest = isRemoveService(req);
     const filterByApproverRole = isRemoveRequest ? true : false;
 
-    // get visible service for all orgs for this user: checking isExternalService, hideApprover
     const allServiceOrganisations =
       await services.getFilteredUserServicesWithOrganisation(
         req.user.sub,
         filterByApproverRole,
       );
 
-    // filter services associated with hidden oranisations (ID only services)
+    const allCachedServices = await checkCacheForAllServices();
+    const hiddenServiceIds = new Set(
+      (allCachedServices?.services ?? [])
+        .filter((s) => s.isHiddenForApprover)
+        .map((s) => s.id),
+    );
+
+    // filter services associated with hidden organisations and NSA-9688 hidden services
     const serviceOrganisations = filterHiddenOrganisations(
       allServiceOrganisations,
-    );
+    ).filter((so) => !hiddenServiceIds.has(so.Service.id));
+
     return buildAdditionalOrgDetails(serviceOrganisations);
   } catch (error) {
     throw new Error(error);
