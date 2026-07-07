@@ -168,9 +168,6 @@ describe("When reviewing a service request for approving", () => {
         {
           id: "service1",
           name: "service name",
-          relyingParty: {
-            clientId: "serviceClient1",
-          },
         },
       ],
     });

@@ -94,6 +94,7 @@ describe("when posting a service rejection", () => {
         sid: "service1",
         orgId: "organisationId",
         rids: [0],
+        uid: "endUser1",
       },
       query: {},
       userOrganisations: [
@@ -312,13 +313,20 @@ describe("when posting a service rejection", () => {
     expect(logger.audit).toHaveBeenCalledWith({
       application: undefined,
       env: "test-run",
-      message:
-        "mock-email (approverId: mock-sub) rejected service (serviceId: service1), roles (roleIds: []) for end user (endUserId: undefined). The reject reason is xxxxxxxxxx - requestId (reqId: undefined)",
-      subType: "access-request-rejected",
+      message: "mock-email rejected service request for mock-email",
+      subType: "service-request-rejected",
       type: "services",
       userEmail: "mock-email",
-      userId: "mock-uid",
+      userId: "mock-sub",
       organisationid: "organisationId",
+      meta: {
+        serviceId: "service1",
+        requestId: undefined,
+        roles: "[]",
+        endUserId: "endUser1",
+        editedUser: "endUser1",
+        reason: "The reject reason is xxxxxxxxxx",
+      },
     });
   });
 });

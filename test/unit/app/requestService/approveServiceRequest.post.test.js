@@ -106,7 +106,7 @@ describe("When approving a service request", () => {
       }));
 
     req.user = {
-      uid: "approver1",
+      uid: "approver1-stale-uid",
       sub: "approver1",
       email: "approver.one@unit.test",
       organisations: [
@@ -184,16 +184,10 @@ describe("When approving a service request", () => {
         {
           id: "service1",
           name: "service name",
-          relyingParty: {
-            clientId: "serviceClient1",
-          },
         },
         {
           id: "service2",
           name: "service2 name",
-          relyingParty: {
-            clientId: "serviceClient1",
-          },
         },
       ],
     });
@@ -340,15 +334,16 @@ describe("When approving a service request", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0].message).toBe(
-      "approver.one@unit.test approved service access request for end user (endUserId: endUser1)",
+      "approver.one@unit.test approved service request for john.doe@email.com",
     );
     expect(logger.audit.mock.calls[0][0]).toMatchObject({
       type: "services",
-      subType: "access-request-approved",
+      subType: "service-request-approved",
       userId: "approver1",
       userEmail: "approver.one@unit.test",
       meta: {
-        client: "serviceClient1",
+        serviceId: "service1",
+        editedUser: "endUser1",
       },
     });
   });
