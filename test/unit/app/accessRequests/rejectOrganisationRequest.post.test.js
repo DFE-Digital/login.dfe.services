@@ -242,8 +242,10 @@ describe("when rejecting an organisation request", () => {
       type: "approver",
       subType: "organisation-request-rejected",
       userId: "user1",
-      editedUser: "userId",
-      reason: "reason for rejection",
+      meta: {
+        editedUser: "userId",
+        reason: "reason for rejection",
+      },
     });
   });
 

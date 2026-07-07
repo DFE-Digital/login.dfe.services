@@ -86,11 +86,12 @@ const post = async (req, res) => {
     subType: "organisation-request-rejected",
     userId: req.user.sub,
     organisationid: model.request.org_id,
-    editedUser: model.request.user_id,
-    reason: model.reason,
-    currentPage: "requests",
     application: config.loggerSettings.applicationName,
     env: config.hostingEnvironment.env,
+    meta: {
+      editedUser: model.request.user_id,
+      reason: model.reason,
+    },
     message: `${req.user.email} rejected organisation request for ${model.request.usersEmail}`,
   });
 
