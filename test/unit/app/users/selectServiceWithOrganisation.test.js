@@ -93,7 +93,7 @@ describe("selectServiceWithOrganisation — isHiddenForApprover filtering", () =
     ).toBeUndefined();
   });
 
-  it("excludes services not present in the cache (isHiddenForApprover undefined → not in cache set)", async () => {
+  it("includes services when cache returns empty (empty hidden set means nothing is hidden)", async () => {
     services.getFilteredUserServicesWithOrganisation.mockResolvedValue([
       makeServiceOrg("svc-visible"),
     ]);
