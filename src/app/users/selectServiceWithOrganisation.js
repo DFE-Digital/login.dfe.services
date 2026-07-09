@@ -76,7 +76,7 @@ const listVisibleServiceOrganisations = async (req) => {
 
     return buildAdditionalOrgDetails(serviceOrganisations);
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };
 
