@@ -52,32 +52,28 @@ const filterHiddenOrganisations = (serviceOrganisations) => {
 };
 
 const listVisibleServiceOrganisations = async (req) => {
-  try {
-    const isRemoveRequest = isRemoveService(req);
-    const filterByApproverRole = isRemoveRequest ? true : false;
+  const isRemoveRequest = isRemoveService(req);
+  const filterByApproverRole = isRemoveRequest ? true : false;
 
-    const allServiceOrganisations =
-      await services.getFilteredUserServicesWithOrganisation(
-        req.user.sub,
-        filterByApproverRole,
-      );
-
-    const allCachedServices = await checkCacheForAllServices();
-    const hiddenServiceIds = new Set(
-      (allCachedServices?.services ?? [])
-        .filter((s) => s.isHiddenForApprover)
-        .map((s) => s.id),
+  const allServiceOrganisations =
+    await services.getFilteredUserServicesWithOrganisation(
+      req.user.sub,
+      filterByApproverRole,
     );
 
-    // filter services associated with hidden organisations and NSA-9688 hidden services
-    const serviceOrganisations = filterHiddenOrganisations(
-      allServiceOrganisations,
-    ).filter((so) => !hiddenServiceIds.has(so.Service.id));
+  const allCachedServices = await checkCacheForAllServices();
+  const hiddenServiceIds = new Set(
+    (allCachedServices?.services ?? [])
+      .filter((s) => s.isHiddenForApprover)
+      .map((s) => s.id),
+  );
 
-    return buildAdditionalOrgDetails(serviceOrganisations);
-  } catch (error) {
-    throw error;
-  }
+  // filter services associated with hidden organisations and NSA-9688 hidden services
+  const serviceOrganisations = filterHiddenOrganisations(
+    allServiceOrganisations,
+  ).filter((so) => !hiddenServiceIds.has(so.Service.id));
+
+  return buildAdditionalOrgDetails(serviceOrganisations);
 };
 
 const get = async (req, res) => {
