@@ -27,9 +27,6 @@ const {
   mockAdapterConfig,
 } = require("./../../../utils/jestMocks");
 const {
-  getAllServices,
-} = require("./../../../../src/infrastructure/applications");
-const {
   getAllServicesForUserInOrg,
 } = require("./../../../../src/app/users/utils");
 jest.mock("./../../../../src/infrastructure/logger", () => mockLogger());
@@ -105,7 +102,7 @@ jest.mock("login.dfe.dao", () => {
                 reason: null,
                 numeric_identifier: "29",
                 text_identifier: "r6ffe4f",
-                createdAt: "2018-10-11T15:35:57.314Z",
+                createdAt: "2018-10-11T15:35:57.334Z",
                 updatedAt: "2019-04-25T08:32:32.008Z",
               },
               {
@@ -233,16 +230,16 @@ describe("when displaying the associate service view", () => {
         {
           id: "service1",
           isExternalService: true,
+          isHiddenForApprover: false,
           isMigrated: true,
           name: "Service One",
-          relyingParty: {},
         },
         {
           id: "service2",
           isExternalService: true,
+          isHiddenForApprover: false,
           isMigrated: true,
           name: "Service two",
-          relyingParty: {},
         },
       ],
     });
@@ -305,20 +302,10 @@ describe("when displaying the associate service view", () => {
     expect(res.redirect.mock.calls[0][0]).toBe("/approvals/users");
   });
 
-  it("should check if external service with no params", async () => {
-    getAllServices.mockReset();
-    getAllServices.mockReturnValue({
-      services: [
-        {
-          id: "service1",
-          dateActivated: "10/10/2018",
-          name: "service name",
-          status: "active",
-          isExternalService: true,
-          relyingParty: {},
-        },
-      ],
-    });
+  it("should render the associate services view with services from cache", async () => {
+    // beforeEach checkCacheForAllServices mock provides service1 and service2;
+    // service2 is already assigned to the user via getAllServicesForUserInOrg,
+    // so only service1 appears as available to select.
     await getAssociateServices(req, res);
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: "token",
@@ -341,22 +328,27 @@ describe("when displaying the associate service view", () => {
     });
   });
 
-  it("should display service if external service with params but no hideApprover", async () => {
-    getAllServices.mockReset();
-    getAllServices.mockReturnValue({
+  it("should display service if isHiddenForApprover is false", async () => {
+    checkCacheForAllServices.mockReturnValue({
       services: [
         {
           id: "service1",
-          dateActivated: "10/10/2018",
-          name: "service name",
-          status: "active",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isHiddenForApprover: false,
+          isMigrated: true,
+          name: "Service One",
         },
       ],
     });
+    getAllServicesForUserInOrg.mockReturnValue([]);
+    policyEngine.getPolicyApplicationResultsForUser.mockReturnValue([
+      {
+        id: "service1",
+        policiesAppliedForUser: [],
+        rolesAvailableToUser: [],
+        serviceAvailableToUser: true,
+      },
+    ]);
     await getAssociateServices(req, res);
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: "token",
@@ -379,44 +371,39 @@ describe("when displaying the associate service view", () => {
     });
   });
 
-  it("should display service if external service with params but hideApprover false", async () => {
-    getAllServices.mockReset();
-    getAllServices.mockReturnValue({
-      services: [
-        {
-          id: "service1",
-          dateActivated: "10/10/2018",
-          name: "service name",
-          status: "active",
-          isExternalService: true,
-          relyingParty: {
-            params: {
-              hideApprover: false,
-            },
-          },
-        },
-      ],
-    });
-    await getAssociateServices(req, res);
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      csrfToken: "token",
-      name: "test name",
-      user: { email: "test@test.com", firstName: "test", lastName: "name" },
-      validationMessages: {},
-      backLink: "/approvals/users/user1",
-      currentPage: "users",
-      organisationDetails: undefined,
+  it("should exclude service if isHiddenForApprover is true", async () => {
+    checkCacheForAllServices.mockReturnValue({
       services: [
         {
           id: "service1",
           isExternalService: true,
+          isHiddenForApprover: true,
           isMigrated: true,
-          name: "Service One",
+          name: "Hidden Service",
+        },
+        {
+          id: "service2",
+          isExternalService: true,
+          isHiddenForApprover: false,
+          isMigrated: true,
+          name: "Visible Service",
         },
       ],
-      selectedServices: [],
-      isInvite: undefined,
     });
+    getAllServicesForUserInOrg.mockReturnValue([]);
+    policyEngine.getPolicyApplicationResultsForUser.mockImplementation(
+      (userId, organisationId, serviceIds) =>
+        serviceIds.map((id) => ({
+          id,
+          policiesAppliedForUser: [],
+          rolesAvailableToUser: [],
+          serviceAvailableToUser: true,
+        })),
+    );
+    await getAssociateServices(req, res);
+    const services = res.render.mock.calls[0][1].services;
+    expect(services.map((s) => s.id)).not.toContain("service1");
+    expect(services.map((s) => s.id)).toContain("service2");
   });
 
   it("then it should include the services", async () => {
@@ -443,23 +430,21 @@ describe("when displaying the associate service view", () => {
   });
 
   it("then it should exclude services that are not available based on policies", async () => {
-    getAllServices.mockReturnValue({
+    checkCacheForAllServices.mockReturnValue({
       services: [
         {
           id: "service1",
-          name: "service one",
+          name: "Service One",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isHiddenForApprover: false,
+          isMigrated: true,
         },
         {
           id: "service2",
-          name: "service two",
+          name: "Service two",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isHiddenForApprover: false,
+          isMigrated: true,
         },
       ],
     });

@@ -8,13 +8,8 @@ const {
 const getAndMapExternalServices = async (correlationId) => {
   const allServices = await checkCacheForAllServices(correlationId);
 
-  // Note, we're not checking `isHiddenService` for a non-id-only service.
   const nonHiddenServices = allServices.services.filter(
-    (service) =>
-      (!service.isIdOnlyService &&
-        (service.relyingParty?.params?.hideApprover === undefined ||
-          service.relyingParty?.params?.hideApprover === "false")) ||
-      (service.isIdOnlyService && !service.isHiddenService),
+    (service) => !service.isHiddenForApprover,
   );
   return sortBy(nonHiddenServices, "name");
 };

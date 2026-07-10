@@ -4,6 +4,10 @@ jest.mock("./../../../../src/infrastructure/config", () =>
   require("../../../utils/jestMocks").mockConfig(),
 );
 
+jest.mock("../../../../src/infrastructure/helpers/allServicesAppCache", () => ({
+  checkCacheForAllServices: jest.fn().mockResolvedValue({ services: [] }),
+}));
+
 jest.mock("login.dfe.dao", () => {
   return {
     organisation: {

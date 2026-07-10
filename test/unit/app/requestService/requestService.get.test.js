@@ -104,12 +104,14 @@ describe("when displaying the request a service page", () => {
         {
           id: "service1",
           isExternalService: true,
+          isHiddenForApprover: false,
           isMigrated: true,
           name: "Service One",
         },
         {
           id: "service2",
           isExternalService: true,
+          isHiddenForApprover: false,
           isMigrated: true,
           name: "Service two",
         },
@@ -164,5 +166,70 @@ describe("when displaying the request a service page", () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: "token",
     });
+  });
+
+  it("should exclude a service with isHiddenForApprover: true from results", async () => {
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service-visible",
+          isExternalService: true,
+          isHiddenForApprover: false,
+          isMigrated: true,
+          name: "Visible Service",
+        },
+        {
+          id: "service-hidden",
+          isExternalService: true,
+          isHiddenForApprover: true,
+          isMigrated: true,
+          name: "Hidden Service",
+        },
+      ],
+    });
+    getAllServicesForUserInOrg.mockReturnValue([]);
+    policyEngine.getPolicyApplicationResultsForUser.mockImplementation(
+      (userId, organisationId, serviceIds) =>
+        serviceIds.map((id) => ({
+          id,
+          policiesAppliedForUser: [],
+          rolesAvailableToUser: [],
+          serviceAvailableToUser: true,
+        })),
+    );
+
+    await get(req, res);
+
+    const services = res.render.mock.calls[0][1].services;
+    expect(services.map((s) => s.id)).not.toContain("service-hidden");
+    expect(services.map((s) => s.id)).toContain("service-visible");
+  });
+
+  it("should include a service with isHiddenForApprover: false in results", async () => {
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service-shown",
+          isExternalService: true,
+          isHiddenForApprover: false,
+          isMigrated: true,
+          name: "Shown Service",
+        },
+      ],
+    });
+    getAllServicesForUserInOrg.mockReturnValue([]);
+    policyEngine.getPolicyApplicationResultsForUser.mockReturnValue([
+      {
+        id: "service-shown",
+        policiesAppliedForUser: [],
+        rolesAvailableToUser: [],
+        serviceAvailableToUser: true,
+      },
+    ]);
+
+    await get(req, res);
+
+    const services = res.render.mock.calls[0][1].services;
+    expect(services.map((s) => s.id)).toContain("service-shown");
   });
 });

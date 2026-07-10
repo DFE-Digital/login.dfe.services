@@ -97,6 +97,7 @@ describe("when displaying the users services", () => {
         {
           id: "service1",
           isExternalService: true,
+          isHiddenForApprover: false,
           isMigrated: true,
           isHiddenService: false,
           name: "Service One",
@@ -104,6 +105,7 @@ describe("when displaying the users services", () => {
         {
           id: "service2",
           isExternalService: true,
+          isHiddenForApprover: false,
           isMigrated: true,
           isHiddenService: false,
           name: "Service two",
@@ -156,6 +158,70 @@ describe("when displaying the users services", () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: "token",
     });
+  });
+
+  it("should exclude a service with isHiddenForApprover: true from displayed services", async () => {
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service1",
+          isExternalService: true,
+          isHiddenForApprover: false,
+          isMigrated: true,
+          name: "Visible Service",
+        },
+        {
+          id: "service-hidden",
+          isExternalService: true,
+          isHiddenForApprover: true,
+          isMigrated: true,
+          name: "Hidden Service",
+        },
+      ],
+    });
+
+    await getServices(req, res);
+
+    const visibleUserOrgs = res.render.mock.calls[0][1].visibleUserOrgs;
+    const displayedIds = visibleUserOrgs.flatMap((org) =>
+      org.displayedServices.map((s) => s.id),
+    );
+    expect(displayedIds).not.toContain("service-hidden");
+  });
+
+  it("should include a service with isHiddenForApprover: false in displayed services", async () => {
+    mockGetOrganisationAndServiceForUser.mockReturnValue([
+      {
+        organisation: { id: "org1" },
+        services: [
+          {
+            id: "service1",
+            dateActivated: "10/10/2018",
+            name: "service name",
+            status: "active",
+          },
+        ],
+      },
+    ]);
+    checkCacheForAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service1",
+          isExternalService: true,
+          isHiddenForApprover: false,
+          isMigrated: true,
+          name: "Visible Service",
+        },
+      ],
+    });
+
+    await getServices(req, res);
+
+    const visibleUserOrgs = res.render.mock.calls[0][1].visibleUserOrgs;
+    const displayedIds = visibleUserOrgs.flatMap((org) =>
+      org.displayedServices.map((s) => s.id),
+    );
+    expect(displayedIds).toContain("service1");
   });
 
   describe("when an invite journey is in progress during a user profile page visit", () => {
