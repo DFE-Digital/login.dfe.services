@@ -81,11 +81,23 @@ describe("when showing the searching for a organisation", () => {
     expect(searchOrganisationsRaw.mock.calls).toHaveLength(1);
     expect(searchOrganisationsRaw.mock.calls[0][0]).toMatchObject({
       categories: ["001"],
-      excludeOrganisationNames: ["Department for Education"],
+      excludeOrganisationNames: [
+        "Department for Education",
+        "EDUCATION, DEPARTMENT FOR (DFE)",
+      ],
       organisationName: "organisation one",
       pageNumber: 1,
       status: [1, 3, 4],
     });
+  });
+
+  it("then it should exclude the UKRLP-sourced Department for Education organisation from search results", async () => {
+    await post(req, res);
+
+    expect(searchOrganisationsRaw.mock.calls).toHaveLength(1);
+    expect(
+      searchOrganisationsRaw.mock.calls[0][0].excludeOrganisationNames,
+    ).toEqual(expect.arrayContaining(["EDUCATION, DEPARTMENT FOR (DFE)"]));
   });
 
   it("then it should render search view with results", async () => {
@@ -144,7 +156,10 @@ describe("when showing the searching for a organisation", () => {
       pageNumber: 1,
       categories: ["001"],
       status: [1, 3, 4],
-      excludeOrganisationNames: ["Department for Education"],
+      excludeOrganisationNames: [
+        "Department for Education",
+        "EDUCATION, DEPARTMENT FOR (DFE)",
+      ],
     });
 
     expect(req.session.organisationId).toBe("org1");
