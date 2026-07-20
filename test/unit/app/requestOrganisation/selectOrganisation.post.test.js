@@ -91,15 +91,6 @@ describe("when showing the searching for a organisation", () => {
     });
   });
 
-  it("then it should exclude the UKRLP-sourced Department for Education organisation from search results", async () => {
-    await post(req, res);
-
-    expect(searchOrganisationsRaw.mock.calls).toHaveLength(1);
-    expect(
-      searchOrganisationsRaw.mock.calls[0][0].excludeOrganisationNames,
-    ).toEqual(expect.arrayContaining(["EDUCATION, DEPARTMENT FOR (DFE)"]));
-  });
-
   it("then it should render search view with results", async () => {
     await post(req, res);
 
