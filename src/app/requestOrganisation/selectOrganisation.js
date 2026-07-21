@@ -13,7 +13,10 @@ const search = async (req) => {
     req.method.toUpperCase() === "POST" ? req.body : req.query;
   const criteria = inputSource.criteria ? inputSource.criteria.trim() : "";
   const filterStatus = [1, 3, 4];
-  const filterOutOrgNames = ["Department for Education"];
+  const filterOutOrgNames = [
+    "Department for Education",
+    "EDUCATION, DEPARTMENT FOR (DFE)",
+  ];
   const organisationCategoriesFilter = await retrieveOrganisationCategories();
 
   let pageNumber = parseInt(inputSource.page) || 1;

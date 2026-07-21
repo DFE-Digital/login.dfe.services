@@ -81,7 +81,10 @@ describe("when showing the searching for a organisation", () => {
     expect(searchOrganisationsRaw.mock.calls).toHaveLength(1);
     expect(searchOrganisationsRaw.mock.calls[0][0]).toMatchObject({
       categories: ["001"],
-      excludeOrganisationNames: ["Department for Education"],
+      excludeOrganisationNames: [
+        "Department for Education",
+        "EDUCATION, DEPARTMENT FOR (DFE)",
+      ],
       organisationName: "organisation one",
       pageNumber: 1,
       status: [1, 3, 4],
@@ -144,7 +147,10 @@ describe("when showing the searching for a organisation", () => {
       pageNumber: 1,
       categories: ["001"],
       status: [1, 3, 4],
-      excludeOrganisationNames: ["Department for Education"],
+      excludeOrganisationNames: [
+        "Department for Education",
+        "EDUCATION, DEPARTMENT FOR (DFE)",
+      ],
     });
 
     expect(req.session.organisationId).toBe("org1");
