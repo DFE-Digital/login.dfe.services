@@ -270,7 +270,11 @@ describe("when displaying the users services", () => {
   describe("when the user shares no organisation the approver approves", () => {
     beforeEach(() => {
       res.status.mockReturnValue(res);
-      req.session.user = { uid: "previous-user", firstName: "Previous" };
+      req.session.user = {
+        uid: "previous-user",
+        firstName: "Previous",
+        isInvite: true,
+      };
       mockGetOrganisationAndServiceForUser.mockReturnValueOnce([
         { organisation: { id: "other-org" }, services: [] },
       ]);
@@ -299,6 +303,7 @@ describe("when displaying the users services", () => {
       expect(req.session.user).toEqual({
         uid: "previous-user",
         firstName: "Previous",
+        isInvite: true,
       });
       expect(req.session.savedInvite).toBeUndefined();
     });
