@@ -34,9 +34,13 @@ const mockGetOrganisationAndServiceForUser = jest.fn().mockReturnValue([
   },
 ]);
 
+const mockGetOrganisationAndServiceForInvitation = jest.fn();
+
 jest.mock("./../../../../src/infrastructure/organisations", () => {
   return {
     getOrganisationAndServiceForUser: mockGetOrganisationAndServiceForUser,
+    getOrganisationAndServiceForInvitation:
+      mockGetOrganisationAndServiceForInvitation,
   };
 });
 
@@ -260,6 +264,85 @@ describe("when displaying the users services", () => {
       await getServices(req, res);
 
       expect(req.session.savedInvite).toBeUndefined();
+    });
+  });
+
+  describe("when the user shares no organisation the approver approves", () => {
+    beforeEach(() => {
+      res.status.mockReturnValue(res);
+      req.session.user = { uid: "previous-user", firstName: "Previous" };
+      mockGetOrganisationAndServiceForUser.mockReturnValueOnce([
+        { organisation: { id: "other-org" }, services: [] },
+      ]);
+    });
+
+    it("returns 401 with the not authorised page", async () => {
+      await getServices(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(401);
+      expect(res.render).toHaveBeenCalledWith("errors/views/notAuthorised");
+      expect(res.render).not.toHaveBeenCalledWith(
+        "users/views/services",
+        expect.anything(),
+      );
+    });
+
+    it("does not load the user's details", async () => {
+      await getServices(req, res);
+
+      expect(getUserDetails).not.toHaveBeenCalled();
+    });
+
+    it("does not change the session", async () => {
+      await getServices(req, res);
+
+      expect(req.session.user).toEqual({
+        uid: "previous-user",
+        firstName: "Previous",
+      });
+      expect(req.session.savedInvite).toBeUndefined();
+    });
+  });
+
+  it("returns 401 when the user has no organisations", async () => {
+    res.status.mockReturnValue(res);
+    mockGetOrganisationAndServiceForUser.mockReturnValueOnce([]);
+
+    await getServices(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(getUserDetails).not.toHaveBeenCalled();
+  });
+
+  describe("when viewing an invitation", () => {
+    beforeEach(() => {
+      res.status.mockReturnValue(res);
+      req.params.uid = "inv-invitation-1";
+    });
+
+    it("renders the page when the invitation belongs to an approver organisation", async () => {
+      mockGetOrganisationAndServiceForInvitation.mockReturnValueOnce([
+        { organisation: { id: "org1" }, services: [] },
+      ]);
+
+      await getServices(req, res);
+
+      expect(mockGetOrganisationAndServiceForInvitation).toHaveBeenCalledWith(
+        "invitation-1",
+      );
+      expect(res.render.mock.calls[0][0]).toBe("users/views/services");
+    });
+
+    it("returns 401 when the invitation belongs to another organisation", async () => {
+      mockGetOrganisationAndServiceForInvitation.mockReturnValueOnce([
+        { organisation: { id: "other-org" }, services: [] },
+      ]);
+
+      await getServices(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(401);
+      expect(res.render).toHaveBeenCalledWith("errors/views/notAuthorised");
+      expect(getUserDetails).not.toHaveBeenCalled();
     });
   });
 });
