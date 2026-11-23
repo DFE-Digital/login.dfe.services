@@ -3,6 +3,7 @@ const {
   isLoggedIn,
   isApprover,
   isApproverInSomeOrgs,
+  isTargetUserInOrganisation,
 } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
 const { asyncWrapper } = require("login.dfe.express-helpers/error-handling");
@@ -214,36 +215,42 @@ const users = (csrf) => {
     "/:orgId/users/:uid/services/:sid",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(getEditService),
   );
   router.post(
     "/:orgId/users/:uid/services/:sid",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(postEditService),
   );
   router.get(
     "/:orgId/users/:uid/services/:sid/confirm-edit-service",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(getConfirmEditService),
   );
   router.post(
     "/:orgId/users/:uid/services/:sid/confirm-edit-service",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(postConfirmEditService),
   );
   router.get(
     "/:orgId/users/:uid/services/:sid/remove-service",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(getRemoveService),
   );
   router.post(
     "/:orgId/users/:uid/services/:sid/remove-service",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(postRemoveService),
   );
 
@@ -251,24 +258,28 @@ const users = (csrf) => {
     "/:orgId/users/:uid/remove-organisation",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(getRemoveOrganisation),
   );
   router.post(
     "/:orgId/users/:uid/remove-organisation",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(postRemoveOrganisation),
   );
   router.get(
     "/:orgId/users/:uid/edit-permission",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(getEditPermission),
   );
   router.post(
     "/:orgId/users/:uid/edit-permission",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(postEditPermission),
   );
 
@@ -276,12 +287,14 @@ const users = (csrf) => {
     "/:orgId/users/:uid/resend-invitation",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(getResendInvitation),
   );
   router.post(
     "/:orgId/users/:uid/resend-invitation",
     csrf,
     isApprover,
+    isTargetUserInOrganisation,
     asyncWrapper(postResendInvitation),
   );
 
