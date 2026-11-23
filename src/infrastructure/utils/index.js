@@ -1,5 +1,7 @@
 const config = require("./../config");
 const {
+  getOrganisationAndServiceForUser,
+  getOrganisationAndServiceForInvitation,
   getOrganisationAndServiceForUserV2,
   getPendingRequestsAssociatedWithUser,
 } = require("./../organisations");
@@ -110,6 +112,30 @@ const isApproverInSomeOrgs = (req, res, next) => {
   return res.status(401).render("errors/views/notAuthorised");
 };
 
+// isApprover only proves the caller approves :orgId. Org-scoped actions must
+// also be limited to users and invitations that belong to that organisation.
+// Unknown and non-member targets get the same response so it does not reveal
+// whether a user or invitation exists.
+const isTargetUserInOrganisation = async (req, res, next) => {
+  try {
+    const { orgId, uid } = req.params;
+    if (orgId && uid) {
+      const targetOrganisations = uid.startsWith("inv-")
+        ? await getOrganisationAndServiceForInvitation(uid.substring(4))
+        : await getOrganisationAndServiceForUser(uid);
+      const isMember = (targetOrganisations || []).some(
+        (x) => x.organisation?.id?.toLowerCase() === orgId.toLowerCase(),
+      );
+      if (isMember) {
+        return next();
+      }
+    }
+    return res.status(401).render("errors/views/notAuthorised");
+  } catch (error) {
+    return next(error);
+  }
+};
+
 const isSelfRequest = (req, res, next) => {
   if (req.user && req.user.sub === req.params.uid) {
     return next();
@@ -208,6 +234,7 @@ module.exports = {
   setConfigContext,
   isApprover,
   isApproverInSomeOrgs,
+  isTargetUserInOrganisation,
   mapUserStatus,
   isSelfRequest,
   mapRole,
