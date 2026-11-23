@@ -56,14 +56,25 @@ describe.each(["get", "post"])("users router %s routes", (method) => {
     (path) => {
       const handlers = handlersFor(method, path);
       const approverIndex = handlers.indexOf(isApprover);
-      const membershipIndex = handlers.indexOf(isTargetUserInOrganisation);
 
       expect(approverIndex).toBeGreaterThan(-1);
-      expect(membershipIndex).toBeGreaterThan(approverIndex);
+      expect(handlers[approverIndex + 1]).toBe(isTargetUserInOrganisation);
     },
   );
 
   it.each(inviteJourneyPaths)("%s does not check target membership", (path) => {
     expect(handlersFor(method, path)).not.toContain(isTargetUserInOrganisation);
+  });
+});
+
+it("classifies every org-scoped :uid route as guarded or invite journey", () => {
+  const classifiedPaths = [...orgScopedActionPaths, ...inviteJourneyPaths];
+  const uidRoutePaths = router.stack
+    .filter((x) => x.route && x.route.path.startsWith("/:orgId/users/:uid"))
+    .map((x) => x.route.path);
+
+  expect(uidRoutePaths.length).toBeGreaterThan(0);
+  uidRoutePaths.forEach((path) => {
+    expect(classifiedPaths).toContain(path);
   });
 });
