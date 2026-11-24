@@ -14,7 +14,6 @@ const {
 const config = require("../../infrastructure/config");
 
 const action = async (req, res) => {
-  const user = await getUserDetails(req);
   const isInvitation = req.params.uid.startsWith("inv-");
   const approverOrgs = getApproverOrgsFromReq(req);
   let userOrgs;
@@ -29,6 +28,14 @@ const action = async (req, res) => {
   const visibleUserOrgs = userOrgs.filter((x) =>
     approverOrgs.find((y) => y.organisation.id === x.organisation.id),
   );
+
+  // Checked before any user details are loaded or written to the session:
+  // approvers may only see users in an organisation they approve.
+  if (visibleUserOrgs.length === 0) {
+    return res.status(401).render("errors/views/notAuthorised");
+  }
+
+  const user = await getUserDetails(req);
 
   // prepare details for all services to start matching and building details for the view
   const allServices = await checkCacheForAllServices();
