@@ -31,38 +31,56 @@ const search = async (req) => {
 
   if (paramsSource && paramsSource.selectedOrganisation) {
     const selectedOrgIds = paramsSource.selectedOrganisation;
-    selectedOrganisations =
-      typeof selectedOrgIds === "string"
-        ? selectedOrgIds.split(",")
-        : selectedOrgIds;
+    let requestedOrgIds = [];
+    if (typeof selectedOrgIds === "string") {
+      requestedOrgIds = selectedOrgIds.split(",");
+    } else if (Array.isArray(selectedOrgIds)) {
+      requestedOrgIds = selectedOrgIds;
+    }
+    // selectedOrganisation is client-supplied, so it must never widen access
+    // beyond the organisations the caller is an approver of.
+    selectedOrganisations = requestedOrgIds.filter((id) =>
+      approverOrgIds.includes(id),
+    );
     filteredOrgIds = selectedOrganisations;
   } else {
     filteredOrgIds = approverOrgIds;
   }
 
-  let usersForOrganisation;
-  if (paramsSource.searchCriteria && paramsSource.searchCriteria.length >= 3) {
-    usersForOrganisation = await searchUsersRaw({
-      searchCriteria: `${paramsSource.searchCriteria}*`,
-      pageNumber: page,
-      filterBy: {
-        organisationIds: filteredOrgIds,
-        excludeId: req.user.sub,
-      },
-      searchFields: ["firstName", "lastName"],
-      sortBy,
-      sortDirection: sortAsc ? "asc" : "desc",
-    });
-  } else {
-    usersForOrganisation = await searchUsersRaw({
-      pageNumber: page,
-      filterBy: {
-        organisationIds: filteredOrgIds,
-        excludeId: req.user.sub,
-      },
-      sortBy,
-      sortDirection: sortAsc ? "asc" : "desc",
-    });
+  // With no authorised organisations, do not call the search API at all: an
+  // empty organisationIds filter could otherwise be treated as "no filter".
+  let usersForOrganisation = {
+    users: [],
+    numberOfPages: 0,
+    totalNumberOfResults: 0,
+  };
+  if (filteredOrgIds.length > 0) {
+    if (
+      paramsSource.searchCriteria &&
+      paramsSource.searchCriteria.length >= 3
+    ) {
+      usersForOrganisation = await searchUsersRaw({
+        searchCriteria: `${paramsSource.searchCriteria}*`,
+        pageNumber: page,
+        filterBy: {
+          organisationIds: filteredOrgIds,
+          excludeId: req.user.sub,
+        },
+        searchFields: ["firstName", "lastName"],
+        sortBy,
+        sortDirection: sortAsc ? "asc" : "desc",
+      });
+    } else {
+      usersForOrganisation = await searchUsersRaw({
+        pageNumber: page,
+        filterBy: {
+          organisationIds: filteredOrgIds,
+          excludeId: req.user.sub,
+        },
+        sortBy,
+        sortDirection: sortAsc ? "asc" : "desc",
+      });
+    }
   }
 
   for (let i = 0; i < usersForOrganisation.users.length; i++) {
